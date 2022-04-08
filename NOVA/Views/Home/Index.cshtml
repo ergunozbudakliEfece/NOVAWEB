@@ -4,7 +4,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 <!------ Include the above in your HEAD tag ---------->
-
+@model NOVA.Models.User
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
     <!--Custom styles-->
-    <link rel="stylesheet" type="text/css" href="styles.css">
+
 </head>
 <body>
     <video id="myVideo" autoplay muted loop>
@@ -26,7 +26,7 @@
         <source src="~/Content/Images/2.ogg" type="video/ogg">
     </video>
 
-        
+
     <div class="container">
         <div class="d-flex justify-content-center "><img style="width:37%;margin-top:10%" src="~/Content/Images/efece_logo.png" alt="Alternate Text" /></div>
         <div class="d-flex justify-content-center" style="margin-top:10%">
@@ -37,27 +37,42 @@
 
                 </div>
                 <div class="card-body">
-                    <form>
-                        <div class="input-group form-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            </div>
-                            <input type="text" class="form-control" placeholder="Kullanıcı Adı">
+                    @using (Html.BeginForm())
+                    {
+                        <form>
+                            <div class="input-group form-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                </div>
+                                <input name="username" type="text" class="form-control" placeholder="Kullanıcı Adı">
 
-                        </div>
-                        <div class="input-group form-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-key"></i></span>
                             </div>
-                            <input type="password" class="form-control" placeholder="Şifre">
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <input type="button" value="Giriş" class="btn login_btn" onclick="location.href = '@Url.Action("Test","Home")'">
-                        </div>
-                        <div class="d-flex remember" style="margin-left:31%;margin-top:5%">
-                            <input type="checkbox">Beni Hatırla
-                        </div>
-                    </form>
+                            <div class="input-group form-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                </div>
+                                <input name="password" type="password" class="form-control" placeholder="Şifre">
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <input type="submit" value="Giriş" class="btn login_btn">
+                            </div>
+                            <div class="d-flex remember" style="margin-left:31%;margin-top:5%">
+                                <input type="checkbox">Beni Hatırla
+                            </div>
+                        </form>
+
+                    }
+                    @if (ViewBag.Mesaj != null)
+                    {
+                        <script type="text/javascript">
+
+                            window.onload = function () {
+                                alert("@ViewBag.Mesaj");
+                                                        };
+                        </script>
+                    }
+
+
                 </div>
                 <div class="card-footer">
 
@@ -68,7 +83,7 @@
             </div>
         </div>
     </div>
-
+    
 </body>
 
 </html>
