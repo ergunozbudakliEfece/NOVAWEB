@@ -1,0 +1,387 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_inside.cshtml";
+}
+<!DOCTYPE html>
+@model NOVA.Models.User
+
+
+<html lang="en"
+      class="light-style layout-menu-fixed"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="../assets/"
+      data-template="vertical-menu-template-free">
+<head>
+
+    <style>
+        .results tr[visible='false'],
+        .no-result {
+            display: none;
+        }
+
+        .results tr[visible='true'] {
+            display: table-row;
+        }
+
+        .counter {
+            padding: 8px;
+            color: #ccc;
+        }
+
+        .full-width-div {
+            position: absolute;
+            width: 100%;
+            left: 0;
+        }
+
+        .sticky {
+            position: fixed;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- Content wrapper -->
+    <div class="content-wrapper">
+        <!-- Content -->
+
+        <div class="container flex-grow-0">
+            <div class="row"><h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Yönetim Paneli/</span>Kullanıcı Tablosu</h4></div>
+            <div class="row">
+                <div class="col">
+                    <select data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Tablo içinde gösterilecek kişi sayısı</span>" class="form-select dropdown-toggle" id="maxRows">
+
+                        <option value="5000">Hepsini Göster</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="70">70</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+
+                <div class="col">
+                    <select data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Seçilen modüle göre liste güncellenir</span>" onchange="location.href='@Url.Action("Yetki", "YonetimPaneli")/'+value" class="form-select dropdown-toggle" id="modules">
+
+                        @{
+                            int i = 1;
+                            foreach (var item in ViewBag.Modules)
+                            {
+                                if (ViewBag.Module_id == i)
+                                {
+                                                <option id="@i" selected="selected" value="@item.INCKEY"> @item.MODULE_ID-@item.MODULE_NAME || @item.PROGRAM_ID-@item.PROGRAM_NAME</option>
+                                    i++;
+                                }
+                                else
+                                {
+                    <option id="@i" value="@item.INCKEY">@item.MODULE_ID-@item.MODULE_NAME || @item.PROGRAM_ID-@item.PROGRAM_NAME</option>
+                                    i++;
+                                }
+
+                            }
+                        }
+
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+
+
+                </div>
+
+                <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <span data-bs-toggle="modal" data-bs-target="#exLargeModal">
+                                <a data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Yetki Listesini Açar</span>" class="btn btn-success float-end bx bx-task">
+
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                
+                <div class=" modal fade" id="ModulEkle" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-m" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalCenterTitle">Modül Ekleme Formu</h5>
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+
+                            @{
+
+                                using (Html.BeginForm("ModulEkle", "YonetimPaneli", FormMethod.Post, new { @id = "modulEkle" }))
+                                {
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label>MODULE ID:</label>
+                                            @Html.TextBoxFor(Model => Model.modules.MODULE_ID, new { @class = "form-control" })
+                                        </div>
+                                        <div class="form-group">
+                                            <label>MODULE NAME:</label>
+                                            @Html.TextBoxFor(Model => Model.modules.MODULE_NAME, new { @class = "form-control" })
+                                        </div>
+                                        <div class="form-group">
+                                            <label>PROGRAM ID:</label>
+                                            @Html.TextBoxFor(Model => Model.modules.PROGRAM_ID, new { @class = "form-control" })
+                                        </div>
+                                        <div class="form-group">
+                                            <label>PROGRAM NAME:</label>
+                                            @Html.TextBoxFor(Model => Model.modules.PROGRAM_NAME, new { @class = "form-control" })
+                                        </div>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="modulekle btn btn-info">EKLE</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">KAPAT</button>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalCenterTitle">Yeni Kullanıcı Ekleme Formu</h5>
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                           
+                            <div class="modal-footer">
+                                <button type="submit" class="ekle btn btn-outline-info">EKLE</button>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">KAPAT</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class=" modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalCenterTitle">Modül Listesi</h5>
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th><strong>MODULE ID</strong></th>
+                                                <th><strong>MODULE NAME</strong></th>
+                                                <th><strong>PROGRAM ID</strong></th>
+                                                <th><strong>PROGRAM NAME</strong></th>
+
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+                                            @{
+
+
+                                                foreach (var urn in ViewBag.Modules)
+                                                {
+                                                    using (Html.BeginForm("ModulEkle", "YonetimPaneli", FormMethod.Post, new { @id = "myFormKaydet" }))
+                                                    {
+
+
+                                                        <tr>
+
+                                                            <td>@Html.TextBoxFor(Model => Model.modules.MODULE_ID, new { @Value = urn.MODULE_ID })</td>
+                                                            <td>@Html.TextBoxFor(Model => Model.modules.MODULE_NAME, new { @Value = urn.MODULE_NAME })</td>
+                                                            <td>@Html.TextBoxFor(Model => Model.modules.PROGRAM_ID, new { @Value = urn.PROGRAM_ID })</td>
+                                                            <td>@Html.TextBoxFor(Model => Model.modules.PROGRAM_NAME, new { @Value = urn.PROGRAM_NAME }) @Html.TextBoxFor(Model => Model.modules.INCKEY, new { @Value = urn.INCKEY, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" })</td>
+
+
+
+
+                                                            <td><button type="submit" class="btn btn-success">GÜNCELLE</button> </td>
+
+
+                                                        </tr>
+
+
+                                                    }
+                                                }
+
+
+                                            }
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="ekle btn btn-outline-info" data-bs-toggle="modal"
+                                        data-bs-target="#ModulEkle" data-dismiss="modal">
+                                    EKLE
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-3" />
+            <!-- Striped Rows -->
+            <div class="card">
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-striped table-hover results sorttable" id="sortTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User Name</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Module</th>
+                                <th>Role</th>
+                                <th>ACTIVE</th>
+                                <th>AUTH</th>
+                                <th>SELECT</th>
+                                <th>INSERT</th>
+                                <th>UPDATE</th>
+                                <th>DELETE</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                            @{ 
+
+
+                                foreach (var urn in ViewBag.Users)
+                                {
+                                    using (Html.BeginForm("Index", "YonetimPaneli", FormMethod.Post, new { @id = "myFormKaydet" }))
+                                    {
+
+
+                                                        <tr>
+                                                            <td>@Html.LabelFor(Model => Model.USER_ID, (String)urn.USER_ID) @Html.TextBoxFor(Model => Model.MODULE_INCKEY, new { @Value = urn.MODULE_INCKEY, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" }) @Html.TextBoxFor(Model => Model.USER_ID, new { @Value = urn.USER_ID, Style = "display: none;" })</td>
+                                                            <td>@Html.LabelFor(Model => Model.USER_NAME, (String)urn.USER_NAME) @Html.TextBoxFor(Model => Model.USER_NAME, new { @Value = urn.USER_NAME, Style = "display: none;" })</td>
+                                                            <td>@Html.LabelFor(Model => Model.USER_FIRSTNAME, (String)urn.USER_FIRSTNAME) @Html.TextBoxFor(Model => Model.USER_FIRSTNAME, new { @Value = urn.USER_FIRSTNAME, Style = "display: none;" }) @Html.TextBoxFor(Model => Model.USER_PASSWORD, new { @Value = urn.USER_PASSWORD, Style = "display: none;" })</td>
+                                                            <td>@Html.LabelFor(Model => Model.USER_LASTNAME, (String)urn.USER_LASTNAME) @Html.TextBoxFor(Model => Model.USER_LASTNAME, new { @Value = urn.USER_LASTNAME, Style = "display: none;" })</td>
+                                                            <td>@Html.Label((String)ViewBag.Modules[urn.MODULE_INCKEY - 1].MODULE_ID.ToString() + "-" + (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].MODULE_NAME + " | " + (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].PROGRAM_ID.ToString() + "-" + (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].PROGRAM_NAME)</td>
+                                                            @{
+                                                                foreach (var urn1 in ViewBag.Roles1)
+                                                                {
+                                                                    if (urn.USER_ROLE == urn1.ROLE_ID)
+                                                                    {
+                                                                        <td>@Html.LabelFor(Model => Model.USER_ROLE, (String)urn1.ROLE_NAME) @Html.TextBoxFor(Model => Model.USER_ROLE, new { @Value = urn.USER_ROLE, Style = "display: none;" }) @Html.TextBoxFor(Model => Model.USER_MAIL, new { @Value = urn.USER_MAIL, Style = "display: none;" })</td>
+
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            @if (urn.ACTIVE == true)
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.ACTIVE, new { @checked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.ACTIVE, new { @unchecked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            @if (urn.USER_AUTH == true)
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.USER_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.USER_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            @if (urn.SELECT_AUTH == true)
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.SELECT_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.SELECT_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            @if (urn.INSERT_AUTH == true)
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.INSERT_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.INSERT_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            @if (urn.UPDATE_AUTH == true)
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.UPDATE_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.UPDATE_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            @if (urn.DELETE_AUTH == true)
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.DELETE_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@Html.CheckBoxFor(Model => Model.DELETE_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                                            }
+
+
+                                                            <td>
+                                                                <div class="dropdown">
+                                                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu">
+                                                                        <button type="submit" class="dropdown-item" href="javascript:void(0);"><i class="bx bx-edit-alt me-1"></i> GÜNCELLE</button>
+                                                                        <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-trash me-1"></i> SİL</a>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+
+
+                                                        </tr>
+
+
+                                    }
+                            }
+
+
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+            <!--/ Striped Rows -->
+
+
+        </div>
+    </div>
+    <!-- / Content -->
+    <!-- Footer -->
+    <!-- / Footer -->
+    <!-- / Layout wrapper -->
+
+
+
+
+
+    
+</body>
+</html>

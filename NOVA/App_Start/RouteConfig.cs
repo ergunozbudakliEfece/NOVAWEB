@@ -16,13 +16,19 @@ namespace NOVA
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Login", action = "Login", id = UrlParameter.Optional }
             );
             routes.MapRoute(
                 name: "SecondPage",
                 url: "{ controller}/{ action}/{ id}",
-                defaults: new { controller = "Home", action = "Test", id = UrlParameter.Optional }
+                defaults: new { controller = "Login", action = "Login", id = UrlParameter.Optional }
             );
+            routes.MapRoute(
+             name: "Hata",
+             url: "hata/{kod}",
+             defaults: new { controller = "Error", action = "Page404", kod = UrlParameter.Optional });
+
+
         }
     }
 }

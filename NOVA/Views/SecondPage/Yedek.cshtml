@@ -1,0 +1,829 @@
+﻿
+@model NOVA.Models.User
+
+
+
+
+
+<doctype html>
+    <html lang='tr'>
+    <head>
+        <meta charset='utf-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="~/Content/bootstrap.css" rel="stylesheet" />
+        <link href="~/Content/Menu.css" rel="stylesheet" />
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+        <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    </head>
+    <body>
+        <style>
+            .results tr[visible='false'],
+            .no-result {
+                display: none;
+            }
+
+            .results tr[visible='true'] {
+                display: table-row;
+            }
+
+            .counter {
+                padding: 8px;
+                color: #ccc;
+            }
+
+            .full-width-div {
+                position: absolute;
+                width: 100%;
+                left: 0;
+            }
+
+            .sticky {
+                position: fixed;
+                top: 0;
+            }
+        </style>
+
+
+
+
+        <div class="full-width-div">
+            <div class="col-sm-2">
+                <div id='cssmenu' style="margin-top:15%" class="sticky">
+                    <ul>
+                        <li><a href='#'><span>ANASAYFA</span></a></li>
+                        <li class='has-sub'>
+                            <a href='#'><span>SATIŞ</span></a>
+                            <ul>
+                                <li class='has-sub'>
+                                    <a href='#'><span>Stok</span></a>
+                                    <ul>
+                                        <!--
+                                        <li><a href='#'><span>Windows Form</span></a></li>
+                                        <li class='last'><a href='#'><span>Console App</span></a></li>
+                                        -->
+                                    </ul>
+                                </li>
+                                <li class='has-sub'><a href='#'><span>Teklif</span></a></li>
+                                <li class='has-sub'><a href='#'><span>Sipariş</span></a></li>
+                            </ul>
+                        </li>
+                        <li><a href='#'><span>ÜRETİM</span></a></li>
+                        <li class='last'><a href='#'><span>SATIN ALMA</span></a></li>
+                        <li class='last'><a href='#'><span>MUHASEBE</span></a></li>
+                        <li class='last'><a href='#'><span>İNSAN KAYNAKLARI</span></a></li>
+                        <li class='last'><a href='#'><span>YÖNETİM</span></a></li>
+                        <li class='last'><a href='#'><span>YÖNETİM PANELİ</span></a></li>
+                        <li class='last'><a data-toggle="modal" data-target="#cikis"><span>ÇIKIŞ</span></a></li>
+
+                    </ul>
+
+
+                </div>
+            </div>
+
+            <div class="col-sm-10">
+
+
+
+
+
+
+
+
+                <div class="container-fluid mt-3">
+                    <div class="row" style="margin-top:3%">
+                        <div class="col-4 pull-left">
+                            <h3>Sütun sayısı</h3>
+                            <!--		Show Numbers Of Rows 		-->
+                            <select class="btn btn-info dropdown-toggle" name="state" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="maxRows" style="width: 300px; color:azure">
+
+                                <option value="5000">Show ALL Rows</option>
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="70">70</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <h3>Yetki Grupları</h3>
+                            <FORM NAME="form1">
+                                <select selected="2" onchange="location.href='@Url.Action("Yetki", "SecondPage")/'+value" class="btn btn-info dropdown-toggle" name="state" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="modules" style="width: 300px; color:azure;">
+
+                                    @{
+                                        int i = 1;
+                                        foreach (var item in ViewBag.Modules)
+                                        {
+                                            if (ViewBag.Module_id == i)
+                                            {
+                                                <option id="@i" selected="selected" value="@item.INCKEY">@item.MODULE_NAME || @item.PROGRAM_NAME</option>
+                                                i++;
+                                            }
+                                            else
+                                            {
+                                                <option id="@i" value="@item.INCKEY">@item.MODULE_NAME || @item.PROGRAM_NAME</option>
+                                                i++;
+                                            }
+
+                                        }
+                                    }
+
+                                </select>
+                            </FORM>
+                        </div>
+                        <div class="col-2 pull-right">
+
+
+
+                            <div class="row pull-right" style="margin-right:2px">
+                                <div class="col">
+                                    <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#modulModal">Yetki Grupları</button>
+
+                                </div>
+                                <div class="col">
+                                    <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#exampleModal">Yeni Kullanıcı</button>
+                                </div>
+
+
+                            </div>
+                            <div class="row mt-5 pull-right w-100" style="margin-right:5px">
+                                <input type="text" class="search form-control" placeholder="Search">
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <table class="table table-striped table-hover table-bordered results table-responsive mt-5 sorttable overflow-scroll " id="sortTable">
+
+                        <thead>
+                            <tr class="text-center table-primary">
+                                <th style="text-align:center">User ID</th>
+                                <th style="text-align:center">User Name</th>
+                                <th style="text-align:center">User Password</th>
+                                <th style="text-align:center">User First Name</th>
+                                <th style="text-align:center">User Last Name</th>
+                                <th style="text-align:center">User Role</th>
+                                <th style="text-align:center">User Mail</th>
+                                <th style="text-align:center">ACTIVE</th>
+                                <th style="text-align:center">USER AUTH</th>
+                                <th style="text-align:center">SELECT AUTH</th>
+                                <th style="text-align:center">INSERT AUTH</th>
+                                <th style="text-align:center">UPDATE AUTH</th>
+                                <th style="text-align:center">DELETE AUTH</th>
+
+                                <th style="text-align:center" colspan="2">Change</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+
+
+                                foreach (var urn in ViewBag.Users)
+                                {
+                                    using (Html.BeginForm("Index", "SecondPage", FormMethod.Post, new { @id = "myFormKaydet" }))
+                                    {
+
+
+                                        <tr class="text-center table-info results">
+                                            <td>@Html.Label("userid", (string)urn.USER_ID) @Html.TextBoxFor(Model => Model.USER_ID, new { @Value = urn.USER_ID, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" }) @Html.TextBoxFor(Model => Model.MODULE_INCKEY, new { @Value = urn.MODULE_INCKEY, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" })</td>
+                                            <td>@Html.Label("userid", (string)urn.USER_NAME) @Html.TextBoxFor(Model => Model.USER_NAME, new { @Value = urn.USER_NAME, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" })</td>
+                                            <td>@Html.TextBoxFor(Model => Model.USER_PASSWORD, new { @Value = urn.USER_PASSWORD, @id = "userpassword", style = "width:80px;" })</td>
+                                            <td>@Html.TextBoxFor(Model => Model.USER_FIRSTNAME, new { @Value = urn.USER_FIRSTNAME, @id = "userfirstname", style = "width:70px;" })</td>
+                                            <td>@Html.TextBoxFor(Model => Model.USER_LASTNAME, new { @Value = urn.USER_LASTNAME, @id = "userlastname", style = "width:120px;" })</td>
+                                            <td>@Html.TextBoxFor(Model => Model.USER_ROLE, new { @Value = urn.USER_ROLE, @id = "userrole", style = "width:40px;" })</td>
+                                            <td>@Html.TextBoxFor(Model => Model.USER_MAIL, new { @Value = urn.USER_MAIL, @id = "usermail", style = "width:250px;" })</td>
+                                            @if (urn.ACTIVE == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.ACTIVE, new { @checked = true })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.ACTIVE, new { @unchecked = true })</td>
+                                            }
+                                            @if (urn.USER_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.USER_AUTH, new { @checked = true })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.USER_AUTH, new { @unchecked = true })</td>
+                                            }
+                                            @if (urn.SELECT_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.SELECT_AUTH, new { @checked = true })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.SELECT_AUTH, new { @unchecked = true })</td>
+                                            }
+                                            @if (urn.INSERT_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.INSERT_AUTH, new { @checked = true })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.INSERT_AUTH, new { @unchecked = true })</td>
+                                            }
+                                            @if (urn.UPDATE_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.UPDATE_AUTH, new { @checked = true })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.UPDATE_AUTH, new { @unchecked = true })</td>
+                                            }
+                                            @if (urn.DELETE_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.DELETE_AUTH, new { @checked = true })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.DELETE_AUTH, new { @unchecked = true })</td>
+                                            }
+
+
+
+
+
+                                            <td><a href="/Urun/SIL/@urn.USER_ID" class="btn btn-danger">DELETE</a></td>
+                                            <td><button type="submit" class="btn btn-success">GÜNCELLE</button> </td>
+
+
+                                        </tr>
+
+
+                                    }
+                                }
+
+
+                            }
+                        </tbody>
+
+
+
+
+                    </table>
+
+                    <div class='pagination-container'>
+                        <nav>
+                            <ul class="pagination">
+
+                                <li data-page="prev">
+                                    <span> < <span class="sr-only">(current)</span></span>
+                                </li>
+                                <!--	Here the JS Function Will Add the Rows -->
+                                <li data-page="next" id="prev">
+                                    <span> > <span class="sr-only">(current)</span></span>
+                                </li>
+                            </ul>
+
+
+
+                        </nav>
+
+
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+
+
+
+        <div id="exampleModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <label class="modal-title">Kullanıcı Ekleme Formu</label>
+                        <button type="button" class=" btn btn-close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    @{
+
+                        using (Html.BeginForm("AddUser", "SecondPage", FormMethod.Post, new { @id = "myForm" }))
+                        {
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>USER NAME:</label>
+                                    @Html.TextBoxFor(Model => Model.USER_NAME, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label>USER ROLE:</label>
+
+                                    @Html.DropDownListFor(Model => Model.USER_ROLE, (SelectList)ViewBag.Roles, "Select", htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label>USER FIRST NAME:</label>
+                                    @Html.TextBoxFor(Model => Model.USER_FIRSTNAME, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label>USER LAST NAME:</label>
+                                    @Html.TextBoxFor(Model => Model.USER_LASTNAME, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label>USER MAIL:</label>
+                                    @Html.TextBoxFor(Model => Model.USER_MAIL, new { @class = "form-control" })
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="ekle btn btn-info">EKLE</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">KAPAT</button>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div id="ModulEkle" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <label class="modal-title">Kullanıcı Ekleme Formu</label>
+                        <button type="button" class=" btn btn-close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    @{
+
+                        using (Html.BeginForm("ModulEkle", "SecondPage", FormMethod.Post, new { @id = "modulEkle" }))
+                        {
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>MODULE ID:</label>
+                                    @Html.TextBoxFor(Model => Model.modules.MODULE_ID, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label>MODULE NAME:</label>
+                                    @Html.TextBoxFor(Model => Model.modules.MODULE_NAME, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label>PROGRAM ID:</label>
+                                    @Html.TextBoxFor(Model => Model.modules.PROGRAM_ID, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label>PROGRAM NAME:</label>
+                                    @Html.TextBoxFor(Model => Model.modules.PROGRAM_NAME, new { @class = "form-control" })
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="modulekle btn btn-info" data-target="#modulModal">EKLE</button>
+                                <button type="button" class="btn btn-secondary" data-target="#modulModal" data-dismiss="modal" >KAPAT</button>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div id="cikis" class="modal center" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <label class="modal-title">Çıkış</label>
+                        <button type="button" class=" btn btn-close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <label class="modal-body">Çıkış yapmak istediğinize emin misiniz?</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("LogOff", "Login")'">EVET</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">HAYIR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modulModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <label class="modal-title">Kullanıcı Ekleme Formu</label>
+                        <button type="button" class="btn btn-close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <table class="table table-striped table-hover table-bordered results table-responsive mt-5 overflow-scroll">
+                            <thead>
+                                <tr class="text-center">
+                                    <th style="text-align:center">MODULE_ID</th>
+                                    <th style="text-align:center">MODULE_NAME</th>
+                                    <th style="text-align:center">PROGRAM_ID</th>
+                                    <th style="text-align:center">PROGRAM_NAME</th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                @{
+
+
+                                    foreach (var urn in ViewBag.Modules)
+                                    {
+                                        using (Html.BeginForm("ModulEkle", "SecondPage", FormMethod.Post, new { @id = "myFormKaydet" }))
+                                        {
+
+
+                                            <tr class="text-center table-info results">
+
+                                                <td>@Html.TextBoxFor(Model => Model.modules.MODULE_ID, new { @Value = urn.MODULE_ID })</td>
+                                                <td>@Html.TextBoxFor(Model => Model.modules.MODULE_NAME, new { @Value = urn.MODULE_NAME })</td>
+                                                <td>@Html.TextBoxFor(Model => Model.modules.PROGRAM_ID, new { @Value = urn.PROGRAM_ID })</td>
+                                                <td>@Html.TextBoxFor(Model => Model.modules.PROGRAM_NAME, new { @Value = urn.PROGRAM_NAME }) @Html.TextBoxFor(Model => Model.modules.INCKEY, new { @Value = urn.INCKEY, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" })</td>
+
+
+
+
+                                                <td><button type="submit" class="btn btn-success">GÜNCELLE</button> </td>
+
+
+                                            </tr>
+
+
+                                        }
+                                    }
+
+
+                                }
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModulEkle" data-dismiss="modal">EKLE</button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        @if (Model != null)
+        {
+            <script type="text/javascript">
+            $(function () {
+                alert("Inserted Customer ID: " + @Model.USER_NAME);
+            });
+            </script>
+        }
+
+
+
+
+
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+
+
+    </body>
+
+</html>
+
+<script>
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("sortTable");
+        switching = true;
+        // Set the sorting direction to ascending:
+        dir = "asc";
+        /* Make a loop that will continue until
+        no switching has been done: */
+        while (switching) {
+            // Start by saying: no switching is done:
+            switching = false;
+            rows = table.rows;
+            /* Loop through all table rows (except the
+            first, which contains table headers): */
+            for (i = 1; i < (rows.length - 1); i++) {
+                // Start by saying there should be no switching:
+                shouldSwitch = false;
+                /* Get the two elements you want to compare,
+                one from current row and one from the next: */
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                /* Check if the two rows should switch place,
+                based on the direction, asc or desc: */
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        // If so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                    else if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        // If so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                    else if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                /* If a switch has been marked, make the switch
+                and mark that a switch has been done: */
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                // Each time a switch is done, increase this count by 1:
+                switchcount++;
+            } else {
+                /* If no switching has been done AND the direction is "asc",
+                set the direction to "desc" and run the while loop again. */
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+
+    }
+</script>
+
+<script>
+    getPagination('.sorttable');
+    //getPagination('.table-class');
+    //getPagination('table');
+
+    /*					PAGINATION
+    - on change max rows select options fade out all rows gt option value mx = 5
+    - append pagination list as per numbers of rows / max rows option (20row/5= 4pages )
+    - each pagination li on click -> fade out all tr gt max rows * li num and (5*pagenum 2 = 10 rows)
+    - fade out all tr lt max rows * li num - max rows ((5*pagenum 2 = 10) - 5)
+    - fade in all tr between (maxRows*PageNum) and (maxRows*pageNum)- MaxRows
+    */
+
+
+    function getPagination(table) {
+        var lastPage = 1;
+
+        $('#maxRows')
+            .on('change', function (evt) {
+                //$('.paginationprev').html('');						// reset pagination
+
+                lastPage = 1;
+                $('.pagination')
+                    .find('li')
+                    .slice(1, -1)
+                    .remove();
+                var trnum = 0; // reset tr counter
+                var maxRows = parseInt($(this).val()); // get Max Rows from select option
+
+                if (maxRows == 5000) {
+                    $('.pagination').hide();
+                } else {
+                    $('.pagination').show();
+                }
+
+                var totalRows = $(table + ' tbody tr').length; // numbers of rows
+                $(table + ' tr:gt(0)').each(function () {
+                    // each TR in  table and not the header
+                    trnum++; // Start Counter
+                    if (trnum > maxRows) {
+                        // if tr number gt maxRows
+
+                        $(this).hide(); // fade it out
+                    }
+                    if (trnum <= maxRows) {
+                        $(this).show();
+                    } // else fade in Important in case if it ..
+                }); //  was fade out to fade it in
+                if (totalRows > maxRows) {
+                    // if tr total rows gt max rows option
+                    var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
+                    //	numbers of pages
+                    for (var i = 1; i <= pagenum;) {
+                        // for each page append pagination li
+                        $('.pagination #prev')
+                            .before(
+                                '<li data-page="' +
+                                i +
+                                '">\
+                                                                                          <span>' +
+                                i++ +
+                                '<span class="sr-only">(current)</span></span>\
+                                                                                        </li>'
+                            )
+                            .show();
+                    } // end for i
+                } // end if row count > max rows
+                $('.pagination [data-page="1"]').addClass('active'); // add active class to the first li
+                $('.pagination li').on('click', function (evt) {
+                    // on click each page
+                    evt.stopImmediatePropagation();
+                    evt.preventDefault();
+                    var pageNum = $(this).attr('data-page'); // get it's number
+
+                    var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
+
+                    if (pageNum == 'prev') {
+                        if (lastPage == 1) {
+                            return;
+                        }
+                        pageNum = --lastPage;
+                    }
+                    if (pageNum == 'next') {
+                        if (lastPage == $('.pagination li').length - 2) {
+                            return;
+                        }
+                        pageNum = ++lastPage;
+                    }
+
+                    lastPage = pageNum;
+                    var trIndex = 0; // reset tr counter
+                    $('.pagination li').removeClass('active'); // remove active class from all li
+                    $('.pagination [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
+                    // $(this).addClass('active');					// add active class to the clicked
+                    limitPagging();
+                    $(table + ' tr:gt(0)').each(function () {
+                        // each tr in table not the header
+                        trIndex++; // tr index counter
+                        // if tr index gt maxRows*pageNum or lt maxRows*pageNum-maxRows fade if out
+                        if (
+                            trIndex > maxRows * pageNum ||
+                            trIndex <= maxRows * pageNum - maxRows
+                        ) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        } //else fade in
+                    }); // end of for each tr in table
+                }); // end of on click pagination list
+                limitPagging();
+            })
+            .val(10)
+            .change();
+
+        // end of on select change
+
+        // END OF PAGINATION
+    }
+
+    function limitPagging() {
+        // alert($('.pagination li').length)
+
+        if ($('.pagination li').length > 7) {
+            if ($('.pagination li.active').attr('data-page') <= 3) {
+                $('.pagination li:gt(5)').hide();
+                $('.pagination li:lt(5)').show();
+                $('.pagination [data-page="next"]').show();
+            } if ($('.pagination li.active').attr('data-page') > 3) {
+                $('.pagination li:gt(0)').hide();
+                $('.pagination [data-page="next"]').show();
+                for (let i = (parseInt($('.pagination li.active').attr('data-page')) - 2); i <= (parseInt($('.pagination li.active').attr('data-page')) + 2); i++) {
+                    $('.pagination [data-page="' + i + '"]').show();
+
+                }
+
+            }
+        }
+    }
+
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        $(".search").keyup(function () {
+            var searchTerm = $(".search").val();
+            var listItem = $('.results tbody').children('tr');
+            var searchSplit = searchTerm.replace(/ /g, "'):containsi('")
+
+            $.extend($.expr[':'], {
+                'containsi': function (elem, i, match, array) {
+                    return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+                }
+            });
+
+            $(".results tbody tr").not(":containsi('" + searchSplit + "')").each(function (e) {
+                $(this).attr('visible', 'false');
+            });
+
+            $(".results tbody tr:containsi('" + searchSplit + "')").each(function (e) {
+                $(this).attr('visible', 'true');
+            });
+
+            var jobCount = $('.results tbody tr[visible="true"]').length;
+            $('.counter').text(jobCount + ' item');
+
+            if (jobCount == '0') { $('.no-result').show(); }
+            else { $('.no-result').hide(); }
+        });
+    });
+
+
+</script>
+
+
+<script>
+
+    $(document).on('click', '.ekle', function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Kullanıcıyı eklemek istediğinize emin misiniz?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonText: 'HAYIR',
+            confirmButtonText: 'EVET!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    'Eklendi!',
+                    'Yeni kullanıcı eklendi',
+                    'Başarılı'
+                )
+                $('#myForm').submit();
+            }
+        })
+    });
+
+    function clicked(e) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Kullanıcıyı eklemek istediğinize emin misiniz?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonText: 'HAYIR',
+            confirmButtonText: 'EVET!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    'Eklendi!',
+                    'Yeni kullanıcı eklendi',
+                    'Başarılı'
+                )
+
+            }
+            $("#myFormKaydet").val().submit();
+
+        })
+    }
+</script>
+
+<script>
+
+    $(document).on('click', '.modulekle', function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Modulü eklemek istediğinize emin misiniz?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonText: 'HAYIR',
+            confirmButtonText: 'EVET!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    'Eklendi!',
+                    'Yeni modül eklendi',
+                    'Başarılı'
+                )
+                $('#modulEkle').submit();
+            }
+        })
+    });
+
+</script>
+
+
+
+
+
+
+

@@ -1,0 +1,226 @@
+﻿
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!------ Include the above in your HEAD tag ---------->
+@model NOVA.Models.Login
+
+
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <!--Made with love by Mutiullah Samim -->
+    <!--Bootsrap 4 CDN-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <!--Fontawesome CDN-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!--Custom styles-->
+
+</head>
+<body>
+    <video id="myVideo" autoplay muted loop>
+        <source src="~/Content/Images/2.mp4" type="video/mp4">
+        <source src="~/Content/Images/2.webm" type="video/webm">
+        <source src="~/Content/Images/2.ogg" type="video/ogg">
+    </video>
+
+
+    <div class="container">
+        <div class="d-flex justify-content-center "><img style="width:37%;margin-top:10%" src="~/Content/Images/efece_logo.png" alt="Alternate Text" /></div>
+        <div class="d-flex justify-content-center" style="margin-top:10%">
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Giriş</h3>
+
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Login", "Login", FormMethod.Post))
+                    {<br />
+                        <div class="form-group">
+                            <div class="input-group form-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                </div>
+                                @Html.TextBoxFor(f => f.USER_NAME, new { title = "Kullanıcı adınızı giriniz.", @Value = ViewBag.username, placeholder = "Kullanıcı Adı", @class = "form-control" })
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group form-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                </div>
+                                @Html.PasswordFor(f => f.USER_PASSWORD, new { title = "Kullanıcı şifrenizi giriniz.", @Value = @ViewBag.password, style = "width:85%", placeholder = "Şifre", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <input type="submit" value="Giriş" class="btn login_btn">
+                        </div>
+                        <div class="d-flex remember" style="margin-left:31%;margin-top:5%">
+
+                            @Html.CheckBoxFor(m => m.RememberMe, new { htmlAttributes = new { @class = "form-control" } })
+                            <label style="font-size:14px">Beni Unutma</label>
+
+                        </div>
+
+
+                    }
+                    @if (ViewBag.Mesaj != null)
+                    {
+                    <script>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Kullanıcı adı veya şifre hatalı!',
+                        })
+                    </script>
+                    }
+
+
+                </div>
+                <div class="card-footer">
+
+                    <div class="d-flex justify-content-center">
+                        <a href="#">Şifremi unuttum</a>
+                    </div>
+
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <script>
+       
+
+        document.querySelector('.sweet-1').onclick = function () {
+            swal("Here's a message!");
+        };
+
+        document.querySelector('.sweet-2').onclick = function () {
+            swal("Here's a message!", "It's pretty, isn't it?")
+        };
+
+        document.querySelector('.sweet-3').onclick = function () {
+            swal("Good job!", "You clicked the button!", "success");
+        };
+
+        document.querySelector('.sweet-4').onclick = function () {
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this imaginary file!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: 'btn-danger',
+                confirmButtonText: 'Yes, delete it!',
+                closeOnConfirm: false,
+                //closeOnCancel: false
+            },
+                function () {
+                    swal("Deleted!", "Your imaginary file has been deleted!", "success");
+                });
+        };
+
+        document.querySelector('.sweet-5').onclick = function () {
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this imaginary file!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: 'btn-danger',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: "No, cancel plx!",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+                function (isConfirm) {
+                    window.console.log('fuck', isConfirm);
+                    if (isConfirm) {
+                        swal("Deleted!", "Your imaginary file has been deleted!", "success");
+                    } else {
+                        swal("Cancelled", "Your imaginary file is safe :)", "error");
+                    }
+                });
+        };
+
+        document.querySelector('.sweet-6').onclick = function () {
+            swal({
+                title: "Sweet!",
+                text: "Here's a custom image.",
+                imageUrl: 'assets/thumbs-up.jpg'
+            });
+        };
+
+        document.querySelector('.sweet-10').onclick = function () {
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this imaginary file!",
+                type: "info",
+                showCancelButton: true,
+                confirmButtonClass: 'btn-primary',
+                confirmButtonText: 'Primary!'
+            });
+        };
+
+        document.querySelector('.sweet-11').onclick = function () {
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this imaginary file!",
+                type: "info",
+                showCancelButton: true,
+                confirmButtonClass: 'btn-info',
+                confirmButtonText: 'Info!'
+            });
+        };
+
+        document.querySelector('.sweet-12').onclick = function () {
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this imaginary file!",
+                type: "success",
+                showCancelButton: true,
+                confirmButtonClass: 'btn-success',
+                confirmButtonText: 'Success!'
+            });
+        };
+
+        document.querySelector('.sweet-13').onclick = function () {
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this imaginary file!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: 'btn-warning',
+                confirmButtonText: 'Warning!'
+            });
+        };
+
+        document.querySelector('.sweet-14').onclick = function () {
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this imaginary file!",
+                type: "error",
+                showCancelButton: true,
+                confirmButtonClass: 'btn-danger',
+                confirmButtonText: 'Danger!'
+            });
+        };
+    </script>
+
+
+
+
+
+</body>
+
+</html>

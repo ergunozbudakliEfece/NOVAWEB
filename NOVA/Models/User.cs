@@ -1,5 +1,8 @@
 ﻿
 using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
 namespace NOVA.Models
 {
     
@@ -10,7 +13,8 @@ namespace NOVA.Models
         {
 
         }
-        public long USER_ID { get; set; }
+        
+        public string USER_ID { get; set; }
 
      
         public string USER_NAME { get; set; }
@@ -24,9 +28,25 @@ namespace NOVA.Models
 
     
         public string USER_ROLE { get; set; }
-
+        public Roles roles { get; set; }
         public bool ACTIVE { get; set; }
 
         public string USER_MAIL { get; set; }
+        public bool USER_AUTH { get; set; }
+
+
+        public bool SELECT_AUTH { get; set; }
+
+        public bool INSERT_AUTH { get; set; }
+
+        public bool UPDATE_AUTH { get; set; }
+
+        public bool DELETE_AUTH { get; set; }
+
+        public int MODULE_INCKEY { get; set; }
+
+        public Modules modules { get; set; }
+
+        
     }
 }
