@@ -17,6 +17,8 @@ namespace NOVA.Models
         [Display(Name = "Şifre")]
         public string USER_PASSWORD { get; set; }
         [Display(Name = "Beni Hatırla")]
-        public bool RememberMe { get; set; }
+        public string RememberMe { get; set; }
+        public PasswordChange PasswordChange { get; set; }
+        public User User { get; set; }
     }
 }

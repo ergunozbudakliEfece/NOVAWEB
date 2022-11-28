@@ -1,226 +1,515 @@
-﻿
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-<!------ Include the above in your HEAD tag ---------->
-@model NOVA.Models.Login
-
-
-@{ 
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-
+﻿@model NOVA.Models.Login
 
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Login Page</title>
-    <!--Made with love by Mutiullah Samim -->
-    <!--Bootsrap 4 CDN-->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-    <!--Fontawesome CDN-->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!--Custom styles-->
+
+<html lang="tr"
+      class="light-style customizer-hide"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="\assets\"
+      data-template="vertical-menu-template-free">
+
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+    <title>Nova | Efece Galvaniz</title>
+
+    <meta name="description" content="" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="~/assets/img/icons/brands/Nova_White.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" type="text/css" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" type="text/css" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" type="text/css" />
+
+    <!-- Icons. Uncomment required icon fonts -->
+    <link href="\assets\boxicons-2.1.2\css\boxicons.css" rel="stylesheet" />
+    <link href="\assets\boxicons-2.1.2\css\animations.css" rel="stylesheet" />
+    <link href="\assets\boxicons-2.1.2\css\transformations.css" rel="stylesheet" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\css\demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
+
+    <!-- Page CSS -->
+    <!-- Page -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\pages\page-auth.css" />
+    <!-- Helpers -->
+    <script type="text/javascript" src="\assets\vendor\js\helpers.js"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script type="text/javascript" src="\assets\js\config.js"></script>
+    <script src="/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="/Scripts/jquery.validate.js" type='text/javascript'></script>
+    <script src="/Scripts/jquery.validate.unobtrusive.js" type='text/javascript'></script>
+    <style>
+
+        .btn-grad {
+            background-image: linear-gradient(to right, #4b6cb7 0%, #182848 51%, #4b6cb7 100%);
+            margin: 10px;
+            padding: 15px 45px;
+            text-align: center;
+            text-transform: uppercase;
+            transition: 0.5s;
+            background-size: 200% auto;
+            color: white;
+            box-shadow: 0 0 20px #eee;
+            border-radius: 10px;
+            display: block;
+        }
+
+            .btn-grad:hover {
+                background-position: right center; /* change the direction of the change here */
+                color: #fff;
+                text-decoration: none;
+            }
+         
+
+
+       
+    </style>
 
 </head>
+
 <body>
+
     <video id="myVideo" autoplay muted loop>
-        <source src="~/Content/Images/2.mp4" type="video/mp4">
-        <source src="~/Content/Images/2.webm" type="video/webm">
-        <source src="~/Content/Images/2.ogg" type="video/ogg">
+        <source src="/Content/Images/2.mp4" type="video/mp4">
     </video>
 
+    <!-- Content -->
+    @if (Session["AlertLogin"] != null)
+    {
+        if (Session["AlertLogin"].ToString() == "Girmiş Olduğunuz Kod Yanlış")
+        {
+            <div class="alert alert-danger text-center" role="alert">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                @Session["AlertLogin"].ToString()
+            </div>
+        }
+        else if (Session["AlertLogin"].ToString() == "Girmiş Olduğunuz Şifreler Aynı Değil!")
+        {
+            <div class="alert alert-danger text-center" role="alert">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                @Session["AlertLogin"].ToString()
+            </div>
+        }
+        else if (Session["AlertLogin"].ToString() == "Bu mail adresi sistemimizde kayıtlı değil!")
+        {
+            <div class="alert alert-danger text-center" role="alert">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                @Session["AlertLogin"].ToString()
+            </div>
+        }
+        else if (Session["AlertLogin"].ToString() == "Şifre Değişikliği Başarılı")
+        {
+            <div class="alert alert-success text-center" role="alert">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                @Session["AlertLogin"].ToString()
+            </div>
+        }
+    }
+    @if (ViewBag.Login != null)
+    {
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+           
+                    @{Session["Onay"] = "onay";}
 
-    <div class="container">
-        <div class="d-flex justify-content-center "><img style="width:37%;margin-top:10%" src="~/Content/Images/efece_logo.png" alt="Alternate Text" /></div>
-        <div class="d-flex justify-content-center" style="margin-top:10%">
+                        window.location.href = "/Login/LogOffAllDevice";
 
-            <div class="card">
-                <div class="card-header">
-                    <h3>Giriş</h3>
+        </script>
 
-                </div>
-                <div class="card-body">
-                    @using (Html.BeginForm("Login", "Login", FormMethod.Post))
-                    {<br />
-                        <div class="form-group">
-                            <div class="input-group form-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                </div>
-                                @Html.TextBoxFor(f => f.USER_NAME, new { title = "Kullanıcı adınızı giriniz.", @Value = ViewBag.username, placeholder = "Kullanıcı Adı", @class = "form-control" })
+    }
+
+    <div class="container-fluid">
+
+        <div class="authentication-wrapper authentication-basic container-p-y">
+
+            <div class="d-flex justify-content-center mb-2"><img style="max-width:28%" src="\Content\Images\efece_logo.png" alt="Alternate Text" /></div>
+            <div class="authentication-inner ">
+
+                <!-- Register -->
+                <div class="card mt-4" style="background-color: #9fafca;opacity:0.9 ">
+
+                    <div class="card-body">
+
+                        <form id="formAuthentication" class="mb-1" action="@Url.Action("Login", "Login")" method="POST">
+                            <div class="d-flex justify-content-between">
+                                <label class="form-label" for="password" style="color: #0e387a">Kullanıcı Adı:</label>
 
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="input-group form-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            <div class="mb-3 input-group">
+                                <span class="input-group-text" id="basic-addon11"><i class='bx bxs-user' style="color: #0e387a"></i></span>
+                                <input type="text"
+                                       id="username"
+                                       class="form-control"
+                                       name="USER_NAME"
+                                       value="@ViewBag.username"
+                                       placeholder="Kullanıcı adınızı giriniz.."
+                                       autofocus
+                                       style="color: #0e387a"/>
+                            </div>
+                            <div class="mb-0 form-password-toggle">
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-label" for="password" style="color: #0e387a">Şifre:</label>
+
                                 </div>
-                                @Html.PasswordFor(f => f.USER_PASSWORD, new { title = "Kullanıcı şifrenizi giriniz.", @Value = @ViewBag.password, style = "width:85%", placeholder = "Şifre", @class = "form-control" })
+                                <div class="input-group input-group">
+                                    <span class="input-group-text" id="basic-addon11"><i class='bx bxs-key' style="color: #0e387a"></i></span>
+                                    <input type="password"
+                                           id="password"
+                                           class="form-control"
+                                           name="USER_PASSWORD"
+                                           value="@ViewBag.password"
+                                           placeholder="Şifrenizi giriniz.."
+                                           aria-describedby="password"
+                                           style="color: #0e387a"/>
+                                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide" style="color: #0e387a"></i></span>
+                                </div>
+                            </div>
+
+                            
+                                <div class="row" style="margin-right:1%">
+                                    <div class="col">
+                                        <button class="btn btn-grad w-100 mt-5" id="giris" type="submit" onclick="wait()">Giriş</button>
+                                    </div>
+                                </div>
+                                <script>
+                                    function wait() {
+                                        document.body.style.cursor = 'wait';
+                                    }
+                                </script>
+                            
+                        </form>
+
+                        
+                    </div>
+                    <div style="border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem;margin-top:-15px">
+                        <div class="mt-2" style="margin-left: 35%">
+                            <div class="form-check">
+
+                                <input class="form-check-input" type="checkbox" id="RememberMe" name="RememberMe" checked />
+                                <label class="form-label" for="remember-me" style="color: #0e387a"> Beni Hatırla </label>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-center">
-                            <input type="submit" value="Giriş" class="btn login_btn">
-                        </div>
-                        <div class="d-flex remember" style="margin-left:31%;margin-top:5%">
-
-                            @Html.CheckBoxFor(m => m.RememberMe, new { htmlAttributes = new { @class = "form-control" } })
-                            <label style="font-size:14px">Beni Unutma</label>
-
-                        </div>
+                        <p class="text-center mt-2" style="color: #0e387a">
+                            
+                                <span class="align-middle" data-bs-toggle="modal" data-bs-target="#mail" style="cursor:pointer">Şifremi Unuttum</span>
+                           
 
 
-                    }
-                    @if (ViewBag.Mesaj != null)
-                    {
-                    <script>
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Kullanıcı adı veya şifre hatalı!',
-                        })
-                    </script>
-                    }
 
+                        </p>
+                    </div>
+                        
+                </div>
+
+                <!-- /Register -->
+            </div>
+            <div class="container-xxl d-flex  text-nowrap justify-content-between py-2 flex-md-row flex-column mt-2">
+                <div class="login-footer" style="color: #0e387a">
+                    ©
+                    <script>document.write(new Date().getFullYear());</script>
+                    , designed by
+                    <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
 
                 </div>
-                <div class="card-footer">
+            </div>
+        </div>
 
-                    <div class="d-flex justify-content-center">
-                        <a href="#">Şifremi unuttum</a>
+
+
+    </div>
+
+
+    <div class="modal fade" id="mail" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCenterTitle">Mail Doğrulama</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                @using (Html.BeginForm("MailControl", "Login", FormMethod.Post, new { @id = "myForm" }))
+                {
+
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Lütfen Şirket Mail Adresinizi Girin</label>
+                            @Html.TextBoxFor(m => m.User.USER_MAIL, new { @class = "form-control", @type = "email" })
+                            <div class="spinner-border spinner-border-lg text-primary mt-2" id="spinner1" style="display: none;margin-left:42%" role="status">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button id="devam" type="submit" class="ekle btn btn-outline-info">DEVAM</button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">KAPAT</button>
                     </div>
 
-                </div>
-                
+                }
+
+
             </div>
         </div>
     </div>
-    <script>
-       
+    @if (ViewBag.Info == "Başarılı")
+    {
+        <div class="modal fade show" id="forgot" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCenterTitle">Şifre Değişiklik</h5>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    @using (Html.BeginForm("ChangePassword", "Login", FormMethod.Post, new { @id = "myForm" }))
+                    {@Html.ValidationSummary()
 
-        document.querySelector('.sweet-1').onclick = function () {
-            swal("Here's a message!");
-        };
 
-        document.querySelector('.sweet-2').onclick = function () {
-            swal("Here's a message!", "It's pretty, isn't it?")
-        };
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Lütfen Mail Adresinize Gelen Doğrulama Kodunu Girin</label>
+                            @Html.TextBoxFor(m => m.PasswordChange.CODE, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label>Yeni Şifre:</label>
+                            @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD, new { @class = "form-control", @minlength = "6" })
+                        </div>
+                        <div class="form-group">
+                            <label>Tekrar Yeni Şifre:</label>
+                            @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD_REPEAT, new { @class = "form-control", @minlength = "6" })
+                            <div class="spinner-border spinner-border-lg text-primary mt-2" id="spinner2" style="display: none;margin-left:42%" role="status">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="guncelle" type="submit" class="ekle btn btn-outline-info">GÜNCELLE</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="location.href='@Url.Action("Login", "Login")'">KAPAT</button>
+                    </div>
 
-        document.querySelector('.sweet-3').onclick = function () {
-            swal("Good job!", "You clicked the button!", "success");
-        };
+                }
 
-        document.querySelector('.sweet-4').onclick = function () {
-            swal({
-                title: "Are you sure?",
-                text: "You will not be able to recover this imaginary file!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: 'btn-danger',
-                confirmButtonText: 'Yes, delete it!',
-                closeOnConfirm: false,
-                //closeOnCancel: false
-            },
-                function () {
-                    swal("Deleted!", "Your imaginary file has been deleted!", "success");
-                });
-        };
 
-        document.querySelector('.sweet-5').onclick = function () {
-            swal({
-                title: "Are you sure?",
-                text: "You will not be able to recover this imaginary file!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: 'btn-danger',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: "No, cancel plx!",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },
-                function (isConfirm) {
-                    window.console.log('fuck', isConfirm);
-                    if (isConfirm) {
-                        swal("Deleted!", "Your imaginary file has been deleted!", "success");
-                    } else {
-                        swal("Cancelled", "Your imaginary file is safe :)", "error");
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="modal fade" id="forgot" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCenterTitle">Yeni Kullanıcı Ekleme Formu</h5>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    @using (Html.BeginForm("ChangePassword", "Login", FormMethod.Post, new { @id = "myForm" }))
+                    {
+                        @Html.ValidationSummary()
+
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Lütfen Mail Adresinize Gelen Kodu Girin</label>
+                                @Html.TextBoxFor(m => m.PasswordChange.CODE, "", new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>Yeni Şifre:</label>
+                                @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD_REPEAT, "", new { @class = "form-control", @minlength = "6" })
+                            </div>
+                            <div class="form-group">
+                                <label>Tekrar Yeni Şifre:</label>
+                                @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD, "", new { @class = "form-control", @minlength = "6" })
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="ekle btn btn-outline-info" data-bs-dismiss="modal">GÜNCELLE</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">KAPAT</button>
+                        </div>
+
                     }
+
+
+                </div>
+            </div>
+        </div>
+    }
+
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (ViewBag.Mesaj == "Hata")
+    {
+
+
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Kullanıcı adı veya şifre hatalı!',
+            })
+        </script>
+    }
+    else if (ViewBag.Mesaj == "Yetki")
+    {
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Kullanıcının giriş yetkisi bulunmamaktadır!',
+            })
+        </script>
+    }
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script type="text/javascript" src="\assets\vendor\libs\jquery\jquery.js"></script>
+    <script type="text/javascript" src="\assets\vendor\libs\popper\popper.js"></script>
+    <script type="text/javascript" src="\assets\vendor\js\bootstrap.js"></script>
+    <script type="text/javascript" src="\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.js"></script>
+
+    <script type="text/javascript" src="\assets\vendor\js/menu.js"></script>
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <!-- Main JS -->
+    <script type="text/javascript" src="\assets\js\main.js"></script>
+
+    <!-- Page JS -->
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script type="text/javascript" async defer src="https://buttons.github.io/buttons.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#just_load_please").on("click", function (e) {
+                e.preventDefault();
+                $("#loadMe").modal({
+                    backdrop: "static", //remove ability to close modal with click
+                    keyboard: false, //remove option to close with keyboard
+                    show: true //Display loader!
                 });
-        };
-
-        document.querySelector('.sweet-6').onclick = function () {
-            swal({
-                title: "Sweet!",
-                text: "Here's a custom image.",
-                imageUrl: 'assets/thumbs-up.jpg'
+                setTimeout(function () {
+                    $("#loadMe").modal("hide");
+                }, 3500);
             });
-        };
-
-        document.querySelector('.sweet-10').onclick = function () {
-            swal({
-                title: "Are you sure?",
-                text: "You will not be able to recover this imaginary file!",
-                type: "info",
-                showCancelButton: true,
-                confirmButtonClass: 'btn-primary',
-                confirmButtonText: 'Primary!'
+            //ajax code here (example for $.post) using test page from https://reqres.in
+            //Adding a delay so we can see the functionality of the loader while request processes
+            $("#load_me_baby").on("click", function (e) {
+                e.preventDefault();
+                $("#loadMe").modal({
+                    backdrop: "static", //remove ability to close modal with click
+                    keyboard: false, //remove option to close with keyboard
+                    show: true //Display loader!
+                });
+                var testUrl = "https://reqres.in/api/users?delay=3";
+                $.get(
+                    testUrl,
+                    function (response) {
+                        if (response.data[0]) {
+                            //if you received a successful return, remove the modal. Either way remove the modal!!
+                            var resOutput =
+                                '<h4 style="color: white">Modal closed and output displayed!</h4><p style="color: white">This is <b>' +
+                                response.data[0].first_name +
+                                " " +
+                                response.data[0].last_name +
+                                '</b></p><img src="' +
+                                response.data[0].avatar +
+                                '" class="img-responsive img-thumbnail" alt="avatar" style="margin-top: 13px; max-width="200px;">';
+                            $("#output").html(resOutput);
+                            $("#loadMe").modal("hide");
+                        } else {
+                            $("#output").html(
+                                '<div class="alert alert-warning"><h4>Uh oh!</h4></div>'
+                            );
+                        }
+                    },
+                    "json"
+                );
             });
-        };
-
-        document.querySelector('.sweet-11').onclick = function () {
-            swal({
-                title: "Are you sure?",
-                text: "You will not be able to recover this imaginary file!",
-                type: "info",
-                showCancelButton: true,
-                confirmButtonClass: 'btn-info',
-                confirmButtonText: 'Info!'
-            });
-        };
-
-        document.querySelector('.sweet-12').onclick = function () {
-            swal({
-                title: "Are you sure?",
-                text: "You will not be able to recover this imaginary file!",
-                type: "success",
-                showCancelButton: true,
-                confirmButtonClass: 'btn-success',
-                confirmButtonText: 'Success!'
-            });
-        };
-
-        document.querySelector('.sweet-13').onclick = function () {
-            swal({
-                title: "Are you sure?",
-                text: "You will not be able to recover this imaginary file!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: 'btn-warning',
-                confirmButtonText: 'Warning!'
-            });
-        };
-
-        document.querySelector('.sweet-14').onclick = function () {
-            swal({
-                title: "Are you sure?",
-                text: "You will not be able to recover this imaginary file!",
-                type: "error",
-                showCancelButton: true,
-                confirmButtonClass: 'btn-danger',
-                confirmButtonText: 'Danger!'
-            });
-        };
+        });
     </script>
+    <script>
+        $(document).ready(function () {
+            $('#giris').click(function () {
+                $('#spinner').css('display', 'flex');
+            });
+        });
+        $(document).ready(function () {
+            $('#devam').click(function () {
+                $('#spinner1').css('display', 'flex');
+            });
+        });
+        $(document).ready(function () {
+            $('#guncelle').click(function () {
+                $('#spinner2').css('display', 'flex');
+            });
+        });
+        $(function () {
+            $(window).load(function () {
+                $('#pageloaddiv').fadeOut(5000);
+            })
+        })
+    </script>
+    <script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
+    </script>
+    <script type="text/javascript">
 
+        function ESCclose(evt) {
 
+            if (evt.keyCode == 27) {
+                //Do your task
+                alert("Escape is not allowed!");
+            }
+        }
 
+    </script>
+    <script>
+        function logoff(data1) {
+            
+            var data = {
+                USERNAME: JSON.parse(data1).USERNAME,
+                USERID: JSON.parse(data1).USERID,
+                LASTACTIVETIME: JSON.parse(data1).LASTACTIVETIME,
+                PLATFORM: JSON.parse(data1).PLATFORM,
+            };
+            
+            $.ajax({
+                url: "/Login/LogOut",
+                type: "POST",
+                dataType: "json",
+                data: data
+            });
+       
+    }
+        
+        if (localStorage.userlist != null && localStorage.userlist != "null") {
+            var data = localStorage.userlist;
+            logoff(data);
 
-
+        }
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,957 @@
+﻿@model NOVA.Models.Login
+
+<!DOCTYPE html>
+<html lang="tr"
+      class="light-style layout-menu-fixed"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="\assets\"
+      data-template="vertical-menu-template-free">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Nova | Efece Galvaniz</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+    <meta name="description" content="" />
+    <meta http-equiv='cache-control' content='no-cache'>
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/brands/Nova_White.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" />
+
+    <!-- Icons. Uncomment required icon fonts -->
+
+
+    <link href="\assets\boxicons-2.1.2\css\boxicons.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\animations.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\transformations.css" rel="stylesheet" type="text/css" />
+    <!-- Core CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\css\demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
+
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs\apex-charts\apex-charts.css" />
+
+    <!-- Page CSS -->
+    <!-- Helpers -->
+    <script type="text/javascript" src="\assets\vendor\js\helpers.js"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script type="text/javascript" src="\assets\js\config.js"></script>
+    <script src="/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="/Scripts/jquery.validate.js" type='text/javascript'></script>
+    <script src="/Scripts/jquery.validate.unobtrusive.js" type='text/javascript'></script>
+</head>
+<body>
+
+
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <!-- Menu -->
+
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                <div class="app-brand demo">
+                    <a href="@Url.Action("Index","Home")" class="app-brand-link">
+                        <span class="app-brand-logo demo">
+                            <img src="/Content/Images/efece_logo.png" alt class="w-px-200 h-auto" />
+                        </span>
+                    </a>
+
+                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                    </a>
+                </div>
+
+                <div class="menu-inner-shadow"></div>
+
+                <ul class="menu-inner py-1">
+                    <!-- ANASAYFA -->
+                    @{if (ViewBag.Page == 1)
+                        {
+                            <li class="menu-item">
+                                <a href="@Url.Action("Index", "Home")" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                                    <div data-i18n="Analytics">Anasayfa</div>
+                                </a>
+                            </li>
+                            <li class="menu-header small text-uppercase">
+                                <span class="menu-header-text">Modüller</span>
+                            </li>
+                            <!-- Layouts -->
+                            <li class="menu-item" style="display: @ViewBag.DisplaySatis">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                    <i class="menu-icon tf-icons bx bx-dollar"></i>
+                                    <div data-i18n="Layouts">Satış</div>
+                                </a>
+
+                                <ul class="menu-sub">
+                                    <li class="menu-item" style="display: @ViewBag.DisplayStok">
+                                        <a href="@Url.Action("Index", "Satis")" class="menu-link">
+                                            <div data-i18n="Without menu">Stok</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item" style="display: @ViewBag.DisplaySiparis">
+                                        <a href="@Url.Action("DetayliSiparis", "Satis")" class="menu-link">
+                                            <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatliStok">
+                                        <a href="@Url.Action("HammaddeListesi", "Satis")" class="menu-link">
+                                            <div data-i18n="Without menu">* Fabrika Stok</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatsizStok">
+                                        <a href="@Url.Action("FiyatsizHammaddeListesi", "Satis")" class="menu-link">
+                                            <div data-i18n="Without menu">Fabrika Stok</div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.DisplaySevkiyat">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                    <i class="menu-icon tf-icons bx bxs-truck"></i>
+                                    <div data-i18n="Layouts">Sevkiyat</div>
+                                </a>
+                                <ul class="menu-sub">
+                                    <li class="menu-item" style="display: @ViewBag.DisplaySiparisRaporu">
+                                        <a href="@Url.Action("SiparisRaporu", "Sevkiyat")" class="menu-link">
+                                            <div data-i18n="Without menu">Müşteri Siparişi Raporu</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item" style="display: @ViewBag.DisplaySaticiSiparisRaporu">
+                                        <a href="@Url.Action("SaticiSiparisRaporu", "Sevkiyat")" class="menu-link">
+                                            <div data-i18n="Without menu">Satıcı Siparişi Raporu</div>
+                                        </a>
+                                    </li>
+                                </ul>
+
+                            </li>
+
+                            <li class="menu-item open active" style="display:none">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                    <i class="menu-icon tf-icons bx bxs-hard-hat"></i>
+                                    <div data-i18n="Account Settings">Üretim</div>
+                                </a>
+                                <ul class="menu-sub">
+                                    <li class="menu-item active" style="display:none">
+                                        <a href="@Url.Action("Index", "Uretim")" class="menu-link">
+                                            <div data-i18n="Without menu">Anlık Üretim</div>
+                                        </a>
+                                    </li>
+                                </ul>
+
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.DisplaySatinAlma">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                    <i class="menu-icon tf-icons bx bx-credit-card"></i>
+                                    <div data-i18n="Authentications">Satın Alma</div>
+                                </a>
+                                <ul class="menu-sub">
+                                    <li class="menu-item active" style="display: @ViewBag.DisplaySatinAlmaRaporu">
+                                        <a href="@Url.Action("SatinAlmaRaporu", "SatinAlma" )" class="menu-link">
+                                            <div data-i18n="Without menu">Sipariş Raporu</div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.DisplayFinans">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                    <i class="menu-icon tf-icons bx bx-trending-up"></i>
+                                    <div data-i18n="Misc">Finans</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.DisplayMuhasebe">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle" >
+                                    <i class="menu-icon tf-icons bx bx-calculator"></i>
+                                    <div data-i18n="Misc">Muhasebe</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.Display4">
+
+                                <a href="javascript:void(0);" class="menu-link menu-toggle" >
+                                    <i class="menu-icon tf-icons bx bx-male-female"></i>
+                                    <div data-i18n="Misc">İnsan Kaynakları</div>
+                                </a>
+                                <ul class="menu-sub">
+                                    <li class="menu-item" style="display: @ViewBag.Display5">
+                                        <a href="@Url.Action("PersonelBilgi", "IK")" class="menu-link">
+                                            <div data-i18n="Without menu">Personel Bilgi Girişi</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item" style="display: @ViewBag.Display6">
+                                        <a href="@Url.Action("PersonelBilgiYonetim", "IK")" class="menu-link">
+                                            <div data-i18n="Without menu">Personel Bilgi Yönetimi</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item" style="display: @ViewBag.Sube">
+                                        <a href="@Url.Action("PersonelSubeYonetim", "IK")" class="menu-link">
+                                            <div data-i18n="Without menu">Şube Bazında Personel Bilgi Yönetimi</div>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.DisplayYonetim">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                    <i class="menu-icon tf-icons bx bx-sitemap"></i>
+                                    <div data-i18n="Misc">Yönetim</div>
+                                </a>
+                            </li>
+                            <li class="menu-item active open" style="display: @ViewBag.Display">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                    <i class="menu-icon tf-icons bx bxs-report"></i>
+                                    <div data-i18n="Misc">Yönetim Paneli</div>
+                                </a>
+                                <ul class="menu-sub">
+                                    <li class="menu-item" style="display: @ViewBag.Display1">
+                                        <a href="@Url.Action("KullaniciAyar", "YonetimPaneli")" class="menu-link">
+                                            <div data-i18n="Without menu">Kullanıcı Ayarları</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item " style="display: @ViewBag.Display2">
+                                        <a href="@Url.Action("YetkiAyar", "YonetimPaneli")" class="menu-link">
+                                            <div data-i18n="Without navbar">Kullanıcı Yetkileri</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item active" style="display: @ViewBag.Display3">
+                                        <a href="#" class="menu-link">
+                                            <div data-i18n="Without navbar">Kullanıcı İstatistikleri</div>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </li>
+                            <li class="menu-item">
+                                <a href="javascript:void(0);" class="menu-link" data-i18n="Misc" data-bs-toggle="modal"
+                                   data-bs-target="#cikis">
+                                    <i class="menu-icon tf-icons bx bx-lock"></i>
+
+                                    Çıkış
+
+                                </a>
+                            </li>
+
+                        }
+
+                        else if (ViewBag.Page == 2)
+                        {
+                            {
+                                <li class="menu-item">
+                                    <a href="@Url.Action("Index", "Home")" class="menu-link">
+                                        <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                                        <div data-i18n="Analytics">Anasayfa</div>
+                                    </a>
+                                </li>
+                                <li class="menu-header small text-uppercase">
+                                    <span class="menu-header-text">Modüller</span>
+                                </li>
+                                <!-- Layouts -->
+                                <li class="menu-item" style="display: @ViewBag.DisplaySatis">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class="menu-icon tf-icons bx bx-dollar"></i>
+                                        <div data-i18n="Layouts">Satış</div>
+                                    </a>
+
+                                    <ul class="menu-sub">
+                                        <li class="menu-item" style="display: @ViewBag.DisplayStok">
+                                            <a href="@Url.Action("Index", "Satis")" class="menu-link">
+                                                <div data-i18n="Without menu">Stok</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.DisplaySiparis">
+                                            <a href="@Url.Action("DetayliSiparis", "Satis")" class="menu-link">
+                                                <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatliStok">
+                                            <a href="@Url.Action("HammaddeListesi", "Satis")" class="menu-link">
+                                                <div data-i18n="Without menu">* Fabrika Stok</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatsizStok">
+                                            <a href="@Url.Action("FiyatsizHammaddeListesi", "Satis")" class="menu-link">
+                                                <div data-i18n="Without menu">Fabrika Stok</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="menu-item" style="display: @ViewBag.DisplaySevkiyat" >
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class="menu-icon tf-icons bx bxs-truck"></i>
+                                        <div data-i18n="Layouts">Sevkiyat</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item" style="display: @ViewBag.DisplaySiparisRaporu">
+                                            <a href="@Url.Action("SiparisRaporu", "Sevkiyat")" class="menu-link">
+                                                <div data-i18n="Without menu">Müşteri Siparişi Raporu</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.DisplaySaticiSiparisRaporu">
+                                            <a href="@Url.Action("SaticiSiparisRaporu", "Sevkiyat")" class="menu-link">
+                                                <div data-i18n="Without menu">Satıcı Siparişi Raporu</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                </li>
+                                <li class="menu-item open active" style="display:none">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class="menu-icon tf-icons bx bxs-hard-hat"></i>
+                                        <div data-i18n="Account Settings">Üretim</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item active" style="display:none">
+                                            <a href="@Url.Action("Index", "Uretim")" class="menu-link">
+                                                <div data-i18n="Without menu">Anlık Üretim</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.DisplaySatinAlma">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                        <i class="menu-icon tf-icons bx bx-credit-card"></i>
+                                        <div data-i18n="Authentications">Satın Alma</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item active" style="display: @ViewBag.DisplaySatinAlmaRaporu">
+                                            <a href="@Url.Action("SatinAlmaRaporu", "SatinAlma" )" class="menu-link">
+                                                <div data-i18n="Without menu">Sipariş Raporu</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.DisplayFinans">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                        <i class="menu-icon tf-icons bx bx-trending-up"></i>
+                                        <div data-i18n="Misc">Finans</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.DisplayMuhasebe">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                        <i class="menu-icon tf-icons bx bx-calculator"></i>
+                                        <div data-i18n="Misc">Muhasebe</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.Display4">
+
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" >
+                                        <i class="menu-icon tf-icons bx bx-male-female"></i>
+                                        <div data-i18n="Misc">İnsan Kaynakları</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item" style="display: @ViewBag.Display5">
+                                            <a href="@Url.Action("PersonelBilgi", "IK")" class="menu-link">
+                                                <div data-i18n="Without menu">Personel Bilgi Girişi</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.Display6">
+                                            <a href="@Url.Action("PersonelBilgiYonetim", "IK")" class="menu-link">
+                                                <div data-i18n="Without menu">Personel Bilgi Yönetimi</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.Sube">
+                                            <a href="@Url.Action("PersonelSubeYonetim", "IK")" class="menu-link">
+                                                <div data-i18n="Without menu">Şube Bazında Personel Bilgi Yönetimi</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.DisplayYonetim">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                        <i class="menu-icon tf-icons bx bx-sitemap"></i>
+                                        <div data-i18n="Misc">Yönetim</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item active open" style="display: @ViewBag.Display">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class="menu-icon tf-icons bx bxs-report"></i>
+                                        <div data-i18n="Misc">Yönetim Paneli</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item active" style="display: @ViewBag.Display1">
+                                            <a href="@Url.Action("KullaniciAyar", "YonetimPaneli")" class="menu-link">
+                                                <div data-i18n="Without menu">Kullanıcı Ayarları</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.Display2">
+                                            <a href="@Url.Action("YetkiAyar", "YonetimPaneli")" class="menu-link">
+                                                <div data-i18n="Without navbar">Kullanıcı Yetkileri</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.Display3">
+                                            <a href="#" class="menu-link">
+                                                <div data-i18n="Without navbar">Kullanıcı İstatistikleri</div>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="javascript:void(0);" class="menu-link" data-i18n="Misc" data-bs-toggle="modal"
+                                       data-bs-target="#cikis">
+                                        <i class="menu-icon tf-icons bx bx-lock"></i>
+
+                                        Çıkış
+
+                                    </a>
+                                </li>
+
+                            }
+                        }
+                        else if (ViewBag.Page == 3)
+                        {
+                            {
+                                <li class="menu-item">
+                                    <a href="@Url.Action("Index", "Home")" class="menu-link">
+                                        <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                                        <div data-i18n="Analytics">Anasayfa</div>
+                                    </a>
+                                </li>
+                                <li class="menu-header small text-uppercase">
+                                    <span class="menu-header-text">Modüller</span>
+                                </li>
+                                <!-- Layouts -->
+                                <li class="menu-item" style="display: @ViewBag.DisplaySatis">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class="menu-icon tf-icons bx bx-dollar"></i>
+                                        <div data-i18n="Layouts">Satış</div>
+                                    </a>
+
+                                    <ul class="menu-sub">
+                                        <li class="menu-item" style="display: @ViewBag.DisplayStok">
+                                            <a href="@Url.Action("Index", "Satis")" class="menu-link">
+                                                <div data-i18n="Without menu">Stok</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.DisplaySiparis">
+                                            <a href="@Url.Action("DetayliSiparis", "Satis")" class="menu-link">
+                                                <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatliStok">
+                                            <a href="@Url.Action("HammaddeListesi", "Satis")" class="menu-link">
+                                                <div data-i18n="Without menu">* Fabrika Stok</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatsizStok">
+                                            <a href="@Url.Action("FiyatsizHammaddeListesi", "Satis")" class="menu-link">
+                                                <div data-i18n="Without menu">Fabrika Stok</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="menu-item" style="display: @ViewBag.DisplaySevkiyat" >
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class="menu-icon tf-icons bx bxs-truck"></i>
+                                        <div data-i18n="Layouts">Sevkiyat</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item" style="display: @ViewBag.DisplaySiparisRaporu">
+                                            <a href="@Url.Action("SiparisRaporu", "Sevkiyat")" class="menu-link">
+                                                <div data-i18n="Without menu">Müşteri Siparişi Raporu</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.DisplaySaticiSiparisRaporu">
+                                            <a href="@Url.Action("SaticiSiparisRaporu", "Sevkiyat")" class="menu-link">
+                                                <div data-i18n="Without menu">Satıcı Siparişi Raporu</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                </li>
+                                <li class="menu-item open active" style="display:none">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class="menu-icon tf-icons bx bxs-hard-hat"></i>
+                                        <div data-i18n="Account Settings">Üretim</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item active" style="display:none">
+                                            <a href="@Url.Action("Index", "Uretim")" class="menu-link">
+                                                <div data-i18n="Without menu">Anlık Üretim</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.DisplaySatinAlma">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                        <i class="menu-icon tf-icons bx bx-credit-card"></i>
+                                        <div data-i18n="Authentications">Satın Alma</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item active" style="display: @ViewBag.DisplaySatinAlmaRaporu">
+                                            <a href="@Url.Action("SatinAlmaRaporu", "SatinAlma" )" class="menu-link">
+                                                <div data-i18n="Without menu">Sipariş Raporu</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.DisplayFinans">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                        <i class="menu-icon tf-icons bx bx-trending-up"></i>
+                                        <div data-i18n="Misc">Finans</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.DisplayMuhasebe">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                        <i class="menu-icon tf-icons bx bx-calculator"></i>
+                                        <div data-i18n="Misc">Muhasebe</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.Display4">
+
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" >
+                                        <i class="menu-icon tf-icons bx bx-male-female"></i>
+                                        <div data-i18n="Misc">İnsan Kaynakları</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item" style="display: @ViewBag.Display5">
+                                            <a href="@Url.Action("PersonelBilgi", "IK")" class="menu-link">
+                                                <div data-i18n="Without menu">Personel Bilgi Girişi</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.Display6">
+                                            <a href="@Url.Action("PersonelBilgiYonetim", "IK")" class="menu-link">
+                                                <div data-i18n="Without menu">Personel Bilgi Yönetimi</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.Sube">
+                                            <a href="@Url.Action("PersonelSubeYonetim", "IK")" class="menu-link">
+                                                <div data-i18n="Without menu">Şube Bazında Personel Bilgi Yönetimi</div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item" style="display: @ViewBag.DisplayYonetim">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                                        <i class="menu-icon tf-icons bx bx-sitemap"></i>
+                                        <div data-i18n="Misc">Yönetim</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item active open" style="display: @ViewBag.Display">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class="menu-icon tf-icons bx bxs-report"></i>
+                                        <div data-i18n="Misc">Yönetim Paneli</div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <li class="menu-item" style="display: @ViewBag.Display1">
+                                            <a href="@Url.Action("KullaniciAyar", "YonetimPaneli")" class="menu-link">
+                                                <div data-i18n="Without menu">Kullanıcı Ayarları</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item active" style="display: @ViewBag.Display2">
+                                            <a href="@Url.Action("YetkiAyar", "YonetimPaneli")" class="menu-link">
+                                                <div data-i18n="Without navbar">Kullanıcı Yetkileri</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item" style="display: @ViewBag.Display3">
+                                            <a href="#" class="menu-link">
+                                                <div data-i18n="Without navbar">Kullanıcı İstatistikleri</div>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="javascript:void(0);" class="menu-link" data-i18n="Misc" data-bs-toggle="modal"
+                                       data-bs-target="#cikis">
+                                        <i class="menu-icon tf-icons bx bx-lock"></i>
+
+                                        Çıkış
+
+                                    </a>
+                                </li>
+
+                            }
+                        }}
+
+                </ul>
+            </aside>
+
+            <div class="layout-page">
+                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme position-sticky sticky-top"
+                     id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                        <!-- Search -->
+                        <div class="navbar-nav align-items-center">
+                            <div class="nav-item d-flex align-items-center">
+                                <i id="click" class="bx bx-search fs-4 lh-0"></i>
+                                <input style="width: 1200px"
+                                       type="text"
+                                       class="form-control border-0 shadow-none"
+                                       id="search"
+                                       placeholder="Arama yapmak için Enter tuşuna veya büyüteç ikonuna basınız.."
+                                       aria-label="Arama" />
+                            </div>
+                        </div>
+                        <!-- /Search -->
+
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+
+                            @{
+                                string s = ViewBag.Id + ".png?" + DateTime.Now.Ticks.ToString();
+                            }
+                            <!-- User -->
+                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                    <div class="avatar avatar-online">
+                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                        </object>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href='@Url.Action("Index","Profil")'>
+                                            <div class="d-flex">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <div class="avatar avatar-online">
+                                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                                        </object>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <span class="fw-semibold d-block">@Session["Name"]</span>
+                                                    <small class="text-muted">Yetki: @ViewBag.RoleName</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                           data-bs-target="#cikis">
+                                            <i class="bx bx-power-off me-2"></i>
+                                            <span class="align-middle">Oturumu Kapat</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--/ User -->
+                        </ul>
+                    </div>
+
+
+                </nav>
+                <div id="cikis" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalCenterTitle">ÇIKIŞ</h5>
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 class="modal-body">Çıkış yapmak istediğinize emin misiniz?</h5>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("LogOff", "Login")'">EVET</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">HAYIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="passwordchange" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalCenterTitle">Şifre Değişiklik Formu</h5>
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            @{
+
+                                using (Html.BeginForm("ChangePassword", "Home", FormMethod.Post, new { @id = "myForm" }))
+                                {
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label>Eski Şifre:</label>
+                                            @Html.TextBoxFor(m => m.PasswordChange.OLD_PASSWORD, new { @class = "form-control" })
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Yeni Şifre:</label>
+                                            @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD, new { @class = "form-control", @minlength = "6" })
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Yeni Şifre Tekrar:</label>
+                                            @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD_REPEAT, new { @class = "form-control", @minlength = "6" })
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="ekle btn btn-outline-info">DEĞİŞTİR</button>
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">KAPAT</button>
+                                    </div>
+                                }
+                            }
+
+
+                        </div>
+                    </div>
+                </div>
+                @RenderBody()
+                <!-- / Content -->
+                <!-- Footer -->
+                <footer class="content-footer footer bg-footer-theme">
+                    <div class="container-xxl d-flex text-nowrap justify-content-between py-2 flex-md-row flex-column">
+                        <div style="padding-left:40%">
+                            ©
+                            <script>document.write(new Date().getFullYear());</script>
+                            , designed by
+                            <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
+                        </div>
+                    </div>
+                </footer>
+                <!-- / Footer -->
+
+                <div class="content-backdrop fade"></div>
+            </div>
+            <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+
+
+
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script type="text/javascript" src="\assets\vendor\libs\jquery/jquery.js"></script>
+    <script type="text/javascript" src="\assets\vendor\libs\popper/popper.js"></script>
+    <script type="text/javascript" src="\assets\vendor\js\bootstrap.js"></script>
+    <script type="text/javascript" src="\assets\vendor\libs/perfect-scrollbar\perfect-scrollbar.js"></script>
+
+    <script src="\assets\vendor\js\menu.js"></script>
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script type="text/javascript" src="\assets\vendor\libs\apex-charts\apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script type="text/javascript" src="\assets\js\main.js"></script>
+
+    <!-- Page JS -->
+    <script type="text/javascript" src="\assets\js\dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+
+
+    <script type="text/javascript" async defer src="\Scripts\buttons.js"></script>
+    <script type="text/javascript" src="\Scripts\boxicons.js"></script>
+    <script type="text/javascript">
+        $("#click").on("click", function () {
+
+            var value = $("#search").val();
+            if (value != "") {
+                $("td").closest("tr").hide()
+                $("td:contains('" + value + "')").each(function (index) {
+                    console.log(index)
+                    const parent = $(this).closest("tr")
+                    const rowspan = $(this).attr("rowspan")
+                    console.log(rowspan)
+                    if (rowspan != undefined) {
+                        var current = parent
+                        for (var i = 0; i < rowspan; i++) {
+                            console.log(current.text())
+                            current.show()
+                            current = current.next()
+                        }
+                    }
+                    else {
+                        parent.show()
+                    }
+                })
+            } else {
+                $("td").closest("tr").show()
+            }
+
+
+
+
+
+        });
+
+        $(document).keypress(function (e) {
+            if ((e.keyCode || e.which) == 13) {
+                // Enter key pressed
+                $('#click').trigger('click');
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        getPagination('.sorttable');
+        //getPagination('.table-class');
+        //getPagination('table');
+
+        /*					PAGINATION
+        - on change max rows select options fade out all rows gt option value mx = 5
+        - append pagination list as per numbers of rows / max rows option (20row/5= 4pages )
+        - each pagination li on click -> fade out all tr gt max rows * li num and (5*pagenum 2 = 10 rows)
+        - fade out all tr lt max rows * li num - max rows ((5*pagenum 2 = 10) - 5)
+        - fade in all tr between (maxRows*PageNum) and (maxRows*pageNum)- MaxRows
+        */
+
+
+        function getPagination(table) {
+            var lastPage = 1;
+
+            $('#maxRows')
+                .on('change', function (evt) {
+                    //$('.paginationprev').html('');						// reset pagination
+
+                    lastPage = 1;
+                    $('.pagination')
+                        .find('li')
+                        .slice(1, -1)
+                        .remove();
+                    var trnum = 0; // reset tr counter
+                    var maxRows = parseInt($(this).val()); // get Max Rows from select option
+
+                    if (maxRows == 5000) {
+                        $('.pagination').hide();
+                    } else {
+                        $('.pagination').show();
+                    }
+
+                    var totalRows = $(table + ' tbody tr').length; // numbers of rows
+                    $(table + ' tr:gt(0)').each(function () {
+                        // each TR in  table and not the header
+                        trnum++; // Start Counter
+                        if (trnum > maxRows) {
+                            // if tr number gt maxRows
+
+                            $(this).hide(); // fade it out
+                        }
+                        if (trnum <= maxRows) {
+                            $(this).show();
+                        } // else fade in Important in case if it ..
+                    }); //  was fade out to fade it in
+                    if (totalRows > maxRows) {
+                        // if tr total rows gt max rows option
+                        var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
+                        //	numbers of pages
+                        for (var i = 1; i <= pagenum;) {
+                            // for each page append pagination li
+                            $('.pagination #prev')
+                                .before(
+                                    '<li data-page="' +
+                                    i +
+                                    '">\
+                                                                                                                          <span>' +
+                                    i++ +
+                                    '<span class="sr-only">(current)</span></span>\
+                                                                                                                        </li>'
+                                )
+                                .show();
+                        } // end for i
+                    } // end if row count > max rows
+                    $('.pagination [data-page="1"]').addClass('active'); // add active class to the first li
+                    $('.pagination li').on('click', function (evt) {
+                        // on click each page
+                        evt.stopImmediatePropagation();
+                        evt.preventDefault();
+                        var pageNum = $(this).attr('data-page'); // get it's number
+
+                        var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
+
+                        if (pageNum == 'prev') {
+                            if (lastPage == 1) {
+                                return;
+                            }
+                            pageNum = --lastPage;
+                        }
+                        if (pageNum == 'next') {
+                            if (lastPage == $('.pagination li').length - 2) {
+                                return;
+                            }
+                            pageNum = ++lastPage;
+                        }
+
+                        lastPage = pageNum;
+                        var trIndex = 0; // reset tr counter
+                        $('.pagination li').removeClass('active'); // remove active class from all li
+                        $('.pagination [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
+                        // $(this).addClass('active');					// add active class to the clicked
+                        limitPagging();
+                        $(table + ' tr:gt(0)').each(function () {
+                            // each tr in table not the header
+                            trIndex++; // tr index counter
+                            // if tr index gt maxRows*pageNum or lt maxRows*pageNum-maxRows fade if out
+                            if (
+                                trIndex > maxRows * pageNum ||
+                                trIndex <= maxRows * pageNum - maxRows
+                            ) {
+                                $(this).hide();
+                            } else {
+                                $(this).show();
+                            } //else fade in
+                        }); // end of for each tr in table
+                    }); // end of on click pagination list
+                    limitPagging();
+                })
+                .val(5000)
+                .change();
+
+            // end of on select change
+
+            // END OF PAGINATION
+        }
+
+        function limitPagging() {
+            // alert($('.pagination li').length)
+
+            if ($('.pagination li').length > 7) {
+                if ($('.pagination li.active').attr('data-page') <= 3) {
+                    $('.pagination li:gt(5)').hide();
+                    $('.pagination li:lt(5)').show();
+                    $('.pagination [data-page="next"]').show();
+                } if ($('.pagination li.active').attr('data-page') > 3) {
+                    $('.pagination li:gt(0)').hide();
+                    $('.pagination [data-page="next"]').show();
+                    for (let i = (parseInt($('.pagination li.active').attr('data-page')) - 2); i <= (parseInt($('.pagination li.active').attr('data-page')) + 2); i++) {
+                        $('.pagination [data-page="' + i + '"]').show();
+
+                    }
+
+                }
+            }
+        }
+
+    </script>
+    <script>
+        window.history.forward(1);
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

@@ -1,0 +1,139 @@
+﻿
+@{
+    Layout = "/Views/Shared/_Layout_profil.cshtml";
+}
+
+@model NOVA.Models.Login
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body onclose="close()">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <h5 class="card-header">Profil Bilgileri</h5>
+                    <!-- Account -->
+                    <div class="card-body">
+                        
+                        @using (Html.BeginForm("UploadFile", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        { 
+                            <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                @{  string s = ViewBag.Id + ".png?" + DateTime.Now.Ticks.ToString(); }
+
+                                <img src="~/assets/img/avatars/@s" alt="user-avatar" class="d-block rounded" height="100" width="100" id="blah">
+                                
+                            </div>
+                        }
+
+                    </div>
+                    <hr class="my-0">
+                    <div class="card-body">
+                        @if (Session["Alert"] != null)
+                        {
+                            if (Session["Alert"].ToString() == "Eski Şifreniz Yanlış")
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                                    @Session["Alert"].ToString()
+                                </div>
+                            }
+                            else if (Session["Alert"].ToString() == "Girmiş olduğunuz şifreler aynı değil!")
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                                    @Session["Alert"].ToString()
+                                </div>
+                            }
+                            else if (Session["Alert"].ToString() == "Şifre değişikliği başarılı!")
+                            {
+                                <div class="alert alert-success" role="alert">
+                                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                                    @Session["Alert"].ToString()
+                                </div>
+                            }
+                        }
+                        <form id="formAccountSettings" method="POST" onsubmit="return false">
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label for="firstName" class="form-label">Ad</label>
+                                    <input class="form-control" type="text" id="firstName" name="firstName" value="@Request.Cookies["FirstName"].Value.ToString()" autofocus="" disabled>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="lastName" class="form-label">Soyad</label>
+                                    <input class="form-control" type="text" name="lastName" id="lastName" value="@Request.Cookies["LastName"].Value.ToString()" disabled>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="address" class="form-label">Yetki Grubu</label>
+                                    <input type="text" class="form-control" id="rolename" name="role" placeholder="" value="@Request.Cookies["RoleName"].Value.ToString()" disabled>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="email" class="form-label">E-mail</label>
+                                    <input class="form-control" type="text" id="email" name="email" value="@Request.Cookies["Mail"].Value.ToString()" placeholder="" disabled>
+                                </div>
+
+                            </div>
+
+                        </form>
+                        <div class="row">
+                            <div class="col">
+                                @using (Html.BeginForm("ChangePassword", "Home", FormMethod.Post, new { @id = "myForm" }))
+                                {
+
+                                    <div class="form-group">
+                                        <label>Eski Şifre:</label>
+                                        @Html.TextBoxFor(m => m.PasswordChange.OLD_PASSWORD, new { @class = "form-control" })
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Yeni Şifre:</label>
+                                        @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD, new { @class = "form-control", @minlength = "6" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Yeni Şifre Tekrar:</label>
+                                        @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD_REPEAT, new { @class = "form-control", @minlength = "6" })
+                                    </div>
+
+                                    <button type="submit" class="ekle btn btn-outline-info mt-2">DEĞİŞTİR</button>
+
+                                }
+                            </div>
+                            <div class="col-8">
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <!-- /Account -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function readURL(input) {
+            document.getElementById("resimKaydet").removeAttribute("disabled")
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah')
+                        .attr('src', e.target.result);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function close() {
+            @{Session["Alert"] = null;
+            }
+        }
+    </script>
+    
+</body>
+</html>

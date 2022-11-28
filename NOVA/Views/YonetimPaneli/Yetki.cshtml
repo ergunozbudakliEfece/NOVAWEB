@@ -1,8 +1,9 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout_inside.cshtml";
+    Layout = "/Views/Shared/_Layout_yonetim.cshtml";
 }
 <!DOCTYPE html>
-@model NOVA.Models.User
+@model Tuple<NOVA.Models.User, NOVA.Models.RolesAuth> 
+
 
 
 <html lang="en"
@@ -41,18 +42,82 @@
     </style>
 </head>
 
-<body>
+<body onclose="close()">
 
-
+    @{  string update = "disabled";
+        string delete = "disabled";
+        string insert = "disabled";
+        string tooltipu = "tooltip";
+        string tooltipi = "tooltip";
+        string tooltipd = "tooltip";
+        if (ViewBag.Update != null)
+        {
+            tooltipu = "";
+            update = "";
+        }
+        if (ViewBag.Delete != null)
+        {
+            tooltipd = "";
+            delete = "";
+        }
+        if (ViewBag.Insert != null)
+        {
+            tooltipi = "";
+            insert = "";
+        }
+    }
     <!-- Content wrapper -->
     <div class="content-wrapper">
         <!-- Content -->
 
         <div class="container flex-grow-0">
-            <div class="row"><h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Yönetim Paneli/</span>Kullanıcı Tablosu</h4></div>
-            <div class="row">
+            <div class="row"><h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Yönetim Paneli/</span><span id="tabloadi">Kullaniciya Göre Yetki Tablosu</span></h4></div>
+            <div class="row mb-3">
                 <div class="col">
-                    <select data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Tablo içinde gösterilecek kişi sayısı</span>" class="form-select dropdown-toggle" id="maxRows">
+
+                </div>
+                <div class="col">
+                    <div class="form-check form-switch float-end">
+                        @if (ViewBag.Updated != null)
+                        {
+
+
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked disabled>
+                        }
+                        else
+                        {
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" unchecked disabled>
+                        }
+
+                        <label class="form-check-label" for="flexSwitchCheckChecked">Role Göre</label>
+                    </div>
+                </div>
+            </div>
+            @{ string display1;
+                string display2;
+
+                if (ViewBag.Updated != null)
+                {
+                    display1 = "display:none";
+                    display2 = "display:flex";
+                    <script>
+                        $(document).ready(function () {
+                            if (document.readyState == "complete") {
+                                document.getElementById('flexSwitchCheckChecked').removeAttribute("disabled", "unchecked");
+                            }
+                        });
+                    </script>
+                }
+                else
+                {
+                    display1 = "display:flex";
+                    display2 = "display:none";
+                }
+
+            }
+            <div class="row icerik" style=@display1>
+                <div class="col">
+                    <select data-bs-toggle='tooltip' data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title='<i class="bx bxs-info-circle bx-xs" ></i> <span>Tablo içinde gösterilecek kişi sayısı</span>' class="form-select dropdown-toggle" id="maxRows">
 
                         <option value="5000">Hepsini Göster</option>
                         <option value="5">5</option>
@@ -67,6 +132,7 @@
 
                 <div class="col">
                     <select data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Seçilen modüle göre liste güncellenir</span>" onchange="location.href='@Url.Action("Yetki", "YonetimPaneli")/'+value" class="form-select dropdown-toggle" id="modules">
+                        <option id="0" selected="selected" value="0"> Hepsini Göster</option>
 
                         @{
                             int i = 1;
@@ -74,12 +140,12 @@
                             {
                                 if (ViewBag.Module_id == i)
                                 {
-                                                <option id="@i" selected="selected" value="@item.INCKEY"> @item.MODULE_ID-@item.MODULE_NAME || @item.PROGRAM_ID-@item.PROGRAM_NAME</option>
+                                    <option id="@i" selected="selected" value="@item.INCKEY"> @item.MODULE_ID-@item.MODULE_NAME || @item.PROGRAM_ID-@item.PROGRAM_NAME</option>
                                     i++;
                                 }
                                 else
                                 {
-                    <option id="@i" value="@item.INCKEY">@item.MODULE_ID-@item.MODULE_NAME || @item.PROGRAM_ID-@item.PROGRAM_NAME</option>
+                                    <option id="@i" value="@item.INCKEY">@item.MODULE_ID-@item.MODULE_NAME || @item.PROGRAM_ID-@item.PROGRAM_NAME</option>
                                     i++;
                                 }
 
@@ -99,7 +165,7 @@
                     <div class="row">
                         <div class="col">
                             <span data-bs-toggle="modal" data-bs-target="#exLargeModal">
-                                <a data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Yetki Listesini Açar</span>" class="btn btn-success float-end bx bx-task">
+                                <a data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Modül Ayarları</span>" class="btn btn-success float-end bx bx-task">
 
                                 </a>
                             </span>
@@ -109,7 +175,7 @@
 
 
                 </div>
-                
+
                 <div class=" modal fade" id="ModulEkle" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-m" role="document">
                         <div class="modal-content">
@@ -123,29 +189,29 @@
 
                             @{
 
-                                using (Html.BeginForm("ModulEkle", "YonetimPaneli", FormMethod.Post, new { @id = "modulEkle" }))
+                                using (Html.BeginForm("AddModule", "YonetimPaneli", FormMethod.Post, new { @id = "modulEkle" }))
                                 {
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <label>MODULE ID:</label>
-                                            @Html.TextBoxFor(Model => Model.modules.MODULE_ID, new { @class = "form-control" })
+                                            @Html.TextBoxFor(Model => Model.Item1.modules.MODULE_ID, new { @class = "form-control" })
                                         </div>
                                         <div class="form-group">
                                             <label>MODULE NAME:</label>
-                                            @Html.TextBoxFor(Model => Model.modules.MODULE_NAME, new { @class = "form-control" })
+                                            @Html.TextBoxFor(Model => Model.Item1.modules.MODULE_NAME, new { @class = "form-control" })
                                         </div>
                                         <div class="form-group">
                                             <label>PROGRAM ID:</label>
-                                            @Html.TextBoxFor(Model => Model.modules.PROGRAM_ID, new { @class = "form-control" })
+                                            @Html.TextBoxFor(Model => Model.Item1.modules.PROGRAM_ID, new { @class = "form-control" })
                                         </div>
                                         <div class="form-group">
                                             <label>PROGRAM NAME:</label>
-                                            @Html.TextBoxFor(Model => Model.modules.PROGRAM_NAME, new { @class = "form-control" })
+                                            @Html.TextBoxFor(Model => Model.Item1.modules.PROGRAM_NAME, new { @class = "form-control" })
                                         </div>
 
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="submit" class="modulekle btn btn-info">EKLE</button>
+                                        <button type="button" onclick="modulEkleme()" class="modulekle btn btn-info" data-bs-dismiss="modal">EKLE</button>
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">KAPAT</button>
                                     </div>
                                 }
@@ -163,7 +229,7 @@
                                         data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                             </div>
-                           
+
                             <div class="modal-footer">
                                 <button type="submit" class="ekle btn btn-outline-info">EKLE</button>
                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">KAPAT</button>
@@ -173,7 +239,7 @@
                     </div>
                 </div>
                 <div class=" modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-dialog modal-fullscreen" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="modalCenterTitle">Modül Listesi</h5>
@@ -197,34 +263,50 @@
                                         </thead>
                                         <tbody>
                                             @{
-
-
+                                                int sayac = 0;
+                                                string ss = "0";
                                                 foreach (var urn in ViewBag.Modules)
                                                 {
-                                                    using (Html.BeginForm("ModulEkle", "YonetimPaneli", FormMethod.Post, new { @id = "myFormKaydet" }))
+                                                    using (Html.BeginForm("ModulEkle", "YonetimPaneli", FormMethod.Post, new { @id = "myFormModul" }))
                                                     {
 
 
-                                                        <tr>
+                                                                                        <tr>
 
-                                                            <td>@Html.TextBoxFor(Model => Model.modules.MODULE_ID, new { @Value = urn.MODULE_ID })</td>
-                                                            <td>@Html.TextBoxFor(Model => Model.modules.MODULE_NAME, new { @Value = urn.MODULE_NAME })</td>
-                                                            <td>@Html.TextBoxFor(Model => Model.modules.PROGRAM_ID, new { @Value = urn.PROGRAM_ID })</td>
-                                                            <td>@Html.TextBoxFor(Model => Model.modules.PROGRAM_NAME, new { @Value = urn.PROGRAM_NAME }) @Html.TextBoxFor(Model => Model.modules.INCKEY, new { @Value = urn.INCKEY, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" })</td>
-
-
+                                                                                            <td scope="row">@Html.TextBoxFor(Model => Model.Item1.modules.MODULE_ID, new { @Value = urn.MODULE_ID })</td>
+                                                                                            <td>@Html.TextBoxFor(Model => Model.Item1.modules.MODULE_NAME, new { @Value = urn.MODULE_NAME })</td>
+                                                                                            <td>@Html.TextBoxFor(Model => Model.Item1.modules.PROGRAM_ID, new { @Value = urn.PROGRAM_ID })</td>
+                                                                                            <td>@Html.TextBoxFor(Model => Model.Item1.modules.PROGRAM_NAME, new { @Value = urn.PROGRAM_NAME }) @Html.TextBoxFor(Model => Model.Item1.modules.INCKEY, new { @Value = urn.INCKEY, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" })</td>
 
 
-                                                            <td><button type="submit" class="btn btn-success">GÜNCELLE</button> </td>
+
+                                                                                            
+
+                                                                                            <td>
+                                                                                               
+                                                                                                    <button type="button" class="btn btn-success" onclick="myUpdateFunction1()" data-bs-dismiss="modal" @update>Güncelle</button>
+
+                                                                                               
+                                                                                           
+                                                                                                <button id="guncelle" type="submit" class="btn btn-success" name="guncelle" data-bs-dismiss="modal" style="display:none">Güncelle</button>
+                                                                                                
+                                                                                                    <button  type="button" class="btn btn-danger" onclick="myDeleteFunction(@sayac)" data-bs-dismiss="modal" @delete>Sil</button>
+                                                                                               
+                                                                                               
+                                                                                                <button id="@ss" name="sil" type="submit" class="btn btn-danger" data-bs-dismiss="modal" style="display:none">Sil</button>
+                                                                                            </td>
 
 
-                                                        </tr>
+                                                                                        </tr>
 
 
                                                     }
                                                 }
 
 
+
+                                                sayac++;
+                                                ss = "sil" + sayac;
                                             }
                                         </tbody>
                                     </table>
@@ -233,10 +315,13 @@
                             </div>
 
                             <div class="modal-footer">
-                                <button type="submit" class="ekle btn btn-outline-info" data-bs-toggle="modal"
-                                        data-bs-target="#ModulEkle" data-dismiss="modal">
+                               
+                                <button  type="submit" class="ekle btn btn-info" data-bs-toggle="modal"
+                                        data-bs-target="#ModulEkle" data-dismiss="modal" @insert>
                                     EKLE
-                                </button>
+                                </button>  
+                               
+                                
                             </div>
 
                         </div>
@@ -245,120 +330,121 @@
             </div>
             <hr class="my-3" />
             <!-- Striped Rows -->
-            <div class="card">
-                <div class="table-responsive text-nowrap">
+
+            <div class="card" style="max-height:600px">
+                <div class="table-responsive text-nowrap icerik" style=@display1>
                     <table class="table table-striped table-hover results sorttable" id="sortTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>User Name</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Module</th>
-                                <th>Role</th>
-                                <th>ACTIVE</th>
-                                <th>AUTH</th>
-                                <th>SELECT</th>
-                                <th>INSERT</th>
-                                <th>UPDATE</th>
-                                <th>DELETE</th>
+                                <th style="background-color:white">ID</th>
+                                <th style="background-color:white">User Name</th>
+                                <th style="background-color:white">First Name</th>
+                                <th style="background-color:white">Last Name</th>
+                                <th style="background-color:white">Module</th>
+                                <th style="background-color:white">Role</th>
+                                <th style="background-color:white">AUTH</th>
+                                <th style="background-color:white">SELECT</th>
+                                <th style="background-color:white">INSERT</th>
+                                <th style="background-color:white">UPDATE</th>
+                                <th style="background-color:white">DELETE</th>
+                                <th style="background-color:white"></th>
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
-                            @{ 
-
+                            @{
+                                var iterator = 0;
 
                                 foreach (var urn in ViewBag.Users)
                                 {
-                                    using (Html.BeginForm("Index", "YonetimPaneli", FormMethod.Post, new { @id = "myFormKaydet" }))
+                                    using (Html.BeginForm("YetkiAyar", "YonetimPaneli", FormMethod.Post, new { @id = "myFormYetki" }))
                                     {
 
 
-                                                        <tr>
-                                                            <td>@Html.LabelFor(Model => Model.USER_ID, (String)urn.USER_ID) @Html.TextBoxFor(Model => Model.MODULE_INCKEY, new { @Value = urn.MODULE_INCKEY, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" }) @Html.TextBoxFor(Model => Model.USER_ID, new { @Value = urn.USER_ID, Style = "display: none;" })</td>
-                                                            <td>@Html.LabelFor(Model => Model.USER_NAME, (String)urn.USER_NAME) @Html.TextBoxFor(Model => Model.USER_NAME, new { @Value = urn.USER_NAME, Style = "display: none;" })</td>
-                                                            <td>@Html.LabelFor(Model => Model.USER_FIRSTNAME, (String)urn.USER_FIRSTNAME) @Html.TextBoxFor(Model => Model.USER_FIRSTNAME, new { @Value = urn.USER_FIRSTNAME, Style = "display: none;" }) @Html.TextBoxFor(Model => Model.USER_PASSWORD, new { @Value = urn.USER_PASSWORD, Style = "display: none;" })</td>
-                                                            <td>@Html.LabelFor(Model => Model.USER_LASTNAME, (String)urn.USER_LASTNAME) @Html.TextBoxFor(Model => Model.USER_LASTNAME, new { @Value = urn.USER_LASTNAME, Style = "display: none;" })</td>
-                                                            <td>@Html.Label((String)ViewBag.Modules[urn.MODULE_INCKEY - 1].MODULE_ID.ToString() + "-" + (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].MODULE_NAME + " | " + (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].PROGRAM_ID.ToString() + "-" + (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].PROGRAM_NAME)</td>
-                                                            @{
-                                                                foreach (var urn1 in ViewBag.Roles1)
-                                                                {
-                                                                    if (urn.USER_ROLE == urn1.ROLE_ID)
-                                                                    {
-                                                                        <td>@Html.LabelFor(Model => Model.USER_ROLE, (String)urn1.ROLE_NAME) @Html.TextBoxFor(Model => Model.USER_ROLE, new { @Value = urn.USER_ROLE, Style = "display: none;" }) @Html.TextBoxFor(Model => Model.USER_MAIL, new { @Value = urn.USER_MAIL, Style = "display: none;" })</td>
+                                        <tr>
+                                            <td>@Html.LabelFor(Model => Model.Item1.USER_ID, (String)urn.USER_ID) @Html.TextBoxFor(Model => Model.Item1.MODULE_INCKEY, new { @Value = urn.MODULE_INCKEY, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" }) @Html.TextBoxFor(Model => Model.Item1.USER_ID, new { @Value = urn.USER_ID, Style = "display: none;" })</td>
+                                            <td>@Html.Label("UserName", (String)urn.USER_NAME, new { Style = "display: none;" }) @Html.TextBox("UserName", (String)urn.USER_NAME, new { @readonly = "readonly", Style = "width : 110px;border: 0;background-color:transparent" }) @Html.TextBoxFor(Model => Model.Item1.USER_NAME, new { @Value = urn.USER_NAME, Style = "display: none;" })</td>
+                                            <td>@Html.LabelFor(Model => Model.Item1.USER_FIRSTNAME, (String)urn.USER_FIRSTNAME) @Html.TextBoxFor(Model => Model.Item1.USER_FIRSTNAME, new { @Value = urn.USER_FIRSTNAME, Style = "display: none;" }) @Html.TextBoxFor(Model => Model.Item1.USER_PASSWORD, new { @Value = urn.USER_PASSWORD, Style = "display: none;" })</td>
+                                            <td>@Html.TextBox("LastName", (String)urn.USER_LASTNAME, new { @readonly = "readonly", Style = "width : 95px;border: 0;background-color:transparent" }) @Html.TextBoxFor(Model => Model.Item1.USER_LASTNAME, new { @Value = urn.USER_LASTNAME, Style = "display: none;" })</td>
+                                            <td>@Html.TextBox("TextBox", (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].MODULE_ID.ToString() + "-" + (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].MODULE_NAME + " | " + (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].PROGRAM_ID.ToString() + "-" + (String)ViewBag.Modules[urn.MODULE_INCKEY - 1].PROGRAM_NAME, new { @readonly = "readonly", Style = "width : 125px;border: 0;background-color:transparent" })</td>
+                                            @{
+                                                foreach (var urn1 in ViewBag.Roles1)
+                                                {
+                                                    if (urn.USER_ROLE == urn1.ROLE_ID)
+                                                    {
+                                                        <td>@Html.LabelFor(Model => Model.Item1.USER_ROLE, (String)urn1.ROLE_NAME) @Html.TextBoxFor(Model => Model.Item1.USER_ROLE, new { @Value = urn.USER_ROLE, Style = "display: none;" }) @Html.TextBoxFor(Model => Model.Item1.USER_MAIL, new { @Value = urn.USER_MAIL, Style = "display: none;" })</td>
 
-                                                                    }
-                                                                }
-                                                            }
+                                                    }
+                                                }
+                                            }
+                                            @if (urn.USER_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.USER_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.USER_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
+                                            @if (urn.SELECT_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.SELECT_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.SELECT_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
+                                            @if (urn.INSERT_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.INSERT_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.INSERT_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
+                                            @if (urn.UPDATE_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.UPDATE_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.UPDATE_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
+                                            @if (urn.DELETE_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.DELETE_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item1.DELETE_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
 
-                                                            @if (urn.ACTIVE == true)
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.ACTIVE, new { @checked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.ACTIVE, new { @unchecked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            @if (urn.USER_AUTH == true)
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.USER_AUTH, new { @checked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.USER_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            @if (urn.SELECT_AUTH == true)
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.SELECT_AUTH, new { @checked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.SELECT_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            @if (urn.INSERT_AUTH == true)
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.INSERT_AUTH, new { @checked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.INSERT_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            @if (urn.UPDATE_AUTH == true)
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.UPDATE_AUTH, new { @checked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.UPDATE_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            @if (urn.DELETE_AUTH == true)
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.DELETE_AUTH, new { @checked = true, @class = "form-check-input" })</td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td>@Html.CheckBoxFor(Model => Model.DELETE_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
-                                                            }
+                                            @{
+                                                string guncelleme = "guncelle" + iterator;
 
 
-                                                            <td>
-                                                                <div class="dropdown">
-                                                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                                    </button>
-                                                                    <div class="dropdown-menu">
-                                                                        <button type="submit" class="dropdown-item" href="javascript:void(0);"><i class="bx bx-edit-alt me-1"></i> GÜNCELLE</button>
-                                                                        <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-trash me-1"></i> SİL</a>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
+}
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                       
+                                                            <button type="button" class="dropdown-item" value="@iterator" onclick="myUpdateFunction(this.value)" @update><i class="bx bx-edit-alt me-1"></i> GÜNCELLE</button>
+
+                                                        
+                                                     
+                                                        <button type="submit" class="dropdown-item" id="@guncelleme" style="display:none"><i class="bx bx-edit-alt me-1"></i> GÜNCELLE</button>
+                                                    </div>
+                                                </div>
+                                            </td>
 
 
-                                                        </tr>
+                                        </tr>
 
 
                                     }
-                            }
+                                    iterator++;
+                                }
 
 
                             }
@@ -366,7 +452,110 @@
                     </table>
 
                 </div>
+                <div class="table-responsive text-nowrap role" style=@display2>
+                    <table class="table table-striped table-hover results sorttable" id="sortTable">
+                        <thead>
+                            <tr>
+                                <th style="background-color:white">ROLE ID</th>
+                                <th style="background-color:white">MODULE ID</th>
+                                <th style="background-color:white">PROGRAM ID</th>
+                                <th style="background-color:white">USER AUTH</th>
+                                <th style="background-color:white">SELECT AUTH</th>
+                                <th style="background-color:white">INSERT AUTH</th>
+                                <th style="background-color:white">UPDATE AUTH</th>
+                                <th style="background-color:white">DELETE AUTH</th>
+                                <th style="background-color:white"></th>
 
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                            @{
+                                int a = 0;
+
+                                foreach (var urn in ViewBag.RolesAuth)
+                                {
+
+                                    using (Html.BeginForm("RoleAyar", "YonetimPaneli", FormMethod.Post, new { @id = "myFormRole" }))
+                                    {
+
+
+                                        <tr>
+                                            <td>@Html.LabelFor(Model => Model.Item2.ROLE_ID, (String)urn.ROLE_ID.ToString()) @Html.TextBoxFor(Model => Model.Item2.MODULE_INCKEY, new { @Value = urn.MODULE_INCKEY, Style = "background-color: transparent;border: none;width:80px;text-align:center;display: none;" }) @Html.TextBoxFor(Model => Model.Item2.ROLE_ID, new { @Value = urn.ROLE_ID, Style = "display: none;" })</td>
+                                            <td>@Html.TextBox("MODULE_ID", (String)urn.MODULE_ID.ToString(), new { @readonly = "readonly", Style = "width : 110px;border: 0;background-color:transparent" }) @Html.TextBoxFor(Model => Model.Item2.MODULE_ID, new { @Value = urn.MODULE_ID, Style = "display: none;" })</td>
+                                            <td>@Html.LabelFor(Model => Model.Item2.PROGRAM_ID, (String)urn.PROGRAM_ID.ToString()) @Html.TextBoxFor(Model => Model.Item2.PROGRAM_ID, new { @Value = urn.PROGRAM_ID, Style = "display: none;" })</td>
+
+
+                                            @if (urn.USER_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.USER_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.USER_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
+
+                                            @if (urn.SELECT_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.SELECT_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.SELECT_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
+                                            @if (urn.INSERT_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.INSERT_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.INSERT_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
+                                            @if (urn.UPDATE_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.UPDATE_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.UPDATE_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
+                                            @if (urn.DELETE_AUTH == true)
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.DELETE_AUTH, new { @checked = true, @class = "form-check-input" })</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.CheckBoxFor(Model => Model.Item2.DELETE_AUTH, new { @unchecked = true, @class = "form-check-input" })</td>
+                                            }
+
+                                            @{ var s = "submit" + a;}
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <button type="button" class="dropdown-item" value="@a" onclick="myUpdateFunction2(this.value)" @update><i class="bx bx-edit-alt me-1"></i> GÜNCELLE</button>
+                                                        <button type="submit" id=@s style="display:none"><i class="bx bx-edit-alt me-1"></i> GÜNCELLE</button>
+
+
+                                                    </div>
+                                                </div>
+                                            </td>
+
+
+                                        </tr>
+
+
+                                    }
+                                    a++;
+                                }
+
+
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
             </div>
             <!--/ Striped Rows -->
 
@@ -378,10 +567,176 @@
     <!-- / Footer -->
     <!-- / Layout wrapper -->
 
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/jquery/jquery.js"></script>
+
+
+
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <!-- Place this tag in your head or just before your close body tag. -->
 
 
 
 
-    
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+
+        function myUpdateFunction(getvalue) {
+            var name = "guncelle" + getvalue;
+            Swal.fire({
+                title: 'Değişiklik yapmak istediğinizden emin misiniz?',
+                icon: 'question',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Evet',
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#03c3ec',
+                confirmButtonBorderColor: '#03c3ec',
+                cancelButtonColor: '#ff3e1d',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Başarılı!',
+                        'Değişiklik yapıldı',
+                        'success'
+                    )
+                    document.getElementById(name).click();
+                }
+            })
+        }
+        function myUpdateFunction1() {
+            Swal.fire({
+                title: 'Değişiklik yapmak istediğinizden emin misiniz?',
+                icon: 'question',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Evet',
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#03c3ec',
+                confirmButtonBorderColor: '#03c3ec',
+                cancelButtonColor: '#ff3e1d',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Başarılı!',
+                        'Değişiklik yapıldı',
+                        'success'
+                    )
+                    document.getElementById("guncelle").click();
+                }
+            })
+        }
+        function myUpdateFunction2(clicked_value) {
+            var s = "submit" + clicked_value;
+            Swal.fire({
+                title: 'Değişiklik yapmak istediğinizden emin misiniz?',
+                icon: 'question',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Evet',
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#03c3ec',
+                confirmButtonBorderColor: '#03c3ec',
+                cancelButtonColor: '#ff3e1d',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Başarılı!',
+                        'Değişiklik yapıldı',
+                        'success'
+                    )
+                    document.getElementById(s).click();
+                }
+            })
+        }
+        function myDeleteFunction(clicked_value) {
+            var x = clicked_value
+            Swal.fire({
+                title: 'Modülü silmek istediğinizden emin misiniz?',
+                icon: 'question',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Evet',
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#03c3ec',
+                confirmButtonBorderColor: '#03c3ec',
+                cancelButtonColor: '#ff3e1d',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Başarılı!',
+                        'Değişiklik yapıldı',
+                        'success'
+                    )
+                    document.getElementById(x).click();
+                }
+            })
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+
+            $('#flexSwitchCheckChecked').change(function () {
+                if (this.checked) {
+                    $('.icerik').css("display", "none");
+                    $('.role').css("display", "flex");
+                    document.getElementById("tabloadi").innerHTML = "Role Göre Yetki Tablosu";
+                } else {
+
+                    $('.icerik').css("display", "flex");
+                    $('.role').css("display", "none");
+                    document.getElementById("tabloadi").innerHTML = "Kullaniciya Göre Yetki Tablosu";
+                }
+
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            if (document.readyState == "complete") {
+                document.getElementById('flexSwitchCheckChecked').removeAttribute("disabled");
+            }
+        });
+    </script>
+    <script>
+        function modulEkleme() {
+            Swal.fire({
+                title: 'Modül eklemek istediğinizden emin misiniz?',
+                icon: 'question',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Evet',
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#03c3ec',
+                confirmButtonBorderColor: '#03c3ec',
+                cancelButtonColor: '#ff3e1d',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Başarılı!',
+                        'Modül başarılı bir şekilde eklendi',
+                        'success'
+                    )
+                    document.getElementById("modulEkle").submit();
+                }
+            })
+        }
+    </script>
+
+    <script>
+        function close() {
+            @TempData["mydata"]=null;
+            @TempData["moduleid"]=null;
+        }
+    </script>
+
 </body>
 </html>

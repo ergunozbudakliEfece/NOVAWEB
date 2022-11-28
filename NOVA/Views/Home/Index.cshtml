@@ -1,0 +1,411 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout_anasayfa.cshtml";
+}
+
+@model NOVA.Models.Mail
+
+<!DOCTYPE html>
+
+<html lang="tr"
+      class="light-style layout-menu-fixed"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="../assets/"
+      data-template="vertical-menu-template-free">
+<head>
+
+
+
+
+    <script src="~/Scripts/jquery-3.6.0.js"></script>
+    <script src="~/Scripts/tippy/popper.min.js"></script>
+    <script src="~/Scripts/tippy/tippy-bundle.umd.js"></script>
+    <style>
+        .centercontent {
+            position: absolute;
+            max-width: 100%;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+    </style>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://lipis.github.io/bootstrap-sweetalert/lib/sweet-alert.css">
+</head>
+
+<body onload="script();" onclose="close()">
+    @if ((string)Session["Onay"] == "onay")
+    {
+        <script>
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            Toast.fire({
+                icon: 'info',
+                title: 'Diğer cihazdaki oturumunuz sonlandırıldı!'
+            });
+    </script>
+        Session["Onay"] = null;
+    }
+    <div id="page" >
+
+        @{ if (Session["Alert"] != null)
+            {
+                if (Session["Alert"].ToString() == "Eski Şifreniz Yanlış")
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        @Session["Alert"].ToString()
+                    </div>
+                }
+                else if (Session["Alert"].ToString() == "Girmiş olduğunuz şifreler aynı değil!")
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        @Session["Alert"].ToString()
+                    </div>
+                }
+                else if (Session["Alert"].ToString() == "Şifre değişikliği başarılı!")
+                {
+                    <div class="alert alert-success" role="alert">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        @Session["Alert"].ToString()
+                    </div>
+                }
+            }
+            if (Session["ModulYetkiMesajı"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    @Session["ModulYetkiMesajı"].ToString()
+                </div>
+            }
+        }
+
+        <!-- / Navbar -->
+        <!-- Content wrapper -->
+        <div class="container-xxl flex-grow-1 container-p-y mt-3" id="online">
+
+            <div class="row">
+                <div class="col-lg-12 mb-4 order-0">
+                    <div class="card">
+                        <div class="d-flex align-items-end row">
+                            <div class="col-sm-7">
+                                <div class="card-body">
+                                    @{ string merhaba = "";
+                                        if (Session["Name"] == null)
+                                        {
+                                            merhaba = Request.Cookies["Name"].Value;
+                                        }
+                                        else
+                                        {
+                                            merhaba = Session["Name"].ToString();
+                                        }
+                                    }
+                                    <h4 class="card-title text-primary">Hoşgeldin @merhaba @ViewBag.IDJS! 🎉</h4>
+
+                                    <p class="mb-4">EFECE Ailesi olarak iyi çalışmalar dileriz.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-5 text-center text-sm-left">
+                                <div class="card-body pb-0 px-0 px-md-4">
+                                    <img src="/assets/img/illustrations/man-with-laptop-light.png" height="140" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card col" style="display:unset">
+                        <div class="table-responsive text-nowrap mt-3">
+                            <table class="table table-hover results sorttable centered" id="sortTable">
+                                <thead class="centered">
+                                    <tr>
+                                        <th>Çevrimiçi Kullanıcılar(@ViewBag.OnlineUsers.Count)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0">
+                                    <tr>
+                                        <td>
+                                            <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                                @foreach (var item in ViewBag.OnlineUsers)
+                                                {
+                                                    var resim = item.USER_ID + ".png?" + DateTime.Now.Ticks.ToString();
+                                                    var isim = item.USER_NAME;
+                                                    var status = "";
+                                                    if (item.ACTIVITY_TYPE == "login")
+                                                    {
+                                                        status = "online";
+                                                    }
+                                                    else if (item.ACTIVITY_TYPE == "Busy")
+                                                    {
+                                                        status = "away";
+                                                    }
+
+                                                    if (item.PLATFORM == "Android App")
+                                                    {
+                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" class=" avatar avatar-mobile avatar-md pull-up durum" title="" data-bs-original-title="<span><i class='bx bx-mobile'></i> @item.USER_NAME</span>">
+                                                            <img src="/assets/img/avatars/@resim" alt="Avatar" class="rounded-circle">
+                                                        </li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" class=" avatar avatar-@status  avatar-online avatar-md pull-up durum" title="" data-bs-original-title="<span> @item.USER_NAME</span>">
+                                                            <img src="/assets/img/avatars/@resim" alt="Avatar" class="rounded-circle">
+                                                        </li>
+                                                    }
+
+
+                                                }
+
+                                            </ul>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-hover results sorttable centered" id="sortTable">
+                                <thead class="centered">
+                                    <tr>
+                                        <th>Çevrimdışı Kullanıcılar(@ViewBag.OfflineUsers.Count)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0">
+                                    <tr>
+                                        <td>
+                                            <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                                @for (int i = 0; i < ViewBag.OfflineUsers.Count; i++)
+                                                {
+                                                    var offlineduratıon1 = " önce";
+                                                    var isim1 = ViewBag.OfflineUsers[i].USER_NAME + "</br>";
+                                                    var gun1 = "";
+                                                    var saat1 = "";
+                                                    var dakika1 = "";
+                                                    var resim1 = ViewBag.OfflineUsers[i].USER_ID + ".png?" + DateTime.Now.Ticks.ToString();
+                                                    if (ViewBag.OfflineDate[i] != " ")
+                                                    {
+
+
+                                                        if (ViewBag.OfflineDay[i] == "0")
+                                                        {
+
+                                                        }
+                                                        else
+                                                        {
+                                                            gun1 = ViewBag.OfflineDay[i] + " gün ";
+                                                        }
+                                                        if (ViewBag.OfflineHour[i] == "0")
+                                                        {
+
+                                                        }
+                                                        else
+                                                        {
+                                                            saat1 = ViewBag.OfflineHour[i] + " saat ";
+                                                        }
+                                                        if (ViewBag.OfflineMinute[i] == "0")
+                                                        {
+
+                                                        }
+                                                        else
+                                                        {
+                                                            dakika1 = ViewBag.OfflineMinute[i] + " dakika ";
+                                                        }
+                                                        if (ViewBag.OfflineDay[i] == "0" && ViewBag.OfflineHour[i] == "0" && ViewBag.OfflineMinute[i] == "0")
+                                                        {
+                                                            isim1 = isim1 + "az önce";
+                                                        }
+                                                        else
+                                                        {
+                                                            isim1 = isim1 + gun1 + saat1 + dakika1 + offlineduratıon1;
+                                                        }
+
+
+
+
+                                                    }
+                                                    else
+                                                    {
+                                                        //isim1 = ViewBag.OfflineUsers[i].USER_NAME;
+                                                    }
+
+
+
+                                                    <li data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="bottom" data-bs-html="true" title="" data-bs-original-title="<span>@isim1</span>" class="avatar avatar-busy avatar-sm pull-up durum">
+                                                        <img src="/assets/img/avatars/@resim1" alt="Avatar" class="rounded-circle">
+                                                    </li>
+
+
+
+
+                                                }
+
+
+                                            </ul>
+                                        </td>
+
+
+
+                                    </tr>
+
+
+
+
+
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+
+            <!--/ Transactions -->
+        </div>
+
+        <footer class="content-footer footer bg-footer-theme">
+            <div class="container-xxl d-flex  text-nowrap justify-content-between py-2 flex-md-row flex-column">
+                <div style="padding-left:40%">
+                    ©
+                    <script>document.write(new Date().getFullYear());</script>
+                    , designed by
+                    <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
+
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+
+
+    <script>
+        function script() {
+            document.body.style.cursor = "default";
+        };
+        
+
+        
+        function close() {
+            @{Session["ModulYetkiMesajı"] = null;
+
+
+}
+        }
+
+    </script>
+
+    <!-- / Content -->
+    <!-- Footer -->
+    <!-- / Footer -->
+    <!-- / Layout wrapper -->
+    <script>
+
+
+
+        function updateDiv() {
+
+            $.ajax({
+                type: "GET",
+                url: '/Home/Refresh',
+                contentType: "application/json; charset=utf-8"
+
+            });
+
+
+
+        }
+        setInterval(myTimer2, 60000);
+        function myTimer2() {
+
+            updateDiv();
+            $('.durum').tooltip('dispose');
+            $("#online").load(" #online > *");
+
+            setTimeout(myTimer1, 2000)
+
+        };
+
+        function myTimer1() {
+            $('body').tooltip({ selector: '[data-bs-toggle="tooltip"]' });
+        }
+
+
+
+
+
+
+        setTimeout(logOut, 1800000)
+        function logOut() {
+
+            $.ajax({
+                type: "GET",
+                url: '/Login/Logoff',
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+
+                    return data;
+                },
+                complete: function () {
+
+                    window.location.href = '/Login/Login';
+
+                }
+            });
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+    <script>
+        var userData = [];
+        $(document).ready(function () {   //same as: $(function() {
+            document.body.style.cursor = 'wait';
+        });
+
+        userData.push({ USERID: "@Request.Cookies["UserId"].Value", USERNAME: "@Request.Cookies["UserName"].Value", PLATFORM: @Request.Cookies["Platform"].Value , LASTACTIVETIME: "@DateTime.Now.ToString()" });
+
+       localStorage.userlist = JSON.stringify(userData[0]);
+
+
+
+
+    </script>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+﻿@model Tuple<NOVA.Models.User, NOVA.Models.Mail>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>MailForm</title>
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/brands/Nova.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" type="text/css" />
+
+    <!-- Icons. Uncomment required icon fonts -->
+
+    <link href="\assets\boxicons-2.1.2\css\boxicons.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\animations.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\transformations.css" rel="stylesheet" type="text/css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\css\demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
+
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs/apex-charts/apex-charts.css" />
+
+    <!-- Page CSS -->
+    <!-- Helpers -->
+    <script type="text/javascript" src="\assets\vendor\js\helpers.js"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script type="text/javascript" src="\assets\js\config.js"></script>
+</head>
+<body>
+    <div class="container-xxl">
+        <div class="card mt-5">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Mail Gönderim Formu</h5>
+                <small class="text-muted float-end">Mail Gönderim Formu</small>
+            </div>
+            @using (Html.BeginForm("SendMail", "YonetimPaneli", FormMethod.Post, new { @id = "myForm" }))
+            {
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label class="form-label" for="basic-icon-default-fullname">Başlık</label>
+                        <div class="input-group input-group-merge">
+                            <span id="basic-icon-default-fullname2" class="input-group-text"><i class="bx bx-envelope"></i></span>
+                            @Html.TextBoxFor(m => m.Item2.Baslik, new { @Value= "NOVA | Kullanıcı Bilgileriniz", type = "text", @class = "form-control", @placeholder = "E-Mail Başlığı" })
+
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="basic-icon-default-fullname">Mail Adresi</label>
+                        <div class="input-group input-group-merge">
+                            <span id="basic-icon-default-fullname2" class="input-group-text"><i class="bx bx-mail-send"></i></span>
+                            @if (ViewBag.Password != null)
+                            {
+                                @Html.TextBoxFor(m => m.Item2.SingleMailAdresi, new { type = "text", @class = "form-control", @Value = "  " + ViewBag.MailAdresi, @readonly = "readonly" })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(m => m.Item2.SingleMailAdresi, new { type = "text", @class = "form-control", @Value = "  Toplu Mail" , @readonly = "readonly" })
+                            }
+                        </div>
+                    </div><div class="mb-3">
+                        <label class="form-label" for="basic-icon-default-fullname">İçerik</label>
+                        <div class="input-group input-group-merge">
+                            <span id="basic-icon-default-fullname2" class="input-group-text"><i class="bx bx-comment"></i></span>
+                            @if (ViewBag.Password != null)
+                            {
+
+
+                                string hi = "Merhaba Çalışma Arkadaşım,\n\nEfecedeki çalışmalarında sana kolaylık sağlabilmem için uygulamaya giriş yapabileceğin kullanıcı adın ve şifren aşağıdaki gibidir;\n\nKullanıcı Adı: " + ViewBag.UserName + "\nŞifre: " + ViewBag.Password + "\n\nKullanıcı bilgileriniz yapacağınız işlemlerde kayıt tutulmasında kullanılacağı için şifrenizi uygulamaya giriş yaptıktan sonra kişisel olmayan bir şifrenizle değiştirip kimseyle paylaşmamanızı öneririz.";
+                                @Html.TextArea("Item2.Icerik", hi, new {rows="10", style = "font-weight: bold", type = "text", @class = "form-control", @placeholder = "E-Mail İçeriği" });
+                            }
+                            else
+                            {
+                                @Html.TextArea("Item2.Icerik", new { type = "text", @class = "form-control", @placeholder = "E-Mail İçeriği" });
+
+
+                            }
+
+                        </div>
+                    </div>
+
+                    
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+
+                        <div class="col"><button type="button" class="btn btn-danger float-end " onclick="location.href='@Url.Action("KullaniciAyar","YonetimPaneli")'">Geri</button><button type="submit" class="btn btn-info float-end me-3">Gönder</button></div>
+                    </div>
+                </div>
+            }
+            </div>
+        </div>
+        
+    
+    <script type="text/javascript" src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/popper/popper.js"></script>
+    <script type="text/javascript" src="/assets/vendor/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script type="text/javascript" src="/assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script type="text/javascript" src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script type="text/javascript" src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script type="text/javascript" src="/assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+
+
+    <script type="text/javascript" async defer src="/Scripts/buttons.js"></script>
+    <script type="text/javascript" src="/Scripts/boxicons.js"></script>
+</body>
+</html>

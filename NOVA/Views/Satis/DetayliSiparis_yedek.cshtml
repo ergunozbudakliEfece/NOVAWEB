@@ -1,0 +1,635 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "/Views/Shared/_Layout_inside.cshtml";
+}
+@model NOVA.Models.SiparisModel
+
+
+
+<!DOCTYPE html>
+
+
+
+<html lang="tr"
+      class="light-style layout-menu-fixed"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="../assets/"
+      data-template="vertical-menu-template-free">
+
+
+
+<head>
+
+
+
+
+    <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+
+    <link href="~/assets/vendor/css/accordion.css" rel="stylesheet" />
+    <style>
+        .results tr[visible='false'],
+        .no-result {
+            display: none;
+        }
+
+        .results tr[visible='true'] {
+            display: table-row;
+        }
+
+        .counter {
+            padding: 8px;
+            color: #ccc;
+        }
+
+        .full-width-div {
+            position: absolute;
+            width: 100%;
+            left: 0;
+        }
+
+        .sticky {
+            position: fixed;
+            top: 0;
+        }
+
+        .sticky-left {
+            position: fixed;
+            left: 0;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function showHideRow(row) {
+            $("#" + row).toggle("fast");
+        }
+    </script>
+    <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
+    <style>
+
+
+        #wrapper {
+            margin: 0 auto;
+            padding: 0px;
+            text-align: center;
+            width: 995px;
+        }
+
+            #wrapper h1 {
+                margin-top: 50px;
+                font-size: 45px;
+                color: #585858;
+            }
+
+                #wrapper h1 p {
+                    font-size: 20px;
+                }
+
+        #table_detail {
+            width: 500px;
+            text-align: left;
+            border-collapse: collapse;
+            color: #2E2E2E;
+            border: #A4A4A4;
+        }
+
+            #table_detail tr:hover {
+                background-color: #F2F2F2;
+            }
+
+            #table_detail .hidden_row {
+                display: none;
+            }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+
+</head>
+
+<body onload="move()" onclose="close()" style="background-color: #f5f5f9 !important;font-size:12px">
+
+
+
+
+
+
+
+    <div class="container-xxl container-p-y">
+
+
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Satış/</span> Detaylı Sipariş Raporu</h4>
+        <div class="row mb-2">
+            <div class="col-2">
+
+                <select class="js-example-basic-multiple" multiple="multiple" style="width:100%">
+                    <option value="0">  TÜM KULLANICILAR </option>
+                    <option value="1">  TÜM KULLANICILAR </option>
+                    <option value="2">  TÜM KULLANICILAR </option>
+                    <option value="3">  TÜM KULLANICILAR </option>
+                    <option value="4">  TÜM KULLANICILAR </option>
+
+                </select>
+                <script>
+                    $(document).ready(function () {
+                        $('.js-example-basic-multiple').select2();
+                    });
+                </script>
+            </div>
+        </div>
+        <div class="card">
+
+            <div class="table-responsive text-nowrap" style="max-height:600px">
+                <table class="table table-sm">
+
+
+
+                    <tbody>
+                        <tr class="position-sticky sticky-top w3-border-light-blue" style="background-color: #E2F3FF; height: 50px;">
+                            <td style="font-size: 14px; background-color: #E2F3FF;" class="position-sticky sticky-left"><strong>Sipariş No</strong></td>
+                            <td style="font-size:14px" class="text-end"><strong>Tarih</strong></td>
+                            <td style="font-size:14px" colspan="4" class="text-end"><strong>Cari İsim</strong></td>
+                            <td style="font-size:14px" class="text-end"><strong>Hesap Türü</strong></td>
+                            <td style="font-size:14px" class="text-end"><strong>Teslim Yeri</strong></td>
+                            <td style="font-size:14px" class="text-end"><strong>Plasiyer Adı</strong></td>
+                            <td></td>
+                            <td style="font-size:14px" class="text-end"><span class="float-end"><strong>GENEL TOPLAM</strong></span></td>
+                            <td style="font-size:14px" colspan="6"></td>
+
+
+                        </tr>
+                        @{ int i = 0;
+                            var x = ViewBag.AltKalem as ICollection<NOVA.Models.SiparisModel>;
+                            int sayac = 1;
+                        }
+
+                        @foreach (var item in ViewBag.UstKalem)
+                        {
+                            String stokadi = "";
+                            String miktar = "";
+                            String olcu = "";
+                            String brutfiyat = "";
+                            String satisiskonto = "";
+                            String netfiyat = "";
+                            String nettutar = "";
+                            String teslimat, teslimatmsip, teslimatssip, teslimaturetim = "";
+                            String msipstring, ssipstring, uretimstring = "";
+                            int start = 0, startmsip = 0, startssip = 0, starturetim = 0;
+                            int end, endssip, endmsip, enduretim = 0;
+                            string cari_isim = @item.CARI_ISIM;
+                            string updated_cari_isim = "";
+                            int msiptoplamoran, ssiptoplamoran, uretimtoplamoran = 0;
+                            int topac = 0;
+                            decimal? toplamteslimmiktarssip = 0;
+                            decimal? bakiyemiktarssip = 0;
+                            decimal? uretilenmiktar = 0;
+                            decimal? uretilecekmiktar = 0;
+                            if (cari_isim.Length > 28)
+                                updated_cari_isim = (cari_isim.Substring(0, 14)) + "..." + (cari_isim.Substring(cari_isim.Length - 10));
+                            else
+                                updated_cari_isim = cari_isim;
+
+
+                            string sipno = @item.SIPARIS_NO;
+                            string updated_sipno = "";
+                            updated_sipno = (sipno.Substring(0, 1)) + (sipno.Substring(3, 2)) + "-" + (sipno.Substring(sipno.Length - 5));
+                            string dovtip = "";
+                            if (item.DOV_TIP == null)
+                                dovtip = "TRY";
+                            else
+                                dovtip = item.DOV_TIP;
+
+
+
+
+                            <tr style="background-color: #F4FBFF " class="w3-border-light-blue w3-animate-top searchable" onclick="showHideRow('@i');">
+                                <td class="sticky-left position-sticky" style="background-color: #F4FBFF;">@updated_sipno</td>
+                                <td class="text-end">@item.TARIH.ToString("dd/MM/yy")</td>
+                                <td colspan="4" class="text-end">@updated_cari_isim</td>
+                                <td class="text-end">@item.CARI_DOVIZ_TIPI</td>
+                                <td class="text-end">@item.TESLIM_YERI</td>
+                                <td class="text-end">@item.PLASIYER_ADI</td>
+                                <td></td>
+                                <td class="text-end"><span class="float-end">@string.Format("{0:N03}", item.GENELTOPLAM) @dovtip</span></td>
+                                <td colspan="6"></td>
+                            </tr>
+
+
+
+                            <tr class="table-light  w3-border-light-blue toggle" id="@i" style="display:none;">
+                                <td colspan="1" class="sticky-left position-sticky" style="vertical-align: top">
+                                    <p class="mt-0"><strong><u>Sira No</u></strong></p>
+
+
+
+
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {
+                                        topac++;
+                                        <p><strong>@sayac</strong></p>
+                                        teslimatmsip = @String.Format("{0:0}", item1.TESLIMAT_ORANI * 100);
+                                        teslimatssip = @String.Format("{0:0}", item1.TESLIMAT_ORANI_SSIP * 100);
+                                        teslimaturetim = @String.Format("{0:0}", item1.URETIM_ORANI * 100);
+                                        if (teslimatmsip == "0" || teslimatmsip == "")
+                                            startmsip = startmsip + (int.Parse("0"));
+                                        else
+                                            startmsip = (startmsip + (int.Parse(teslimatmsip)));
+                                        if (teslimatssip == "0" || teslimatssip == "")
+                                            startssip = startssip + (int.Parse("0"));
+                                        else
+                                            startssip = (startssip + (int.Parse(teslimatssip)));
+                                        if (teslimaturetim == "0" || teslimaturetim == "")
+                                            starturetim = starturetim + (int.Parse("0"));
+                                        else
+                                            starturetim = (starturetim + (int.Parse(teslimaturetim)));
+                                        sayac++;
+
+                                    }
+                                    @{
+                                        msiptoplamoran = startmsip / topac; msipstring = @String.Format("{0:0}", msiptoplamoran);
+                                        ssiptoplamoran = startssip / topac; ssipstring = @String.Format("{0:0}", ssiptoplamoran);
+                                        uretimtoplamoran = starturetim / topac; uretimstring = @String.Format("{0:0}", uretimtoplamoran);
+                                        endmsip = 100 - msiptoplamoran;
+                                        endssip = 100 - ssiptoplamoran;
+                                        enduretim = 100 - uretimtoplamoran;
+
+                                        sayac = 1;
+                                    }
+
+                                    <p>
+                                        <span class="top-0">
+                                            <svg width="60%" viewBox="0 0 40 40" class="donut">
+                                                <circle class="donut-hole" cx="20" cy="20" r="15.91549430918954" fill="#fff"></circle>
+                                                <circle class="donut-ring" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5"></circle>
+                                                <circle class="donut-segment-msip" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5" stroke-dasharray="@msiptoplamoran @endmsip" stroke-dashoffset="25"></circle>
+                                                <g class="donut-text">
+
+                                                    <text y="55%" transform="translate(0, 2)">
+                                                        <tspan x="50%" text-anchor="middle" class="donut-percent-msip" style="font-size:13px;font-weight:bold;font-stretch:condensed">@msipstring<tspan style="font-size: 10px; font-weight:normal">%</tspan></tspan>
+                                                    </text>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <span class="top-0">
+                                            <svg width="60%" viewBox="0 0 40 40" class="donut">
+                                                <circle class="donut-hole" cx="20" cy="20" r="15.91549430918954" fill="#fff"></circle>
+                                                <circle class="donut-ring" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5"></circle>
+                                                <circle class="donut-segment-ssip" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5" stroke-dasharray="@ssiptoplamoran @endssip" stroke-dashoffset="25"></circle>
+                                                <g class="donut-text">
+
+                                                    <text y="55%" transform="translate(0, 2)">
+                                                        <tspan x="50%" text-anchor="middle" class="donut-percent-ssip" style="font-size:13px;font-weight:bold;font-stretch:condensed">@ssipstring<tspan style="font-size: 10px; font-weight:normal">%</tspan></tspan>
+                                                    </text>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <span class="top-0">
+                                            <svg width="60%" viewBox="0 0 40 40" class="donut">
+                                                <circle class="donut-hole" cx="20" cy="20" r="15.91549430918954" fill="#fff"></circle>
+                                                <circle class="donut-ring" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5"></circle>
+                                                <circle class="donut-segment" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5" stroke-dasharray="@uretimtoplamoran @enduretim" stroke-dashoffset="25"></circle>
+                                                <g class="donut-text">
+
+                                                    <text y="55%" transform="translate(0, 2)">
+                                                        <tspan x="50%" text-anchor="middle" class="donut-percent" style="font-size:13px;font-weight:bold;font-stretch:condensed">@uretimstring<tspan style="font-size: 10px; font-weight:normal">%</tspan></tspan>
+                                                    </text>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </p>
+                                </td>
+                                @{
+                                    startmsip = 0;
+                                    startssip = 0;
+                                    starturetim = 0;
+                                }
+                                <td colspan="1" style="vertical-align: top">
+
+                                    <p class="mt-0"><strong><u>Stok Adı</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {<p class="text-nowrap">@item1.STOK_ADI.Replace('Ý', 'I') </p>teslimat = @String.Format("{0:0}", item1.TESLIMAT_ORANI * 100);
+                                    start = int.Parse(teslimat);
+                                    end = 100 - start;
+                                }
+
+
+
+
+
+
+                                </td>
+                                <td colspan="1" style="vertical-align: top">
+                                    <p class="text-end"><strong><u>Miktar</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {<p class="text-end">@String.Format("{0:0.00}", item1.MIKTAR)</p>
+
+                                }
+
+
+
+                                </td>
+                                <td colspan="1" style="vertical-align: top">
+                                    <p class="text-end"><strong><u>Ölçü Br</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {<p class="text-end">@item1.OLCU_BR1 </p>
+
+                                }
+
+                                </td>
+                                <td colspan="1" style="vertical-align: top">
+                                    <p class="text-end"><strong><u>Brüt Fiyat</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {<p class="text-end">@String.Format("{0:N02}", item1.BRUT_FIYAT)</p>
+
+                                }
+
+                                </td>
+                                <td colspan="1" style="vertical-align: top">
+                                    <p class="text-end"><strong><u>İskonto</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {<p class="text-end">@String.Format("{0:0.00}", item1.SATIS_ISKONTOSU) </p>
+
+                                }
+
+                                </td>
+                                <td colspan="1" style="vertical-align: top">
+                                    <p class="text-end"><strong><u>Net Fiyat</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {<p class="text-end">@String.Format("{0:N02}", item1.NET_FIYAT) </p>
+
+                                }
+                                    <p class="text-end"><strong>Brüt Toplam:</strong></p><p class="text-end"><strong>Toplam KDV:</strong></p><p class="text-end"><strong>Tevkifat:</strong></p><p class="text-end"><strong>Genel Toplam:</strong></p>
+
+                                </td>
+                                <td style="vertical-align: top">
+                                    <p class="text-end"><span class="float-end"><strong><u>Net Tutar</u></strong></span></p><br />@{var y = x.FirstOrDefault(t => t.SIPARIS_NO == item.SIPARIS_NO);}
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {<p><span class="float-end">@String.Format("{0:N03}", item1.NET_TUTAR_KALEM)</span></p><br />
+
+                                }
+
+                                    <p><span class="float-end">@String.Format("{0:N03}", y.BRUTTUTAR)</span></p><br /><p><span class="float-end"> @String.Format("{0:N03}", y.TOPLAM_KDV) </span></p><br /><p><span class="float-end"> @String.Format("{0:N03}", y.TEVKIFAT)</span> </p><br /><p><span class="float-end"><strong> @String.Format("{0:N03}", y.GENELTOPLAM)</strong></span></p><br />
+                                </td>
+                                <td style="vertical-align: top; background-color: #f2faf5">
+                                    <p><span class="float-end"><strong><u>MSIP Teslim</u></strong></span></p><br />
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {<p><span class="float-end">@String.Format("{0:0.00}", item1.TESLIM_MIKTARI)</span></p><br />
+
+                                }
+                                    <br />
+                                </td>
+                                <td style="vertical-align: top; background-color: #f2faf5">
+                                    <p><span class="float-end"><strong><u>MSIP Bekleyen</u></strong></span></p><br />
+                                    @{
+                                        decimal? msipbekleyen = 0;}
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {<p><span class="float-end">@String.Format("{0:0.00}", item1.BAKIYE_MIKTARI)</span></p><br />
+
+                                    msipbekleyen = msipbekleyen + item1.BAKIYE_MIKTARI;
+
+                                }<br />
+                                    @if (msipbekleyen != 0)
+                                    {<p><span class="float-end"><strong><u>Toplam</u></strong></span></p><br />
+                                        <p class="text-end"><span class="float-end"><stron>@String.Format("{0:0.00}", msipbekleyen)</stron></span></p>}
+
+                                </td>
+
+                                <td style="vertical-align: top; background-color: #f2faf5">
+                                    <p><span><strong><u>MSIP Süreç</u></strong></span></p>
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {
+                                        teslimat = @String.Format("{0:0}", item1.TESLIMAT_ORANI * 100);
+                                        start = int.Parse(teslimat);
+                                        end = 100 - start;
+
+
+                                        <div class="meter" id="meter-msip"><span style="width:@start%"><span class="progress" id="progress-msip"><span style="margin-bottom:10px;text-align:end;color:black">@start%</span></span></span><br /></div> <br />
+
+
+                                    }
+
+
+
+                                </td>
+                                <td style="vertical-align: top; background-color: #fffaed ">
+                                    <p><span class="float-end"><strong><u>SSIP Teslim</u></strong></span></p><br />
+
+
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {
+                                        if (item1.TESLIM_MIKTARI_SSIP != null)
+                                        {
+                                            <p><span class="float-end">@String.Format("{0:0.00}", item1.TESLIM_MIKTARI_SSIP)</span></p><br /> toplamteslimmiktarssip = toplamteslimmiktarssip + item1.TESLIM_MIKTARI_SSIP;
+                                        }
+                                        else
+                                        {
+                                            <p class="text-center"><span class="text-center">-</span></p>
+                                        }
+
+                                    }
+
+
+                                    <br />
+                                    @if (toplamteslimmiktarssip != 0)
+                                    {<p><span class="float-end"><strong><u>Toplam</u></strong></span></p><br />
+                                        <p><span class="float-end">@String.Format("{0:0.00}", toplamteslimmiktarssip)</span></p><br />
+                                    }
+
+
+                                </td>
+                                <td style="vertical-align: top; background-color: #fffaed ">
+                                    <p><span class="float-end"><strong><u>SSIP Bekleyen</u></strong></span></p><br />
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {
+                                        if (item1.BAKIYE_MIKTARI_SSIP != null)
+                                        {<p><span class="float-end">@String.Format("{0:0.00}", item1.BAKIYE_MIKTARI_SSIP)</span></p><br /> bakiyemiktarssip = bakiyemiktarssip + item1.BAKIYE_MIKTARI_SSIP;
+                                    }
+                                    else
+                                    {
+                                        <p class="text-center"><span class="text-center">-</span></p>
+                                    }
+
+                                }<br />
+                                    @if (bakiyemiktarssip != 0)
+                                    {<p><span class="float-end"><strong><u>Toplam</u></strong></span></p><br />
+                                        <p><span class="float-end">@String.Format("{0:0.00}", bakiyemiktarssip)</span></p><br />
+                                    }
+
+                                </td>
+                                <td style="vertical-align: top; background-color: #fffaed ">
+                                    <p><span><strong><u>SSIP Süreç</u></strong></span></p>
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {
+                                        if (item1.TESLIMAT_ORANI_SSIP != null)
+                                        {
+                                            teslimat = @String.Format("{0:0}", item1.TESLIMAT_ORANI_SSIP * 100);
+                                            start = int.Parse(teslimat);
+                                            end = 100 - start;
+                                            <div class="meter" id="meter-ssip">
+
+                                                <span style="width:@start%;"><span class="progress" id="progress-ssip"><span style="margin-bottom:10px;text-align:end;color:white">@start%</span></span></span>
+                                                <br />
+                                            </div>
+
+
+                                            <br />
+                                        }
+                                        else
+                                        {
+                                            <p class="text-center"><span class="text-center">-</span></p>
+                                        }
+
+
+                                    }
+
+
+                                </td>
+
+                                <td style="vertical-align: top; background-color: #f5f6fc">
+                                    <p><span class="float-end"><strong><u>Üretilen</u></strong></span></p><br />
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {
+                                        if (item1.URETILEN_MIKTAR1 != null)
+                                        {<p><span class="float-end">@String.Format("{0:0.00}", item1.URETILEN_MIKTAR1)</span></p><br /> uretilenmiktar = uretilenmiktar + item1.URETILEN_MIKTAR1;
+                                    }
+                                    else
+                                    {
+                                        <p class="text-center"><span class="text-center">-</span></p>
+                                    }
+
+                                }<br />
+                                    @if (uretilenmiktar != 0)
+                                    {
+                                        <p><span class="float-end"><strong><u>Toplam</u></strong></span></p><br />
+                                        <p><span class="float-end">@String.Format("{0:0.00}", uretilenmiktar)</span></p><br />
+                                    }
+
+                                </td>
+                                <td style="vertical-align: top; background-color: #f5f6fc">
+                                    <p><span class="float-end"><strong><u>Üretim Bekleyen</u></strong></span></p><br />
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {
+                                        if (item1.URETILECEK_MIKTAR1 != null)
+                                        {<p><span class="float-end">@String.Format("{0:0.00}", item1.URETILECEK_MIKTAR1)</span></p><br /> uretilecekmiktar = uretilecekmiktar + item1.URETILECEK_MIKTAR1;
+                                    }
+                                    else
+                                    {
+                                        <p class="text-center"><span class="text-center">-</span></p>
+                                    }
+
+                                }<br />
+                                    @if (uretilecekmiktar != 0)
+                                    {
+                                        <p><span class="float-end"><strong><u>Toplam</u></strong></span></p><br />
+                                        <p><span class="float-end">@String.Format("{0:0.00}", uretilecekmiktar)</span></p><br />
+                                    }
+
+                                </td>
+                                <td style="vertical-align: top; background-color: #f5f6fc">
+                                    <p><span><strong><u>Üretim Süreç</u></strong></span></p>
+                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                    {
+                                        if (item1.URETIM_ORANI != null)
+                                        {
+                                            teslimat = @String.Format("{0:0}", item1.URETIM_ORANI * 100);
+                                            start = int.Parse(teslimat);
+                                            end = 100 - start;
+                                            if (item1.URETILECEKMI != null)
+                                                <div class="meter" id="meter">
+                                                    <span style="width:@start%;"><span class="progress" id="progress-uretim"><span style="margin-bottom:10px;text-align:end;color:white">@start%</span></span></span>
+                                                    <br />
+                                                </div>
+                                                <br />
+
+
+
+                                            }
+                                            else
+                                            {
+
+                                                <p class="text-center"><span class="text-center">-</span></p>
+                                            }
+
+
+
+
+                                        }
+
+
+                                </td>
+
+
+
+
+
+
+                            </tr>
+                            i++;
+                        }
+
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+    <script type="text/javascript">
+        $(function () {
+            $('input').keyup(function () {
+                this.value = this.value.toLocaleUpperCase();
+            });
+        });
+        $("#click").on("click", function () {
+
+            var value = $("#search").val();
+
+            if (value.length >= 3) {
+                $("td").closest(".searchable").hide()
+                $("td:contains('" + value.toUpperCase() + "')").each(function (index) {
+                    console.log(index)
+                    const parent = $(this).closest(".searchable")
+                    const rowspan = $(this).attr("rowspan")
+                    console.log(rowspan)
+                    if (rowspan != undefined) {
+                        var current = parent
+                        for (var i = 0; i < rowspan; i++) {
+                            console.log(current.text())
+                            current.show()
+                            current = current.next()
+                        }
+                    }
+                    else {
+                        parent.show()
+                    }
+                })
+            } else {
+                $("td").closest(".searchable").show()
+            }
+
+
+
+
+
+        });
+
+        $(document).keypress(function (e) {
+            if ((e.keyCode || e.which) == 13) {
+                // Enter key pressed
+                $('#click').trigger('click');
+            }
+        });
+    </script>
+
+    
+
+</body>
+</html>
+

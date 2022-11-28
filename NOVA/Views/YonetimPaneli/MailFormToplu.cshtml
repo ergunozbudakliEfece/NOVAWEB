@@ -1,0 +1,178 @@
+﻿@model Tuple<NOVA.Models.User, NOVA.Models.Mail>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>MailForm</title>
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/brands/Nova_White.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" type="text/css" />
+
+    <!-- Icons. Uncomment required icon fonts -->
+
+    <link href="\assets\boxicons-2.1.2\css\boxicons.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\animations.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\transformations.css" rel="stylesheet" type="text/css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\css\demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
+
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs/apex-charts/apex-charts.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Page CSS -->
+    <!-- Helpers -->
+    <script type="text/javascript" src="\assets\vendor\js\helpers.js"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script type="text/javascript" src="\assets\js\config.js"></script>
+</head>
+<body>
+    <div class="container-xxl">
+        <div class="card mt-5">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Seçili Kullanıcılara Bilgi Gönderme Formu</h5>
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" unchecked="">
+                    <label class="form-check-label" for="flexSwitchCheckChecked">Özel İçerik</label>
+                </div>
+            </div>
+            @using (Html.BeginForm("SendMail", "YonetimPaneli", FormMethod.Post, new { @id = "mailForm" }))
+            {<div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="basic-icon-default-fullname">Başlık</label>
+                        <div class="input-group input-group-merge">
+                            <span id="basic-icon-default-fullname2" class="input-group-text"><i class="bx bx-envelope"></i></span>
+                            @Html.TextBoxFor(m => m.Item2.Baslik, new { @Value = "NOVA | Kullanıcı Bilgileriniz", type = "text", @class = "form-control", @placeholder = "E-Mail Başlığı" })
+
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="basic-icon-default-fullname">Mail Adresi</label>
+
+
+                        <select class="js-example-basic-multiple" name="Item2.MailAdresi" multiple="multiple" style="width:100%">
+                            <option value="0">  TÜM KULLANICILAR </option>
+                            @foreach (var item in ViewBag.Mails)
+                            {
+
+                                <option value=@item.USER_MAIL>  @item.USER_FIRSTNAME  @item.USER_LASTNAME || @item.USER_NAME || @item.USER_MAIL </option>
+
+                            }
+                        </select>
+
+
+                    </div><div class="mb-3" id="icerik" style="display:none">
+                        <label class="form-label" for="basic-icon-default-fullname">İçerik</label>
+                        <div class="input-group input-group-merge">
+                            <span id="basic-icon-default-fullname2" class="input-group-text"><i class="bx bx-comment"></i></span>
+
+
+                            @Html.TextBoxFor(m => m.Item2.Icerik, new { type = "text", @class = "form-control", @placeholder = "E-Mail İçeriği", @rows = "3" })
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card-footer">
+                    <div class="row">
+
+                        <div class="col"><button type="button" class="btn btn-danger float-end " onclick="location.href='@Url.Action("KullaniciAyar","YonetimPaneli")'">Geri</button> <button type="button" class="btn btn-info float-end me-3" onclick="mailGonder()">Gönder</button> </div>
+                    </div>
+                </div>}
+
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/popper/popper.js"></script>
+    <script type="text/javascript" src="/assets/vendor/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script type="text/javascript" src="/assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script type="text/javascript" src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script type="text/javascript" src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script type="text/javascript" src="/assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+
+
+    <script type="text/javascript" async defer src="/Scripts/buttons.js"></script>
+    <script type="text/javascript" src="/Scripts/boxicons.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.js-example-basic-multiple').select2();
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+
+
+            $('#flexSwitchCheckChecked').change(function () {
+                if (this.checked) {
+                    $('#icerik').css("display", "block");
+
+                } else {
+
+                    $('#icerik').css("display", "none");
+                    $('#icerik1').val(null);
+                }
+
+            });
+        });
+    </script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function mailGonder() {
+            Swal.fire({
+                title: 'Mail göndermek istediğinizden emin misiniz?',
+                icon: 'question',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Evet',
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#03c3ec',
+                confirmButtonBorderColor: '#03c3ec',
+                cancelButtonColor: '#ff3e1d',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Başarılı!',
+                        'Mail Başarıyla Gönderildi',
+                        'success'
+                    )
+                    document.getElementById("mailForm").submit();
+                }
+            })
+        }
+    </script>
+</body>
+</html>
+

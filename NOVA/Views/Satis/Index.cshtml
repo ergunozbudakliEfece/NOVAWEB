@@ -1,102 +1,1019 @@
 ﻿
-@{
-    ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout_inside.cshtml";
-}
+
+@model NOVA.Models.StokListe
+
 
 <!DOCTYPE html>
-@model NOVA.Models.User
+
 
 
 <html lang="en"
       class="light-style layout-menu-fixed"
       dir="ltr"
       data-theme="theme-default"
-      data-assets-path="../assets/"
+      data-assets-path="/assets/"
       data-template="vertical-menu-template-free">
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+    <title>Nova | Efece Galvaniz</title>
 
+    <meta name="description" content="" />
+    <meta http-equiv='cache-control' content='no-cache'>
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/brands/Nova_White.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" type="text/css" />
+
+    <!-- Icons. Uncomment required icon fonts -->
+
+    <link href="\assets\boxicons-2.1.2\css\boxicons.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\animations.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\transformations.css" rel="stylesheet" type="text/css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\css\demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
+
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs/apex-charts/apex-charts.css" />
+
+    <!-- Page CSS -->
+    <!-- Helpers -->
+    <script type="text/javascript" src="\assets\vendor\js\helpers.js"></script>
+    <script src="~/Scripts/jquery-3.6.0.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script type="text/javascript" src="\assets\js\config.js"></script>
+    <script src="/Scripts/jquery.validate.js" type='text/javascript'></script>
+    <script src="/Scripts/jquery.validate.unobtrusive.js" type='text/javascript'></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
-        .results tr[visible='false'],
-        .no-result {
-            display: none;
-        }
-
-        .results tr[visible='true'] {
-            display: table-row;
-        }
-
-        .counter {
-            padding: 8px;
-            color: #ccc;
-        }
-
-        .full-width-div {
+        .centercontent {
             position: absolute;
-            width: 100%;
-            left: 0;
+            max-width: 100%;
+            height: auto;
+            top: 50%;
+            left: 53.5%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+        tr {
+            animation: fadeInAnimation ease 3s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
         }
 
-        .sticky {
-            position: fixed;
-            top: 0;
+        @@keyframes fadeInAnimation {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
     </style>
+
 </head>
 
 <body>
 
 
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <!-- Menu -->
+
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                <div class="app-brand demo">
+                    <a href="@Url.Action("Index", "Home" )" class="app-brand-link">
+                        <span class="app-brand-logo demo">
+                            <img src="/Content/Images/efece_logo.png" alt class="w-px-200 h-auto" />
+                        </span>
+                    </a>
+
+                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                    </a>
+                </div>
+
+                <div class="menu-inner-shadow"></div>
+
+                <ul class="menu-inner py-1">
+                    <!-- ANASAYFA -->
+                    <li class="menu-item">
+                        <a href="@Url.Action("Index", "Home" )" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                            <div data-i18n="Analytics">Anasayfa</div>
+                        </a>
+                    </li>
+                    <li class="menu-header small text-uppercase">
+                        <span class="menu-header-text">Modüller</span>
+                    </li>
+                    <!-- Layouts -->
+                    <li class="menu-item active open" style="display: @ViewBag.DisplaySatis">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-dollar"></i>
+                            <div data-i18n="Layouts">Satış</div>
+                        </a>
+
+                        <ul class="menu-sub">
+                            <li class="menu-item active" style="display: @ViewBag.DisplayStok">
+                                <a href="@Url.Action("Index", "Satis" )" class="menu-link">
+                                    <div data-i18n="Without menu">Stok</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.DisplaySiparis">
+                                <a href="@Url.Action("DetayliSiparis", "Satis" )" class="menu-link">
+                                    <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatliStok">
+                                <a href="@Url.Action("HammaddeListesi", "Satis")" class="menu-link">
+                                    <div data-i18n="Without menu">* Fabrika Stok</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatsizStok">
+                                <a href="@Url.Action("FiyatsizHammaddeListesi", "Satis")" class="menu-link">
+                                    <div data-i18n="Without menu">Fabrika Stok</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item" style="display: @ViewBag.DisplaySevkiyat">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bxs-truck"></i>
+                            <div data-i18n="Layouts">Sevkiyat</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item" style="display: @ViewBag.DisplaySiparisRaporu">
+                                <a href="@Url.Action("SiparisRaporu", "Sevkiyat" )" class="menu-link">
+                                    <div data-i18n="Without menu">Müşteri Siparişi Raporu</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.DisplaySaticiSiparisRaporu">
+                                <a href="@Url.Action("SaticiSiparisRaporu", "Sevkiyat")" class="menu-link">
+                                    <div data-i18n="Without menu">Satıcı Siparişi Raporu</div>
+                                </a>
+                            </li>
+                        </ul>
+
+                    </li>
 
 
+                    <li class="menu-item open active" style="display:none">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bxs-hard-hat"></i>
+                            <div data-i18n="Account Settings">Üretim</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item active" style="display:none">
+                                <a href="@Url.Action("Index", "Uretim")" class="menu-link">
+                                    <div data-i18n="Without menu">Anlık Üretim</div>
+                                </a>
+                            </li>
+                        </ul>
 
-   
-    <div class="container-xxl flex-grow-1 container-p-y">
+                    </li>
+                    <li class="menu-item" style="display: @ViewBag.DisplaySatinAlma">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-credit-card"></i>
+                            <div data-i18n="Authentications">Satın Alma</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item" style="display: @ViewBag.DisplaySatinAlmaRaporu">
+                                <a href="@Url.Action("SatinAlmaRaporu", "SatinAlma" )" class="menu-link">
+                                    <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
+                                </a>
+                            </li>
+                        </ul>
 
+                    </li>
+                    <li class="menu-item" style="display: @ViewBag.DisplayFinans">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                            <i class="menu-icon tf-icons bx bx-trending-up"></i>
+                            <div data-i18n="Misc">Finans</div>
+                        </a>
+                    </li>
+                    <li class="menu-item" style="display: @ViewBag.DisplayMuhasebe">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                            <i class="menu-icon tf-icons bx bx-calculator"></i>
+                            <div data-i18n="Misc">Muhasebe</div>
+                        </a>
+                    </li>
+                    <li class="menu-item" style="display: @ViewBag.Display4">
 
-        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Satış/</span> Stok Listesi</h4>
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-male-female"></i>
+                            <div data-i18n="Misc">İnsan Kaynakları</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item" style="display: @ViewBag.Display5">
+                                <a href="@Url.Action("PersonelBilgi", "IK" )" class="menu-link">
+                                    <div data-i18n="Without menu">Personel Bilgi Girişi</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.Display6">
+                                <a href="@Url.Action("PersonelBilgiYonetim", "IK" )" class="menu-link">
+                                    <div data-i18n="Without menu">Personel Bilgi Yönetimi</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.Sube">
+                                <a href="@Url.Action("PersonelSubeYonetim", "IK" )" class="menu-link">
+                                    <div data-i18n="Without menu">Şube Bazında Personel Bilgi Yönetimi</div>
+                                </a>
+                            </li>
 
-        <!-- Accordion -->
-        <h5 class="mt-4">Accordion</h5>
-        <div class="row">
-            <div class="col-md mb-4 mb-md-0">
-                <small class="text-light fw-semibold">Basic Accordion</small>
-                <div class="accordion mt-3" id="accordionExample">
-                    <div class="card accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#accordionOne" aria-expanded="false" aria-controls="accordionOne">
-                                Accordion Item 1
-                            </button>
-                        </h2>
+                        </ul>
+                    </li>
+                    <li class="menu-item" style="display: @ViewBag.DisplayYonetim">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
+                            <i class="menu-icon tf-icons bx bx-sitemap"></i>
+                            <div data-i18n="Misc">Yönetim</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item" style="display: @ViewBag.DisplayIstatistik">
+                                <a href="@Url.Action("Index", "Yonetim")" class="menu-link">
+                                    <div data-i18n="Without menu">Personel İstatistikleri</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item" style="display: @ViewBag.Display">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bxs-report"></i>
+                            <div data-i18n="Misc">Yönetim Paneli</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item" style="display: @ViewBag.Display1">
+                                <a href="@Url.Action("KullaniciAyar", "YonetimPaneli" )" class="menu-link">
+                                    <div data-i18n="Without menu">Kullanıcı Ayarları</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.Display2">
+                                <a href="@Url.Action("YetkiAyar", "YonetimPaneli" )" class="menu-link">
+                                    <div data-i18n="Without navbar">Kullanıcı Yetkileri</div>
+                                </a>
+                            </li>
+                            <li class="menu-item" style="display: @ViewBag.Display3">
+                                <a href="#" class="menu-link">
+                                    <div data-i18n="Without navbar">Kullanıcı İstatistikleri</div>
+                                </a>
+                            </li>
 
-                        <div id="accordionOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
-                            <div class="accordion-body">
-                                Lemon drops chocolate cake gummies carrot cake chupa chups muffin topping. Sesame snaps icing marzipan gummi
-                                bears macaroon dragée danish caramels powder. Bear claw dragée pastry topping soufflé. Wafer gummi bears
-                                marshmallow pastry pie.
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="javascript:void(0);" class="menu-link" data-i18n="Misc" data-bs-toggle="modal"
+                           data-bs-target="#cikis">
+                            <i class="menu-icon tf-icons bx bx-lock"></i>
+
+                            Çıkış
+
+                        </a>
+                    </li>
+
+                </ul>
+            </aside>
+            <!-- / Menu -->
+            <!-- Layout container -->
+            <div class="layout-page overflow-hidden">
+                <!-- Navbar -->
+
+                <nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+                     id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                        <!-- Search -->
+                        <div class="navbar-nav align-items-center">
+                            <div class="nav-item d-flex align-items-center">
+                                <i id="click" class="bx bx-search fs-4 lh-0"></i>
+                                <input type="text"
+                                       class="form-control border-0 shadow-none"
+                                       id="search"
+                                       placeholder="Arama..."
+                                       aria-label="Search..."
+                                       onkeyup="myFunction()" />
+                            </div>
+                        </div>
+                        <!-- /Search -->
+
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+
+                            @{
+                                string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                            }
+                            <!-- User -->
+                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                    <div class="avatar avatar-online">
+                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto ">
+                                        </object>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href='@Url.Action("Index","Profil")'>
+                                            <div class="d-flex">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <div class="avatar avatar-online">
+                                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto ">
+                                                        </object>
+                                                    </div>
+                                                </div>
+                                                @{var fullname = "";
+                                                    if (Session["Name"] == null)
+                                                    {
+                                                        fullname = Request.Cookies["Name"].Value;
+                                                    }
+                                                    else
+                                                    {
+                                                        fullname = Session["Name"].ToString();
+                                                    }
+                                                }
+                                                <div class="flex-grow-1">
+                                                    <span class="fw-semibold d-block">@fullname</span>
+                                                    <small class="text-muted">Yetki: @ViewBag.RoleName</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                           data-bs-target="#cikis">
+                                            <i class="bx bx-power-off me-2"></i>
+                                            <span class="align-middle">Oturumu Kapat</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--/ User -->
+                        </ul>
+                    </div>
+                </nav>
+                <div id="cikis" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalCenterTitle">ÇIKIŞ</h5>
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 class="modal-body">Çıkış yapmak istediğinize emin misiniz?</h5>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("LogOff", "Login")'">EVET</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">HAYIR</button>
                             </div>
                         </div>
                     </div>
-                   
                 </div>
+
+
+
+                <div id="page">
+                    <div class="container-fluid flex-grow-1 container-p-y">
+
+                        <div class="centercontent">
+                            <img id="progress" src="~/assets/img/elements/load.gif" style="width:150px;margin-left:5%" />
+                        </div>
+
+                        @if (Session["Info"] != null)
+                        {
+                            <div class="row mb-1">
+                                <div class="alert alert-success" role="alert">
+                                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                                    Mail başarıyla gönderilmiştir.
+                                </div>
+                            </div>
+                            Session["Info"] = null;
+                        }
+                        <div class="row mb-1">
+                            <div class="col">
+                                <label><b>Son Güncelleme:</b> @DateTime.Now.ToShortDateString()  @DateTime.Now.ToShortTimeString()</label>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col">
+                                <button type="button" class="btn btn-success float-end" onclick="myUpdateFunction()" data-bs-toggle='tooltip' data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title='<i class="bx bxs-info-circle bx-xs" ></i> <span>Güncel tüm stok bilgisini mail olarak gönderir.</span>'><i class='bx bx-mail-send'></i></button>
+                                <button id="submitbutton" type="button" class="btn btn-success float-end" style="display:none" onclick="location.href='@Url.Action("MailControl", "Satis")'"></button>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col d-flex">
+                                <select disabled id="select1" class="form-select w-50">
+
+                                    <option value="" selected>Hepsi</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+
+
+
+                                <div class="card" style="max-height:70vh;" id="table">
+                                    <div role="region" aria-labelledby="HeadersCol" tabindex="0" class="rowheaders">
+                                        <table class="table table-responsive sorttable " id="sorttable">
+                                            <thead class="table-secondary ">
+                                                <tr class="sticky-top">
+                                                    <th style="text-align: center;position:sticky; left: 0;width:120px;">STOK ADI</th>
+                                                    <th style="text-align: right; width: 70px;">SATIŞA HAZIR</th>
+                                                    <th style="text-align: right; width: 70px;">BEKLEYEN SİPARİŞ</th>
+                                                    <th style="text-align: right; width: 70px;">BAKİYE</th>
+                                                    <th style="text-align: right; width: 70px;">BEKLEYEN İŞ EMRİ</th>
+                                                    <th style="text-align: right; width: 70px;">FABRİKA STOK</th>
+                                                    <th style="text-align: center; width: 70px;">ALIŞ FİYATI</th>
+                                                    <th style="text-align: center; width: 70px;">SATIŞ FİYATI</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbody">
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <div style="padding-left:33vw">
+                                    ©
+                                    <script>document.write(new Date().getFullYear());</script>
+                                    , designed by
+                                    <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/ Accordion -->
+                        <!--/ Advance Styling Options -->
+
+
+                    </div>
+                </div>
+
+
+
+
+
+                <script>
+                    var stoks = [];
+                    var grupkodlari = [];
+                    var grupisimleri = [];
+                    $(document).ready(function () {
+
+                        
+                        // PAGE IS FULLY LOADED
+                        // FADE OUT YOUR OVERLAYING DIV
+                        $.getJSON('http://192.168.2.13:83/api/stok', function (data) {
+                            stoks = data;
+                            
+                            
+                            $('#select1').select2();
+                            $('#maxRows').select2();
+                            for (let i = 0; i < data.length; i++) {
+                                if (!grupkodlari.includes(data[i].GRUP_KODU)) {
+                                    grupkodlari.push(data[i].GRUP_KODU);
+                                    grupisimleri.push(data[i].GRUP_ISIM);
+                                }
+                                var tr = document.createElement("tr");
+                                
+                                var td = document.createElement("td");
+                                var lab = document.createElement("label");
+
+                                td.appendChild(lab);
+                                td.className = "border-bottom-1 border-info";
+                                td.style = "background-color:white;position:sticky;left:0;width:120px;";
+                                td.rowSpan = 2;
+
+                                lab.innerHTML = data[i].STOK_ADI;
+                                lab.style = "width:120px;font-size:12px;font-weight:bold";
+                                tr.appendChild(td);
+                                var td1 = document.createElement("td");
+                                var lab1 = document.createElement("label");
+                                if (data[i].SAT_HZR_ADET <= 0) {
+                                    lab1.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                } else {
+                                    lab1.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                }
+                                td1.appendChild(lab1);
+                                td1.className = "border-bottom-1 border-gray";
+                                td1.style = "height:50px;width:70px;";
+                                lab1.innerHTML = (data[i].SAT_HZR_ADET).toLocaleString('tr-TR');
+                                tr.appendChild(td1);
+                                var td2 = document.createElement("td");
+                                var lab2 = document.createElement("label");
+                                if (data[i].BEKLEYEN_SIPARIS <= 0) {
+                                    lab2.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                } else {
+                                    lab2.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                }
+                                td2.appendChild(lab2);
+                                td2.className = "border-bottom-1 border-gray";
+                                td2.style = "height:50px;width:70px;";
+                                lab2.innerHTML = (data[i].BEKLEYEN_SIPARIS).toLocaleString('tr-TR');
+                                tr.appendChild(td2);
+                                var td3 = document.createElement("td");
+                                var lab3 = document.createElement("label");
+                                if (data[i].BAKIYE <= 0) {
+                                    lab3.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                } else {
+                                    lab3.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                }
+                                td3.appendChild(lab3);
+                                td3.className = "border-bottom-1 border-gray";
+                                td3.style = "height:50px;width:70px;";
+                                lab3.innerHTML = (data[i].BAKIYE).toLocaleString('tr-TR');
+                                tr.appendChild(td3);
+                                var td4 = document.createElement("td");
+                                var lab4 = document.createElement("label");
+                                if (data[i].BEKL_IE_MIKTAR <= 0) {
+                                    lab4.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                } else {
+                                    lab4.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                }
+                                td4.appendChild(lab4);
+                                td4.className = "border-bottom-1 border-gray";
+                                td4.style = "height:50px;width:70px;";
+                                lab4.innerHTML = (data[i].BEKL_IE_MIKTAR).toLocaleString('tr-TR');
+                                tr.appendChild(td4);
+                                var td5 = document.createElement("td");
+                                var lab5 = document.createElement("label");
+                                if (data[i].FAB_STOK_AD <= 0) {
+                                    lab5.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                } else {
+                                    lab5.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                }
+                                td5.appendChild(lab5);
+                                td5.className = "border-bottom-1 border-gray";
+                                td5.style = "height:50px";
+                                lab5.innerHTML = (data[i].FAB_STOK_AD).toLocaleString('tr-TR');
+
+                                tr.appendChild(td5);
+                                var td6 = document.createElement("td");
+                                var lab6 = document.createElement("label");
+                                if (data[i].ALISFIYAT1 <= 0) {
+                                    lab6.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                } else {
+                                    lab6.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                }
+                                td6.appendChild(lab6);
+                                td6.className = "border-bottom-1 border-gray";
+                                td6.style = "height:50px";
+                                lab6.innerHTML = (data[i].ALISFIYAT1).toLocaleString('tr-TR');;
+                                tr.appendChild(td6);
+                                var td7 = document.createElement("td");
+                                var lab7 = document.createElement("label");
+                                if (data[i].SATISFIYAT1 <= 0) {
+                                    lab7.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                } else {
+                                    lab7.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                }
+                                td7.appendChild(lab7);
+                                td7.className = "border-bottom-1 border-gray";
+                                td7.style = "height:50px";
+                                lab7.innerHTML = (data[i].SATISFIYAT1).toLocaleString('tr-TR');
+                                tr.appendChild(td7);
+                                document.getElementById("tbody").appendChild(tr);
+
+                                var tr1 = document.createElement("tr");
+
+                                var td8 = document.createElement("td");
+                                var lab8 = document.createElement("label");
+                                if (data[i].SAT_HZR_ADET <= 0) {
+                                    lab8.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                } else {
+                                    lab8.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                }
+                                td8.appendChild(lab8);
+                                td8.className = "border-bottom-1 border-info";
+                                td8.style = "height:50px; width:70px";
+                                lab8.innerHTML = (data[i].SAT_HZR_ADET).toLocaleString('tr-TR');
+                                tr1.appendChild(td8);
+                                var td9 = document.createElement("td");
+                                var lab9 = document.createElement("label");
+                                if (data[i].BEK_SIP_ADET <= 0) {
+                                    lab9.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                } else {
+                                    lab9.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                }
+                                td9.appendChild(lab9);
+                                td9.className = "border-bottom-1 border-info";
+                                td9.style = "height:50px; width:70px";
+                                lab9.innerHTML = (data[i].BEK_SIP_ADET).toLocaleString('tr-TR');
+                                tr1.appendChild(td9);
+                                var td10 = document.createElement("td");
+                                var lab10 = document.createElement("label");
+                                if (data[i].AD_BAKIYE <= 0) {
+                                    lab10.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                } else {
+                                    lab10.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                }
+                                td10.appendChild(lab10);
+                                td10.className = "border-bottom-1 border-info";
+                                td10.style = "height:50px";
+                                lab10.innerHTML = (data[i].AD_BAKIYE).toLocaleString('tr-TR');
+                                tr1.appendChild(td10);
+                                var td11 = document.createElement("td");
+                                var lab11 = document.createElement("label");
+                                if (data[i].BEKL_IE_AD <= 0) {
+                                    lab11.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                } else {
+                                    lab11.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                }
+                                td11.appendChild(lab11);
+                                td11.className = "border-bottom-1 border-info";
+                                td11.style = "height:50px";
+                                lab11.innerHTML = (data[i].BEKL_IE_AD).toLocaleString('tr-TR');
+                                tr1.appendChild(td11);
+                                var td12 = document.createElement("td");
+                                var lab12 = document.createElement("label");
+                                if (data[i].FAB_STOK_MIK <= 0) {
+                                    lab12.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                } else {
+                                    lab12.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                }
+                                td12.appendChild(lab12);
+                                td12.className = "border-bottom-1 border-info";
+                                td12.style = "height:50px";
+                                lab12.innerHTML = (data[i].FAB_STOK_MIK).toLocaleString('tr-TR');
+
+                                tr1.appendChild(td12);
+                                var td13 = document.createElement("td");
+                                var lab13 = document.createElement("label");
+                                if (data[i].ALISFIYAT3 <= 0) {
+                                    lab13.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                } else {
+                                    lab13.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                }
+                                td13.appendChild(lab13);
+                                td13.className = "border-bottom-1 border-info";
+                                td13.style = "height:50px";
+                                lab13.innerHTML = (data[i].ALISFIYAT3).toLocaleString('tr-TR');
+                                tr1.appendChild(td13);
+                                var td14 = document.createElement("td");
+                                var lab14 = document.createElement("label");
+                                if (data[i].SATISFIYAT3 <= 0) {
+                                    lab14.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                } else {
+                                    lab14.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                }
+
+                                td14.appendChild(lab14);
+                                td14.className = "border-bottom-1 border-info";
+                                td14.style = "height:50px";
+                                lab14.innerHTML = (data[i].SATISFIYAT3).toLocaleString('tr-TR');
+                                tr1.appendChild(td14);
+                                document.getElementById("tbody").appendChild(tr1);
+                            }
+                            for (let i = 0; i < grupisimleri.length; i++) {
+                                var option = document.createElement("option");
+                                option.innerHTML = grupisimleri[i];
+                                option.value = grupkodlari[i];
+                                document.getElementById("select1").appendChild(option)
+                            }
+                        }).done(function () {
+                            document.getElementById("select1").removeAttribute("disabled");
+                        });
+
+
+                    }).ajaxStop(function () {
+                        document.getElementById("progress").style.display = "none";
+                    });
+
+
+
+
+
+                    $('#select1').change(function () {
+                        document.body.style.cursor = "wait";
+                        $.ajax(updateDiv(this.value)).then(function () {
+
+                        }).done(function () {
+                            document.body.style.cursor = "default";
+                        });
+                    });
+                    function updateDiv(selected_value) {
+
+                        if (selected_value != "") {
+                            var upt = stoks.filter(x => x.GRUP_KODU === selected_value);
+                        } else {
+
+                            var upt = stoks;
+                        }
+
+
+                        document.getElementById("tbody").replaceChildren();
+
+                        for (let i = 0; i < upt.length; i++) {
+
+                            var tr = document.createElement("tr");
+                            var td = document.createElement("td");
+                            var lab = document.createElement("label");
+
+                            td.appendChild(lab);
+                            td.className = "border-bottom-1 border-info";
+                            td.style = "background-color:white;position:sticky;left:0;width:120px;";
+                            td.rowSpan = 2;
+
+                            lab.innerHTML = upt[i].STOK_ADI;
+                            lab.style = "width:120;font-size:12px;font-weight:bold";
+                            tr.appendChild(td);
+                            var td1 = document.createElement("td");
+                            var lab1 = document.createElement("label");
+                            if (upt[i].SAT_HZR_ADET <= 0) {
+                                lab1.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                            } else {
+                                lab1.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                            }
+                            td1.appendChild(lab1);
+                            td1.className = "border-bottom-1 border-gray";
+                            td1.style = "height:50px;width:70px;";
+                            lab1.innerHTML = (upt[i].SAT_HZR_ADET).toLocaleString('tr-TR');
+                            tr.appendChild(td1);
+                            var td2 = document.createElement("td");
+                            var lab2 = document.createElement("label");
+                            if (upt[i].BEKLEYEN_SIPARIS <= 0) {
+                                lab2.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                            } else {
+                                lab2.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                            }
+                            td2.appendChild(lab2);
+                            td2.className = "border-bottom-1 border-gray";
+                            td2.style = "height:50px;width:70px;";
+                            lab2.innerHTML = (upt[i].BEKLEYEN_SIPARIS).toLocaleString('tr-TR');
+                            tr.appendChild(td2);
+                            var td3 = document.createElement("td");
+                            var lab3 = document.createElement("label");
+                            if (upt[i].BAKIYE <= 0) {
+                                lab3.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                            } else {
+                                lab3.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                            }
+                            td3.appendChild(lab3);
+                            td3.className = "border-bottom-1 border-gray";
+                            td3.style = "height:50px;width:70px;";
+                            lab3.innerHTML = (upt[i].BAKIYE).toLocaleString('tr-TR');
+                            tr.appendChild(td3);
+                            var td4 = document.createElement("td");
+                            var lab4 = document.createElement("label");
+                            if (upt[i].BEKL_IE_MIKTAR <= 0) {
+                                lab4.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                            } else {
+                                lab4.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                            }
+                            td4.appendChild(lab4);
+                            td4.className = "border-bottom-1 border-gray";
+                            td4.style = "height:50px;width:70px;";
+                            lab4.innerHTML = (upt[i].BEKL_IE_MIKTAR).toLocaleString('tr-TR');
+                            tr.appendChild(td4);
+                            var td5 = document.createElement("td");
+                            var lab5 = document.createElement("label");
+                            if (upt[i].FAB_STOK_AD <= 0) {
+                                lab5.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                            } else {
+                                lab5.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                            }
+                            td5.appendChild(lab5);
+                            td5.className = "border-bottom-1 border-gray";
+                            td5.style = "height:50px";
+                            lab5.innerHTML = (upt[i].FAB_STOK_AD).toLocaleString('tr-TR');
+
+                            tr.appendChild(td5);
+                            var td6 = document.createElement("td");
+                            var lab6 = document.createElement("label");
+                            if (upt[i].ALISFIYAT1 <= 0) {
+                                lab6.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                            } else {
+                                lab6.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                            }
+                            td6.appendChild(lab6);
+                            td6.className = "border-bottom-1 border-gray";
+                            td6.style = "height:50px";
+                            lab6.innerHTML = (upt[i].ALISFIYAT1).toLocaleString('tr-TR');;
+                            tr.appendChild(td6);
+                            var td7 = document.createElement("td");
+                            var lab7 = document.createElement("label");
+                            if (upt[i].SATISFIYAT1 <= 0) {
+                                lab7.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                            } else {
+                                lab7.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                            }
+                            td7.appendChild(lab7);
+                            td7.className = "border-bottom-1 border-gray";
+                            td7.style = "height:50px";
+                            lab7.innerHTML = (upt[i].SATISFIYAT1).toLocaleString('tr-TR');
+                            tr.appendChild(td7);
+                            document.getElementById("tbody").appendChild(tr);
+
+                            var tr1 = document.createElement("tr");
+
+                            var td8 = document.createElement("td");
+                            var lab8 = document.createElement("label");
+                            if (upt[i].SAT_HZR_ADET <= 0) {
+                                lab8.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                            } else {
+                                lab8.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                            }
+                            td8.appendChild(lab8);
+                            td8.className = "border-bottom-1 border-info";
+                            td8.style = "height:50px; width:70px";
+                            lab8.innerHTML = (upt[i].SAT_HZR_ADET).toLocaleString('tr-TR');
+                            tr1.appendChild(td8);
+                            var td9 = document.createElement("td");
+                            var lab9 = document.createElement("label");
+                            if (upt[i].BEK_SIP_ADET <= 0) {
+                                lab9.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                            } else {
+                                lab9.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                            }
+                            td9.appendChild(lab9);
+                            td9.className = "border-bottom-1 border-info";
+                            td9.style = "height:50px; width:70px";
+                            lab9.innerHTML = (upt[i].BEK_SIP_ADET).toLocaleString('tr-TR');
+                            tr1.appendChild(td9);
+                            var td10 = document.createElement("td");
+                            var lab10 = document.createElement("label");
+                            if (upt[i].AD_BAKIYE <= 0) {
+                                lab10.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                            } else {
+                                lab10.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                            }
+                            td10.appendChild(lab10);
+                            td10.className = "border-bottom-1 border-info";
+                            td10.style = "height:50px";
+                            lab10.innerHTML = (upt[i].AD_BAKIYE).toLocaleString('tr-TR');
+                            tr1.appendChild(td10);
+                            var td11 = document.createElement("td");
+                            var lab11 = document.createElement("label");
+                            if (upt[i].BEKL_IE_AD <= 0) {
+                                lab11.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                            } else {
+                                lab11.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                            }
+                            td11.appendChild(lab11);
+                            td11.className = "border-bottom-1 border-info";
+                            td11.style = "height:50px";
+                            lab11.innerHTML = (upt[i].BEKL_IE_AD).toLocaleString('tr-TR');
+                            tr1.appendChild(td11);
+                            var td12 = document.createElement("td");
+                            var lab12 = document.createElement("label");
+                            if (upt[i].FAB_STOK_MIK <= 0) {
+                                lab12.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                            } else {
+                                lab12.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                            }
+                            td12.appendChild(lab12);
+                            td12.className = "border-bottom-1 border-info";
+                            td12.style = "height:50px";
+                            lab12.innerHTML = (upt[i].FAB_STOK_MIK).toLocaleString('tr-TR');
+
+                            tr1.appendChild(td12);
+                            var td13 = document.createElement("td");
+                            var lab13 = document.createElement("label");
+                            if (upt[i].ALISFIYAT3 <= 0) {
+                                lab13.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                            } else {
+                                lab13.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                            }
+                            td13.appendChild(lab13);
+                            td13.className = "border-bottom-1 border-info";
+                            td13.style = "height:50px";
+                            lab13.innerHTML = (upt[i].ALISFIYAT3).toLocaleString('tr-TR');
+                            tr1.appendChild(td13);
+                            var td14 = document.createElement("td");
+                            var lab14 = document.createElement("label");
+                            if (upt[i].SATISFIYAT3 <= 0) {
+                                lab14.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                            } else {
+                                lab14.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                            }
+
+                            td14.appendChild(lab14);
+                            td14.className = "border-bottom-1 border-info";
+                            td14.style = "height:50px";
+                            lab14.innerHTML = (upt[i].SATISFIYAT3).toLocaleString('tr-TR');
+                            tr1.appendChild(td14);
+                            document.getElementById("tbody").appendChild(tr1);
+                        }
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+                </script>
+
+
+                <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script type="text/javascript">
+                    function myUpdateFunction() {
+                        var s = "submitbutton";
+                        Swal.fire({
+                            title: 'Mail göndermek istediğinize emin misiniz?',
+                            icon: 'question',
+                            showDenyButton: false,
+                            showCancelButton: true,
+                            confirmButtonText: 'Evet',
+                            cancelButtonText: 'Hayır',
+                            confirmButtonColor: '#03c3ec',
+                            confirmButtonBorderColor: '#03c3ec',
+                            cancelButtonColor: '#ff3e1d',
+                        }).then((result) => {
+                            /* Read more about isConfirmed, isDenied below */
+                            if (result.isConfirmed) {
+                                document.getElementById(s).click();
+                            }
+                        })
+                    }
+                </script>
+
             </div>
-            
         </div>
-        <!--/ Accordion -->
-        <!--/ Advance Styling Options -->
-
-
     </div>
+    <script>
+        function myFunction() {
+            var input, filter, table, tr, label, i, txtValue;
+            input = document.getElementById("search");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("sorttable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i = i + 2) {
+                label = tr[i].getElementsByTagName("label")[0];
+                txtValue = label.textContent || label.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    tr[i + 1].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                    tr[i + 1].style.display = "none";
+                }
+            }
+        }
+    </script>
 
 
+    <script type="text/javascript" src="\assets\vendor\libs\popper/popper.js"></script>
+    <script type="text/javascript" src="\assets\vendor\js\bootstrap.js"></script>
+    <script type="text/javascript" src="\assets\vendor\libs/perfect-scrollbar\perfect-scrollbar.js"></script>
 
-  
+    <script src="\assets\vendor\js\menu.js"></script>
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script type="text/javascript" src="\assets\vendor\libs\apex-charts\apexcharts.js"></script>
 
+    <!-- Main JS -->
+    <script type="text/javascript" src="\assets\js\main.js"></script>
 
-
-
-
-
+    <!-- Page JS -->
+    <script type="text/javascript" src="\assets\js\dashboards-analytics.js"></script>
+   
+    <div class="layout-overlay layout-menu-toggle"></div>
 </body>
-</html>
+
+</html >
 

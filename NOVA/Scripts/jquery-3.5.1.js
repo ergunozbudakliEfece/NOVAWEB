@@ -603,7 +603,7 @@
 				attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
 
 					// Operator (capture 2)
-					"*([*^$|!~]?=)" + whitespace +
+					"*([*^$|!]?=)" + whitespace +
 
 					// "Attribute values must be CSS identifiers [capture 5]
 					// or strings [capture 3 or capture 4]"
@@ -629,7 +629,7 @@
 					whitespace + "+$", "g"),
 
 				rcomma = new RegExp("^" + whitespace + "*," + whitespace + "*"),
-				rcombinators = new RegExp("^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace +
+				rcombinators = new RegExp("^" + whitespace + "*([>+]|" + whitespace + ")" + whitespace +
 					"*"),
 				rdescend = new RegExp(whitespace + "|>"),
 
@@ -650,7 +650,7 @@
 					// For use in libraries implementing .is()
 					// We use this for POS matching in `select`
 					"needsContext": new RegExp("^" + whitespace +
-						"*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + whitespace +
+						"*[>+]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + whitespace +
 						"*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i")
 				},
 
@@ -663,7 +663,7 @@
 				// Easily-parseable/retrievable ID or TAG or CLASS selectors
 				rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
 
-				rsibling = /[+~]/,
+				rsibling = /[+]/,
 
 				// CSS escapes
 				// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
@@ -1345,8 +1345,8 @@
 						}
 
 						// Support: Chrome<29, Android<4.4, Safari<7.0+, iOS<7.0+, PhantomJS<1.9.8+
-						if (!el.querySelectorAll("[id~=" + expando + "-]").length) {
-							rbuggyQSA.push("~=");
+						if (!el.querySelectorAll("[id=" + expando + "-]").length) {
+							rbuggyQSA.push("=");
 						}
 
 						// Support: IE 11+, Edge 15 - 18+
@@ -1373,7 +1373,7 @@
 						// https://bugs.webkit.org/show_bug.cgi?id=136851
 						// In-page `selector#id sibling-combinator selector` fails
 						if (!el.querySelectorAll("a#" + expando + "+*").length) {
-							rbuggyQSA.push(".#.+[+~]");
+							rbuggyQSA.push(".#.+[+]");
 						}
 
 						// Support: Firefox <=3.6 - 5 only
@@ -1395,7 +1395,7 @@
 						// Support: IE8
 						// Enforce case-sensitivity of name attribute
 						if (el.querySelectorAll("[name=d]").length) {
-							rbuggyQSA.push("name" + whitespace + "*[*^$|!~]?=");
+							rbuggyQSA.push("name" + whitespace + "*[*^$|!]?=");
 						}
 
 						// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
@@ -1768,7 +1768,7 @@
 					">": { dir: "parentNode", first: true },
 					" ": { dir: "parentNode" },
 					"+": { dir: "previousSibling", first: true },
-					"~": { dir: "previousSibling" }
+					"": { dir: "previousSibling" }
 				},
 
 				preFilter: {
@@ -1779,7 +1779,7 @@
 						match[3] = (match[3] || match[4] ||
 							match[5] || "").replace(runescape, funescape);
 
-						if (match[2] === "~=") {
+						if (match[2] === "=") {
 							match[3] = " " + match[3] + " ";
 						}
 
@@ -1902,7 +1902,7 @@
 									operator === "^=" ? check && result.indexOf(check) === 0 :
 										operator === "*=" ? check && result.indexOf(check) > -1 :
 											operator === "$=" ? check && result.slice(-check.length) === check :
-												operator === "~=" ? (" " + result.replace(rwhitespace, " ") + " ").indexOf(check) > -1 :
+												operator === "=" ? (" " + result.replace(rwhitespace, " ") + " ").indexOf(check) > -1 :
 													operator === "|=" ? result === check || result.slice(0, check.length + 1) === check + "-" :
 														false;
 							/* eslint-enable max-len */
@@ -2173,7 +2173,7 @@
 					"focus": function (elem) {
 						return elem === document.activeElement &&
 							(!document.hasFocus || document.hasFocus()) &&
-							!!(elem.type || elem.href || ~elem.tabIndex);
+							!!(elem.type || elem.href || elem.tabIndex);
 					},
 
 					// Boolean properties

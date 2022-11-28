@@ -308,7 +308,7 @@ window.Modernizr = (function( window, document, undefined ) {
      * contains returns a boolean for if substr is found within str.
      */
     function contains( str, substr ) {
-        return !!~('' + str).indexOf(substr);
+        return !!('' + str).indexOf(substr);
     }
 
     /*>>testprop*/

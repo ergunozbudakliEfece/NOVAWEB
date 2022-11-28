@@ -9,11 +9,7 @@ namespace NOVA.Models
 
     public partial class User
     {
-        public User()
-        {
-
-        }
-        
+      
         public string USER_ID { get; set; }
 
      
@@ -31,6 +27,8 @@ namespace NOVA.Models
         public Roles roles { get; set; }
         public bool ACTIVE { get; set; }
 
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Lütfen Mail Adresinizi Girin")]
+        [DataType(DataType.EmailAddress)]
         public string USER_MAIL { get; set; }
         public bool USER_AUTH { get; set; }
 
@@ -46,7 +44,7 @@ namespace NOVA.Models
         public int MODULE_INCKEY { get; set; }
 
         public Modules modules { get; set; }
-
+        public Mail mail { get; set; }
         
     }
 }

@@ -1,0 +1,2959 @@
+﻿
+
+
+
+
+<!DOCTYPE html>
+
+         
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Page CSS -->
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+
+
+
+
+
+    <script data-require="jquery@2.0.3" data-semver="2.0.3" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="~/assets/vendor/css/scripts.js"></script>
+    <style>
+
+
+        .myInput {
+            box-sizing: border-box;
+            background-image: url('https://www.w3schools.com/howto/searchicon.png');
+            background-position: 5px;
+            background-repeat: no-repeat;
+            font-size: 12px;
+            padding: 8px 20px 7px 45px;
+            border: none;
+        }
+
+            .myInput:focus {
+                outline: 3px solid #ddd;
+            }
+
+        .dropdown {
+            position: fixed;
+            display: inline-block;
+        }
+        .dropdown-content2 {
+            position: fixed;
+            background-color: #f6f6f6;
+            margin-left: -100px;
+            min-width: 100px;
+            max-height: 300px;
+            overflow: auto;
+            border: 1px solid;
+            display: none;
+        }
+                .dropdown-content2 a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            width:auto;
+            display: none;
+            cursor: pointer;
+            z-index: 2;
+            border-bottom:1px solid;
+           }
+
+        .dropdown-content {
+            position: relative;
+            background-color: #f6f6f6;
+            min-width: 130px;
+            overflow: auto;
+            border: 1px solid #ddd;
+        }
+
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: none;
+                cursor:pointer;
+                z-index: 2;
+            }
+
+        .dropdown a:hover {
+            background-color: #ddd;
+        }
+
+        .show {
+            display: flex;
+        }
+    </style>
+    
+</head>
+<body style="background-color: #f5f5f9 !important;font-size:10px !important;">
+    <div class="container-md">
+        @{ TempData["number"] = 1;}
+        <div class="authentication-wrapper authentication-basic container-p-y">
+            <div class="authentication-inner " id="body">
+                <div class="card mt-4">
+
+                    <div class="card-body" id="cid">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="text-center"><u>MÜŞTERİ</u></h4>
+                            </div>
+                            <div class="col">
+                                <h4 class="text-center"><u>KALINLIK</u></h4>
+                            </div>
+                            <div class="col">
+                                <h4 class="text-center"><u>TOPLAM ADET</u></h4>
+                            </div>
+                            <div class="col">
+                                <h4 class="text-center"><u>TOPLAM AĞIRLIK</u></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                        <div class="card mt-4">
+
+
+
+                            <div class="card-body">
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table table-bordered" style="border-color:black;" id="table1">
+
+
+
+                                        <tbody>
+                                            <tr style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)">
+                                                <th class="text-center" style="font-size:11px">FABRİKA</th>
+                                                <th class="text-center" style="font-size: 11px">ORAN</th>
+                                                <th class="text-center" style="font-size: 11px">SAC KODU</th>
+                                                <th class="text-center" style="font-size: 11px">STOK ADI</th>
+                                                <th class="text-center" style="font-size: 11px">KONUM</th>
+                                                <th class="text-center" style="font-size: 11px">MARKA</th>
+                                                <th class="text-center" style="font-size: 11px">ADET</th>
+                                                <th class="text-center" style="font-size: 11px">KALINLIK</th>
+                                                <th class="text-center" style="font-size: 11px">GENİŞLİK | ±</th>
+                                                <th class="text-center" style="font-size: 11px">KAPLAMA</th>
+                                                <th class="text-center" style="font-size: 11px">KALİTE</th>
+                                                <th class="text-wrap" style="font-size: 10px">KULL. METRAJ/TAM METRAJ</th>
+                                                <th class="text-wrap" style="font-size: 10px">KULL. AĞIRLIK/TAM AĞIRLIK</th>
+
+
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    MANİSA
+                                                </td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0 w-px-50 text-center" id="hamoran" type="number" value="1.00" />
+                                                    <script>
+                                                        var ham = document.getElementById("hamoran");
+                                                        ham.oninput = function () {
+                                                            if (this.value >= 1) {
+                                                                this.value = "1.00";
+                                                            } else if (this.value < 0) {
+                                                                this.value = 0;
+                                                            }
+                                                        };</script>
+                                                </td>
+
+                                                <td class="text-center p-0">
+                                                    <input class="border-0 w-100 text-center" id="seri" />
+                                                </td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0 w-100 text-center" id="stokadi" readonly />
+                                                </td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0  w-100 text-center" />
+                                                </td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0  w-100 text-center" id="marka" readonly />
+                                                </td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0 w-100 text-center" id="adet" readonly />
+                                                </td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0 w-100 text-center" id="kalinlik" readonly />
+                                                </td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0 w-px-50 text-center" id="genislik" readonly />
+                                                    <input class="border-1 w-px-30 text-center" style="border-radius:5px" id="genislikalti" value="0" />
+                                                </td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0 w-100 text-center" id="kaplama" readonly />
+                                                </td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0 w-100 text-center" id="kalite" readonly />
+                                                </td>
+                                                <td class="text-center  p-0">
+                                                    <input class="border-0 w-100 text-center" id="metraj" readonly />
+                                                </td>
+
+                                                <td class="text-center">
+                                                    <input class="border-0 w-100 text-center" id="agirlik" readonly />
+                                                </td>
+
+
+                                            </tr>
+                                            <tr style="display:none">
+                                                <th style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%); position: unset">
+                                                    MAKİNE
+                                                </th>
+                                                <th style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)">OPERATÖR</th>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center"><input class="border-0 w-px-50" /></td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center"><input class="border-0 w-px-50" /></td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center"><input class="border-0 w-px-50" /></td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <th class="text-center ms-1" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)">ÇIKIŞ</th>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+
+                                            </tr>
+
+                                            <tr style="display:none">
+                                                <td class="p-0">
+                                                    <select class=" form-select w-100 bg-transparent" id="machinenames">
+                                                        @foreach (var item in ViewBag.Makine)
+                                                        {
+                                                            <option>@item.MACHINE_CODE</option>
+                                                        }
+
+                                                    </select>
+                                                </td>
+                                                <th style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)">KLT/KNTRL</th>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center"><input class="border-0 w-px-50" /></td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center"><input class="border-0 w-px-50" /></td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center"><input class="border-0 w-px-50" /></td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+                                                <th class="text-center ms-1" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)">HURDA</th>
+                                                <td class="text-center">
+                                                    <input class="border-0 w-px-50" />
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="row mt-2 mb-2">
+                            <div class="col">
+                                <button class="btn btn-info float-end" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="kaydet1()">KAYDET</button>
+                            </div>
+                        </div>
+                        <div class="card">
+
+                            <div class="card-body">
+                                <div class="table-responsive text-nowrap" style="overflow-y:hidden;">
+                                    <a class="float-end mb-1" onclick="addCell()" style="cursor:pointer;"><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC" /></a>
+                                    <img class="float-end" onclick="removeCell()" style="cursor:pointer;width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC" />
+
+                                    <table class="table table-bordered border-dark" id="test">
+
+
+
+                                        <tbody>
+                                            <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
+                                                <th style="font-size: 11px"></th>
+                                                <th style="font-size: 11px">ORAN</th>
+                                                <th style="font-size: 11px">İŞ EMRİ NO</th>
+                                                <th style="font-size: 11px">STOK ÖLÇÜLERİ</th>
+                                                <th style="font-size: 11px">GENİŞLİK(Dilme)</th>
+                                                <th style="font-size: 11px">ADET(Dilme)</th>
+                                                <th style="font-size: 11px">AĞIRLIK</th>
+                                                <th style="font-size: 11px">MÜŞTERİ</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center">1</td>
+                                                <td class="text-center p-0">
+                                                    <input class="border-0 w-px-75 text-center" type="number" value="1.00" max="1.00" min="0.00" id="oran1" />
+                                                    <script>
+
+                                                        var oraninput = document.getElementById("oran1");
+                                                        oraninput.oninput = function () {
+                                                            if (this.value >= 1) {
+                                                                this.value = "1.00";
+                                                            } else if (this.value < 0) {
+                                                                this.value = "0.00";
+                                                            }
+
+                                                        };
+
+
+                                                    </script>
+
+                                                </td>
+                                                <td class="p-0 border-0" style="display:flex">
+
+                                                    <select class="form-select ms-1 bg-transparent" style="width:100px" id="machinenames" onchange="selectChange(this.value)">
+                                                        @foreach (var item in ViewBag.Makine)
+                                                        {
+                                                            <option style="font-size:11px">@item.MACHINE_CODE</option>
+                                                        }
+
+                                                    </select>
+
+
+                                                    <input class="border-0 text-center ms-1" style="width:200px" id="1input" />
+
+                                                    <script>
+                                                function selectChange(value) {
+                                                    document.getElementById("1input").name = value;
+                                                    if (value == "DL01") {
+                                                        document.getElementById("2input").removeAttribute("disabled");
+                                                        document.getElementById("3input").removeAttribute("disabled");
+                                                    } else {
+                                                        document.getElementById("2input").setAttribute("disabled", "");
+                                                        document.getElementById("3input").setAttribute("disabled", "");
+                                                    }
+                                                     var today = new Date();
+            var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+                        var b = jsonObj.find(x => x.MAK_KODU === value);
+            var x = "";
+            if (b.MAX_ISEMRINO.toString().length == 1) {
+                x = ".0000" + b.MAX_ISEMRINO + ".0" + (rownum-1).toString();
+            } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                x = ".000" + b.MAX_ISEMRINO + ".0" + (rownum - 1).toString();
+            }
+            else if (b.MAX_ISEMRINO.toString().length == 3) {
+                x = ".00" + b.MAX_ISEMRINO + ".0" + (rownum - 1).toString();
+            }
+            else if (b.MAX_ISEMRINO.toString().length == 4) {
+                x = ".0" + b.MAX_ISEMRINO + ".0" + (rownum - 1).toString();
+            } else {
+                x = ".00000";
+                                                    }
+                                                    document.getElementById("1input").value = value + today.getFullYear().toString().substring(2) + x;
+                    };
+
+                                                    </script>
+                                                </td>
+
+                                                <td class="text-center p-0">
+                                                    <div class="dropdown-content"><input id="input5" type="text" class="myInput w-100" placeholder="Ara.." onkeyup="search()" /></div> <div class="dropdown-content2" id="1content2">
+                                                        @foreach (var item in ViewBag.Stok_Adlari)
+                                                        {
+                                                            <a onclick="addStokAdi(this.innerText)">@item.STOK_ADI</a>
+                                                        }
+                                                        <script>
+                                                                                                                                                                                                           function addStokAdi(value) {
+                                                                                                                                                                                                                                        var d = document.getElementsByClassName("dropdown-content2");
+                                                              document.getElementById("input5").value = value;
+                                                              var cont = document.getElementById("1content2");
+                                                              var a = cont.getElementsByTagName("a");
+                                                              for (let i = 0; i < a.length; i++) {
+                                                                  a[i].style.display = "none";
+                                                              }
+                                                              var jsonObj1 = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                                                              var div4 = document.getElementById("1content3");
+                                                              var old = div4.getElementsByTagName("a");
+                                                              for (let i = 0; i < old.length; i++) {
+                                                                  old[i].remove();
+                                                              }
+
+                            var filterobj = jsonObj1.filter(x => x.STOK_ADI === value);
+                                for (let i = 0; i < filterobj.length; i++) {
+
+                                    var newA = document.createElement("a");
+                                    newA.innerHTML = filterobj[i].FISNO + "→" + filterobj[i].CARI_ISIM;
+                                    newA.style = "display:block";
+                                    newA.onclick = function () {
+
+                                        var all = div4.getElementsByTagName("a");
+                                        document.getElementById("input2").value = this.text;
+                                        for (let i = 0; i < all.length; i++) {
+                                            all[i].style = "display:none";
+                                        }
+                                        for (let i = 0; i < d.length; i++) {
+                                            d[i].style = "display:none";
+                                        }
+
+
+                                    };
+                                    div4.appendChild(newA);
+                                }
+
+
+
+
+                        }
+
+                                                          function search() {
+                                                              var input, filter, ul, li, a, i;
+                                                              filter = document.getElementById("input5").value.toUpperCase();
+                                                              var cont = document.getElementById("1content2");
+                                                              a = cont.getElementsByTagName("a");
+                                                              var d = document.getElementsByClassName("dropdown-content2");
+                                                              if (filter.length > 0) {
+
+                                                                  for (i = 0; i < a.length; i++) {
+                                                                      txtValue = a[i].textContent || a[i].innerText;
+                                                                      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                                          a[i].style.display = "block";
+
+                                                                      } else {
+                                                                          a[i].style.display = "none";
+                                                                      }
+
+                                                                  }
+                                                                  for (let i = 0; i < d.length; i++) {
+                                                                      d[i].style.display = "block";
+                                                                  }
+                                                              } else {
+                                                                  for (i = 0; i < a.length; i++) {
+                                                                      txtValue = a[i].textContent || a[i].innerText;
+
+                                                                      a[i].style.display = "none";
+
+                                                                  }
+                                                                  for (let i = 0; i < d.length; i++) {
+                                                                      d[i].style.display = "none";
+                                                                  }
+                                                              }
+
+
+                                                          }
+                                                        </script>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center p-0"><input class="border-0 text-center" id="2input" onkeyup="changeadet()" disabled /></td>
+                                                <td class="text-center p-0"><input class="border-0 text-center" id="3input" onkeyup="changeadet()" disabled /></td>
+                                                <td class="text-center p-0"><input class="border-0 text-center" id="agirlikhesap" /></td>
+                                                <td class="text-center p-0">
+                                                    <div class="dropdown-content"><input id="input2" type="text" class="myInput w-100" placeholder="Ara.." onkeyup="search1()" /></div> <div class="dropdown-content2" id="1content3">
+                                                        <script>
+                                                            function search1() {
+                                                                var input, filter, ul, li, a, i;
+                                                                filter = document.getElementById("input2").value.toUpperCase();
+                                                                var cont = document.getElementById("1content3");
+                                                                a = cont.getElementsByTagName("a");
+                                                                if (filter.length > 0) {
+                                                                    
+                                                                    for (i = 0; i < a.length; i++) {
+                                                                        txtValue = a[i].textContent || a[i].innerText;
+                                                                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                                            a[i].style.display = "block";
+                                                                            cont.style.display = "block";
+                                                                        } else {
+                                                                            a[i].style.display = "none";
+                                                                            cont.style.display = "none";
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    for (i = 0; i < a.length; i++) {
+                                                                        txtValue = a[i].textContent || a[i].innerText;
+
+                                                                        a[i].style.display = "none";
+                                                                        cont.style.display = "none";
+                                                                    }
+                                                                }
+
+
+                                                            }
+                                                        </script>
+
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                        </tbody>
+
+                                    </table>
+                                    <script>
+                                        function changeadet() {
+                                            var top1 = 0;
+                                            var rows = document.getElementById("test").getElementsByTagName("tr");
+                                            for (let i = 1; i < rows.length; i++) {
+                                                top1 = top1 + (parseInt(rows[i].getElementsByTagName("input")[3].value) * parseInt(rows[i].getElementsByTagName("input")[4].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
+                                            }
+
+                                            document.getElementById("fireagir").value = ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) - top1;
+                                            document.getElementById("agirlikhesap").value = thousands_separators(Math.round(parseFloat((parseInt(document.getElementById("2input").value) * parseInt(document.getElementById("3input").value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(document.getElementById("oran1").value)).toFixed(2)));
+
+
+                                            document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
+                                            document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
+                                        }
+                                        function thousands_separators(num) {
+                                            var num_parts = num.toString().split(".");
+                                            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                            return num_parts.join(",");
+                                        }
+
+                                    </script>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table table-bordered" style="border-color:black;">
+                                                <tbody>
+
+                                                    <tr style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
+                                                        <td class="text-center" style="font-size: 11px;font-weight:bold">
+                                                            FİRE YÜZDESİ
+                                                        </td>
+                                                        <td class="text-center" style="font-size: 11px; font-weight: bold">
+                                                            FİRE
+                                                        </td>
+                                                        <td class="text-center" style="font-size: 11px; font-weight: bold">
+                                                            FİRE AĞIRLIĞI
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <input class="border-0 text-center" id="fireyuzde" readonly />
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <input class="border-0 text-center" id="fireagir" readonly />
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <input class="border-0 text-center" id="fireagirligi" readonly />
+                                                        </td>
+
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <a class="float-end" onclick="addRow()" style="cursor:pointer;"><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC" /></a>
+                                        <a class="float-end" onclick="removeRow()" style="cursor:pointer;" disabled><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC" /></a>
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+    
+    <div class="container" style="display:none">
+        <div class="row">
+            <div class="col">
+                <img class="float-end" onclick="addTable()" style="cursor:pointer;width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC" />
+                <img class="float-end" onclick="removeTable()" style="cursor:pointer;width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC" />
+
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/popper/popper.js"></script>
+    <script type="text/javascript" src="/assets/vendor/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script type="text/javascript" src="/assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script type="text/javascript" src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script type="text/javascript" src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script type="text/javascript" src="/assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+
+
+    <script type="text/javascript" async defer src="/Scripts/buttons.js"></script>
+    <script type="text/javascript" src="/Scripts/boxicons.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+    <script>
+        document.body.style.zoom = "100%";
+    </script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var rownum = 2;
+        var tablealtrow = 0;
+        var id = 0;
+        var x = 0;
+        var selectindex = 0;
+        var sayac = 0;
+        var fireagirlik = 0;
+        var fire = 0;
+        var fireyuzde = 0;
+        function addRow() {
+            var table = document.getElementById("test");
+            var onceki = table.getElementsByTagName("tr");
+            if (onceki[rownum-1].getElementsByTagName("input")[1].value.length > 0) {
+                const idIndex=[];
+            // (B1) GET TABLE
+            
+            var th = document.getElementById("th").getElementsByTagName("th");
+            // (B2) INSERT ROW
+
+            var row = table.insertRow();
+
+
+            // (B3) INSERT CELLS
+            var cell = row.insertCell();
+            cell.innerHTML = rownum;
+                cell.className = "text-center";
+            for (let i = 0; i < th.length - 1; i++) {
+
+                var input = document.createElement("input");
+                var grup = document.getElementById("machinenames");
+                input.className = "border-0 w-px-75 text-center";
+
+                var select = document.createElement("select");
+                select.className = "form-select bg-transparent ms-1";
+
+                var option;
+                if (rownum == 2) {
+                    for (let a = 0; a < grup.length; a++) {
+                        option = document.createElement('option');
+                        option.innerHTML = grup.options[a].text;
+                        option.value = grup.options[a].text;
+                        select.appendChild(option);
+                        select.id = "first";
+                    }
+                } else {
+                    for (let a = 0; a < grup.length; a++) {
+                        option = document.createElement('option');
+                        option.innerHTML = grup.options[a].text;
+                        option.value = grup.options[a].text;
+                        select.appendChild(option);
+                        select.id = "first";
+
+                    }
+
+                }
+
+
+                cell = row.insertCell();
+                cell.className = "text-center p-0";
+                if (x == 0) {
+                    if (i == 0) {
+                        var rows = table.getElementsByTagName("tr");
+                        var c = 0;
+                        var oraninput = document.createElement("input");
+                        oraninput.className = "border-0 w-px-75 text-center";
+                        oraninput.type = "number";
+                        oraninput.max = "1.00";
+                        oraninput.min = "0.00";
+                        oraninput.value = "1.00";
+                        oraninput.onkeyup = function () {
+                            if (this.value >= 1) {
+                                this.value = "1.00";
+                            } else if (this.value < 0) {
+                                this.value = "0.00";
+                            }
+                             
+                            for (let i = 1; i < rows.length; i++) {
+                                c = c + parseFloat(parseInt(rows[i].getElementsByTagName("input")[3].value) * (parseInt(rows[i].getElementsByTagName("input")[4].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value)));
+                                }
+                               
+
+
+                            document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
+
+                            row.getElementsByTagName("input")[5].value = thousands_separators(parseFloat((parseInt(row.getElementsByTagName("input")[4].value) * parseInt(row.getElementsByTagName("input")[3].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value)).toFixed(2));
+                        };
+                        cell.appendChild(oraninput);
+                    }
+                    else if (i == 1) {
+                        cell.className = "p-0 border-0";
+                        select.value = table.getElementsByTagName("select")[selectindex].value;
+                        cell.appendChild(select);
+
+                        cell.style = "display:flex";
+                        var input1 = document.createElement("input");
+                        input1.className = "border-0 ms-1 text-center";
+                        input1.style = "width:200px";
+                        input1.name = select.value;
+
+                        if (selectindex != 0) {
+                            if (table.getElementsByTagName("select")[selectindex - 1].value == table.getElementsByTagName("select")[selectindex].value) {
+
+                                input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+
+
+
+                            } else {
+
+                                if (document.getElementsByName(select.value).length > 1) {
+                                    input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+                                } else {
+                                    input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+                                }
+
+
+
+                            }
+
+                        } else {
+
+
+                            input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+
+
+
+
+
+
+                        }
+
+
+                        select.style = "width:100px"
+                        select.name = "select1";
+                        select.onchange = function () {
+                            if (this.value == "DL01") {
+                                document.getElementById(idIndex[0]).removeAttribute("disabled");
+                                document.getElementById(idIndex[1]).removeAttribute("disabled");
+                            } else {
+                                document.getElementById(idIndex[0]).setAttribute("disabled", "");
+                                document.getElementById(idIndex[1]).setAttribute("disabled", "");
+                            }
+                            select.value = input1.name;
+                            var today = new Date();
+                            var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+                            var b = jsonObj.find(x => x.MAK_KODU === this.value);
+                            var x = "";
+                            var y = (rownum - 1 - 2) * (6 + rownum - 1 - 2) + 1;
+                            if (y == 0) {
+                                y = 1;
+                            }
+
+
+                            if (this.value == table.getElementsByTagName("select")[selectindex - 1].value) {
+
+                                var d = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                                if (b.MAX_ISEMRINO.toString().length == 1) {
+                                    x = ".0000" + b.MAX_ISEMRINO + ".0" + d;
+                                } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                    x = ".000" + b.MAX_ISEMRINO + ".0" + d;
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                    x = ".00" + b.MAX_ISEMRINO + ".0" + d;
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                    x = ".0" + b.MAX_ISEMRINO + ".0" + d;
+                                } else {
+                                    x = ".00000";
+                                }
+                                input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                                input1.name = this.value;
+                            } else {
+
+                                var k = document.getElementsByName(this.value).length;
+                                var son = 0;
+                                if (k > 0) {
+                                    son = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                                    if (b.MAX_ISEMRINO.toString().length == 1) {
+                                        x = ".0000" + b.MAX_ISEMRINO + ".0" + son;
+                                    } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                        x = ".000" + b.MAX_ISEMRINO + ".0" + son;
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                        x = ".00" + b.MAX_ISEMRINO + ".0" + son;
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                        x = ".0" + b.MAX_ISEMRINO + ".0" + son;
+                                    } else {
+                                        x = ".00000.00";
+                                    }
+                                } else {
+                                    if (b.MAX_ISEMRINO.toString().length == 1) {
+                                        x = ".0000" + b.MAX_ISEMRINO + ".01";
+                                    } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                        x = ".000" + b.MAX_ISEMRINO + ".01";
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                        x = ".00" + b.MAX_ISEMRINO + ".01";
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                        x = ".0" + b.MAX_ISEMRINO + ".01";
+                                    } else {
+                                        x = ".00000.00";
+                                    }
+                                }
+
+
+
+                                input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                                input1.name = this.value;
+                            }
+
+
+                        }
+
+                        input1.setAttribute("readonly", "");
+
+                        cell.appendChild(input1);
+                    }
+                    else if (i == 2) {
+                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+
+                        var div3 = document.createElement("div");
+                        var div4 = document.createElement("div");
+                        div3.id = "myDropdown" + rownum;
+                        div3.className = "dropdown-content";
+                        div4.className = "dropdown-content2";
+                        div4.id = Math.random();
+                        var input2 = document.createElement("input");
+                        input2.type = "text";
+                        input2.className = "myInput w-100";
+                        input2.placeholder = "Ara..";
+                        input2.onkeyup = function () {
+                            var input, filter, ul, li, a, i;
+                            filter = this.value.toUpperCase();
+                            var drop = div4.id;
+                            div4 = document.getElementById(drop);
+                            a = div4.getElementsByTagName("a");
+                            if (filter.length > 0) {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+                                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                        a[i].style.display = "block";
+                                        div4.style.display = "block";
+                                    } else {
+                                        a[i].style.display = "none";
+                                        div4.style.display = "none";
+                                    }
+                                }
+                            } else {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+
+                                    a[i].style.display = "none";
+                                    div4.style.display = "none";
+
+                                }
+                            }
+                        };
+                        div3.appendChild(input2);
+                        var jsonObj1 = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                        for (let x = 0; x < jsonObj1.length; x++) {
+                            var adiv = document.createElement("a");
+                            adiv.innerHTML = jsonObj1[x].STOK_ADI;
+                            adiv.style = "display:block";
+                            adiv.onclick = function () {
+                                input2.value = this.text;
+                                var all = div4.getElementsByTagName("a");
+                                for (let i = 0; i < all.length; i++) {
+                                    all[i].style = "display:none";
+                                    div4.style = "display:none";
+
+                                }
+                                var filterobj = jsonObj1.filter(x => x.STOK_ADI === this.text);
+                                for (let i = 0; i < filterobj.length; i++) {
+
+                                    var newA = document.createElement("a");
+                                    newA.innerHTML = filterobj[i].FISNO + "→" + filterobj[i].CARI_ISIM;
+                                    newA.style = "display:block";
+                                    div2.style = "display:block";
+                                    newA.onclick = function () {
+
+                                        var all = div.getElementsByTagName("a");
+                                        for (let i = 0; i < all.length; i++) {
+                                            all[i].style = "display:none";
+                                            div2.style = "display:none";
+                                        }
+
+                                        input3.value = this.text;
+                                    };
+                                    div2.appendChild(newA);
+                                }
+
+
+                            };
+                            div4.style = "text-align: left";
+                            div4.appendChild(adiv);
+                        }
+                        div3.appendChild(div4);
+
+
+
+
+
+
+                        cell.appendChild(div3);
+                    }
+                    else if (i == 3 || i == 4) {
+                        if (row.getElementsByTagName("select")[0].value == "DL01") {
+
+                            input.id = Math.random() * 100;
+                            cell.appendChild(input);
+                            idIndex.push(input.id);
+                        } else {
+                            input.setAttribute("disabled", "");
+                            input.id = Math.random() * 100;
+                            cell.appendChild(input);
+                            idIndex.push(input.id);
+                        }
+
+                        if (i == 4) {
+                            input.onkeyup = function changeadet(e) {
+                                var rows = table.getElementsByTagName("tr");
+                                var top = 0;
+
+                                for (let i = 1; i < rows.length; i++) {
+                                    top = top + (parseInt(rows[i].getElementsByTagName("input")[3].value) * parseInt(rows[i].getElementsByTagName("input")[4].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
+                                }
+                               
+                                    document.getElementById("fireagir").value = ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) - top;
+                                
+                                if (fireyuzde == 0) {
+                                    document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
+                                } else {
+                                    document.getElementById("fireyuzde").value = ((fireagirlik / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
+                                }
+                                
+                                
+                                document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
+
+                                row.getElementsByTagName("input")[5].value = thousands_separators(parseFloat((parseInt(row.getElementsByTagName("input")[4].value) * parseInt(row.getElementsByTagName("input")[3].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value)).toFixed(2));
+                            };
+                        }
+
+                    }
+                    else if (i == 6) {
+                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                        var div = document.createElement("div");
+                        var div2 = document.createElement("div");
+                        div.id = "myDropdown" + Math.random();
+                        div.className = "dropdown-content";
+                        div2.className = "dropdown-content2";
+                        div2.id = Math.random();
+                        var input3 = document.createElement("input");
+                        input3.type = "text";
+                        input3.className = "myInput w-100";
+                        input3.placeholder = "Ara..";
+                        input3.onkeyup = function () {
+                            var input, filter, ul, li, a, i;
+                            filter = this.value.toUpperCase();
+                            var drop = div2.id;
+                            div2 = document.getElementById(drop);
+                            a = div2.getElementsByTagName("a");
+                            if (filter.length > 0) {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+                                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                        a[i].style.display = "block";
+                                    } else {
+                                        a[i].style.display = "none";
+                                    }
+                                }
+                            } else {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+
+                                    a[i].style.display = "none";
+
+                                }
+                            }
+                        };
+                        div.appendChild(input3);
+                        for (let m = 0; m < jsonObj.length; m++) {
+                            var adiv = document.createElement("a");
+                            adiv.innerHTML = jsonObj[m].CARI_ISIM;
+                            adiv.onclick = function () {
+
+                                var all = div.getElementsByTagName("a");
+                                for (let i = 0; i < all.length; i++) {
+                                    all[i].style = "display:none";
+                                }
+
+                                input3.value = this.text;
+                            };
+                            //div2.appendChild(adiv);
+                        }
+                        div2.style = "text-align: left"
+                        div2.id = rownum * 10 + "input";
+                        div.appendChild(div2);
+
+
+
+
+
+
+                        cell.appendChild(div);
+                    }
+
+
+                    else {
+                        var ag = document.createElement("input");
+                        ag.className = "border-0 text-center";
+                        cell.appendChild(ag);
+                    }
+
+                } else if (x == 1) {
+                    if (i == 0) {
+                        var oraninput = document.createElement("input");
+                        oraninput.className = "border-0 w-px-75 text-center";
+                        oraninput.type = "number";
+                        oraninput.max = "1.00";
+                        oraninput.min = "0.00";
+                        oraninput.value = "1.00";
+                        oraninput.onkeyup = function () {
+                            if (this.value > 1) {
+                                this.value = "1.00";
+                            } else if (this.value < 0) {
+                                this.value = "0.00";
+                            }
+                        };
+                        cell.appendChild(oraninput);
+                    }
+                    else if (i == 1) {
+                        cell.className = "p-0";
+                        select.value = table.getElementsByTagName("select")[selectindex].value;
+                        cell.appendChild(select);
+
+                        cell.style = "display:flex";
+                        var input1 = document.createElement("input");
+                        input1.className = "border-0 ms-1 text-center";
+                        input1.style = "width:200px";
+                        input1.name = select.value;
+
+                        if (selectindex != 0) {
+                            if (table.getElementsByTagName("select")[selectindex].value == table.getElementsByTagName("select")[selectindex - 1].value) {
+
+                                input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+
+
+
+                            } else {
+
+                                if (document.getElementsByName(select.value).length > 1) {
+                                    input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+                                } else {
+                                    input1.value = document.getElementsByName(select.value)[0].value.split('.')[0] + "." + document.getElementsByName(select.value)[0].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[0].value.split('.')[2]) + 1).toString();
+                                }
+
+
+
+                            }
+
+                        } else {
+                            input1.value = document.getElementsByName(select.value)[selectindex].value.split('.')[0] + "." + document.getElementsByName(select.value)[selectindex].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[selectindex].value.split('.')[2]) + 1).toString();
+
+
+                        }
+
+
+                        select.style = "width:100px"
+                        select.name = "select1";
+                        select.onchange = function () {
+                            if (this.value == "DL01") {
+                                document.getElementById(idIndex[0]).removeAttribute("disabled");
+                                document.getElementById(idIndex[1]).removeAttribute("disabled");
+                            } else {
+                                document.getElementById(idIndex[0]).setAttribute("disabled", "");
+                                document.getElementById(idIndex[1]).setAttribute("disabled", "");
+                            }
+                            select.value = input1.name;
+                            var today = new Date();
+                            var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+                            var b = jsonObj.find(x => x.MAK_KODU === this.value);
+                            var x = "";
+                            var y = (rownum - 1 - 2) * (6 + rownum - 1 - 2) + 1;
+                            if (y == 0) {
+                                y = 1;
+                            }
+
+
+                            if (this.value == table.getElementsByTagName("select")[selectindex - 1].value) {
+
+                                var d = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                                if (b.MAX_ISEMRINO.toString().length == 1) {
+                                    x = ".0000" + b.MAX_ISEMRINO + ".0" + d;
+                                } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                    x = ".000" + b.MAX_ISEMRINO + ".0" + d;
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                    x = ".00" + b.MAX_ISEMRINO + ".0" + d;
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                    x = ".0" + b.MAX_ISEMRINO + ".0" + d;
+                                } else {
+                                    x = ".00000";
+                                }
+                                input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                                input1.name = this.value;
+                            } else {
+
+                                var k = document.getElementsByName(this.value).length;
+                                var son = 0;
+                                if (k > 0) {
+                                    son = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                                    if (b.MAX_ISEMRINO.toString().length == 1) {
+                                        x = ".0000" + b.MAX_ISEMRINO + ".0" + son;
+                                    } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                        x = ".000" + b.MAX_ISEMRINO + ".0" + son;
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                        x = ".00" + b.MAX_ISEMRINO + ".0" + son;
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                        x = ".0" + b.MAX_ISEMRINO + ".0" + son;
+                                    } else {
+                                        x = ".00000.00";
+                                    }
+                                } else {
+                                    if (b.MAX_ISEMRINO.toString().length == 1) {
+                                        x = ".0000" + b.MAX_ISEMRINO + ".01";
+                                    } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                        x = ".000" + b.MAX_ISEMRINO + ".01";
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                        x = ".00" + b.MAX_ISEMRINO + ".01";
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                        x = ".0" + b.MAX_ISEMRINO + ".01";
+                                    } else {
+                                        x = ".00000.00";
+                                    }
+                                }
+
+
+
+                                input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                                input1.name = this.value;
+                            }
+
+
+                        }
+
+                        input1.setAttribute("readonly", "");
+
+                        cell.appendChild(input1);
+                    }
+                    else if (i == 2) {
+                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+
+                        var div3 = document.createElement("div");
+                        var div4 = document.createElement("div");
+                        div3.id = "myDropdown" + rownum;
+                        div3.className = "dropdown-content";
+                        div4.className = "dropdown-content2";
+                        div4.id = Math.random();
+                        var input2 = document.createElement("input");
+                        input2.type = "text";
+                        input2.className = "myInput w-100";
+                        input2.placeholder = "Ara..";
+                        input2.onkeyup = function () {
+                            var input, filter, ul, li, a, i;
+                            filter = this.value.toUpperCase();
+                            var drop = div4.id;
+                            div4 = document.getElementById(drop);
+                            a = div4.getElementsByTagName("a");
+                            if (filter.length > 0) {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+                                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                        a[i].style.display = "block";
+                                        div4.style.display = "block";
+                                    } else {
+                                        a[i].style.display = "none";
+                                        div4.style.display = "none";
+                                    }
+                                }
+                            } else {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+
+                                    a[i].style.display = "none";
+                                    div4.style.display = "none";
+                                }
+                            }
+                        };
+                        div3.appendChild(input2);
+                        var jsonObj1 = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                        for (let x = 0; x < jsonObj.length; x++) {
+                            var adiv = document.createElement("a");
+                            adiv.innerHTML = jsonObj[x].STOK_ADI;
+                            adiv.onclick = function () {
+                                input2.value = this.text;
+                                var all = div4.getElementsByTagName("a");
+                                for (let i = 0; i < all.length; i++) {
+                                    all[i].style = "display:none";
+
+
+                                }
+                                var filterobj = jsonObj1.filter(x => x.STOK_ADI === this.text);
+                                for (let i = 0; i < filterobj.length; i++) {
+
+                                    var newA = document.createElement("a");
+                                    newA.innerHTML = filterobj[i].FISNO + "→" + filterobj[i].CARI_ISIM;
+                                    newA.style = "display:block";
+                                    newA.onclick = function () {
+
+                                        var all = div.getElementsByTagName("a");
+                                        for (let i = 0; i < all.length; i++) {
+                                            all[i].style = "display:none";
+                                        }
+
+                                        input3.value = this.text;
+                                    };
+                                    div2.appendChild(newA);
+                                }
+
+
+                            };
+                            div4.style = "text-align: left";
+                            div4.appendChild(adiv);
+                        }
+                        div3.appendChild(div4);
+
+
+
+
+
+
+                        cell.appendChild(div3);
+                    }
+                    else if (i == 3 || i == 4) {
+                        if (row.getElementsByTagName("select")[0].value == "DL01") {
+
+                            input.id = Math.random() * 100;
+                            cell.appendChild(input);
+                            idIndex.push(input.id);
+                        } else {
+                            input.setAttribute("disabled", "");
+                            input.id = Math.random() * 100;
+                            cell.appendChild(input);
+                            idIndex.push(input.id);
+                        }
+                    }
+                    else if (i == th.length) {
+                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                        var div = document.createElement("div");
+                        var div2 = document.createElement("div");
+                        div.id = "myDropdown" + Math.random();
+                        div.className = "dropdown-content";
+                        div2.className = "dropdown-content2";
+                        div2.id = Math.random();
+                        var input3 = document.createElement("input");
+                        input3.type = "text";
+                        input3.className = "myInput w-100";
+                        input3.placeholder = "Ara..";
+                        input3.onkeyup = function () {
+                            var input, filter, ul, li, a, i;
+                            filter = this.value.toUpperCase();
+                            var drop = div2.id;
+                            div2 = document.getElementById(drop);
+                            a = div2.getElementsByTagName("a");
+                            if (filter.length > 0) {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+                                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                        a[i].style.display = "block";
+                                    } else {
+                                        a[i].style.display = "none";
+                                    }
+                                }
+                            } else {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+
+                                    a[i].style.display = "none";
+
+                                }
+                            }
+                        };
+                        div.appendChild(input3);
+                        for (let x = 0; x < jsonObj.length; x++) {
+                            var adiv = document.createElement("a");
+                            adiv.innerHTML = jsonObj[x].CARI_ISIM;
+                            adiv.onclick = function () {
+
+                                var all = div.getElementsByTagName("a");
+                                for (let i = 0; i < all.length; i++) {
+                                    all[i].style = "display:none";
+                                }
+
+                                input3.value = this.text;
+                            };
+                            //div2.appendChild(adiv);
+                        }
+                        div2.style = "text-align: left"
+                        div2.id = rownum * 10 + "input";
+                        div.appendChild(div2);
+
+
+
+
+
+
+                        cell.appendChild(div);
+                    }
+                    else if (i == th.length - 7) {
+                        if (x == 1) {
+                            if (i == th.length - 4 || i == th.length - 8) {
+                                cell.style = "border-bottom:hidden";
+                            } else {
+                                if (i == th.length - 7) {
+
+                                } else {
+                                    cell.appendChild(input);
+                                }
+
+                            }
+
+
+                            cell.className = "p-0";
+                            select.value = table.getElementsByTagName("select")[selectindex].value;
+                            cell.appendChild(select);
+
+                            cell.style = "display:flex";
+                            var input1 = document.createElement("input");
+                            input1.className = "border-0 ms-1 text-center";
+                            input1.style = "width:200px";
+                            input1.name = select.value;
+
+                            if (selectindex != 0) {
+                                if (table.getElementsByTagName("select")[selectindex].value == table.getElementsByTagName("select")[selectindex - 1].value) {
+
+                                    input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+
+
+
+                                } else {
+
+                                    if (document.getElementsByName(select.value).length > 1) {
+                                        input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+                                    } else {
+                                        input1.value = document.getElementsByName(select.value)[0].value.split('.')[0] + "." + document.getElementsByName(select.value)[0].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[0].value.split('.')[2]) + 1).toString();
+                                    }
+
+
+
+                                }
+
+                            } else {
+                                input1.value = document.getElementsByName(select.value)[selectindex].value.split('.')[0] + "." + document.getElementsByName(select.value)[selectindex].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[selectindex].value.split('.')[2]) + 1).toString();
+
+
+                            }
+
+
+
+                            select.name = "select1";
+                            select.onchange = function () {
+                                if (this.value == "DL01") {
+                                    document.getElementById(idIndex[0]).removeAttribute("disabled");
+                                    document.getElementById(idIndex[1]).removeAttribute("disabled");
+                                } else {
+                                    document.getElementById(idIndex[0]).setAttribute("disabled", "");
+                                    document.getElementById(idIndex[1]).setAttribute("disabled", "");
+                                }
+                                select.value = input1.name;
+                                var today = new Date();
+                                var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+                                var b = jsonObj.find(x => x.MAK_KODU === this.value);
+                                var x = "";
+                                var y = (rownum - 1 - 2) * (6 + rownum - 1 - 2) + 1;
+                                if (y == 0) {
+                                    y = 1;
+                                }
+
+
+                                if (this.value == table.getElementsByTagName("select")[selectindex - 1].value) {
+
+                                    var d = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                                    if (b.MAX_ISEMRINO.toString().length == 1) {
+                                        x = ".0000" + b.MAX_ISEMRINO + ".0" + d;
+                                    } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                        x = ".000" + b.MAX_ISEMRINO + ".0" + d;
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                        x = ".00" + b.MAX_ISEMRINO + ".0" + d;
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                        x = ".0" + b.MAX_ISEMRINO + ".0" + d;
+                                    } else {
+                                        x = ".00000";
+                                    }
+                                    input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                                    input1.name = this.value;
+                                } else {
+
+                                    var k = document.getElementsByName(this.value).length;
+                                    var son = 0;
+                                    if (k > 0) {
+                                        son = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                                        if (b.MAX_ISEMRINO.toString().length == 1) {
+                                            x = ".0000" + b.MAX_ISEMRINO + ".0" + son;
+                                        } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                            x = ".000" + b.MAX_ISEMRINO + ".0" + son;
+                                        }
+                                        else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                            x = ".00" + b.MAX_ISEMRINO + ".0" + son;
+                                        }
+                                        else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                            x = ".0" + b.MAX_ISEMRINO + ".0" + son;
+                                        } else {
+                                            x = ".00000.00";
+                                        }
+                                    } else {
+                                        if (b.MAX_ISEMRINO.toString().length == 1) {
+                                            x = ".0000" + b.MAX_ISEMRINO + ".01";
+                                        } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                            x = ".000" + b.MAX_ISEMRINO + ".01";
+                                        }
+                                        else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                            x = ".00" + b.MAX_ISEMRINO + ".01";
+                                        }
+                                        else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                            x = ".0" + b.MAX_ISEMRINO + ".01";
+                                        } else {
+                                            x = ".00000.00";
+                                        }
+                                    }
+
+
+
+                                    input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                                    input1.name = this.value;
+                                }
+
+
+                            }
+
+                            input1.setAttribute("readonly", "");
+
+                            cell.appendChild(input1);
+
+                        }
+                        else if (x == 2) {
+                            if (i == th.length - 8 || i == th.length - 12 || i == th.length - 4) {
+                                cell.style = "border-bottom:hidden";
+                            } else {
+                                cell.appendChild(input);
+                            }
+                        }
+                        else if (x == 3) {
+                            if (i == th.length - 8 || i == th.length - 12 || i == th.length - 4 || i == th.length - 16) {
+                                cell.style = "border-bottom:hidden";
+                            } else {
+                                cell.appendChild(input);
+                            }
+                        }
+                        else {
+                            cell.appendChild(input);
+                        }
+                    }
+                    else if (i == th.length - 8) {
+                        cell.style = "border-bottom:hidden";
+                    }
+                    else if (i == th.length - 4) {
+                        cell.style = "border-bottom:hidden";
+                    }
+                    else if (i == th.length - 6) {
+                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+
+                        var div3 = document.createElement("div");
+                        var div4 = document.createElement("div");
+                        div3.id = "myDropdown" + rownum;
+                        div3.className = "dropdown-content";
+                        div4.className = "dropdown-content2";
+                        div4.id = Math.random();
+                        var input2 = document.createElement("input");
+                        input2.type = "text";
+                        input2.className = "myInput w-100";
+                        input2.placeholder = "Ara..";
+                        input2.onkeyup = function () {
+                            var input, filter, ul, li, a, i;
+                            filter = this.value.toUpperCase();
+                            var drop = div4.id;
+                            div4 = document.getElementById(drop);
+                            a = div4.getElementsByTagName("a");
+                            if (filter.length > 0) {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+                                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                        a[i].style.display = "block";
+                                    } else {
+                                        a[i].style.display = "none";
+                                    }
+                                }
+                            } else {
+                                for (i = 0; i < a.length; i++) {
+                                    txtValue = a[i].textContent || a[i].innerText;
+
+                                    a[i].style.display = "none";
+
+                                }
+                            }
+                        };
+                        div3.appendChild(input2);
+                        var jsonObj1 = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                        for (let x = 0; x < jsonObj.length; x++) {
+                            var adiv = document.createElement("a");
+                            adiv.innerHTML = jsonObj[x].STOK_ADI;
+                            adiv.onclick = function () {
+                                input2.value = this.text;
+                                var all = div4.getElementsByTagName("a");
+                                for (let i = 0; i < all.length; i++) {
+                                    all[i].style = "display:none";
+
+
+                                }
+                                var filterobj = jsonObj1.filter(x => x.STOK_ADI === this.text);
+                                for (let i = 0; i < filterobj.length; i++) {
+
+                                    var newA = document.createElement("a");
+                                    newA.innerHTML = filterobj[i].FISNO + "→" + filterobj[i].CARI_ISIM;
+                                    newA.style = "display:block";
+                                    newA.onclick = function () {
+
+                                        var all = div.getElementsByTagName("a");
+                                        for (let i = 0; i < all.length; i++) {
+                                            all[i].style = "display:none";
+                                        }
+
+                                        input3.value = this.text;
+                                    };
+                                    div2.appendChild(newA);
+                                }
+
+
+                            };
+                            div4.style = "text-align: left";
+                            div4.appendChild(adiv);
+                        }
+                        div3.appendChild(div4);
+
+
+
+
+
+
+                        cell.appendChild(div3);
+                    }
+                    else {
+                        cell.appendChild(document.createElement("input"));
+                    }
+                }
+                else {
+                    if (i == 0) {
+                    var oraninput = document.createElement("input");
+                    oraninput.className = "border-0 w-px-75 text-center";
+                    oraninput.type = "number";
+                    oraninput.max = "1.00";
+                    oraninput.min = "0.00";
+                    oraninput.value = "1.00";
+                    oraninput.onkeyup = function () {
+                        if (this.value > 1) {
+                            this.value = "1.00";
+                        } else if (this.value < 0) {
+                            this.value = "0.00";
+                        }
+                    };
+                    cell.appendChild(oraninput);
+                }
+                else if (i == 1) {
+                    cell.className = "p-0";
+                        select.value = table.getElementsByTagName("select")[selectindex].value;
+                    cell.appendChild(select);
+
+                    cell.style = "display:flex";
+                    var input1 = document.createElement("input");
+                    input1.className = "border-0 ms-1 text-center";
+                    input1.style = "width:200px";
+                    input1.name = select.value;
+
+                    if (selectindex != 0) {
+                        if (table.getElementsByTagName("select")[selectindex].value == table.getElementsByTagName("select")[selectindex - 1].value) {
+
+                            input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+
+
+
+                        } else {
+
+                            if (document.getElementsByName(select.value).length > 1) {
+                                input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+                            } else {
+                                input1.value = document.getElementsByName(select.value)[0].value.split('.')[0] + "." + document.getElementsByName(select.value)[0].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[0].value.split('.')[2]) + 1).toString();
+                            }
+
+
+
+                        }
+
+                    } else {
+                        input1.value = document.getElementsByName(select.value)[selectindex].value.split('.')[0] + "." + document.getElementsByName(select.value)[selectindex].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[selectindex].value.split('.')[2]) + 1).toString();
+
+
+                    }
+
+
+                    select.style = "width:100px"
+                    select.name = "select1";
+                    select.onchange = function () {
+                        if (this.value == "DL01") {
+                            document.getElementById(idIndex[0]).removeAttribute("disabled");
+                            document.getElementById(idIndex[1]).removeAttribute("disabled");
+                        } else {
+                            document.getElementById(idIndex[0]).setAttribute("disabled", "");
+                            document.getElementById(idIndex[1]).setAttribute("disabled", "");
+                        }
+                        select.value = input1.name;
+                        var today = new Date();
+                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+                        var b = jsonObj.find(x => x.MAK_KODU === this.value);
+                        var x = "";
+                        var y = (rownum - 1 - 2) * (6 + rownum - 1 - 2) + 1;
+                        if (y == 0) {
+                            y = 1;
+                        }
+
+
+                        if (this.value == table.getElementsByTagName("select")[selectindex - 1].value) {
+
+                            var d = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                            if (b.MAX_ISEMRINO.toString().length == 1) {
+                                x = ".0000" + b.MAX_ISEMRINO + ".0" + d;
+                            } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                x = ".000" + b.MAX_ISEMRINO + ".0" + d;
+                            }
+                            else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                x = ".00" + b.MAX_ISEMRINO + ".0" + d;
+                            }
+                            else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                x = ".0" + b.MAX_ISEMRINO + ".0" + d;
+                            } else {
+                                x = ".00000";
+                            }
+                            input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                            input1.name = this.value;
+                        } else {
+
+                            var k = document.getElementsByName(this.value).length;
+                            var son = 0;
+                            if (k > 0) {
+                                son = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                                if (b.MAX_ISEMRINO.toString().length == 1) {
+                                    x = ".0000" + b.MAX_ISEMRINO + ".0" + son;
+                                } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                    x = ".000" + b.MAX_ISEMRINO + ".0" + son;
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                    x = ".00" + b.MAX_ISEMRINO + ".0" + son;
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                    x = ".0" + b.MAX_ISEMRINO + ".0" + son;
+                                } else {
+                                    x = ".00000.00";
+                                }
+                            } else {
+                                if (b.MAX_ISEMRINO.toString().length == 1) {
+                                    x = ".0000" + b.MAX_ISEMRINO + ".01";
+                                } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                    x = ".000" + b.MAX_ISEMRINO + ".01";
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                    x = ".00" + b.MAX_ISEMRINO + ".01";
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                    x = ".0" + b.MAX_ISEMRINO + ".01";
+                                } else {
+                                    x = ".00000.00";
+                                }
+                            }
+
+
+
+                            input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                            input1.name = this.value;
+                        }
+
+
+                    }
+
+                    input1.setAttribute("readonly", "");
+
+                    cell.appendChild(input1);
+                }
+                else if (i == 2) {
+                    var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+
+                    var div3 = document.createElement("div");
+                    var div4 = document.createElement("div");
+                    div3.id = "myDropdown" + rownum;
+                    div3.className = "dropdown-content";
+                    div4.className = "dropdown-content2";
+                    div4.id = Math.random();
+                    var input2 = document.createElement("input");
+                    input2.type = "text";
+                    input2.className = "myInput w-100";
+                    input2.placeholder = "Ara..";
+                    input2.onkeyup = function () {
+                        var input, filter, ul, li, a, i;
+                        filter = this.value.toUpperCase();
+                        var drop = div4.id;
+                        div4 = document.getElementById(drop);
+                        a = div4.getElementsByTagName("a");
+                        if (filter.length > 0) {
+                            for (i = 0; i < a.length; i++) {
+                                txtValue = a[i].textContent || a[i].innerText;
+                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                    a[i].style.display = "block";
+                                } else {
+                                    a[i].style.display = "none";
+                                }
+                            }
+                        } else {
+                            for (i = 0; i < a.length; i++) {
+                                txtValue = a[i].textContent || a[i].innerText;
+
+                                a[i].style.display = "none";
+
+                            }
+                        }
+                    };
+                    div3.appendChild(input2);
+                    var jsonObj1 = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                    for (let x = 0; x < jsonObj.length; x++) {
+                        var adiv = document.createElement("a");
+                        adiv.innerHTML = jsonObj[x].STOK_ADI;
+                        adiv.onclick = function () {
+                            input2.value = this.text;
+                            var all = div4.getElementsByTagName("a");
+                            for (let i = 0; i < all.length; i++) {
+                                all[i].style = "display:none";
+
+
+                            }
+                            var filterobj = jsonObj1.filter(x => x.STOK_ADI === this.text);
+                            for (let i = 0; i < filterobj.length; i++) {
+
+                                var newA = document.createElement("a");
+                                newA.innerHTML = filterobj[i].FISNO + "→" + filterobj[i].CARI_ISIM;
+                                newA.style = "display:block";
+                                newA.onclick = function () {
+
+                                    var all = div.getElementsByTagName("a");
+                                    for (let i = 0; i < all.length; i++) {
+                                        all[i].style = "display:none";
+                                    }
+
+                                    input3.value = this.text;
+                                };
+                                div2.appendChild(newA);
+                            }
+
+
+                        };
+                        div4.style = "text-align: left";
+                        div4.appendChild(adiv);
+                    }
+                    div3.appendChild(div4);
+
+
+
+
+
+
+                    cell.appendChild(div3);
+                }
+                else if (i == 3 || i == 4) {
+                        if (row.getElementsByTagName("select")[0].value == "DL01") {
+
+                            input.id = Math.random() * 100;
+                            cell.appendChild(input);
+                            idIndex.push(input.id);
+                        } else {
+                            input.setAttribute("disabled", "");
+                            input.id = Math.random() * 100;
+                            cell.appendChild(input);
+                            idIndex.push(input.id);
+                        }
+                }
+                else if (i == th.length) {
+                    var jsonObj = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                    var div = document.createElement("div");
+                    var div2 = document.createElement("div");
+                    div.id = "myDropdown" + Math.random();
+                    div.className = "dropdown-content";
+                    div2.className = "dropdown-content2";
+                    div2.id = Math.random();
+                    var input3 = document.createElement("input");
+                    input3.type = "text";
+                    input3.className = "myInput w-100";
+                    input3.placeholder = "Ara..";
+                    input3.onkeyup = function () {
+                        var input, filter, ul, li, a, i;
+                        filter = this.value.toUpperCase();
+                        var drop = div2.id;
+                        div2 = document.getElementById(drop);
+                        a = div2.getElementsByTagName("a");
+                        if (filter.length > 0) {
+                            for (i = 0; i < a.length; i++) {
+                                txtValue = a[i].textContent || a[i].innerText;
+                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                    a[i].style.display = "block";
+                                } else {
+                                    a[i].style.display = "none";
+                                }
+                            }
+                        } else {
+                            for (i = 0; i < a.length; i++) {
+                                txtValue = a[i].textContent || a[i].innerText;
+
+                                a[i].style.display = "none";
+
+                            }
+                        }
+                    };
+                    div.appendChild(input3);
+                    for (let x = 0; x < jsonObj.length; x++) {
+                        var adiv = document.createElement("a");
+                        adiv.innerHTML = jsonObj[x].CARI_ISIM;
+                        adiv.onclick = function () {
+
+                            var all = div.getElementsByTagName("a");
+                            for (let i = 0; i < all.length; i++) {
+                                all[i].style = "display:none";
+                            }
+
+                            input3.value = this.text;
+                        };
+                        //div2.appendChild(adiv);
+                    }
+                    div2.style = "text-align: left"
+                    div2.id = rownum * 10 + "input";
+                    div.appendChild(div2);
+
+
+
+
+
+
+                    cell.appendChild(div);
+                }
+                else if (i == th.length - 7) {
+                    if (x == 1) {
+                        if (i == th.length - 4 || i == th.length - 8) {
+                            cell.style = "border-bottom:hidden";
+                        } else {
+                            if (i == th.length - 7) {
+
+                            } else {
+                                cell.appendChild(input);
+                            }
+
+                        }
+
+
+                        cell.className = "p-0";
+                        select.value = table.getElementsByTagName("select")[selectindex].value;
+                        cell.appendChild(select);
+
+                        cell.style = "display:flex";
+                        var input1 = document.createElement("input");
+                        input1.className = "border-0 ms-1 text-center";
+                        input1.style = "width:200px";
+                        input1.name = select.value;
+
+                        if (selectindex != 0) {
+                            if (table.getElementsByTagName("select")[selectindex].value == table.getElementsByTagName("select")[selectindex - 1].value) {
+
+                                input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+
+
+
+                            } else {
+
+                                if (document.getElementsByName(select.value).length > 1) {
+                                    input1.value = document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[0] + "." + document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[document.getElementsByName(select.value).length - 1].value.split('.')[2]) + 1).toString();
+                                } else {
+                                    input1.value = document.getElementsByName(select.value)[0].value.split('.')[0] + "." + document.getElementsByName(select.value)[0].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[0].value.split('.')[2]) + 1).toString();
+                                }
+
+
+
+                            }
+
+                        } else {
+                            input1.value = document.getElementsByName(select.value)[selectindex].value.split('.')[0] + "." + document.getElementsByName(select.value)[selectindex].value.split('.')[1] + ".0" + (parseInt(document.getElementsByName(select.value)[selectindex].value.split('.')[2]) + 1).toString();
+
+
+                        }
+
+
+
+                        select.name = "select1";
+                        select.onchange = function () {
+                            if (this.value == "DL01") {
+                                document.getElementById(idIndex[0]).removeAttribute("disabled");
+                                document.getElementById(idIndex[1]).removeAttribute("disabled");
+                            } else {
+                                document.getElementById(idIndex[0]).setAttribute("disabled", "");
+                                document.getElementById(idIndex[1]).setAttribute("disabled", "");
+                            }
+                            select.value = input1.name;
+                            var today = new Date();
+                            var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+                            var b = jsonObj.find(x => x.MAK_KODU === this.value);
+                            var x = "";
+                            var y = (rownum - 1 - 2) * (6 + rownum - 1 - 2) + 1;
+                            if (y == 0) {
+                                y = 1;
+                            }
+
+
+                            if (this.value == table.getElementsByTagName("select")[selectindex - 1].value) {
+
+                                var d = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                                if (b.MAX_ISEMRINO.toString().length == 1) {
+                                    x = ".0000" + b.MAX_ISEMRINO + ".0" + d;
+                                } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                    x = ".000" + b.MAX_ISEMRINO + ".0" + d;
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                    x = ".00" + b.MAX_ISEMRINO + ".0" + d;
+                                }
+                                else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                    x = ".0" + b.MAX_ISEMRINO + ".0" + d;
+                                } else {
+                                    x = ".00000";
+                                }
+                                input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                                input1.name = this.value;
+                            } else {
+
+                                var k = document.getElementsByName(this.value).length;
+                                var son = 0;
+                                if (k > 0) {
+                                    son = parseInt(document.getElementsByName(this.value)[(document.getElementsByName(this.value).length) - 1].value.substring(13)) + 1;
+
+                                    if (b.MAX_ISEMRINO.toString().length == 1) {
+                                        x = ".0000" + b.MAX_ISEMRINO + ".0" + son;
+                                    } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                        x = ".000" + b.MAX_ISEMRINO + ".0" + son;
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                        x = ".00" + b.MAX_ISEMRINO + ".0" + son;
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                        x = ".0" + b.MAX_ISEMRINO + ".0" + son;
+                                    } else {
+                                        x = ".00000.00";
+                                    }
+                                } else {
+                                    if (b.MAX_ISEMRINO.toString().length == 1) {
+                                        x = ".0000" + b.MAX_ISEMRINO + ".01";
+                                    } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                                        x = ".000" + b.MAX_ISEMRINO + ".01";
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 3) {
+                                        x = ".00" + b.MAX_ISEMRINO + ".01";
+                                    }
+                                    else if (b.MAX_ISEMRINO.toString().length == 4) {
+                                        x = ".0" + b.MAX_ISEMRINO + ".01";
+                                    } else {
+                                        x = ".00000.00";
+                                    }
+                                }
+
+
+
+                                input1.value = this.value + today.getFullYear().toString().substring(2) + x;
+                                input1.name = this.value;
+                            }
+
+
+                        }
+
+                        input1.setAttribute("readonly", "");
+
+                        cell.appendChild(input1);
+
+                    }
+                    else if (x == 2) {
+                        if (i == th.length - 8 || i == th.length - 12 || i == th.length - 4) {
+                            cell.style = "border-bottom:hidden";
+                        } else {
+                            cell.appendChild(input);
+                        }
+                    }
+                    else if (x == 3) {
+                        if (i == th.length - 8 || i == th.length - 12 || i == th.length - 4 || i == th.length - 16) {
+                            cell.style = "border-bottom:hidden";
+                        } else {
+                            cell.appendChild(input);
+                        }
+                    }
+                    else {
+                        cell.appendChild(input);
+                    }
+                }
+                else if (i == th.length - 8) {
+                    cell.style = "border-bottom:hidden";
+                }
+                else if (i == th.length - 4) {
+                    cell.style = "border-bottom:hidden";
+                    }
+                    else if (i == th.length - 6) {
+                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+
+                    var div3 = document.createElement("div");
+                    var div4 = document.createElement("div");
+                    div3.id = "myDropdown" + rownum;
+                    div3.className = "dropdown-content";
+                    div4.className = "dropdown-content2";
+                    div4.id = Math.random();
+                    var input2 = document.createElement("input");
+                    input2.type = "text";
+                    input2.className = "myInput w-100";
+                    input2.placeholder = "Ara..";
+                    input2.onkeyup = function () {
+                        var input, filter, ul, li, a, i;
+                        filter = this.value.toUpperCase();
+                        var drop = div4.id;
+                        div4 = document.getElementById(drop);
+                        a = div4.getElementsByTagName("a");
+                        if (filter.length > 0) {
+                            for (i = 0; i < a.length; i++) {
+                                txtValue = a[i].textContent || a[i].innerText;
+                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                    a[i].style.display = "block";
+                                } else {
+                                    a[i].style.display = "none";
+                                }
+                            }
+                        } else {
+                            for (i = 0; i < a.length; i++) {
+                                txtValue = a[i].textContent || a[i].innerText;
+
+                                a[i].style.display = "none";
+
+                            }
+                        }
+                    };
+                    div3.appendChild(input2);
+                    var jsonObj1 = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                    for (let x = 0; x < jsonObj.length; x++) {
+                        var adiv = document.createElement("a");
+                        adiv.innerHTML = jsonObj[x].STOK_ADI;
+                        adiv.onclick = function () {
+                            input2.value = this.text;
+                            var all = div4.getElementsByTagName("a");
+                            for (let i = 0; i < all.length; i++) {
+                                all[i].style = "display:none";
+
+
+                            }
+                            var filterobj = jsonObj1.filter(x => x.STOK_ADI === this.text);
+                            for (let i = 0; i < filterobj.length; i++) {
+
+                                var newA = document.createElement("a");
+                                newA.innerHTML = filterobj[i].FISNO + "→" + filterobj[i].CARI_ISIM;
+                                newA.style = "display:block";
+                                newA.onclick = function () {
+
+                                    var all = div.getElementsByTagName("a");
+                                    for (let i = 0; i < all.length; i++) {
+                                        all[i].style = "display:none";
+                                    }
+
+                                    input3.value = this.text;
+                                };
+                                div2.appendChild(newA);
+                            }
+
+
+                        };
+                        div4.style = "text-align: left";
+                        div4.appendChild(adiv);
+                    }
+                    div3.appendChild(div4);
+
+
+
+
+
+
+                    cell.appendChild(div3);
+                    }
+                else {
+                    cell.appendChild(document.createElement("input"));
+                }
+                }
+
+
+
+
+                }
+            rownum++;
+                selectindex++;
+                
+            }
+
+            }
+
+
+
+
+
+        function removeRow() {
+
+
+            var table = document.getElementById("test");
+
+
+            if (rownum!= 2) {
+                var row = table.deleteRow(rownum-1)
+                rownum--;
+            }
+        }
+        var tableid = 0;
+        var tablerownum = 1;
+        function addRow1() {
+
+            // (B1) GET TABLE
+            var table = document.getElementById(tableid - 1 + "test1");
+            tablerownum = table.tBodies[0].rows.length;
+            // (B2) INSERT ROW
+
+            var row = table.insertRow();
+
+            var cell = row.insertCell();
+            cell.innerHTML = tablerownum;
+            // (B3) INSERT CELLS
+
+            for (let i = 0; i < 11; i++) {
+                var input = document.createElement("input");
+                input.className = "border-0 w-px-50";
+
+                cell = row.insertCell();
+                cell.className = "text-center";
+                cell.appendChild(input)
+            }
+
+
+
+
+        }
+        function removeRow1() {
+
+            // (B1) GET TABLE
+            var table = document.getElementById(tableid - 1 + "test1");
+            tablerownum = table.tBodies[0].rows.length;
+            // (B2) INSERT ROW
+            if (tablerownum != 1)
+                table.deleteRow(tablerownum - 1)
+
+
+        }
+        function addCell() {
+
+            var th = document.getElementById("th");
+            var table = document.getElementById("test");
+
+                var t = table.getElementsByTagName("tr");
+
+
+            table.style = "border-spacing:10px";
+            var i = table.getElementsByTagName("tr").length;
+            var cells = document.getElementById("th").getElementsByTagName("th").length;
+
+            if (x == 0) {
+                var cell = th.insertCell(cells - 2);
+                cell.outerHTML = "<th style='background-color:white;border-bottom:hidden;border-top:hidden;'></th>";
+
+                var cell3 = th.insertCell(cells - 2);
+                cell3.outerHTML = "<th>ADET</th>";
+
+                var cell2 = th.insertCell(cells - 2);
+                cell2.outerHTML = "<th>STOK ÖLÇÜLERİ</th>";
+
+                var cell = th.insertCell(cells - 2);
+                cell.outerHTML = "<th>İŞ EMRİ NO " + (x + 1) + "</th>";
+
+                var cell = th.insertCell(cells - 2);
+                cell.outerHTML = "<th style='background-color:white;border-bottom:hidden;border-top:hidden;'></th>";
+            }
+
+
+            if (x < 1) {
+                for (let i = 1; i < t.length; i++) {
+
+                    if (x == 0) {
+                        var g1 = t[i].insertCell(cells - 2);
+                        g1.style = "border-bottom:hidden border-0";
+                        var g3 = t[i].insertCell(cells - 2);
+                        var inp=document.createElement("input");
+                        inp.className = "text-center border-0";
+                        g3.appendChild(inp);
+                        g3.className = "p-0  ";
+                        var g4 = t[i].insertCell(cells - 2);
+                        g4.className = "p-0  ";
+                        var g2 = t[i].insertCell(cells - 2);
+
+                        var g = t[i].insertCell(cells - 2);
+                        g.style = "border-bottom:hidden ";
+
+                        var input1 = document.createElement("input");
+                        var select = document.createElement("select");
+                        select.className = "form-select bg-transparent ms-1";
+                        select.value = t[i].getElementsByTagName("select")[x].value;
+                        var option;
+                        var grup = document.getElementById("machinenames");
+                        for (let a = 0; a < grup.length; a++) {
+                            option = document.createElement('option');
+                            option.innerHTML = grup.options[a].text;
+                            option.value = grup.options[a].text;
+                            if (t[i].getElementsByTagName("select")[x].value == grup.options[a].text) {
+                                option.setAttribute("selected", "");
+                            }
+                            select.appendChild(option);
+                            select.id = "first";
+                        }
+                        input1.className = "border-0 ms-1 text-center";
+                        input1.style = "width:200px";
+                        input1.value = t[i].getElementsByTagName("input")[1].value.split(".")[0] + "." + (parseInt(t[i].getElementsByTagName("input")[1].value.split(".")[1]) + 1).toString().padStart(5, '0') + ".01";
+                        input1.name = t[i].getElementsByTagName("input")[1].name;
+                        g2.appendChild(select);
+                        g2.appendChild(input1);
+                        g2.style.display = "flex";
+                        g2.className = "p-0 border-0";
+                        select.onchange = function () {
+                            if (select.value == t[i].getElementsByTagName("select")[x - 1].value) {
+                                input1.value = t[i].getElementsByTagName("input")[x].value.split(".")[0] + "." + (parseInt(t[i].getElementsByTagName("input")[x].value.split(".")[1]) + 1).toString().padStart(5, '0') + ".01";
+                            } else {
+                                input1.value = "hello";
+                            }
+                        }
+                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+
+                    var div3 = document.createElement("div");
+                    var div4 = document.createElement("div");
+                    div3.id = "myDropdown" + rownum;
+                    div3.className = "dropdown-content";
+                    div4.className = "dropdown-content2";
+                    div4.id = Math.random();
+                    var input2 = document.createElement("input");
+                    input2.type = "text";
+                    input2.className = "myInput w-100";
+                    input2.placeholder = "Ara..";
+                    input2.onkeyup = function () {
+                        var input, filter, ul, li, a, i;
+                        filter = this.value.toUpperCase();
+                        var drop = div4.id;
+                        div4 = document.getElementById(drop);
+                        a = div4.getElementsByTagName("a");
+                        if (filter.length > 0) {
+                            div4.style = "display:block";
+                            for (i = 0; i < a.length; i++) {
+                                txtValue = a[i].textContent || a[i].innerText;
+                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                    a[i].style.display = "block";
+                                } else {
+                                    a[i].style.display = "none";
+                                }
+                            }
+                        } else {
+                            for (i = 0; i < a.length; i++) {
+                                txtValue = a[i].textContent || a[i].innerText;
+
+                                a[i].style.display = "none";
+                            }
+                        }
+                    };
+                    div3.appendChild(input2);
+                    var jsonObj1 = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                    for (let x = 0; x < jsonObj.length; x++) {
+                        var adiv = document.createElement("a");
+                        adiv.style.display = "none";
+                        adiv.innerHTML = jsonObj[x].STOK_ADI;
+                        adiv.onclick = function () {
+                            input2.value = this.text;
+                            var all = div4.getElementsByTagName("a");
+                            for (let i = 0; i < all.length; i++) {
+                                all[i].style = "display:none";
+
+
+                            }
+                            var filterobj = jsonObj1.filter(x => x.STOK_ADI === this.text);
+                            for (let i = 0; i < filterobj1.length; i++) {
+
+                                var newA = document.createElement("a");
+                                newA.innerHTML = filterobj[i].FISNO + "→" + filterobj[i].CARI_ISIM;
+                                newA.style = "display:block";
+                               
+                                newA.onclick = function () {
+                                    
+                                    var all = div.getElementsByTagName("a");
+                                    for (let i = 0; i < all.length; i++) {
+                                        all[i].style = "display:none";
+                                    }
+
+                                    input3.value = this.text;
+                                };
+                                div2.appendChild(newA);
+                                div2.style.display = "block";
+                            }
+
+
+                        };
+                        div4.style = "text-align: left";
+                        div4.appendChild(adiv);
+                    }
+                    div3.appendChild(div4);
+
+
+
+
+
+
+                        g4.appendChild(div3);
+
+
+                    }
+
+                }
+                x++;
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+        }
+        function removeCell() {
+            var th = document.getElementById("th");
+            var table = document.getElementById("test");
+            var i = table.getElementsByTagName("tr").length;
+            var thcells = th.getElementsByTagName("th").length;
+
+
+            for (let a = 1; a < i; a++) {
+                if (x == 2) {
+
+                    table.getElementsByTagName("tr")[a].deleteCell(10);
+                    table.getElementsByTagName("tr")[a].deleteCell(10);
+                    table.getElementsByTagName("tr")[a].deleteCell(10);
+                    table.getElementsByTagName("tr")[a].deleteCell(10);
+
+                } else if (x == 1) {
+
+                    table.getElementsByTagName("tr")[a].deleteCell(6);
+                    table.getElementsByTagName("tr")[a].deleteCell(6);
+                    table.getElementsByTagName("tr")[a].deleteCell(6);
+                    table.getElementsByTagName("tr")[a].deleteCell(6);
+                    table.getElementsByTagName("tr")[a].deleteCell(6);
+
+                }
+
+            }
+            if (x == 1) {
+                th.deleteCell(6);
+                th.deleteCell(6);
+                th.deleteCell(6);
+                th.deleteCell(6);
+                th.deleteCell(6);
+                x--;
+            } else if (x == 2) {
+                th.deleteCell(10);
+                th.deleteCell(10);
+                th.deleteCell(10);
+                th.deleteCell(10);
+                x--;
+            }
+
+
+
+
+
+        }
+
+
+        function addTable() {
+
+            var body = document.getElementById('body');
+            var tbl = document.createElement('table');
+            tbl.className = "table table-bordered border-dark";
+            var card = document.createElement('div');
+            var cardbody = document.createElement('div');
+            var tablediv = document.createElement('div');
+            tablediv.className = "table-responsive text-nowrap";
+            var row = tbl.insertRow();
+            row.style = "background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)";
+
+            var cell1 = row.insertCell();
+            cell1.outerHTML = "<th>FABRİKA</th>";
+            var cell2 = row.insertCell();
+            cell2.outerHTML = "<th> </th>";;
+            cell2.style = "";
+            var cell3 = row.insertCell();
+            cell3.outerHTML = "<th>SAC KODU</th>";
+            var cell4 = row.insertCell();
+            cell4.outerHTML = "<th>KONUM</th>";
+            var cell5 = row.insertCell();
+            cell5.outerHTML = "<th>RENK</th>";
+            var cell6 = row.insertCell();
+            cell6.outerHTML = "<th>MARKA</th>";
+            var cell7 = row.insertCell();
+            cell7.outerHTML = "<th>ADET</th>";
+            var cell8 = row.insertCell();
+            cell8.outerHTML = "<th>KALINLIK</th>";
+            var cell9 = row.insertCell();
+            cell9.outerHTML = "<th>GENİŞLİK</th>";
+            var cell10 = row.insertCell();
+            cell10.outerHTML = "<th>AĞIRLIK</th>";
+            var cell11 = row.insertCell();
+            cell11.outerHTML = "<th>KLT/KPLM</th>";
+            var cell12 = row.insertCell();
+            cell12.outerHTML = "<th>ONAY</th>";
+            var cell13 = row.insertCell();
+            cell13.outerHTML = "<th>AMB.FARK</th>";
+            var cell14 = row.insertCell();
+            cell14.outerHTML = "<th> </th>";
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            var row2 = tbl.insertRow();
+            cell1 = row2.insertCell();
+            cell1.innerHTML = "MANİSA";
+            cell2 = row2.insertCell();
+            cell2.outerHTML = "<th style='background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)'>KAYIT</th>";
+            cell3 = row2.insertCell();
+            var input2 = document.createElement("input");
+            input2.className = "border-0 w-px-50";
+            cell3.appendChild(input2);
+            cell4 = row2.insertCell();
+            var input3 = document.createElement("input");
+            input3.className = "border-0 w-px-50";
+            cell4.appendChild(input3);
+            cell5 = row2.insertCell();
+            var input4 = document.createElement("input");
+            input4.className = "border-0 w-px-50";
+            cell5.appendChild(input4);
+            cell6 = row2.insertCell();
+            var input5 = document.createElement("input");
+            input5.className = "border-0 w-px-50";
+            cell6.appendChild(input5);
+            cell7 = row2.insertCell();
+            var input6 = document.createElement("input");
+            input6.className = "border-0 w-px-50";
+            cell7.appendChild(input6);
+            cell8 = row2.insertCell();
+            var input7 = document.createElement("input");
+            input7.className = "border-0 w-px-50";
+            cell8.appendChild(input7);
+            cell9 = row2.insertCell();
+            var input8 = document.createElement("input");
+            input8.className = "border-0 w-px-50";
+            cell9.appendChild(input8);
+            cell10 = row2.insertCell();
+            var input9 = document.createElement("input");
+            input9.className = "border-0 w-px-50";
+            cell10.appendChild(input9);
+            cell11 = row2.insertCell();
+            var input10 = document.createElement("input");
+            input10.className = "border-0 w-px-50";
+            cell11.appendChild(input10);
+            cell12 = row2.insertCell();
+            var input11 = document.createElement("input");
+            input11.className = "border-0 w-px-50";
+            cell12.appendChild(input11);
+            cell13 = row2.insertCell();
+            cell13.outerHTML = "<th style='background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)'>GİRİŞ</th>";
+            cell14 = row2.insertCell();
+            cell14.className = "text-center";
+
+            cell14.appendChild(input);
+
+
+            var row3 = tbl.insertRow();
+            cell1 = row3.insertCell();
+            cell1.outerHTML = "<th style='background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)'>MAKİNE</th>";
+
+            cell2 = row3.insertCell();
+            cell2.outerHTML = "<th style='background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)'>OPERATÖR</th>";
+            cell3 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell3.appendChild(input)
+            cell4 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell4.appendChild(input)
+            cell5 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell5.appendChild(input)
+            cell6 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell6.appendChild(input)
+            cell7 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell7.appendChild(input)
+            cell8 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell8.appendChild(input)
+            cell9 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell9.appendChild(input)
+            cell10 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell10.appendChild(input)
+            cell11 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell11.appendChild(input)
+            cell12 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell12.appendChild(input)
+            cell13 = row3.insertCell();
+            cell13.outerHTML = "<th style='background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)'>ÇIKIŞ</th>";
+            cell14 = row3.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell14.appendChild(input)
+            var row4 = tbl.insertRow();
+            cell1 = row4.insertCell();
+            var select = document.createElement('select');
+            var grup = document.getElementById("machinenames");
+            var a;
+            var option;
+            for (a = 0; a < grup.length; a++) {
+                option = document.createElement('option');
+                option.innerHTML = grup.options[a].text;
+                select.appendChild(option);
+
+            }
+            select.className = "form-select w-100 bg-transparent";
+
+
+
+
+
+            cell1.appendChild(select);
+            cell1.className = "p-0"
+            cell2 = row4.insertCell();
+            cell2.outerHTML = "<th style='background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)'>KLT/KNTRL</th>";
+            cell3 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell3.appendChild(input)
+            cell4 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell4.appendChild(input)
+            cell5 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell5.appendChild(input)
+            cell6 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell6.appendChild(input)
+            cell7 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell7.appendChild(input)
+            cell8 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell8.appendChild(input)
+            cell9 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell9.appendChild(input)
+            cell10 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell10.appendChild(input)
+            cell11 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell11.appendChild(input)
+            cell12 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell12.appendChild(input)
+            cell13 = row4.insertCell();
+            cell13.outerHTML = "<th style='background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)'>HURDA</th>";
+            cell14 = row4.insertCell();
+            var input = document.createElement("input");
+            input.className = "border-0 w-px-50";
+            cell14.appendChild(input)
+
+
+
+
+
+            tablediv.appendChild(tbl);
+
+            cardbody.appendChild(tablediv);
+            card.className = "card mt-4";
+            cardbody.className = "card-body";
+            card.appendChild(cardbody);
+            card.id = id;
+            body.appendChild(card);
+            var tbl = document.createElement('table');
+            tbl.className = "table table-bordered border-dark";
+            tbl.id = tableid + "test1";
+            var card = document.createElement('div');
+            var cardbody = document.createElement('div');
+            var tablediv = document.createElement('div');
+            tablediv.className = "table-responsive text-nowrap";
+            var row = tbl.insertRow();
+            row.style = "background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)";
+            var cell1 = row.insertCell();
+            cell1.outerHTML = "<th> </th>";
+            var cell2 = row.insertCell();
+            cell2.outerHTML = "<th>İŞ EMRİ NO</th>";
+
+            var cell3 = row.insertCell();
+            cell3.outerHTML = "<th>SAC KODU</th>";
+            var cell4 = row.insertCell();
+            cell4.outerHTML = "<th>GENİŞLİK</th>";
+            var cell5 = row.insertCell();
+            cell5.outerHTML = "<th>ADET</th>";
+            var cell6 = row.insertCell();
+            cell6.outerHTML = "<th>STOK ÖLÇÜLERİ</th>";
+            var cell7 = row.insertCell();
+            cell7.outerHTML = "<th>KALINLIK</th>";
+            var cell8 = row.insertCell();
+            cell8.outerHTML = "<th>MT/AD</th>";
+            var cell9 = row.insertCell();
+            cell9.outerHTML = "<th>ADET</th>";
+            var cell10 = row.insertCell();
+            cell10.outerHTML = "<th>AĞIRLIK</th>";
+            var cell11 = row.insertCell();
+            cell11.outerHTML = "<th>MK</th>";
+            var cell12 = row.insertCell();
+            cell12.outerHTML = "<th>MÜŞTERİ</th>";
+
+
+            var buttonrow = document.createElement("div");
+            buttonrow.className = "row mt-1";
+            var buttoncol = document.createElement("div");
+            buttoncol.className = "col";
+            var aElement = document.createElement("a");
+            aElement.className = "float-end";
+            aElement.onclick = function () { removeRow1() };
+            aElement.style = "cursor:pointer";
+            var aElement2 = document.createElement("a");
+            aElement2.className = "float-end";
+            aElement2.onclick = function () { addRow1() };
+            aElement2.style = "cursor:pointer";
+            var img = document.createElement("img");
+            var img2 = document.createElement("img");
+            img.style = "width:20px";
+            img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC"
+            img2.style = "width:20px";
+            img2.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC"
+
+            aElement.appendChild(img);
+            aElement2.appendChild(img2);
+            buttoncol.appendChild(aElement);
+            buttoncol.appendChild(aElement2);
+            buttonrow.appendChild(buttoncol);
+
+            tablediv.appendChild(tbl);
+
+            cardbody.appendChild(tablediv);
+            cardbody.appendChild(buttonrow);
+            card.className = "card mt-4";
+            cardbody.className = "card-body";
+            card.appendChild(cardbody);
+            card.id = id + 1;
+
+            body.appendChild(card);
+
+            tableid++;
+            id++;
+
+        }
+        function removeTable() {
+            var tbl = document.getElementById(id - 1);
+            var tbl2 = document.getElementById(id);
+            tbl.remove();
+            tbl2.remove();
+            id--;
+
+        }
+    </script>
+    <script>
+        var jsonObj = @Html.Raw(Json.Encode(ViewBag.UretimTakip));
+        const seri = document.getElementById('seri');
+        const genislik = document.getElementById('genislik');
+        const genislikarti = document.getElementById('genislikalti');
+        const kalinlik = document.getElementById('kalinlik');
+        const agirlik = document.getElementById('agirlik');
+        const marka = document.getElementById('marka');
+        const adet = document.getElementById('adet');
+        const kaplama = document.getElementById('kaplama');
+        const stokAdi = document.getElementById('stokadi');
+        const kalite = document.getElementById('kalite');
+        const hamoran = document.getElementById('hamoran');
+
+
+        const inputHandler = function (e) {
+            //result.innerHTML = e.target.value;
+            var b = jsonObj.find(x => x.SERI_NO === e.target.value);
+            if (b != null) {
+                genislik.value = b.GENISLIK;
+                kalinlik.value = b.KALINLIK;
+                agirlik.value = (b.MIKTAR * hamoran.value).toLocaleString('tr-TR') + " / " + (b.MIKTAR).toLocaleString('tr-TR');
+                marka.value = b.MENSEI;
+                adet.value = b.MIKTAR2;
+                kaplama.value = b.KAPLAMA_KALINLIK;
+                kalite.value = b.KALITE;
+                stokAdi.value = b.STOK_ADI;
+                metraj.value = parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2) +" / " + parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2);
+                    
+            } else {
+                genislik.value = "";
+                kalinlik.value = "";
+                agirlik.value = "";
+                marka.value = "";
+                adet.value = "";
+                kaplama.value = "";
+                stokAdi.value = "";
+                kalite.value = "";
+            }
+
+
+        }
+        const inputHandler2 = function (e) {
+            //result.innerHTML = e.target.value;
+            
+
+            metraj.value = parseFloat(parseInt(((agirlik.value).split('/')[0].split('.')[0] + (agirlik.value).split('/')[0].split('.')[1])) / parseFloat((parseInt(genislik.value) + parseInt(e.target.value)) * parseFloat((kalinlik.value).replace(",", ".")) * (0.00786))).toFixed(2) +" / " + parseFloat(parseInt(((agirlik.value).split('/')[1].split('.')[0] + (agirlik.value).split('/')[1].split('.')[1])) / parseFloat((parseInt(genislik.value) + parseInt(e.target.value)) * parseFloat((kalinlik.value).replace(",", ".")) * (0.00786))).toFixed(2)
+               
+            changeadet();
+
+
+        }
+        const inputHandler1 = function (e) {
+            //result.innerHTML = e.target.value;
+            if (seri.value != "") {
+                var b = jsonObj.find(x => x.SERI_NO === seri.value);
+                agirlik.value = (b.MIKTAR * hamoran.value).toLocaleString('tr-TR') + " / " + (b.MIKTAR).toLocaleString('tr-TR');
+                metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2);
+
+                changeadet();
+            }
+            
+
+
+        }
+        var oran1 = document.getElementById("oran1");
+        hamoran.addEventListener('input', inputHandler1);
+        hamoran.addEventListener('propertychange', inputHandler1);
+        oran1.addEventListener('input', inputHandler1);
+        oran1.addEventListener('propertychange', inputHandler1);
+
+        seri.addEventListener('input', inputHandler);
+        seri.addEventListener('propertychange', inputHandler);
+
+        genislikarti.addEventListener('input', inputHandler2);
+        genislikarti.addEventListener('propertychange', inputHandler2);
+    </script>
+    <script>
+        function change(name) {
+
+            var today = new Date();
+            var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+            var b = jsonObj.find(x => x.MAK_KODU === name.substring(0, value));
+            var x = "";
+            if (b.MAX_ISEMRINO.toString().length == 1) {
+                x = "0000" + b.MAX_ISEMRINO;
+            } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                x = "000" + b.MAX_ISEMRINO;
+            }
+            else if (b.MAX_ISEMRINO.toString().length == 3) {
+                x = "00" + b.MAX_ISEMRINO;
+            }
+            else if (b.MAX_ISEMRINO.toString().length == 4) {
+                x = "0" + b.MAX_ISEMRINO;
+            } else {
+                x = "00000";
+            }
+            document.getElementById("ieno").value = name + today.getFullYear().toString().substring(2) + "."  + x;
+        }
+
+        function kaydet() {
+
+            var emri = document.getElementById("test").getElementsByTagName("input");
+            var ob =@Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+            var STOK_KODU = ob.find(x => x.STOK_ADI === emri[2].value);
+            var dip = "";
+            if ((emri[5].value).indexOf('.') > -1) {
+                dip = emri[5].value.split('.')[0] + emri[5].value.split('.')[1];
+            } else {
+                dip = emri[5].value;
+            }
+            var IsEmriModel = [
+                { ISEMRINO: emri[1].value, STOK_KODU: STOK_KODU.STOK_KODU, GENISLIK: emri[3].value, MIKTAR: parseFloat(dip), ADET: emri[4].value, DEPOKODU: 45 }
+            ];
+
+            IsEmriModel = JSON.stringify({ 'IsEmriModel': IsEmriModel });
+
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                type: 'POST',
+                url: '/IsEmri/IsEmriSend',
+                data: IsEmriModel,
+                success: function () {
+
+                },
+                failure: function (response) {
+
+                }
+            });
+        }
+        function kaydet1() {
+            if (x == 1) {
+                var tab = document.getElementById("test");
+                var c = document.getElementById("cid");
+
+                var rows = tab.getElementsByTagName("tr");
+                if (c.getElementsByClassName("row").length > 0) {
+                    for (let i = 1; i < c.getElementsByClassName("row").length-1; i++) {
+
+                        c.getElementsByClassName("row")[i].remove();
+
+                    }
+                }
+                
+                for (let i = 1; i < rows.length; i++) {
+
+                    var row = document.createElement("div");
+                    var col = document.createElement("div");
+                    row.className = "row";
+                    col.className = "col text-center";
+                    var musteri = "";
+                    var kalinlik = "";
+                    var adet = "";
+                    var agirlik = "";
+
+
+                    kalinlik = document.getElementById("kalinlik").value;
+                    musteri = rows[i].getElementsByTagName("input")[9].value;
+                    agirlik = rows[i].getElementsByTagName("input")[8].value;
+                    var label = document.createElement("label");
+                    label.innerHTML = musteri;
+                    col.appendChild(label);
+                    row.appendChild(col);
+                    var colkal = document.createElement("div");
+                    colkal.className = "col text-center";
+                    var labelkal = document.createElement("label");
+                    labelkal.innerHTML = kalinlik;
+                    colkal.appendChild(labelkal);
+
+                    row.appendChild(colkal);
+                    var col2 = document.createElement("div");
+                    col2.className = "col text-center";
+                   
+                    adet = rows[i].getElementsByTagName("input")[7].value;
+                    var labelad = document.createElement("label");
+                    labelad.innerHTML = adet;
+                    col2.appendChild(labelad);
+                    row.appendChild(col2);
+                    var col3 = document.createElement("div");
+                    col3.className = "col text-center";
+                    var labelag = document.createElement("label");
+                    labelag.innerHTML = agirlik;
+                    col3.appendChild(labelag);
+                    row.appendChild(col3);
+                    c.appendChild(row);
+                }
+            }
+           
+                
+            
+
+        }
+
+
+
+    </script>
+   
+    
+</body>
+</html>
+
+
+
+
+
+
