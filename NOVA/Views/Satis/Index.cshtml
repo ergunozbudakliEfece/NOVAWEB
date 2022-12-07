@@ -72,8 +72,9 @@
             transform: translate(-50%, -50%);
             z-index: 5;
         }
+
         tr {
-            animation: fadeInAnimation ease 3s;
+            animation: fadeInAnimation ease 1.5s;
             animation-iteration-count: 1;
             animation-fill-mode: forwards;
         }
@@ -88,7 +89,8 @@
             }
         }
     </style>
-
+   
+   
 </head>
 
 <body>
@@ -302,7 +304,7 @@
                         </a>
                     </div>
 
-                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="z-index:0;">
                         <!-- Search -->
                         <div class="navbar-nav align-items-center">
                             <div class="nav-item d-flex align-items-center">
@@ -420,18 +422,17 @@
                                 <label><b>Son Güncelleme:</b> @DateTime.Now.ToShortDateString()  @DateTime.Now.ToShortTimeString()</label>
                             </div>
                         </div>
+                        
                         <div class="row mb-1">
                             <div class="col">
-                                <button type="button" class="btn btn-success float-end" onclick="myUpdateFunction()" data-bs-toggle='tooltip' data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title='<i class="bx bxs-info-circle bx-xs" ></i> <span>Güncel tüm stok bilgisini mail olarak gönderir.</span>'><i class='bx bx-mail-send'></i></button>
-                                <button id="submitbutton" type="button" class="btn btn-success float-end" style="display:none" onclick="location.href='@Url.Action("MailControl", "Satis")'"></button>
+                                <button type="button" class="btn btn-success float-end" onclick="myUpdateFunction()" data-bs-toggle='tooltip' data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title='<i class="bx bxs-info-circle bx-xs" ></i> <span>Güncel tüm stok bilgisini mail olarak gönderir.</span>' style="background-color: #BBBBBD; border-color: #B7B7BA; box-shadow: 0.125rem 0.25rem 0 rgb(0 0 0 / 40%); "><i class='bx bx-mail-send'></i></button>
+                               
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col d-flex">
                                 <select disabled id="select1" class="form-select w-50">
-
                                     <option value="" selected>Hepsi</option>
-
                                 </select>
 
                             </div>
@@ -495,191 +496,254 @@
                     var stoks = [];
                     var grupkodlari = [];
                     var grupisimleri = [];
+                    var termin = [];
                     $(document).ready(function () {
-
                         
+                        $.getJSON('http://192.168.2.13:83/api/UretimTermin', function (data) {
+                            termin = data;
+                           
+                        })
+                       
                         // PAGE IS FULLY LOADED
                         // FADE OUT YOUR OVERLAYING DIV
                         $.getJSON('http://192.168.2.13:83/api/stok', function (data) {
                             stoks = data;
-                            
+                           
                             
                             $('#select1').select2();
                             $('#maxRows').select2();
-                            for (let i = 0; i < data.length; i++) {
+                            var i = 0;
+                            var a = 0;
+                            var len = data.length;
+                            while ( i < len) {
                                 if (!grupkodlari.includes(data[i].GRUP_KODU)) {
                                     grupkodlari.push(data[i].GRUP_KODU);
                                     grupisimleri.push(data[i].GRUP_ISIM);
                                 }
+                                var test = termin.find(x => x.STOK_KODU == data[i].STOK_KODU);
+                                if (test == null) {
+                                    test = "boş";
+                                }
                                 var tr = document.createElement("tr");
+                                
                                 
                                 var td = document.createElement("td");
                                 var lab = document.createElement("label");
-
-                                td.appendChild(lab);
-                                td.className = "border-bottom-1 border-info";
-                                td.style = "background-color:white;position:sticky;left:0;width:120px;";
-                                td.rowSpan = 2;
-
+                               
                                 lab.innerHTML = data[i].STOK_ADI;
-                                lab.style = "width:120px;font-size:12px;font-weight:bold";
+                                lab.style = "width:120px;font-size:12px;font-weight:bold;";
+                                
+                                td.appendChild(lab);
+                                td.className = "border-bottom-0";
+                                
+                               
+                                td.style = "position:sticky;left:0;width:120px;background-color:white;height:100%;z-index:5";
+                                
                                 tr.appendChild(td);
                                 var td1 = document.createElement("td");
                                 var lab1 = document.createElement("label");
                                 if (data[i].SAT_HZR_ADET <= 0) {
-                                    lab1.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                   
+                                        lab1.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
+                                  
+                                    
                                 } else {
-                                    lab1.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                    lab1.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
+                                
+                                    
+                                
                                 td1.appendChild(lab1);
                                 td1.className = "border-bottom-1 border-gray";
-                                td1.style = "height:50px;width:70px;";
-                                lab1.innerHTML = (data[i].SAT_HZR_ADET).toLocaleString('tr-TR');
+                                td1.style = "height:50px;width:85px;z-index:-1;";
+                                var olcubr = "";
+                                if (data[i].OLCU_BIRIMI == "M2") {
+                                    olcubr = "M²";
+                                } else {
+                                    olcubr = data[i].OLCU_BIRIMI;
+                                }
+                                lab1.innerHTML = (data[i].SATISA_HAZIR).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
+                                
+                               
                                 tr.appendChild(td1);
                                 var td2 = document.createElement("td");
                                 var lab2 = document.createElement("label");
                                 if (data[i].BEKLEYEN_SIPARIS <= 0) {
-                                    lab2.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                    lab2.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab2.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                    lab2.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td2.appendChild(lab2);
                                 td2.className = "border-bottom-1 border-gray";
-                                td2.style = "height:50px;width:70px;";
-                                lab2.innerHTML = (data[i].BEKLEYEN_SIPARIS).toLocaleString('tr-TR');
+                                td2.style = "height:50px;width:85px;";
+                                lab2.innerHTML = (data[i].BEKLEYEN_SIPARIS).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
                                 tr.appendChild(td2);
                                 var td3 = document.createElement("td");
                                 var lab3 = document.createElement("label");
                                 if (data[i].BAKIYE <= 0) {
-                                    lab3.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                    lab3.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab3.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                    lab3.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td3.appendChild(lab3);
                                 td3.className = "border-bottom-1 border-gray";
-                                td3.style = "height:50px;width:70px;";
-                                lab3.innerHTML = (data[i].BAKIYE).toLocaleString('tr-TR');
+                                td3.style = "height:50px;width:85px;";
+                                lab3.innerHTML = (data[i].BAKIYE).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
                                 tr.appendChild(td3);
                                 var td4 = document.createElement("td");
                                 var lab4 = document.createElement("label");
+                                
                                 if (data[i].BEKL_IE_MIKTAR <= 0) {
-                                    lab4.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                    lab4.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab4.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                    lab4.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
+                                lab4.setAttribute("data-toggle", "tooltip");
+                                lab4.setAttribute("data-placement", "top");
+                                if (test.TESLIM_TARIHI != null) {
+                                    var old = test.TESLIM_TARIHI.split('T')[0];
+                                    var year = old.split('-')[0];
+                                    var month = old.split('-')[1];
+                                    var day = old.split('-')[2];
+                                    var newdate= day + "/" + month + "/" + year;
+                                    lab4.setAttribute("title", "Termin: "+newdate);
+                                } else {
+                                   
+                                    lab4.setAttribute("title", "Termin tarihi belirlenmemiş.");
+                                }
+                                
                                 td4.appendChild(lab4);
                                 td4.className = "border-bottom-1 border-gray";
-                                td4.style = "height:50px;width:70px;";
-                                lab4.innerHTML = (data[i].BEKL_IE_MIKTAR).toLocaleString('tr-TR');
+                                td4.style = "height:50px;width:85px;";
+                                lab4.innerHTML = (data[i].BEKL_IE_MIKTAR).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
+                               
                                 tr.appendChild(td4);
                                 var td5 = document.createElement("td");
                                 var lab5 = document.createElement("label");
                                 if (data[i].FAB_STOK_AD <= 0) {
-                                    lab5.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                    lab5.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab5.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                    lab5.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td5.appendChild(lab5);
                                 td5.className = "border-bottom-1 border-gray";
                                 td5.style = "height:50px";
-                                lab5.innerHTML = (data[i].FAB_STOK_AD).toLocaleString('tr-TR');
+                                lab5.innerHTML = (data[i].FAB_STOK_AD).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr +"</span>";
 
                                 tr.appendChild(td5);
                                 var td6 = document.createElement("td");
                                 var lab6 = document.createElement("label");
                                 if (data[i].ALISFIYAT1 <= 0) {
-                                    lab6.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                    lab6.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab6.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                    lab6.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td6.appendChild(lab6);
                                 td6.className = "border-bottom-1 border-gray";
                                 td6.style = "height:50px";
-                                lab6.innerHTML = (data[i].ALISFIYAT1).toLocaleString('tr-TR');;
+                                lab6.innerHTML = (data[i].ALISFIYAT1).toLocaleString('tr-TR');
                                 tr.appendChild(td6);
                                 var td7 = document.createElement("td");
                                 var lab7 = document.createElement("label");
                                 if (data[i].SATISFIYAT1 <= 0) {
-                                    lab7.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                    lab7.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab7.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                    lab7.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td7.appendChild(lab7);
                                 td7.className = "border-bottom-1 border-gray";
-                                td7.style = "height:50px";
-                                lab7.innerHTML = (data[i].SATISFIYAT1).toLocaleString('tr-TR');
+                                td7.style = "width:80px;height:50px";
+                                lab7.innerHTML = (data[i].SATISFIYAT1).toLocaleString('tr-TR') ;
                                 tr.appendChild(td7);
                                 document.getElementById("tbody").appendChild(tr);
 
                                 var tr1 = document.createElement("tr");
-
+                                var bos = document.createElement("td");
+                                bos.className = "border-bottom-1 border-info";
+                                bos.style = "position:sticky;left:0;width:120px;background-color:white;height:100%;z-index:5";
+                                tr1.appendChild(bos);
                                 var td8 = document.createElement("td");
                                 var lab8 = document.createElement("label");
                                 if (data[i].SAT_HZR_ADET <= 0) {
-                                    lab8.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                    lab8.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab8.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                    lab8.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td8.appendChild(lab8);
                                 td8.className = "border-bottom-1 border-info";
-                                td8.style = "height:50px; width:70px";
-                                lab8.innerHTML = (data[i].SAT_HZR_ADET).toLocaleString('tr-TR');
+                                td8.style = "height:50px; width:85px;font-style: normal !important";
+                                  
+                                lab8.innerHTML = (data[i].SAT_HZR_ADET).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
+                                
+                              
                                 tr1.appendChild(td8);
                                 var td9 = document.createElement("td");
                                 var lab9 = document.createElement("label");
                                 if (data[i].BEK_SIP_ADET <= 0) {
-                                    lab9.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                    lab9.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab9.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                    lab9.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td9.appendChild(lab9);
                                 td9.className = "border-bottom-1 border-info";
-                                td9.style = "height:50px; width:70px";
-                                lab9.innerHTML = (data[i].BEK_SIP_ADET).toLocaleString('tr-TR');
+                                td9.style = "height:50px; width:85px;";
+                                lab9.innerHTML = (data[i].BEK_SIP_ADET).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp" ;
                                 tr1.appendChild(td9);
                                 var td10 = document.createElement("td");
                                 var lab10 = document.createElement("label");
                                 if (data[i].AD_BAKIYE <= 0) {
-                                    lab10.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                    lab10.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab10.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                    lab10.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td10.appendChild(lab10);
                                 td10.className = "border-bottom-1 border-info";
                                 td10.style = "height:50px";
-                                lab10.innerHTML = (data[i].AD_BAKIYE).toLocaleString('tr-TR');
+                                lab10.innerHTML = (data[i].AD_BAKIYE).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp" ;
                                 tr1.appendChild(td10);
                                 var td11 = document.createElement("td");
                                 var lab11 = document.createElement("label");
                                 if (data[i].BEKL_IE_AD <= 0) {
-                                    lab11.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                    lab11.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab11.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                    lab11.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td11.appendChild(lab11);
                                 td11.className = "border-bottom-1 border-info";
                                 td11.style = "height:50px";
-                                lab11.innerHTML = (data[i].BEKL_IE_AD).toLocaleString('tr-TR');
+                                lab11.setAttribute("data-toggle", "tooltip");
+                                lab11.setAttribute("data-placement", "top");
+                                if (test.TESLIM_TARIHI != null) {
+                                    var old = test.TESLIM_TARIHI.split('T')[0];
+                                    var year = old.split('-')[0];
+                                    var month = old.split('-')[1];
+                                    var day = old.split('-')[2];
+                                    var newdate = day + "/" + month + "/" + year;
+                                    lab11.setAttribute("title", "Termin: " + newdate);
+                                } else {
+                                    lab11.setAttribute("title", "Termin tarihi belirlenmemiş.");
+                                }
+                                lab11.innerHTML = (data[i].BEKL_IE_AD).toLocaleString('tr-TR') +"&nbsp&nbsp&nbsp&nbsp&nbsp";
                                 tr1.appendChild(td11);
                                 var td12 = document.createElement("td");
                                 var lab12 = document.createElement("label");
                                 if (data[i].FAB_STOK_MIK <= 0) {
-                                    lab12.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                    lab12.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab12.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                    lab12.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td12.appendChild(lab12);
                                 td12.className = "border-bottom-1 border-info";
                                 td12.style = "height:50px";
-                                lab12.innerHTML = (data[i].FAB_STOK_MIK).toLocaleString('tr-TR');
-
+                                lab12.innerHTML = (data[i].FAB_STOK_MIK).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
+                                lab12.className = "arkada";
                                 tr1.appendChild(td12);
                                 var td13 = document.createElement("td");
                                 var lab13 = document.createElement("label");
                                 if (data[i].ALISFIYAT3 <= 0) {
-                                    lab13.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                    lab13.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab13.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                    lab13.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
                                 td13.appendChild(lab13);
                                 td13.className = "border-bottom-1 border-info";
@@ -689,9 +753,9 @@
                                 var td14 = document.createElement("td");
                                 var lab14 = document.createElement("label");
                                 if (data[i].SATISFIYAT3 <= 0) {
-                                    lab14.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                    lab14.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 } else {
-                                    lab14.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                    lab14.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
                                 }
 
                                 td14.appendChild(lab14);
@@ -700,12 +764,15 @@
                                 lab14.innerHTML = (data[i].SATISFIYAT3).toLocaleString('tr-TR');
                                 tr1.appendChild(td14);
                                 document.getElementById("tbody").appendChild(tr1);
+                                i++;
                             }
-                            for (let i = 0; i < grupisimleri.length; i++) {
+                            var gruplen = grupisimleri.length;
+                            while (a < gruplen) {
                                 var option = document.createElement("option");
-                                option.innerHTML = grupisimleri[i];
-                                option.value = grupkodlari[i];
-                                document.getElementById("select1").appendChild(option)
+                                option.innerHTML = grupisimleri[a];
+                                option.value = grupkodlari[a];
+                                document.getElementById("select1").appendChild(option);
+                                a++;
                             }
                         }).done(function () {
                             document.getElementById("select1").removeAttribute("disabled");
@@ -714,6 +781,24 @@
 
                     }).ajaxStop(function () {
                         document.getElementById("progress").style.display = "none";
+                        // selecting the elements for which we want to add a tooltip
+                        const target = document.getElementsByClassName("tooltip-button");
+                        var targetlen = target.length
+                        const tooltip = document.getElementsByClassName("tooltip-text");
+                        var i = 0;
+                        while (i < targetlen) {
+                            target[i].addEventListener('mouseover', () => {
+                                tooltip[i].style.display = 'block';
+                            }, false);
+
+                            // change display to 'none' on mouseleave
+                            target[i].addEventListener('mouseleave', () => {
+                                tooltip[i].style.display = 'none';
+                            }, false);
+                            i++;
+                        }
+                       
+                        
                     });
 
 
@@ -739,13 +824,17 @@
 
 
                         document.getElementById("tbody").replaceChildren();
-
-                        for (let i = 0; i < upt.length; i++) {
+                        var i = 0;
+                        var len = upt.length;
+                        while ( i < len) {
 
                             var tr = document.createElement("tr");
                             var td = document.createElement("td");
                             var lab = document.createElement("label");
-
+                            var test1 = termin.find(x => x.STOK_KODU == upt[i].STOK_KODU);
+                            if (test1 == null) {
+                                test1 = "boş";
+                            }
                             td.appendChild(lab);
                             td.className = "border-bottom-1 border-info";
                             td.style = "background-color:white;position:sticky;left:0;width:120px;";
@@ -757,82 +846,102 @@
                             var td1 = document.createElement("td");
                             var lab1 = document.createElement("label");
                             if (upt[i].SAT_HZR_ADET <= 0) {
-                                lab1.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                lab1.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab1.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                lab1.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td1.appendChild(lab1);
                             td1.className = "border-bottom-1 border-gray";
-                            td1.style = "height:50px;width:70px;";
-                            lab1.innerHTML = (upt[i].SAT_HZR_ADET).toLocaleString('tr-TR');
+                            td1.style = "height:50px;width:85px;";
+                            var olcubr = "";
+                            if (upt[i].OLCU_BIRIMI == "M2") {
+                                olcubr = "M²";
+                            } else {
+                                olcubr = upt[i].OLCU_BIRIMI;
+                            }
+                            lab1.innerHTML = (upt[i].SATISA_HAZIR).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
                             tr.appendChild(td1);
                             var td2 = document.createElement("td");
                             var lab2 = document.createElement("label");
                             if (upt[i].BEKLEYEN_SIPARIS <= 0) {
-                                lab2.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                lab2.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab2.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                lab2.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td2.appendChild(lab2);
                             td2.className = "border-bottom-1 border-gray";
-                            td2.style = "height:50px;width:70px;";
-                            lab2.innerHTML = (upt[i].BEKLEYEN_SIPARIS).toLocaleString('tr-TR');
+                            td2.style = "height:50px;width:85px;";
+                            lab2.innerHTML = (upt[i].BEKLEYEN_SIPARIS).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";;
                             tr.appendChild(td2);
                             var td3 = document.createElement("td");
                             var lab3 = document.createElement("label");
                             if (upt[i].BAKIYE <= 0) {
-                                lab3.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                lab3.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab3.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                lab3.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td3.appendChild(lab3);
                             td3.className = "border-bottom-1 border-gray";
-                            td3.style = "height:50px;width:70px;";
-                            lab3.innerHTML = (upt[i].BAKIYE).toLocaleString('tr-TR');
+                            td3.style = "height:50px;width:85px;";
+                            lab3.innerHTML = (upt[i].BAKIYE).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";;
                             tr.appendChild(td3);
                             var td4 = document.createElement("td");
                             var lab4 = document.createElement("label");
                             if (upt[i].BEKL_IE_MIKTAR <= 0) {
-                                lab4.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                lab4.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab4.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                lab4.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td4.appendChild(lab4);
                             td4.className = "border-bottom-1 border-gray";
-                            td4.style = "height:50px;width:70px;";
-                            lab4.innerHTML = (upt[i].BEKL_IE_MIKTAR).toLocaleString('tr-TR');
+                            td4.style = "height:50px;width:85px;";
+                            lab4.setAttribute("data-toggle", "tooltip");
+                            lab4.setAttribute("data-placement", "top");
+                            lab4.setAttribute("data-toggle", "tooltip");
+                            lab4.setAttribute("data-placement", "top");
+                            if (test1.TESLIM_TARIHI != null) {
+                                var old = test1.TESLIM_TARIHI.split('T')[0];
+                                var year = old.split('-')[0];
+                                var month = old.split('-')[1];
+                                var day = old.split('-')[2];
+                                var newdate = day + "/" + month + "/" + year;
+                                lab4.setAttribute("title", "Termin: " + newdate);
+                            } else {
+                                lab4.setAttribute("title", "Termin tarihi belirlenmemiş.");
+                            }
+                            lab4.innerHTML = (upt[i].BEKL_IE_MIKTAR).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";;
                             tr.appendChild(td4);
                             var td5 = document.createElement("td");
                             var lab5 = document.createElement("label");
                             if (upt[i].FAB_STOK_AD <= 0) {
-                                lab5.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                lab5.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab5.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                lab5.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td5.appendChild(lab5);
                             td5.className = "border-bottom-1 border-gray";
                             td5.style = "height:50px";
-                            lab5.innerHTML = (upt[i].FAB_STOK_AD).toLocaleString('tr-TR');
+                            lab5.innerHTML = (upt[i].FAB_STOK_AD).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";;
 
                             tr.appendChild(td5);
                             var td6 = document.createElement("td");
                             var lab6 = document.createElement("label");
                             if (upt[i].ALISFIYAT1 <= 0) {
-                                lab6.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                lab6.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab6.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                lab6.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td6.appendChild(lab6);
                             td6.className = "border-bottom-1 border-gray";
                             td6.style = "height:50px";
-                            lab6.innerHTML = (upt[i].ALISFIYAT1).toLocaleString('tr-TR');;
+                            lab6.innerHTML = (upt[i].ALISFIYAT1).toLocaleString('tr-TR');
                             tr.appendChild(td6);
                             var td7 = document.createElement("td");
                             var lab7 = document.createElement("label");
                             if (upt[i].SATISFIYAT1 <= 0) {
-                                lab7.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                lab7.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab7.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                lab7.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td7.appendChild(lab7);
                             td7.className = "border-bottom-1 border-gray";
@@ -846,70 +955,84 @@
                             var td8 = document.createElement("td");
                             var lab8 = document.createElement("label");
                             if (upt[i].SAT_HZR_ADET <= 0) {
-                                lab8.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                lab8.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab8.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                lab8.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td8.appendChild(lab8);
                             td8.className = "border-bottom-1 border-info";
-                            td8.style = "height:50px; width:70px";
-                            lab8.innerHTML = (upt[i].SAT_HZR_ADET).toLocaleString('tr-TR');
+                            td8.style = "height:50px; width:85px";
+                            lab8.innerHTML = (upt[i].SAT_HZR_ADET).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
                             tr1.appendChild(td8);
                             var td9 = document.createElement("td");
                             var lab9 = document.createElement("label");
                             if (upt[i].BEK_SIP_ADET <= 0) {
-                                lab9.style = "background-color: transparent;border: none;color:red;float: right; width:70px;text-align: end";
+                                lab9.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab9.style = "background-color: transparent;border: none;color:green;float: right; width:70px;text-align: end";
+                                lab9.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td9.appendChild(lab9);
                             td9.className = "border-bottom-1 border-info";
-                            td9.style = "height:50px; width:70px";
-                            lab9.innerHTML = (upt[i].BEK_SIP_ADET).toLocaleString('tr-TR');
+                            td9.style = "height:50px; width:85px";
+                            lab9.innerHTML = (upt[i].BEK_SIP_ADET).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
                             tr1.appendChild(td9);
                             var td10 = document.createElement("td");
                             var lab10 = document.createElement("label");
                             if (upt[i].AD_BAKIYE <= 0) {
-                                lab10.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                lab10.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab10.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                lab10.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td10.appendChild(lab10);
                             td10.className = "border-bottom-1 border-info";
                             td10.style = "height:50px";
-                            lab10.innerHTML = (upt[i].AD_BAKIYE).toLocaleString('tr-TR');
+                            lab10.innerHTML = (upt[i].AD_BAKIYE).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
                             tr1.appendChild(td10);
                             var td11 = document.createElement("td");
                             var lab11 = document.createElement("label");
                             if (upt[i].BEKL_IE_AD <= 0) {
-                                lab11.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                lab11.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab11.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                lab11.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td11.appendChild(lab11);
                             td11.className = "border-bottom-1 border-info";
                             td11.style = "height:50px";
-                            lab11.innerHTML = (upt[i].BEKL_IE_AD).toLocaleString('tr-TR');
+                            lab11.setAttribute("data-toggle", "tooltip");
+                            lab11.setAttribute("data-placement", "top");
+                            lab11.setAttribute("data-toggle", "tooltip");
+                            lab11.setAttribute("data-placement", "top");
+                            if (test1.TESLIM_TARIHI != null) {
+                                var old = test1.TESLIM_TARIHI.split('T')[0];
+                                var year = old.split('-')[0];
+                                var month = old.split('-')[1];
+                                var day = old.split('-')[2];
+                                var newdate = day + "/" + month + "/" + year;
+                                lab11.setAttribute("title", "Termin: " + newdate);
+                            } else {
+                                lab11.setAttribute("title", "Termin tarihi belirlenmemiş.");
+                            }
+                            lab11.innerHTML = (upt[i].BEKL_IE_AD).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
                             tr1.appendChild(td11);
                             var td12 = document.createElement("td");
                             var lab12 = document.createElement("label");
                             if (upt[i].FAB_STOK_MIK <= 0) {
-                                lab12.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                lab12.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab12.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                lab12.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td12.appendChild(lab12);
                             td12.className = "border-bottom-1 border-info";
                             td12.style = "height:50px";
-                            lab12.innerHTML = (upt[i].FAB_STOK_MIK).toLocaleString('tr-TR');
+                            lab12.innerHTML = (upt[i].FAB_STOK_MIK).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
 
                             tr1.appendChild(td12);
                             var td13 = document.createElement("td");
                             var lab13 = document.createElement("label");
                             if (upt[i].ALISFIYAT3 <= 0) {
-                                lab13.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                lab13.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab13.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                lab13.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
                             td13.appendChild(lab13);
                             td13.className = "border-bottom-1 border-info";
@@ -919,9 +1042,9 @@
                             var td14 = document.createElement("td");
                             var lab14 = document.createElement("label");
                             if (upt[i].SATISFIYAT3 <= 0) {
-                                lab14.style = "background-color: transparent;border: none;color:red;float: right; width:70px;;text-align: end";
+                                lab14.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
                             } else {
-                                lab14.style = "background-color: transparent;border: none;color:green;float: right; width:70px;;text-align: end";
+                                lab14.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
                             }
 
                             td14.appendChild(lab14);
@@ -930,6 +1053,7 @@
                             lab14.innerHTML = (upt[i].SATISFIYAT3).toLocaleString('tr-TR');
                             tr1.appendChild(td14);
                             document.getElementById("tbody").appendChild(tr1);
+                            i++;
                         }
 
 
@@ -952,7 +1076,7 @@
                 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                 <script type="text/javascript">
                     function myUpdateFunction() {
-                        var s = "submitbutton";
+                        
                         Swal.fire({
                             title: 'Mail göndermek istediğinize emin misiniz?',
                             icon: 'question',
@@ -966,8 +1090,32 @@
                         }).then((result) => {
                             /* Read more about isConfirmed, isDenied below */
                             if (result.isConfirmed) {
-                                document.getElementById(s).click();
+                                
+                                var grupkodu = (document.getElementById("select1").value).toString();
+                                $.post("/Satis/GetStoksApiExcelDetails?grupkodu=" + grupkodu);
+                               
+
+                                
+                               
                             }
+                            
+                        }).then(function () {
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            })
+
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Mail başarıyla gönderildi!'
+                            });
                         })
                     }
                 </script>
@@ -1013,6 +1161,30 @@
     <script type="text/javascript" src="\assets\js\dashboards-analytics.js"></script>
    
     <div class="layout-overlay layout-menu-toggle"></div>
+   <script>
+       setTimeout(logOut, 7200000)
+       function logOut() {
+
+           $.ajax({
+               type: "GET",
+               url: '/Login/Logoff',
+               contentType: "application/json; charset=utf-8",
+               success: function (data) {
+
+
+                   return data;
+               },
+               complete: function () {
+
+                   window.location.href = '/Login/Login';
+
+               }
+           });
+
+
+
+       }
+   </script>
 </body>
 
 </html >

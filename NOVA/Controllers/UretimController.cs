@@ -260,6 +260,10 @@ namespace NOVA.Controllers
             }
             return View();
         }
+        public ActionResult IsEmri()
+        {
+            return View();
+        }
         public List<MakKoduModel> GetMak()
         {
             var apiUrl = "http://192.168.2.13:83/api/makine";

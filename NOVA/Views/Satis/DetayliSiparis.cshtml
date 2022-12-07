@@ -173,7 +173,7 @@
                             <select class="js-example-basic-multiple sticky-top position-sticky" id="TESLIM_YERI" name="TESLIM_YERI" multiple="multiple" style="width:100%;top:65px">
 
                                 @{
-
+                                    var a = 0;
                                     List<String> teslim = new List<String>();
                                     foreach (var item in ViewBag.AltKalem)
                                     {
@@ -183,24 +183,24 @@
                                         }
 
                                     }
-                                    foreach (var item2 in teslim)
+                                    while (a<teslim.Count)
                                     {
                                         if (ViewBag.FilterTeslim != null)
                                         {
-                                            if (ViewBag.FilterTeslim.Contains(item2))
+                                            if (ViewBag.FilterTeslim.Contains(teslim[a]))
                                             {
-                                                <option value="@item2" selected> @item2 </option>
+                                                <option value="@teslim[a]" selected> @teslim[a] </option>
                                             }
                                             else
                                             {
-                                                <option value="@item2"> @item2 </option>
+                                                <option value="@teslim[a]"> @teslim[a] </option>
                                             }
                                         }
                                         else
                                         {
-                                            <option value="@item2"> @item2 </option>
+                                            <option value="@teslim[a]"> @teslim[a] </option>
                                         }
-
+                                        a++;
                                     }
                                 }
 
@@ -526,11 +526,14 @@
                                         </tr>
 
                                         @{ int i = 0;
+                                            int b = 0;
                                             var x = ViewBag.AltKalem as ICollection<NOVA.Models.SiparisModel>;
+                                            var ustkalem = ViewBag.UstKalem;
+                                            var leng = ustkalem.Count;
                                             int sayac = 1;
                                         }
 
-                                        @foreach (var item in ViewBag.UstKalem)
+                                        @while (b<leng)
                                         {
                                             String stokadi = "";
                                             String miktar = "";
@@ -543,7 +546,7 @@
                                             String msipstring, ssipstring, uretimstring = "";
                                             int start = 0, startmsip = 0, startssip = 0, starturetim = 0;
                                             int end, endssip, endmsip, enduretim = 0;
-                                            string cari_isim = @item.CARI_ISIM;
+                                            string cari_isim = ustkalem[b].CARI_ISIM;
                                             string updated_cari_isim = "";
                                             int msiptoplamoran = 0, ssiptoplamoran = 0, uretimtoplamoran = 0;
                                             int topac = 0, topacuretim = 0, topacssip = 0;
@@ -553,35 +556,53 @@
                                             decimal? uretilecekmiktar = 0;
                                             decimal? msipteslim = 0;
                                             if (cari_isim.Length > 28)
+                                            {
                                                 updated_cari_isim = (cari_isim.Substring(0, 14)) + "..." + (cari_isim.Substring(cari_isim.Length - 10));
+                                            }
+
                                             else
+                                            {
                                                 updated_cari_isim = cari_isim;
+                                            }
 
 
-                                            string sipno = @item.SIPARIS_NO;
+
+                                            string sipno = ustkalem[b].SIPARIS_NO;
                                             string updated_sipno = "";
                                             updated_sipno = (sipno.Substring(0, 1)) + (sipno.Substring(3, 2)) + "-" + (sipno.Substring(sipno.Length - 5));
                                             string dovtip = "";
-                                            if (item.DOV_TIP == null)
+                                            if (ustkalem[b].DOV_TIP == null)
+                                            {
                                                 dovtip = "TRY";
+                                            }
+
                                             else
-                                                dovtip = item.DOV_TIP;
+                                            {
+                                                dovtip = ustkalem[b].DOV_TIP;
+                                            }
+
 
 
 
                                             decimal geneltoplam = 0;
                                             if (dovtip != "TRY")
-                                                geneltoplam = item.DOV_GENELTOPLAM;
+                                            {
+                                                geneltoplam = ustkalem[b].DOV_GENELTOPLAM;
+                                            }
+
                                             else
-                                                geneltoplam = item.GENELTOPLAM;
+                                            {
+                                                geneltoplam = ustkalem[b].GENELTOPLAM;
+                                            }
+
                                             <tr style="background-color: #F4FBFF " class="filt w3-border-light-blue w3-animate-top searchable" onclick="showHideRow('@i');">
                                                 <td class="sticky-left position-sticky text-center w3-border-light-blue" style="background-color: #F4FBFF;width:30px">@updated_sipno</td>
-                                                <td class="text-center">@item.TARIH.ToString("dd/MM/yy")</td>
+                                                <td class="text-center">@ustkalem[b].TARIH.ToString("dd/MM/yy")</td>
                                                 <td colspan="4" class="text-start">@updated_cari_isim</td>
-                                                <td class="text-center">@item.CARI_DOVIZ_TIPI</td>
-                                                <td class="text-center">@item.TESLIM_YERI</td>
-                                                <td class="text-end">@item.PLASIYER_ADI</td>
-                                                <td class="text-center geneltoplamTL" colspan="8" style="display:none"><span>@string.Format("{0:N02}", item.GENELTOPLAM) TRY</span></td>
+                                                <td class="text-center">@ustkalem[b].CARI_DOVIZ_TIPI</td>
+                                                <td class="text-center">@ustkalem[b].TESLIM_YERI</td>
+                                                <td class="text-end">@ustkalem[b].PLASIYER_ADI</td>
+                                                <td class="text-center geneltoplamTL" colspan="8" style="display:none"><span>@string.Format("{0:N02}", ustkalem[b].GENELTOPLAM) TRY</span></td>
                                                 <td class="text-center geneltoplamDoviz" colspan="8"><span>@string.Format("{0:N02}", geneltoplam) @dovtip</span></td>
 
                                             </tr>
@@ -595,7 +616,7 @@
 
 
 
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
 
 
@@ -615,7 +636,7 @@
                                                             starturetim = starturetim + (int.Parse("0"));
                                                         else
                                                             starturetim = (starturetim + (int.Parse(teslimaturetim)));
-                                                        if (item1.URETILECEKMI == "E")
+                                                        if (item1.URETIM_ORANI > 0)
                                                             topacuretim++;
                                                         if (item1.TESLIM_MIKTARI_SSIP + item1.BAKIYE_MIKTARI_SSIP > 0)
                                                             topacssip++;
@@ -704,7 +725,7 @@
                                                 }
                                                 <td colspan="1" style="vertical-align: top">
 
-                                                    <p class="mt-0"><strong><u>Stok Adı</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    <p class="mt-0"><strong><u>Stok Adı</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {<p class="text-nowrap">@item1.STOK_ADI.Replace('Ý', 'I') </p>teslimat = @String.Format("{0:0}", item1.TESLIMAT_ORANI * 100);
                                                     start = int.Parse(teslimat);
                                                     end = 100 - start;
@@ -717,7 +738,7 @@
 
                                                 </td>
                                                 <td colspan="1" style="vertical-align: top">
-                                                    <p class="text-end"><strong><u>Miktar 1</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    <p class="text-end"><strong><u>Miktar 1</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {<p class="text-end"><span>@String.Format("{0:N02}", item1.MIKTAR)</span>&nbsp;&nbsp;<span class="text-end">@item1.OLCU_BR1</span></p>
 
                                                 }
@@ -727,7 +748,7 @@
                                                 </td>
 
                                                 <td colspan="1" style="vertical-align: top">
-                                                    <p class="text-end"><strong><u>Miktar 2</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    <p class="text-end"><strong><u>Miktar 2</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {<p class="text-end"><span>@String.Format("{0:N02}", item1.MIKTAR2)</span>&nbsp;&nbsp;<span class="text-end">@item1.OLCU_BR2</span></p>
 
                                                 }
@@ -735,12 +756,12 @@
                                                 </td>
 
                                                 <td colspan="1" style="vertical-align: top">
-                                                    <p class="text-end"><strong><u>Brüt Fiyat</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    <p class="text-end"><strong><u>Brüt Fiyat</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         decimal? brut_fiyat = 0;
                                                         if (item1.DOV_TIP != "TRY")
                                                         {
-                                                            brut_fiyat = item1.BRUT_FIYAT/item1.KUR;
+                                                            brut_fiyat = item1.BRUT_FIYAT / item1.KUR;
                                                         }
                                                         else
                                                         {
@@ -752,7 +773,7 @@
 
                                                 </td>
                                                 <td colspan="1" style="vertical-align: top">
-                                                    <p class="text-end"><strong><u>İskonto</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    <p class="text-end"><strong><u>İskonto</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {<p class="text-end">@String.Format("{0:0.00}", item1.SATIS_ISKONTOSU)%</p>
 
                                                 }
@@ -760,10 +781,10 @@
                                                 </td>
 
                                                 <td colspan="1" style="vertical-align: top">
-                                                    <p class="text-end"><strong><u>Net Fiyat</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    <p class="text-end"><strong><u>Net Fiyat</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         decimal? net_fiyat = 0;
-                                                        if (item1.DOV_TIP != null)
+                                                        if (item1.DOV_TIP != "TRY")
                                                         {
                                                             net_fiyat = item1.DOV_NET_FIYAT;
                                                         }
@@ -778,11 +799,11 @@
 
                                                 </td>
                                                 <td style="vertical-align: top">
-                                                    <p class="text-end"><span class="float-end"><strong><u>Net Tutar</u></strong></span></p><br />@{var y = x.FirstOrDefault(t => t.SIPARIS_NO == item.SIPARIS_NO);}
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    <p class="text-end"><span class="float-end"><strong><u>Net Tutar</u></strong></span></p><br />@{var y = x.FirstOrDefault(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO);}
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         decimal? net_tutar = 0;
-                                                        if (item1.DOV_TIP != null)
+                                                        if (item1.DOV_TIP != "TRY")
                                                         {
                                                             net_tutar = item1.DOV_TUTAR;
                                                         }
@@ -795,7 +816,7 @@
                                                     }
                                                     @{
                                                         decimal? brut = 0, toplamkdv = 0, tevkifat = 0, geneltop = 0;
-                                                        if (y.DOV_TIP != null)
+                                                        if (y.DOV_TIP != "TRY")
                                                         {
                                                             brut = y.DOV_BRUTTUTAR; toplamkdv = y.DOV_TOPLAM_KDV; tevkifat = y.DOV_TEVKIFAT; geneltop = y.DOV_GENELTOPLAM;
                                                         }
@@ -811,7 +832,7 @@
                                                 </td>
                                                 <td style="vertical-align: top; background-color: #f2faf5">
                                                     <p class="text-end"><span><strong><u>MSIP Teslim</u></strong></span></p>
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {<p class="text-end"><span>@String.Format("{0:N02}", item1.TESLIM_MIKTARI)</span></p>
                                                     msipteslim = msipteslim + item1.TESLIM_MIKTARI;
                                                 }
@@ -823,7 +844,7 @@
                                                     <p class="text-end"><span><strong><u>MSIP Bekleyen</u></strong></span></p>
                                                     @{
                                                         decimal? msipbekleyen = 0;}
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {<p class="text-end"><span>@String.Format("{0:N02}", item1.BAKIYE_MIKTARI)</span></p>
 
                                                     msipbekleyen = msipbekleyen + item1.BAKIYE_MIKTARI;
@@ -836,7 +857,7 @@
                                                 </td>
                                                 <td style="vertical-align: top; background-color: #f2faf5">
                                                     <p class="text-center"><span><strong><u>MSIP Süreç</u></strong></span></p>
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         teslimat = @String.Format("{0:0}", item1.TESLIMAT_ORANI * 100);
                                                         start = int.Parse(teslimat);
@@ -857,7 +878,7 @@
                                                     <p class="text-end"><span><strong><u>SSIP Teslim</u></strong></span></p>
 
 
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         if (item1.TESLIM_MIKTARI_SSIP != null)
                                                         {
@@ -881,7 +902,7 @@
                                                 </td>
                                                 <td style="vertical-align: top; background-color: #fffaed ">
                                                     <p><span class="float-end"><strong><u>SSIP Bekleyen</u></strong></span></p><br />
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         if (item1.BAKIYE_MIKTARI_SSIP != null)
                                                         {<p class="text-center"><span>@String.Format("{0:N02}", item1.BAKIYE_MIKTARI_SSIP)</span></p> bakiyemiktarssip = bakiyemiktarssip + item1.BAKIYE_MIKTARI_SSIP;
@@ -900,7 +921,7 @@
                                                 </td>
                                                 <td style="vertical-align: top; background-color: #fffaed ">
                                                     <p><span><strong><u>SSIP Süreç</u></strong></span></p>
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         if (item1.TESLIMAT_ORANI_SSIP != null)
                                                         {
@@ -929,7 +950,7 @@
 
                                                 <td style="vertical-align: top; background-color: #f5f6fc">
                                                     <p class="text-end"><span><strong><u>Üretilen</u></strong></span></p>
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         if (item1.URETILEN_MIKTAR1 != null)
                                                         {<p class="text-end"><span>@String.Format("{0:N02}", item1.URETILEN_MIKTAR1)</span></p> uretilenmiktar = uretilenmiktar + item1.URETILEN_MIKTAR1;
@@ -949,7 +970,7 @@
                                                 </td>
                                                 <td style="vertical-align: top; background-color: #f5f6fc">
                                                     <p class="text-end"><span><strong><u>Üretim Bekleyen</u></strong></span></p>
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         if (item1.URETILECEK_MIKTAR1 != null)
                                                         {<p class="text-end"><span>@String.Format("{0:N02}", item1.URETILECEK_MIKTAR1)</span></p> uretilecekmiktar = uretilecekmiktar + item1.URETILECEK_MIKTAR1;
@@ -969,7 +990,7 @@
                                                 </td>
                                                 <td style="vertical-align: top; background-color: #f5f6fc">
                                                     <p><span><strong><u>Üretim Süreç</u></strong></span></p>
-                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                    @foreach (var item1 in x.Where(t => t.SIPARIS_NO == ustkalem[b].SIPARIS_NO))
                                                     {
                                                         if (item1.URETIM_ORANI != null)
                                                         {
@@ -1009,6 +1030,7 @@
 
                                             </tr>
                                             i++;
+                                                            b++;
                                         }
 
 
@@ -1234,7 +1256,30 @@
             })
         }
     </script>
+    <script>
+        setTimeout(logOut, 7200000)
+        function logOut() {
 
+            $.ajax({
+                type: "GET",
+                url: '/Login/Logoff',
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+
+                    return data;
+                },
+                complete: function () {
+
+                    window.location.href = '/Login/Login';
+
+                }
+            });
+
+
+
+        }
+    </script>
 </body>
 </html>
 

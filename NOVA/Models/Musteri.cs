@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Web;
+
+namespace NOVA.Models
+{
+    public class Musteri
+    {
+        public int MUSTERI_ID { get; set; }
+        public string MUSTERI_ADI { get; set; }
+        public string MUSTERI_IL { get; set; }
+        public string MUSTERI_ILCE { get; set; }
+        public string MUSTERI_TEL1 { get; set; }
+        public string MUSTERI_TEL2 { get; set; }
+        public string MUSTERI_MAIL { get; set; }
+        public string MUSTERI_SEKTOR { get; set; }
+        public string MUSTERI_SEKTOR_DIGER { get; set; }
+        public string MUSTERI_NITELIK { get; set; }
+        public string MUSTERI_NITELIK_DIGER { get; set; }
+        public string MUSTERI_NOTU { get; set; }
+        public string PLASIYER { get; set; }
+        public string KAYIT_YAPAN_KULLANICI { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? KAYIT_TARIHI { get; set; }
+        public string DUZELTME_YAPAN_KULLANICI { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? DUZELTME_TARIHI { get; set; }
+    }
+}

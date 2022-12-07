@@ -35,6 +35,11 @@
 
 
     <style>
+        tbody tr:hover {
+            background-color: transparent;
+            color: black;
+            transform: scale(1.01);
+        }
         .centercontent {
             position: absolute;
             max-width: 100%;
@@ -109,144 +114,140 @@
             100% {
                 opacity: 1;
             }
+
         }
+       
     </style>
     <script data-require="jquery@2.0.3" data-semver="2.0.3" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="~/assets/vendor/css/scripts.js"></script>
 </head>
 <body onload="move()" onclose="close()" style="background-color: #f5f5f9 !important;font-size:12px !important;overflow:hidden">
 
-
+    <script>
+        var white = 0;
+        var kural1 = 0;
+        var kural3 = 0;
+    </script>
     <div class="container-fluid mt-5">
         <div class="centercontent">
             <img id="progress" src="~/assets/img/elements/load.gif" style="width:150px;margin-left:5%" />
         </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm">
+                    <label class="text-nowrap" style="font-weight:bold">Rulo Sac Kodu</label>
+                    <select class="form-select" id="rulokodufilter" name="states[]" multiple="multiple" onchange="change()">
+                    </select>
+
+                </div>
+                <div class="col-sm">
+                    <label style="font-weight:bold">Renk Kodu</label>
+                    <select class="form-select" id="renkkodufilter" name="states[]" multiple="multiple" onchange="changerenk()">
+                    </select>
+
+                </div>
+                <div class="col-sm">
+                    <label style="font-weight:bold">Kalınlık</label>
+                    <select class="form-select" id="kalinlikfilter" name="states[]" multiple="multiple" onchange="changekal()">
+                    </select>
+
+                </div>
+                <div class="col-sm">
+                    <label style="font-weight:bold">Genişlik</label>
+                    <select class="form-select" id="genislikfilter" name="states[]" multiple="multiple" onchange="changegen()">
+                    </select>
+
+                </div>
+                <div class="col-sm">
+                    <label style="font-weight:bold">Menşei</label>
+                    <select id="menseifilter" class="form-select" name="states[]" multiple="multiple" onchange="changemen()">
+                    </select>
+
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col d-flex">
+
+                    <button class="btn1 me-2" style="background-color: white; border-style: none;" onclick="white()"> <i class='bx bxs-filter-alt'></i> Hazır Stoklar</button>
+
+                </div>
+                <div class="col d-flex">
+
+
+                    <button class="btn1 me-2" style="background-color: #EAFFF1; border-style: none;" onclick="kural1()"><i class='bx bxs-filter-alt'></i> İş Emri Verilen Stoklar</button>
+
+                </div>
+                <div class="col d-flex">
+
+
+                    <button class="btn1 me-2" style="background-color: #EAF1FF;border-style:none;" onclick="kural3()"><i class='bx bxs-filter-alt'></i> Üretim Bekleyenler</button>
+
+                </div>
+                <div class="col d-flex">
+
+
+                    <button class="btn me-2" style="background-color: #F1EAFF;cursor:default"> Opsiyonlanmış Stoklar </button>
+
+                </div>
+
+                <div class="col d-flex">
+                    <button class="btn-grad float-end" id="genis" onclick="genislet()" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-filter-alt bx-flashing' ></i> <span>Genişlet</span>"><i class='bx bx-expand-horizontal'></i></button>
+                    <button class="btn-grad float-end" onclick="refresh()" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-filter-alt bx-flashing' ></i> <span>Filtreyi Temizle</span>"><i class='bx bxs-trash'></i></button>
+                </div>
+
+
+            </div>
+        </div>
+
+
+
+
+
+
+
+
         <div class="row mb-1 d-flex">
             <div class="col">
-                <div class="row">
-                    <div class="col">
-                        <label style="font-weight:bold">Rulo Sac Kodu</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex">
-                        <select class="form-select" id="rulokodufilter" name="states[]" multiple="multiple" onchange="change()">
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="row">
-                    <div class="col">
-                        <label style="font-weight:bold">Renk Kodu</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex">
-                        <select class="form-select" id="renkkodufilter" name="states[]" multiple="multiple" onchange="changerenk()">
-                        </select>
-                    </div>
-                </div>
-
-
-            </div>
-            <div class="col">
-                <div class="row">
-                    <div class="col">
-                        <label style="font-weight:bold">Kalınlık</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex">
-                        <select class="form-select" id="kalinlikfilter" name="states[]" multiple="multiple" onchange="changekal()">
-                        </select>
-                    </div>
-                </div>
-
-
-            </div>
-            <div class="col">
-                <div class="row">
-                    <div class="col">
-                        <label style="font-weight:bold">Genişlik</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex">
-                        <select class="form-select" id="genislikfilter" name="states[]" multiple="multiple" onchange="changegen()">
-                        </select>
-                    </div>
-                </div>
-
-
-            </div>
-            <div class="col ">
-                <div class="row">
-                    <div class="col">
-                        <label style="font-weight:bold">Menşei</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col d-flex">
-                        <select id="menseifilter" class="form-select" name="states[]" multiple="multiple" onchange="changemen()">
-                        </select>
-                    </div>
-                </div>
-
-
+                
+                <label class="float-end"><b>Son Güncelleme Tarihi: </b> @ViewBag.LastModified </label>
             </div>
 
         </div>
 
-        <div class="row mt-3 mb-1 d-flex">
-            <div class="col">
 
-                <button class="btn1 me-2" style="background-color: white; border-style: none;" onclick="white()"> <i class='bx bxs-filter-alt'></i> Hazır Stoklar</button>
-                <button class="btn1 me-2" style="background-color: #EAFFF1; border-style: none;" onclick="kural1()"><i class='bx bxs-filter-alt'></i> İş Emri Verilen Stoklar</button>
-                <button class="btn1 me-2" style="background-color: #EAF1FF;border-style:none;" onclick="kural3()"><i class='bx bxs-filter-alt'></i> Üretim Bekleyenler</button>
-                <button class="btn me-2" style="background-color: #F1EAFF;cursor:default"> Opsiyonlanmış Stoklar </button>
-                <button class="btn-grad float-end" id="genis" onclick="genislet()" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-filter-alt bx-flashing' ></i> <span>Genişlet</span>"><i class='bx bx-expand-horizontal'></i></button>
-                <button class="btn-grad float-end" onclick="refresh()" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-filter-alt bx-flashing' ></i> <span>Filtreyi Temizle</span>"><i class='bx bxs-trash'></i></button>
-            </div>
-
-
-
-
-        </div>
-        
-        <div class="row">
+        <div class="row mt-2">
             <div class="col">
 
 
 
-                <div class="card" style="max-height:70vh;" id="table">
+                <div class="card" style="max-height: 60vh; overflow-x: hidden" id="table">
 
                     <div role="region" aria-labelledby="HeadersCol" tabindex="0" class="rowheaders">
-                        <table class="table table-responsive sorttable " id="sorttable">
-                            <thead class="table-secondary ">
-                                <tr class="sticky-top text-nowrap">
-                                    <th style="text-align: center; position: sticky; left: 0;">RULO KODU</th>
+                        <table class="table table-responsive-sm sorttable" id="sorttable">
+                            <thead class="table-secondary">
+                                <tr class="sticky-top">
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; position: sticky; left: 0;">RULO KODU</th>
                                     @*<th style="text-align: center; ">BOBIN NO</th>*@
-                                    <th style="text-align: center; ">KONUM</th>
-                                    <th style="text-align: center; ">RENKKODU</th>
-                                    <th style="text-align: center; ">KALINLIK</th>
-                                    <th style="text-align: center; ">GENISLIK</th>
-                                    <th style="text-align: center; ">KALITE</th>
-                                    <th style="text-align: center; ">KAPLAMA</th>
-                                    <th style="text-align: center; ">MENSEI</th>
-                                    <th style="text-align: center; ">REZERVE TARIH</th>
-                                    <th style="text-align: center; ">REZERVE ACIKLAMA</th>
-                                    <th style="text-align: center;">TONAJ</th>
-                                    <th style="text-align: center;">ADET</th>
-                                    <th style="text-align: center; display: none">STOK SAHASI</th>
-                                    <th style="text-align: center; display: none">STOĞA GİRİŞ TARİHİ</th>
-                                    <th style="text-align: center; display: none">İŞ EMRİ TARİHİ</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; ">KONUM</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; ">RENKKODU</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; ">KALINLIK</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; ">GENISLIK</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; ">KALITE</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; ">KAPLAMA</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; ">MENSEI</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; ">REZERVE TARIH</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; ">REZERVE ACIKLAMA</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center;">TONAJ</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center;">ADET</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; display: none">STOK SAHASI</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; display: none">STOĞA GİRİŞ TARİHİ</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; display: none">İŞ EMRİ TARİHİ</th>
                                     @*<th style="text-align: center; ">ÜRETİLME TARİHİ</th>*@
-                                    <th style="text-align: center; display: none">İRSALİYE NO</th>
-                                    <th style="text-align: center; display: none ">İŞ EMRİ NO</th>
-                                    <th style="text-align: center; display: none">ÜRETİLECEK MALZEME ADI</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; display: none">İRSALİYE NO</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; display: none ">İŞ EMRİ NO</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; display: none">ÜRETİLECEK MALZEME ADI</th>
                                     @*<th style="text-align: center; ">KURAL</th>*@
-                                    <th style="text-align: center; display: none">ÜRETİLECEK MAKİNE</th>
+                                    <th class="ps-sm-0 pe-sm-0" style="text-align: center; display: none">ÜRETİLECEK MAKİNE</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody">
@@ -292,7 +293,8 @@
     <script type="text/javascript" async defer src="/Scripts/buttons.js"></script>
     <script type="text/javascript" src="/Scripts/boxicons.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="
+            s://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 
@@ -326,8 +328,8 @@
                     if (!genislikfilter.includes(parseFloat(data[i].GENISLIK.replace(',', '.')))) {
                         genislikfilter.push(parseFloat(data[i].GENISLIK.replace(',', '.')));
                     }
-                    if (!menseifilter.includes(data[i].MENSEI)) {
-                        menseifilter.push(data[i].MENSEI);
+                    if (!menseifilter.includes(data[i].MENSEI.trim())) {
+                        menseifilter.push(data[i].MENSEI.trim());
                     }
                     var color = "";
                     if (data[i].KURAL == 1) {
@@ -343,7 +345,7 @@
                     }
                     tr.style = "background-color:" + color;
                     td.appendChild(lab);
-                    td.className = "border-bottom-1 border-gray";
+                    td.className = "border-bottom-1 border-gray  flex-sm-column ";
                     td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                     if (data[i].RULOKODU.length == 6) {
@@ -360,7 +362,7 @@
                     //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                     //td1.appendChild(lab1);
-                    //td1.className = "border-bottom-1 border-gray";
+                    //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td1.style = "height:50px;";
                     //lab1.innerHTML = data[i].BOBINNO;
                     //tr.appendChild(td1);
@@ -370,7 +372,7 @@
                     lab2.style = "background-color: transparent;border: none; text-align: center";
 
                     td2.appendChild(lab2);
-                    td2.className = "border-bottom-1 border-gray";
+                    td2.className = "border-bottom-1 border-gray  flex-sm-column";
                     td2.style = "height:50px;text-align: center";
                     if (data[i].KONUM != "") {
                         lab2.innerHTML = data[i].KONUM;
@@ -385,7 +387,7 @@
                     lab3.style = "background-color: transparent;border: none; text-align: center";
 
                     td3.appendChild(lab3);
-                    td3.className = "border-bottom-1 border-gray";
+                    td3.className = "border-bottom-1 border-gray  flex-sm-column";
                     td3.style = "height:50px;text-align: center";
                     if (data[i].RENKKODU != "") {
                         lab3.innerHTML = data[i].RENKKODU;
@@ -400,7 +402,7 @@
                     lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                     td4.appendChild(lab4);
-                    td4.className = "border-bottom-1 border-gray";
+                    td4.className = "border-bottom-1 border-gray  flex-sm-column";
                     td4.style = "height:50px;text-align: center";
                     if (data[i].KALINLIK != "") {
                         lab4.innerHTML = (parseFloat((data[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -415,7 +417,7 @@
                     lab5.style = "background-color: transparent;border: none; text-align: center";
 
                     td5.appendChild(lab5);
-                    td5.className = "border-bottom-1 border-gray";
+                    td5.className = "border-bottom-1 border-gray  flex-sm-column";
                     td5.style = "height:50px;text-align: center";
                     if (data[i].GENISLIK != "") {
                         lab5.innerHTML = data[i].GENISLIK;
@@ -431,7 +433,7 @@
                     lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                     td6.appendChild(lab6);
-                    td6.className = "border-bottom-1 border-gray";
+                    td6.className = "border-bottom-1 border-gray  flex-sm-column";
                     td6.style = "height:50px;text-align: center";
                     if (data[i].KALITE != "") {
                         lab6.innerHTML = data[i].KALITE;
@@ -446,7 +448,7 @@
                     lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                     td7.appendChild(lab7);
-                    td7.className = "border-bottom-1 border-gray";
+                    td7.className = "border-bottom-1 border-gray  flex-sm-column";
                     td7.style = "height:50px;text-align: center";
                     if (data[i].KAPLAMA != "") {
                         lab7.innerHTML = data[i].KAPLAMA;
@@ -465,7 +467,7 @@
                     lab8.style = "background-color: transparent;border: none; text-align: center";
 
                     td8.appendChild(lab8);
-                    td8.className = "border-bottom-1 border-gray";
+                    td8.className = "border-bottom-1 border-gray  flex-sm-column";
                     td8.style = "height:50px;text-align: center ";
                     if (data[i].MENSEI != "") {
                         lab8.innerHTML = data[i].MENSEI;
@@ -480,7 +482,7 @@
                     lab9.style = "background-color: transparent;border: none; text-align: center";
 
                     td9.appendChild(lab9);
-                    td9.className = "border-bottom-1 border-gray";
+                    td9.className = "border-bottom-1 border-gray  flex-sm-column";
                     td9.style = "height:50px;text-align: center ";
                     if (data[i].RESERVETARIH != "") {
                         lab9.innerHTML = data[i].RESERVETARIH.split(' ')[0];
@@ -495,7 +497,7 @@
                     lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                     td10.appendChild(lab10);
-                    td10.className = "border-bottom-1 border-gray";
+                    td10.className = "border-bottom-1 border-gray  flex-sm-column";
                     td10.style = "height:50px;text-align: center";
                     if (data[i].RESERVEACIKLAMA != "") {
                         lab10.innerHTML = data[i].RESERVEACIKLAMA;
@@ -510,7 +512,7 @@
                     lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                     td11.appendChild(lab11);
-                    td11.className = "border-bottom-1 border-gray";
+                    td11.className = "border-bottom-1 border-gray  flex-sm-column";
                     td11.style = "height:50px;text-align: center;";
                     lab11.innerHTML = (parseFloat(data[i].TONAJ)).toLocaleString('tr-TR');
                     tr.appendChild(td11);
@@ -520,7 +522,7 @@
                     lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                     td12.appendChild(lab12);
-                    td12.className = "border-bottom-1 border-gray";
+                    td12.className = "border-bottom-1 border-gray  flex-sm-column";
                     td12.style = "height:50px;text-align: center;";
                     lab12.innerHTML = data[i].ADET;
 
@@ -532,7 +534,7 @@
                     lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td14.appendChild(lab14);
-                    td14.className = "border-bottom-1 border-gray";
+                    td14.className = "border-bottom-1 border-gray  flex-sm-column";
                     td14.style = "height:50px;text-align: center;display:none";
                     tr.appendChild(td14);
                     if (data[i].STOKSAHASI != "") {
@@ -547,7 +549,7 @@
                     lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td15.appendChild(lab15);
-                    td15.className = "border-bottom-1 border-gray";
+                    td15.className = "border-bottom-1 border-gray  flex-sm-column";
                     td15.style = "height:50px;text-align: center;display:none";
                     if (data[i].RULOBANTGIRISTARIH != "") {
                         lab15.innerHTML = data[i].RULOBANTGIRISTARIH;
@@ -561,7 +563,7 @@
                     lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td16.appendChild(lab16);
-                    td16.className = "border-bottom-1 border-gray";
+                    td16.className = "border-bottom-1 border-gray  flex-sm-column";
                     td16.style = "height:50px;text-align: center;display:none";
                     if (data[i].ISEMRITARIHI != "") {
                         lab16.innerHTML = data[i].ISEMRITARIHI;
@@ -575,7 +577,7 @@
                     //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td17.appendChild(lab17);
-                    //td17.className = "border-bottom-1 border-gray";
+                    //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td17.style = "height:50px";
                     //lab17.innerHTML = data[i].URETILMETARIHI;
                     //tr.appendChild(td17);
@@ -585,7 +587,7 @@
                     lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td17.appendChild(lab17);
-                    td17.className = "border-bottom-1 border-gray";
+                    td17.className = "border-bottom-1 border-gray  flex-sm-column";
                     td17.style = "height:50px;text-align: center;display:none";
                     if (data[i].IRSALIYENO != "") {
                         lab17.innerHTML = data[i].IRSALIYENO;
@@ -605,7 +607,7 @@
                     }
 
                     td18.appendChild(lab18);
-                    td18.className = "border-bottom-1 border-gray";
+                    td18.className = "border-bottom-1 border-gray  flex-sm-column";
                     td18.style = "height:50px;text-align: center;display:none";
                     tr.appendChild(td18);
                     var td19 = document.createElement("td");
@@ -614,7 +616,7 @@
                     lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td19.appendChild(lab19);
-                    td19.className = "border-bottom-1 border-gray";
+                    td19.className = "border-bottom-1 border-gray  flex-sm-column";
                     td19.style = "height:50px;text-align: center;display:none";
                     if (data[i].URETILECEKMALZEMEADI != "") {
                         lab19.innerHTML = data[i].URETILECEKMALZEMEADI;
@@ -629,7 +631,7 @@
                     //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td20.appendChild(lab20);
-                    //td20.className = "border-bottom-1 border-gray";
+                    //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td20.style = "height:50px";
                     //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                     //tr.appendChild(td20);
@@ -639,7 +641,7 @@
                     //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td21.appendChild(lab21);
-                    //td21.className = "border-bottom-1 border-gray";
+                    //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td21.style = "height:50px";
                     //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                     //tr.appendChild(td21);
@@ -649,7 +651,7 @@
                     //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td22.appendChild(lab22);
-                    //td22.className = "border-bottom-1 border-gray";
+                    //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td22.style = "height:50px";
                     //lab22.innerHTML = data[i].KURAL;
                     //tr.appendChild(td22);
@@ -659,7 +661,7 @@
                     lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td23.appendChild(lab23);
-                    td23.className = "border-bottom-1 border-gray";
+                    td23.className = "border-bottom-1 border-gray  flex-sm-column";
                     td23.style = "height:50px;text-align: center;display:none";
                     if (data[i].ISEMRIKOD != "") {
                         lab23.innerHTML = data[i].ISEMRIKOD;
@@ -865,8 +867,8 @@
             } else {
                 var menf = [];
                 for (let i = 0; i < fitered.length; i++) {
-                    if (!menf.includes(fitered[i].MENSEI)) {
-                        menf.push(fitered[i].MENSEI);
+                    if (!menf.includes(fitered[i].MENSEI.trim())) {
+                        menf.push(fitered[i].MENSEI.trim());
                     }
                 }
                 document.getElementById("menseifilter").replaceChildren();
@@ -904,7 +906,7 @@
                 }
                 tr.style = "background-color:" + color;
                 td.appendChild(lab);
-                td.className = "border-bottom-1 border-gray";
+                td.className = "border-bottom-1 border-gray  flex-sm-column";
                 td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                 if (fitered[i].RULOKODU.length == 6) {
@@ -921,7 +923,7 @@
                 //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                 //td1.appendChild(lab1);
-                //td1.className = "border-bottom-1 border-gray";
+                //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td1.style = "height:50px;";
                 //lab1.innerHTML = data[i].BOBINNO;
                 //tr.appendChild(td1);
@@ -931,7 +933,7 @@
                 lab2.style = "background-color: transparent;border: none; text-align: center";
 
                 td2.appendChild(lab2);
-                td2.className = "border-bottom-1 border-gray";
+                td2.className = "border-bottom-1 border-gray  flex-sm-column";
                 td2.style = "height:50px;text-align: center";
                 if (fitered[i].KONUM != "") {
                     lab2.innerHTML = fitered[i].KONUM;
@@ -946,7 +948,7 @@
                 lab3.style = "background-color: transparent;border: none; text-align: center";
 
                 td3.appendChild(lab3);
-                td3.className = "border-bottom-1 border-gray";
+                td3.className = "border-bottom-1 border-gray  flex-sm-column";
                 td3.style = "height:50px;text-align: center";
                 if (fitered[i].RENKKODU != "") {
                     lab3.innerHTML = fitered[i].RENKKODU;
@@ -961,7 +963,7 @@
                 lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                 td4.appendChild(lab4);
-                td4.className = "border-bottom-1 border-gray";
+                td4.className = "border-bottom-1 border-gray  flex-sm-column";
                 td4.style = "height:50px;text-align: center";
                 if (fitered[i].KALINLIK != "") {
                     lab4.innerHTML = (parseFloat((fitered[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -976,7 +978,7 @@
                 lab5.style = "background-color: transparent;border: none; text-align: center";
 
                 td5.appendChild(lab5);
-                td5.className = "border-bottom-1 border-gray";
+                td5.className = "border-bottom-1 border-gray  flex-sm-column";
                 td5.style = "height:50px;text-align: center";
                 if (fitered[i].GENISLIK != "") {
                     lab5.innerHTML = fitered[i].GENISLIK;
@@ -992,7 +994,7 @@
                 lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                 td6.appendChild(lab6);
-                td6.className = "border-bottom-1 border-gray";
+                td6.className = "border-bottom-1 border-gray  flex-sm-column";
                 td6.style = "height:50px;text-align: center";
                 if (fitered[i].KALITE != "") {
                     lab6.innerHTML = fitered[i].KALITE;
@@ -1007,7 +1009,7 @@
                 lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                 td7.appendChild(lab7);
-                td7.className = "border-bottom-1 border-gray";
+                td7.className = "border-bottom-1 border-gray  flex-sm-column";
                 td7.style = "height:50px;text-align: center";
                 if (fitered[i].KAPLAMA != "") {
                     lab7.innerHTML = fitered[i].KAPLAMA;
@@ -1026,7 +1028,7 @@
                 lab8.style = "background-color: transparent;border: none; text-align: center";
 
                 td8.appendChild(lab8);
-                td8.className = "border-bottom-1 border-gray";
+                td8.className = "border-bottom-1 border-gray  flex-sm-column";
                 td8.style = "height:50px;text-align: center ";
                 if (fitered[i].MENSEI != "") {
                     lab8.innerHTML = fitered[i].MENSEI;
@@ -1041,7 +1043,7 @@
                 lab9.style = "background-color: transparent;border: none; text-align: center";
 
                 td9.appendChild(lab9);
-                td9.className = "border-bottom-1 border-gray";
+                td9.className = "border-bottom-1 border-gray  flex-sm-column";
                 td9.style = "height:50px;text-align: center ";
                 if (fitered[i].RESERVETARIH != "") {
                     lab9.innerHTML = fitered[i].RESERVETARIH.split(' ')[0];
@@ -1056,7 +1058,7 @@
                 lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                 td10.appendChild(lab10);
-                td10.className = "border-bottom-1 border-gray";
+                td10.className = "border-bottom-1 border-gray  flex-sm-column";
                 td10.style = "height:50px;text-align: center";
                 if (fitered[i].RESERVEACIKLAMA != "") {
                     lab10.innerHTML = fitered[i].RESERVEACIKLAMA;
@@ -1071,7 +1073,7 @@
                 lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                 td11.appendChild(lab11);
-                td11.className = "border-bottom-1 border-gray";
+                td11.className = "border-bottom-1 border-gray  flex-sm-column";
                 td11.style = "height:50px;text-align: center;";
                 lab11.innerHTML = (parseFloat(fitered[i].TONAJ)).toLocaleString('tr-TR');
                 tr.appendChild(td11);
@@ -1081,7 +1083,7 @@
                 lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                 td12.appendChild(lab12);
-                td12.className = "border-bottom-1 border-gray";
+                td12.className = "border-bottom-1 border-gray  flex-sm-column";
                 td12.style = "height:50px;text-align: center;";
                 lab12.innerHTML = fitered[i].ADET;
 
@@ -1093,7 +1095,7 @@
                 lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td14.appendChild(lab14);
-                td14.className = "border-bottom-1 border-gray";
+                td14.className = "border-bottom-1 border-gray  flex-sm-column";
                 td14.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td14);
                 if (fitered[i].STOKSAHASI != "") {
@@ -1108,7 +1110,7 @@
                 lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td15.appendChild(lab15);
-                td15.className = "border-bottom-1 border-gray";
+                td15.className = "border-bottom-1 border-gray  flex-sm-column";
                 td15.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].RULOBANTGIRISTARIH != "") {
                     lab15.innerHTML = fitered[i].RULOBANTGIRISTARIH;
@@ -1122,7 +1124,7 @@
                 lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td16.appendChild(lab16);
-                td16.className = "border-bottom-1 border-gray";
+                td16.className = "border-bottom-1 border-gray  flex-sm-column";
                 td16.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRITARIHI != "") {
                     lab16.innerHTML = fitered[i].ISEMRITARIHI;
@@ -1136,7 +1138,7 @@
                 //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td17.appendChild(lab17);
-                //td17.className = "border-bottom-1 border-gray";
+                //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td17.style = "height:50px";
                 //lab17.innerHTML = data[i].URETILMETARIHI;
                 //tr.appendChild(td17);
@@ -1146,7 +1148,7 @@
                 lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td17.appendChild(lab17);
-                td17.className = "border-bottom-1 border-gray";
+                td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 td17.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].IRSALIYENO != "") {
                     lab17.innerHTML = fitered[i].IRSALIYENO;
@@ -1166,7 +1168,7 @@
                 }
 
                 td18.appendChild(lab18);
-                td18.className = "border-bottom-1 border-gray";
+                td18.className = "border-bottom-1 border-gray  flex-sm-column";
                 td18.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td18);
                 var td19 = document.createElement("td");
@@ -1175,7 +1177,7 @@
                 lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td19.appendChild(lab19);
-                td19.className = "border-bottom-1 border-gray";
+                td19.className = "border-bottom-1 border-gray  flex-sm-column";
                 td19.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].URETILECEKMALZEMEADI != "") {
                     lab19.innerHTML = fitered[i].URETILECEKMALZEMEADI;
@@ -1190,7 +1192,7 @@
                 //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td20.appendChild(lab20);
-                //td20.className = "border-bottom-1 border-gray";
+                //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td20.style = "height:50px";
                 //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                 //tr.appendChild(td20);
@@ -1200,7 +1202,7 @@
                 //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td21.appendChild(lab21);
-                //td21.className = "border-bottom-1 border-gray";
+                //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td21.style = "height:50px";
                 //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                 //tr.appendChild(td21);
@@ -1210,7 +1212,7 @@
                 //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td22.appendChild(lab22);
-                //td22.className = "border-bottom-1 border-gray";
+                //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td22.style = "height:50px";
                 //lab22.innerHTML = data[i].KURAL;
                 //tr.appendChild(td22);
@@ -1220,7 +1222,7 @@
                 lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td23.appendChild(lab23);
-                td23.className = "border-bottom-1 border-gray";
+                td23.className = "border-bottom-1 border-gray  flex-sm-column";
                 td23.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRIKOD != "") {
                     lab23.innerHTML = fitered[i].ISEMRIKOD;
@@ -1327,8 +1329,8 @@
                 } else {
                     var menf = [];
                     for (let i = 0; i < fitered.length; i++) {
-                        if (!menf.includes(fitered[i].MENSEI)) {
-                            menf.push(fitered[i].MENSEI);
+                        if (!menf.includes(fitered[i].MENSEI.trim())) {
+                            menf.push(fitered[i].MENSEI.trim());
                         }
                     }
                     document.getElementById("menseifilter").replaceChildren();
@@ -1366,7 +1368,7 @@
                     }
                     tr.style = "background-color:" + color;
                     td.appendChild(lab);
-                    td.className = "border-bottom-1 border-gray";
+                    td.className = "border-bottom-1 border-gray  flex-sm-column";
                     td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                     if (fitered[i].RULOKODU.length == 6) {
@@ -1383,7 +1385,7 @@
                     //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                     //td1.appendChild(lab1);
-                    //td1.className = "border-bottom-1 border-gray";
+                    //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td1.style = "height:50px;";
                     //lab1.innerHTML = data[i].BOBINNO;
                     //tr.appendChild(td1);
@@ -1393,7 +1395,7 @@
                     lab2.style = "background-color: transparent;border: none; text-align: center";
 
                     td2.appendChild(lab2);
-                    td2.className = "border-bottom-1 border-gray";
+                    td2.className = "border-bottom-1 border-gray  flex-sm-column";
                     td2.style = "height:50px;text-align: center";
                     if (fitered[i].KONUM != "") {
                         lab2.innerHTML = fitered[i].KONUM;
@@ -1408,7 +1410,7 @@
                     lab3.style = "background-color: transparent;border: none; text-align: center";
 
                     td3.appendChild(lab3);
-                    td3.className = "border-bottom-1 border-gray";
+                    td3.className = "border-bottom-1 border-gray  flex-sm-column";
                     td3.style = "height:50px;text-align: center";
                     if (fitered[i].RENKKODU != "") {
                         lab3.innerHTML = fitered[i].RENKKODU;
@@ -1423,7 +1425,7 @@
                     lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                     td4.appendChild(lab4);
-                    td4.className = "border-bottom-1 border-gray";
+                    td4.className = "border-bottom-1 border-gray  flex-sm-column";
                     td4.style = "height:50px;text-align: center";
                     if (fitered[i].KALINLIK != "") {
                         lab4.innerHTML = (parseFloat((fitered[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -1438,7 +1440,7 @@
                     lab5.style = "background-color: transparent;border: none; text-align: center";
 
                     td5.appendChild(lab5);
-                    td5.className = "border-bottom-1 border-gray";
+                    td5.className = "border-bottom-1 border-gray  flex-sm-column";
                     td5.style = "height:50px;text-align: center";
                     if (fitered[i].GENISLIK != "") {
                         lab5.innerHTML = fitered[i].GENISLIK;
@@ -1454,7 +1456,7 @@
                     lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                     td6.appendChild(lab6);
-                    td6.className = "border-bottom-1 border-gray";
+                    td6.className = "border-bottom-1 border-gray  flex-sm-column";
                     td6.style = "height:50px;text-align: center";
                     if (fitered[i].KALITE != "") {
                         lab6.innerHTML = fitered[i].KALITE;
@@ -1469,7 +1471,7 @@
                     lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                     td7.appendChild(lab7);
-                    td7.className = "border-bottom-1 border-gray";
+                    td7.className = "border-bottom-1 border-gray  flex-sm-column";
                     td7.style = "height:50px;text-align: center";
                     if (fitered[i].KAPLAMA != "") {
                         lab7.innerHTML = fitered[i].KAPLAMA;
@@ -1488,7 +1490,7 @@
                     lab8.style = "background-color: transparent;border: none; text-align: center";
 
                     td8.appendChild(lab8);
-                    td8.className = "border-bottom-1 border-gray";
+                    td8.className = "border-bottom-1 border-gray  flex-sm-column";
                     td8.style = "height:50px;text-align: center ";
                     if (fitered[i].MENSEI != "") {
                         lab8.innerHTML = fitered[i].MENSEI;
@@ -1503,7 +1505,7 @@
                     lab9.style = "background-color: transparent;border: none; text-align: center";
 
                     td9.appendChild(lab9);
-                    td9.className = "border-bottom-1 border-gray";
+                    td9.className = "border-bottom-1 border-gray  flex-sm-column";
                     td9.style = "height:50px;text-align: center ";
                     if (fitered[i].RESERVETARIH != "") {
                         lab9.innerHTML = fitered[i].RESERVETARIH.split(' ')[0];
@@ -1518,7 +1520,7 @@
                     lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                     td10.appendChild(lab10);
-                    td10.className = "border-bottom-1 border-gray";
+                    td10.className = "border-bottom-1 border-gray  flex-sm-column";
                     td10.style = "height:50px;text-align: center";
                     if (fitered[i].RESERVEACIKLAMA != "") {
                         lab10.innerHTML = fitered[i].RESERVEACIKLAMA;
@@ -1533,7 +1535,7 @@
                     lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                     td11.appendChild(lab11);
-                    td11.className = "border-bottom-1 border-gray";
+                    td11.className = "border-bottom-1 border-gray  flex-sm-column";
                     td11.style = "height:50px;text-align: center;";
                     lab11.innerHTML = (parseFloat(fitered[i].TONAJ)).toLocaleString('tr-TR');
                     tr.appendChild(td11);
@@ -1543,7 +1545,7 @@
                     lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                     td12.appendChild(lab12);
-                    td12.className = "border-bottom-1 border-gray";
+                    td12.className = "border-bottom-1 border-gray  flex-sm-column";
                     td12.style = "height:50px;text-align: center;";
                     lab12.innerHTML = fitered[i].ADET;
 
@@ -1555,7 +1557,7 @@
                     lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td14.appendChild(lab14);
-                    td14.className = "border-bottom-1 border-gray";
+                    td14.className = "border-bottom-1 border-gray  flex-sm-column";
                     td14.style = "height:50px;text-align: center;display:none";
                     tr.appendChild(td14);
                     if (fitered[i].STOKSAHASI != "") {
@@ -1570,7 +1572,7 @@
                     lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td15.appendChild(lab15);
-                    td15.className = "border-bottom-1 border-gray";
+                    td15.className = "border-bottom-1 border-gray  flex-sm-column";
                     td15.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].RULOBANTGIRISTARIH != "") {
                         lab15.innerHTML = fitered[i].RULOBANTGIRISTARIH;
@@ -1584,7 +1586,7 @@
                     lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td16.appendChild(lab16);
-                    td16.className = "border-bottom-1 border-gray";
+                    td16.className = "border-bottom-1 border-gray  flex-sm-column";
                     td16.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].ISEMRITARIHI != "") {
                         lab16.innerHTML = fitered[i].ISEMRITARIHI;
@@ -1598,7 +1600,7 @@
                     //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td17.appendChild(lab17);
-                    //td17.className = "border-bottom-1 border-gray";
+                    //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td17.style = "height:50px";
                     //lab17.innerHTML = data[i].URETILMETARIHI;
                     //tr.appendChild(td17);
@@ -1608,7 +1610,7 @@
                     lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td17.appendChild(lab17);
-                    td17.className = "border-bottom-1 border-gray";
+                    td17.className = "border-bottom-1 border-gray  flex-sm-column";
                     td17.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].IRSALIYENO != "") {
                         lab17.innerHTML = fitered[i].IRSALIYENO;
@@ -1628,7 +1630,7 @@
                     }
 
                     td18.appendChild(lab18);
-                    td18.className = "border-bottom-1 border-gray";
+                    td18.className = "border-bottom-1 border-gray  flex-sm-column";
                     td18.style = "height:50px;text-align: center;display:none";
                     tr.appendChild(td18);
                     var td19 = document.createElement("td");
@@ -1637,7 +1639,7 @@
                     lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td19.appendChild(lab19);
-                    td19.className = "border-bottom-1 border-gray";
+                    td19.className = "border-bottom-1 border-gray  flex-sm-column";
                     td19.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].URETILECEKMALZEMEADI != "") {
                         lab19.innerHTML = fitered[i].URETILECEKMALZEMEADI;
@@ -1652,7 +1654,7 @@
                     //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td20.appendChild(lab20);
-                    //td20.className = "border-bottom-1 border-gray";
+                    //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td20.style = "height:50px";
                     //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                     //tr.appendChild(td20);
@@ -1662,7 +1664,7 @@
                     //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td21.appendChild(lab21);
-                    //td21.className = "border-bottom-1 border-gray";
+                    //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td21.style = "height:50px";
                     //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                     //tr.appendChild(td21);
@@ -1672,7 +1674,7 @@
                     //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td22.appendChild(lab22);
-                    //td22.className = "border-bottom-1 border-gray";
+                    //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td22.style = "height:50px";
                     //lab22.innerHTML = data[i].KURAL;
                     //tr.appendChild(td22);
@@ -1682,7 +1684,7 @@
                     lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td23.appendChild(lab23);
-                    td23.className = "border-bottom-1 border-gray";
+                    td23.className = "border-bottom-1 border-gray  flex-sm-column";
                     td23.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].ISEMRIKOD != "") {
                         lab23.innerHTML = fitered[i].ISEMRIKOD;
@@ -1798,8 +1800,8 @@
             } else {
                 var menf = [];
                 for (let i = 0; i < fitered.length; i++) {
-                    if (!menf.includes(fitered[i].MENSEI)) {
-                        menf.push(fitered[i].MENSEI);
+                    if (!menf.includes(fitered[i].MENSEI.trim())) {
+                        menf.push(fitered[i].MENSEI.trim());
                     }
                 }
                 document.getElementById("menseifilter").replaceChildren();
@@ -1832,7 +1834,7 @@
                 }
                 tr.style = "background-color:" + color;
                 td.appendChild(lab);
-                td.className = "border-bottom-1 border-gray";
+                td.className = "border-bottom-1 border-gray  flex-sm-column";
                 td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                 if (fitered[i].RULOKODU.length == 6) {
@@ -1849,7 +1851,7 @@
                 //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                 //td1.appendChild(lab1);
-                //td1.className = "border-bottom-1 border-gray";
+                //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td1.style = "height:50px;";
                 //lab1.innerHTML = data[i].BOBINNO;
                 //tr.appendChild(td1);
@@ -1859,7 +1861,7 @@
                 lab2.style = "background-color: transparent;border: none; text-align: center";
 
                 td2.appendChild(lab2);
-                td2.className = "border-bottom-1 border-gray";
+                td2.className = "border-bottom-1 border-gray  flex-sm-column";
                 td2.style = "height:50px;text-align: center";
                 if (fitered[i].KONUM != "") {
                     lab2.innerHTML = fitered[i].KONUM;
@@ -1874,7 +1876,7 @@
                 lab3.style = "background-color: transparent;border: none; text-align: center";
 
                 td3.appendChild(lab3);
-                td3.className = "border-bottom-1 border-gray";
+                td3.className = "border-bottom-1 border-gray  flex-sm-column";
                 td3.style = "height:50px;text-align: center";
                 if (fitered[i].RENKKODU != "") {
                     lab3.innerHTML = fitered[i].RENKKODU;
@@ -1889,7 +1891,7 @@
                 lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                 td4.appendChild(lab4);
-                td4.className = "border-bottom-1 border-gray";
+                td4.className = "border-bottom-1 border-gray  flex-sm-column";
                 td4.style = "height:50px;text-align: center";
                 if (fitered[i].KALINLIK != "") {
                     lab4.innerHTML = (parseFloat((fitered[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -1904,7 +1906,7 @@
                 lab5.style = "background-color: transparent;border: none; text-align: center";
 
                 td5.appendChild(lab5);
-                td5.className = "border-bottom-1 border-gray";
+                td5.className = "border-bottom-1 border-gray  flex-sm-column";
                 td5.style = "height:50px;text-align: center";
                 if (fitered[i].GENISLIK != "") {
                     lab5.innerHTML = fitered[i].GENISLIK;
@@ -1920,7 +1922,7 @@
                 lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                 td6.appendChild(lab6);
-                td6.className = "border-bottom-1 border-gray";
+                td6.className = "border-bottom-1 border-gray  flex-sm-column";
                 td6.style = "height:50px;text-align: center";
                 if (fitered[i].KALITE != "") {
                     lab6.innerHTML = fitered[i].KALITE;
@@ -1935,7 +1937,7 @@
                 lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                 td7.appendChild(lab7);
-                td7.className = "border-bottom-1 border-gray";
+                td7.className = "border-bottom-1 border-gray  flex-sm-column";
                 td7.style = "height:50px;text-align: center";
                 if (fitered[i].KAPLAMA != "") {
                     lab7.innerHTML = fitered[i].KAPLAMA;
@@ -1954,7 +1956,7 @@
                 lab8.style = "background-color: transparent;border: none; text-align: center";
 
                 td8.appendChild(lab8);
-                td8.className = "border-bottom-1 border-gray";
+                td8.className = "border-bottom-1 border-gray  flex-sm-column";
                 td8.style = "height:50px;text-align: center ";
                 if (fitered[i].MENSEI != "") {
                     lab8.innerHTML = fitered[i].MENSEI;
@@ -1969,7 +1971,7 @@
                 lab9.style = "background-color: transparent;border: none; text-align: center";
 
                 td9.appendChild(lab9);
-                td9.className = "border-bottom-1 border-gray";
+                td9.className = "border-bottom-1 border-gray  flex-sm-column";
                 td9.style = "height:50px;text-align: center ";
                 if (fitered[i].RESERVETARIH != "") {
                     lab9.innerHTML = fitered[i].RESERVETARIH.split(' ')[0];
@@ -1984,7 +1986,7 @@
                 lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                 td10.appendChild(lab10);
-                td10.className = "border-bottom-1 border-gray";
+                td10.className = "border-bottom-1 border-gray  flex-sm-column";
                 td10.style = "height:50px;text-align: center";
                 if (fitered[i].RESERVEACIKLAMA != "") {
                     lab10.innerHTML = fitered[i].RESERVEACIKLAMA;
@@ -1999,7 +2001,7 @@
                 lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                 td11.appendChild(lab11);
-                td11.className = "border-bottom-1 border-gray";
+                td11.className = "border-bottom-1 border-gray  flex-sm-column";
                 td11.style = "height:50px;text-align: center;";
                 lab11.innerHTML = (parseFloat(fitered[i].TONAJ)).toLocaleString('tr-TR');
                 tr.appendChild(td11);
@@ -2009,7 +2011,7 @@
                 lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                 td12.appendChild(lab12);
-                td12.className = "border-bottom-1 border-gray";
+                td12.className = "border-bottom-1 border-gray  flex-sm-column";
                 td12.style = "height:50px;text-align: center;";
                 lab12.innerHTML = fitered[i].ADET;
 
@@ -2021,7 +2023,7 @@
                 lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td14.appendChild(lab14);
-                td14.className = "border-bottom-1 border-gray";
+                td14.className = "border-bottom-1 border-gray  flex-sm-column";
                 td14.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td14);
                 if (fitered[i].STOKSAHASI != "") {
@@ -2036,7 +2038,7 @@
                 lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td15.appendChild(lab15);
-                td15.className = "border-bottom-1 border-gray";
+                td15.className = "border-bottom-1 border-gray  flex-sm-column";
                 td15.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].RULOBANTGIRISTARIH != "") {
                     lab15.innerHTML = fitered[i].RULOBANTGIRISTARIH;
@@ -2050,7 +2052,7 @@
                 lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td16.appendChild(lab16);
-                td16.className = "border-bottom-1 border-gray";
+                td16.className = "border-bottom-1 border-gray  flex-sm-column";
                 td16.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRITARIHI != "") {
                     lab16.innerHTML = fitered[i].ISEMRITARIHI;
@@ -2064,7 +2066,7 @@
                 //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td17.appendChild(lab17);
-                //td17.className = "border-bottom-1 border-gray";
+                //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td17.style = "height:50px";
                 //lab17.innerHTML = data[i].URETILMETARIHI;
                 //tr.appendChild(td17);
@@ -2074,7 +2076,7 @@
                 lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td17.appendChild(lab17);
-                td17.className = "border-bottom-1 border-gray";
+                td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 td17.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].IRSALIYENO != "") {
                     lab17.innerHTML = fitered[i].IRSALIYENO;
@@ -2094,7 +2096,7 @@
                 }
 
                 td18.appendChild(lab18);
-                td18.className = "border-bottom-1 border-gray";
+                td18.className = "border-bottom-1 border-gray  flex-sm-column";
                 td18.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td18);
                 var td19 = document.createElement("td");
@@ -2103,7 +2105,7 @@
                 lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td19.appendChild(lab19);
-                td19.className = "border-bottom-1 border-gray";
+                td19.className = "border-bottom-1 border-gray  flex-sm-column";
                 td19.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].URETILECEKMALZEMEADI != "") {
                     lab19.innerHTML = fitered[i].URETILECEKMALZEMEADI;
@@ -2118,7 +2120,7 @@
                 //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td20.appendChild(lab20);
-                //td20.className = "border-bottom-1 border-gray";
+                //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td20.style = "height:50px";
                 //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                 //tr.appendChild(td20);
@@ -2128,7 +2130,7 @@
                 //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td21.appendChild(lab21);
-                //td21.className = "border-bottom-1 border-gray";
+                //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td21.style = "height:50px";
                 //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                 //tr.appendChild(td21);
@@ -2138,7 +2140,7 @@
                 //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td22.appendChild(lab22);
-                //td22.className = "border-bottom-1 border-gray";
+                //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td22.style = "height:50px";
                 //lab22.innerHTML = data[i].KURAL;
                 //tr.appendChild(td22);
@@ -2148,7 +2150,7 @@
                 lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td23.appendChild(lab23);
-                td23.className = "border-bottom-1 border-gray";
+                td23.className = "border-bottom-1 border-gray  flex-sm-column";
                 td23.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRIKOD != "") {
                     lab23.innerHTML = fitered[i].ISEMRIKOD;
@@ -2254,8 +2256,8 @@
             } else {
                 var menf = [];
                 for (let i = 0; i < fitered.length; i++) {
-                    if (!menf.includes(fitered[i].MENSEI)) {
-                        menf.push(fitered[i].MENSEI);
+                    if (!menf.includes(fitered[i].MENSEI.trim())) {
+                        menf.push(fitered[i].MENSEI.trim());
                     }
                 }
                 document.getElementById("menseifilter").replaceChildren();
@@ -2290,7 +2292,7 @@
                 }
                 tr.style = "background-color:" + color;
                 td.appendChild(lab);
-                td.className = "border-bottom-1 border-gray";
+                td.className = "border-bottom-1 border-gray  flex-sm-column";
                 td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                 if (fitered[i].RULOKODU.length == 6) {
@@ -2307,7 +2309,7 @@
                 //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                 //td1.appendChild(lab1);
-                //td1.className = "border-bottom-1 border-gray";
+                //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td1.style = "height:50px;";
                 //lab1.innerHTML = data[i].BOBINNO;
                 //tr.appendChild(td1);
@@ -2317,7 +2319,7 @@
                 lab2.style = "background-color: transparent;border: none; text-align: center";
 
                 td2.appendChild(lab2);
-                td2.className = "border-bottom-1 border-gray";
+                td2.className = "border-bottom-1 border-gray  flex-sm-column";
                 td2.style = "height:50px;text-align: center";
                 if (fitered[i].KONUM != "") {
                     lab2.innerHTML = fitered[i].KONUM;
@@ -2332,7 +2334,7 @@
                 lab3.style = "background-color: transparent;border: none; text-align: center";
 
                 td3.appendChild(lab3);
-                td3.className = "border-bottom-1 border-gray";
+                td3.className = "border-bottom-1 border-gray  flex-sm-column";
                 td3.style = "height:50px;text-align: center";
                 if (fitered[i].RENKKODU != "") {
                     lab3.innerHTML = fitered[i].RENKKODU;
@@ -2347,7 +2349,7 @@
                 lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                 td4.appendChild(lab4);
-                td4.className = "border-bottom-1 border-gray";
+                td4.className = "border-bottom-1 border-gray  flex-sm-column";
                 td4.style = "height:50px;text-align: center";
                 if (fitered[i].KALINLIK != "") {
                     lab4.innerHTML = (parseFloat((fitered[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -2362,7 +2364,7 @@
                 lab5.style = "background-color: transparent;border: none; text-align: center";
 
                 td5.appendChild(lab5);
-                td5.className = "border-bottom-1 border-gray";
+                td5.className = "border-bottom-1 border-gray  flex-sm-column";
                 td5.style = "height:50px;text-align: center";
                 if (fitered[i].GENISLIK != "") {
                     lab5.innerHTML = fitered[i].GENISLIK;
@@ -2378,7 +2380,7 @@
                 lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                 td6.appendChild(lab6);
-                td6.className = "border-bottom-1 border-gray";
+                td6.className = "border-bottom-1 border-gray  flex-sm-column";
                 td6.style = "height:50px;text-align: center";
                 if (fitered[i].KALITE != "") {
                     lab6.innerHTML = fitered[i].KALITE;
@@ -2393,7 +2395,7 @@
                 lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                 td7.appendChild(lab7);
-                td7.className = "border-bottom-1 border-gray";
+                td7.className = "border-bottom-1 border-gray  flex-sm-column";
                 td7.style = "height:50px;text-align: center";
                 if (fitered[i].KAPLAMA != "") {
                     lab7.innerHTML = fitered[i].KAPLAMA;
@@ -2412,7 +2414,7 @@
                 lab8.style = "background-color: transparent;border: none; text-align: center";
 
                 td8.appendChild(lab8);
-                td8.className = "border-bottom-1 border-gray";
+                td8.className = "border-bottom-1 border-gray  flex-sm-column";
                 td8.style = "height:50px;text-align: center ";
                 if (fitered[i].MENSEI != "") {
                     lab8.innerHTML = fitered[i].MENSEI;
@@ -2427,7 +2429,7 @@
                 lab9.style = "background-color: transparent;border: none; text-align: center";
 
                 td9.appendChild(lab9);
-                td9.className = "border-bottom-1 border-gray";
+                td9.className = "border-bottom-1 border-gray  flex-sm-column";
                 td9.style = "height:50px;text-align: center ";
                 if (fitered[i].RESERVETARIH != "") {
                     lab9.innerHTML = fitered[i].RESERVETARIH.split(' ')[0];
@@ -2442,7 +2444,7 @@
                 lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                 td10.appendChild(lab10);
-                td10.className = "border-bottom-1 border-gray";
+                td10.className = "border-bottom-1 border-gray  flex-sm-column";
                 td10.style = "height:50px;text-align: center";
                 if (fitered[i].RESERVEACIKLAMA != "") {
                     lab10.innerHTML = fitered[i].RESERVEACIKLAMA;
@@ -2457,7 +2459,7 @@
                 lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                 td11.appendChild(lab11);
-                td11.className = "border-bottom-1 border-gray";
+                td11.className = "border-bottom-1 border-gray  flex-sm-column";
                 td11.style = "height:50px;text-align: center;";
                 lab11.innerHTML = (parseFloat(fitered[i].TONAJ)).toLocaleString('tr-TR');
                 tr.appendChild(td11);
@@ -2467,7 +2469,7 @@
                 lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                 td12.appendChild(lab12);
-                td12.className = "border-bottom-1 border-gray";
+                td12.className = "border-bottom-1 border-gray  flex-sm-column";
                 td12.style = "height:50px;text-align: center;";
                 lab12.innerHTML = fitered[i].ADET;
 
@@ -2479,7 +2481,7 @@
                 lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td14.appendChild(lab14);
-                td14.className = "border-bottom-1 border-gray";
+                td14.className = "border-bottom-1 border-gray  flex-sm-column";
                 td14.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td14);
                 if (fitered[i].STOKSAHASI != "") {
@@ -2494,7 +2496,7 @@
                 lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td15.appendChild(lab15);
-                td15.className = "border-bottom-1 border-gray";
+                td15.className = "border-bottom-1 border-gray  flex-sm-column";
                 td15.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].RULOBANTGIRISTARIH != "") {
                     lab15.innerHTML = fitered[i].RULOBANTGIRISTARIH;
@@ -2508,7 +2510,7 @@
                 lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td16.appendChild(lab16);
-                td16.className = "border-bottom-1 border-gray";
+                td16.className = "border-bottom-1 border-gray  flex-sm-column";
                 td16.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRITARIHI != "") {
                     lab16.innerHTML = fitered[i].ISEMRITARIHI;
@@ -2522,7 +2524,7 @@
                 //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td17.appendChild(lab17);
-                //td17.className = "border-bottom-1 border-gray";
+                //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td17.style = "height:50px";
                 //lab17.innerHTML = data[i].URETILMETARIHI;
                 //tr.appendChild(td17);
@@ -2532,7 +2534,7 @@
                 lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td17.appendChild(lab17);
-                td17.className = "border-bottom-1 border-gray";
+                td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 td17.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].IRSALIYENO != "") {
                     lab17.innerHTML = fitered[i].IRSALIYENO;
@@ -2552,7 +2554,7 @@
                 }
 
                 td18.appendChild(lab18);
-                td18.className = "border-bottom-1 border-gray";
+                td18.className = "border-bottom-1 border-gray  flex-sm-column";
                 td18.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td18);
                 var td19 = document.createElement("td");
@@ -2561,7 +2563,7 @@
                 lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td19.appendChild(lab19);
-                td19.className = "border-bottom-1 border-gray";
+                td19.className = "border-bottom-1 border-gray  flex-sm-column";
                 td19.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].URETILECEKMALZEMEADI != "") {
                     lab19.innerHTML = fitered[i].URETILECEKMALZEMEADI;
@@ -2576,7 +2578,7 @@
                 //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td20.appendChild(lab20);
-                //td20.className = "border-bottom-1 border-gray";
+                //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td20.style = "height:50px";
                 //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                 //tr.appendChild(td20);
@@ -2586,7 +2588,7 @@
                 //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td21.appendChild(lab21);
-                //td21.className = "border-bottom-1 border-gray";
+                //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td21.style = "height:50px";
                 //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                 //tr.appendChild(td21);
@@ -2596,7 +2598,7 @@
                 //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td22.appendChild(lab22);
-                //td22.className = "border-bottom-1 border-gray";
+                //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td22.style = "height:50px";
                 //lab22.innerHTML = data[i].KURAL;
                 //tr.appendChild(td22);
@@ -2606,7 +2608,7 @@
                 lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td23.appendChild(lab23);
-                td23.className = "border-bottom-1 border-gray";
+                td23.className = "border-bottom-1 border-gray  flex-sm-column";
                 td23.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRIKOD != "") {
                     lab23.innerHTML = fitered[i].ISEMRIKOD;
@@ -2749,7 +2751,7 @@
                 }
                 tr.style = "background-color:" + color;
                 td.appendChild(lab);
-                td.className = "border-bottom-1 border-gray";
+                td.className = "border-bottom-1 border-gray  flex-sm-column";
                 td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                 if (fitered[i].RULOKODU.length == 6) {
@@ -2766,7 +2768,7 @@
                 //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                 //td1.appendChild(lab1);
-                //td1.className = "border-bottom-1 border-gray";
+                //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td1.style = "height:50px;";
                 //lab1.innerHTML = data[i].BOBINNO;
                 //tr.appendChild(td1);
@@ -2776,7 +2778,7 @@
                 lab2.style = "background-color: transparent;border: none; text-align: center";
 
                 td2.appendChild(lab2);
-                td2.className = "border-bottom-1 border-gray";
+                td2.className = "border-bottom-1 border-gray  flex-sm-column";
                 td2.style = "height:50px;text-align: center";
                 if (fitered[i].KONUM != "") {
                     lab2.innerHTML = fitered[i].KONUM;
@@ -2791,7 +2793,7 @@
                 lab3.style = "background-color: transparent;border: none; text-align: center";
 
                 td3.appendChild(lab3);
-                td3.className = "border-bottom-1 border-gray";
+                td3.className = "border-bottom-1 border-gray  flex-sm-column";
                 td3.style = "height:50px;text-align: center";
                 if (fitered[i].RENKKODU != "") {
                     lab3.innerHTML = fitered[i].RENKKODU;
@@ -2806,7 +2808,7 @@
                 lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                 td4.appendChild(lab4);
-                td4.className = "border-bottom-1 border-gray";
+                td4.className = "border-bottom-1 border-gray  flex-sm-column";
                 td4.style = "height:50px;text-align: center";
                 if (fitered[i].KALINLIK != "") {
                     lab4.innerHTML = (parseFloat((fitered[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -2821,7 +2823,7 @@
                 lab5.style = "background-color: transparent;border: none; text-align: center";
 
                 td5.appendChild(lab5);
-                td5.className = "border-bottom-1 border-gray";
+                td5.className = "border-bottom-1 border-gray  flex-sm-column";
                 td5.style = "height:50px;text-align: center";
                 if (fitered[i].GENISLIK != "") {
                     lab5.innerHTML = fitered[i].GENISLIK;
@@ -2837,7 +2839,7 @@
                 lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                 td6.appendChild(lab6);
-                td6.className = "border-bottom-1 border-gray";
+                td6.className = "border-bottom-1 border-gray  flex-sm-column";
                 td6.style = "height:50px;text-align: center";
                 if (fitered[i].KALITE != "") {
                     lab6.innerHTML = fitered[i].KALITE;
@@ -2852,7 +2854,7 @@
                 lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                 td7.appendChild(lab7);
-                td7.className = "border-bottom-1 border-gray";
+                td7.className = "border-bottom-1 border-gray  flex-sm-column";
                 td7.style = "height:50px;text-align: center";
                 if (fitered[i].KAPLAMA != "") {
                     lab7.innerHTML = fitered[i].KAPLAMA;
@@ -2871,7 +2873,7 @@
                 lab8.style = "background-color: transparent;border: none; text-align: center";
 
                 td8.appendChild(lab8);
-                td8.className = "border-bottom-1 border-gray";
+                td8.className = "border-bottom-1 border-gray  flex-sm-column";
                 td8.style = "height:50px;text-align: center ";
                 if (fitered[i].MENSEI != "") {
                     lab8.innerHTML = fitered[i].MENSEI;
@@ -2886,7 +2888,7 @@
                 lab9.style = "background-color: transparent;border: none; text-align: center";
 
                 td9.appendChild(lab9);
-                td9.className = "border-bottom-1 border-gray";
+                td9.className = "border-bottom-1 border-gray  flex-sm-column";
                 td9.style = "height:50px;text-align: center ";
                 if (fitered[i].RESERVETARIH != "") {
                     lab9.innerHTML = fitered[i].RESERVETARIH.split(' ')[0];
@@ -2901,7 +2903,7 @@
                 lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                 td10.appendChild(lab10);
-                td10.className = "border-bottom-1 border-gray";
+                td10.className = "border-bottom-1 border-gray  flex-sm-column";
                 td10.style = "height:50px;text-align: center";
                 if (fitered[i].RESERVEACIKLAMA != "") {
                     lab10.innerHTML = fitered[i].RESERVEACIKLAMA;
@@ -2916,7 +2918,7 @@
                 lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                 td11.appendChild(lab11);
-                td11.className = "border-bottom-1 border-gray";
+                td11.className = "border-bottom-1 border-gray  flex-sm-column";
                 td11.style = "height:50px;text-align: center;";
                 lab11.innerHTML = (parseFloat(fitered[i].TONAJ)).toLocaleString('tr-TR');
                 tr.appendChild(td11);
@@ -2926,7 +2928,7 @@
                 lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                 td12.appendChild(lab12);
-                td12.className = "border-bottom-1 border-gray";
+                td12.className = "border-bottom-1 border-gray  flex-sm-column";
                 td12.style = "height:50px;text-align: center;";
                 lab12.innerHTML = fitered[i].ADET;
 
@@ -2938,7 +2940,7 @@
                 lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td14.appendChild(lab14);
-                td14.className = "border-bottom-1 border-gray";
+                td14.className = "border-bottom-1 border-gray  flex-sm-column";
                 td14.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td14);
                 if (fitered[i].STOKSAHASI != "") {
@@ -2953,7 +2955,7 @@
                 lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td15.appendChild(lab15);
-                td15.className = "border-bottom-1 border-gray";
+                td15.className = "border-bottom-1 border-gray  flex-sm-column";
                 td15.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].RULOBANTGIRISTARIH != "") {
                     lab15.innerHTML = fitered[i].RULOBANTGIRISTARIH;
@@ -2967,7 +2969,7 @@
                 lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td16.appendChild(lab16);
-                td16.className = "border-bottom-1 border-gray";
+                td16.className = "border-bottom-1 border-gray  flex-sm-column";
                 td16.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRITARIHI != "") {
                     lab16.innerHTML = fitered[i].ISEMRITARIHI;
@@ -2981,7 +2983,7 @@
                 //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td17.appendChild(lab17);
-                //td17.className = "border-bottom-1 border-gray";
+                //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td17.style = "height:50px";
                 //lab17.innerHTML = data[i].URETILMETARIHI;
                 //tr.appendChild(td17);
@@ -2991,7 +2993,7 @@
                 lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td17.appendChild(lab17);
-                td17.className = "border-bottom-1 border-gray";
+                td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 td17.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].IRSALIYENO != "") {
                     lab17.innerHTML = fitered[i].IRSALIYENO;
@@ -3011,7 +3013,7 @@
                 }
 
                 td18.appendChild(lab18);
-                td18.className = "border-bottom-1 border-gray";
+                td18.className = "border-bottom-1 border-gray  flex-sm-column";
                 td18.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td18);
                 var td19 = document.createElement("td");
@@ -3020,7 +3022,7 @@
                 lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td19.appendChild(lab19);
-                td19.className = "border-bottom-1 border-gray";
+                td19.className = "border-bottom-1 border-gray  flex-sm-column";
                 td19.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].URETILECEKMALZEMEADI != "") {
                     lab19.innerHTML = fitered[i].URETILECEKMALZEMEADI;
@@ -3035,7 +3037,7 @@
                 //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td20.appendChild(lab20);
-                //td20.className = "border-bottom-1 border-gray";
+                //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td20.style = "height:50px";
                 //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                 //tr.appendChild(td20);
@@ -3045,7 +3047,7 @@
                 //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td21.appendChild(lab21);
-                //td21.className = "border-bottom-1 border-gray";
+                //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td21.style = "height:50px";
                 //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                 //tr.appendChild(td21);
@@ -3055,7 +3057,7 @@
                 //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td22.appendChild(lab22);
-                //td22.className = "border-bottom-1 border-gray";
+                //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td22.style = "height:50px";
                 //lab22.innerHTML = data[i].KURAL;
                 //tr.appendChild(td22);
@@ -3065,7 +3067,7 @@
                 lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td23.appendChild(lab23);
-                td23.className = "border-bottom-1 border-gray";
+                td23.className = "border-bottom-1 border-gray  flex-sm-column";
                 td23.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRIKOD != "") {
                     lab23.innerHTML = fitered[i].ISEMRIKOD;
@@ -3118,7 +3120,7 @@
                 }
                 tr.style = "background-color:" + color;
                 td.appendChild(lab);
-                td.className = "border-bottom-1 border-gray";
+                td.className = "border-bottom-1 border-gray  flex-sm-column";
                 td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                 if (fitered[i].RULOKODU.length == 6) {
@@ -3135,7 +3137,7 @@
                 //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                 //td1.appendChild(lab1);
-                //td1.className = "border-bottom-1 border-gray";
+                //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td1.style = "height:50px;";
                 //lab1.innerHTML = data[i].BOBINNO;
                 //tr.appendChild(td1);
@@ -3145,7 +3147,7 @@
                 lab2.style = "background-color: transparent;border: none; text-align: center";
 
                 td2.appendChild(lab2);
-                td2.className = "border-bottom-1 border-gray";
+                td2.className = "border-bottom-1 border-gray  flex-sm-column";
                 td2.style = "height:50px;text-align: center";
                 if (fitered[i].KONUM != "") {
                     lab2.innerHTML = fitered[i].KONUM;
@@ -3160,7 +3162,7 @@
                 lab3.style = "background-color: transparent;border: none; text-align: center";
 
                 td3.appendChild(lab3);
-                td3.className = "border-bottom-1 border-gray";
+                td3.className = "border-bottom-1 border-gray  flex-sm-column";
                 td3.style = "height:50px;text-align: center";
                 if (fitered[i].RENKKODU != "") {
                     lab3.innerHTML = fitered[i].RENKKODU;
@@ -3175,7 +3177,7 @@
                 lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                 td4.appendChild(lab4);
-                td4.className = "border-bottom-1 border-gray";
+                td4.className = "border-bottom-1 border-gray  flex-sm-column";
                 td4.style = "height:50px;text-align: center";
                 if (fitered[i].KALINLIK != "") {
                     lab4.innerHTML = (parseFloat((fitered[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -3190,7 +3192,7 @@
                 lab5.style = "background-color: transparent;border: none; text-align: center";
 
                 td5.appendChild(lab5);
-                td5.className = "border-bottom-1 border-gray";
+                td5.className = "border-bottom-1 border-gray  flex-sm-column";
                 td5.style = "height:50px;text-align: center";
                 if (fitered[i].GENISLIK != "") {
                     lab5.innerHTML = fitered[i].GENISLIK;
@@ -3206,7 +3208,7 @@
                 lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                 td6.appendChild(lab6);
-                td6.className = "border-bottom-1 border-gray";
+                td6.className = "border-bottom-1 border-gray  flex-sm-column";
                 td6.style = "height:50px;text-align: center";
                 if (fitered[i].KALITE != "") {
                     lab6.innerHTML = fitered[i].KALITE;
@@ -3221,7 +3223,7 @@
                 lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                 td7.appendChild(lab7);
-                td7.className = "border-bottom-1 border-gray";
+                td7.className = "border-bottom-1 border-gray  flex-sm-column";
                 td7.style = "height:50px;text-align: center";
                 if (fitered[i].KAPLAMA != "") {
                     lab7.innerHTML = fitered[i].KAPLAMA;
@@ -3240,7 +3242,7 @@
                 lab8.style = "background-color: transparent;border: none; text-align: center";
 
                 td8.appendChild(lab8);
-                td8.className = "border-bottom-1 border-gray";
+                td8.className = "border-bottom-1 border-gray  flex-sm-column";
                 td8.style = "height:50px;text-align: center ";
                 if (fitered[i].MENSEI != "") {
                     lab8.innerHTML = fitered[i].MENSEI;
@@ -3255,7 +3257,7 @@
                 lab9.style = "background-color: transparent;border: none; text-align: center";
 
                 td9.appendChild(lab9);
-                td9.className = "border-bottom-1 border-gray";
+                td9.className = "border-bottom-1 border-gray  flex-sm-column";
                 td9.style = "height:50px;text-align: center ";
                 if (fitered[i].RESERVETARIH != "") {
                     lab9.innerHTML = fitered[i].RESERVETARIH.split(' ')[0];
@@ -3270,7 +3272,7 @@
                 lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                 td10.appendChild(lab10);
-                td10.className = "border-bottom-1 border-gray";
+                td10.className = "border-bottom-1 border-gray  flex-sm-column";
                 td10.style = "height:50px;text-align: center";
                 if (fitered[i].RESERVEACIKLAMA != "") {
                     lab10.innerHTML = fitered[i].RESERVEACIKLAMA;
@@ -3285,7 +3287,7 @@
                 lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                 td11.appendChild(lab11);
-                td11.className = "border-bottom-1 border-gray";
+                td11.className = "border-bottom-1 border-gray  flex-sm-column";
                 td11.style = "height:50px;text-align: center;";
                 lab11.innerHTML = (parseFloat(fitered[i].TONAJ)).toLocaleString('tr-TR');
                 tr.appendChild(td11);
@@ -3295,7 +3297,7 @@
                 lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                 td12.appendChild(lab12);
-                td12.className = "border-bottom-1 border-gray";
+                td12.className = "border-bottom-1 border-gray  flex-sm-column";
                 td12.style = "height:50px;text-align: center;";
                 lab12.innerHTML = fitered[i].ADET;
 
@@ -3307,7 +3309,7 @@
                 lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td14.appendChild(lab14);
-                td14.className = "border-bottom-1 border-gray";
+                td14.className = "border-bottom-1 border-gray  flex-sm-column";
                 td14.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td14);
                 if (fitered[i].STOKSAHASI != "") {
@@ -3322,7 +3324,7 @@
                 lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td15.appendChild(lab15);
-                td15.className = "border-bottom-1 border-gray";
+                td15.className = "border-bottom-1 border-gray  flex-sm-column";
                 td15.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].RULOBANTGIRISTARIH != "") {
                     lab15.innerHTML = fitered[i].RULOBANTGIRISTARIH;
@@ -3336,7 +3338,7 @@
                 lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td16.appendChild(lab16);
-                td16.className = "border-bottom-1 border-gray";
+                td16.className = "border-bottom-1 border-gray  flex-sm-column";
                 td16.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRITARIHI != "") {
                     lab16.innerHTML = fitered[i].ISEMRITARIHI;
@@ -3350,7 +3352,7 @@
                 //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td17.appendChild(lab17);
-                //td17.className = "border-bottom-1 border-gray";
+                //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td17.style = "height:50px";
                 //lab17.innerHTML = data[i].URETILMETARIHI;
                 //tr.appendChild(td17);
@@ -3360,7 +3362,7 @@
                 lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td17.appendChild(lab17);
-                td17.className = "border-bottom-1 border-gray";
+                td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 td17.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].IRSALIYENO != "") {
                     lab17.innerHTML = fitered[i].IRSALIYENO;
@@ -3380,7 +3382,7 @@
                 }
 
                 td18.appendChild(lab18);
-                td18.className = "border-bottom-1 border-gray";
+                td18.className = "border-bottom-1 border-gray  flex-sm-column";
                 td18.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td18);
                 var td19 = document.createElement("td");
@@ -3389,7 +3391,7 @@
                 lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td19.appendChild(lab19);
-                td19.className = "border-bottom-1 border-gray";
+                td19.className = "border-bottom-1 border-gray  flex-sm-column";
                 td19.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].URETILECEKMALZEMEADI != "") {
                     lab19.innerHTML = fitered[i].URETILECEKMALZEMEADI;
@@ -3404,7 +3406,7 @@
                 //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td20.appendChild(lab20);
-                //td20.className = "border-bottom-1 border-gray";
+                //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td20.style = "height:50px";
                 //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                 //tr.appendChild(td20);
@@ -3414,7 +3416,7 @@
                 //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td21.appendChild(lab21);
-                //td21.className = "border-bottom-1 border-gray";
+                //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td21.style = "height:50px";
                 //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                 //tr.appendChild(td21);
@@ -3424,7 +3426,7 @@
                 //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td22.appendChild(lab22);
-                //td22.className = "border-bottom-1 border-gray";
+                //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td22.style = "height:50px";
                 //lab22.innerHTML = data[i].KURAL;
                 //tr.appendChild(td22);
@@ -3434,7 +3436,7 @@
                 lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td23.appendChild(lab23);
-                td23.className = "border-bottom-1 border-gray";
+                td23.className = "border-bottom-1 border-gray  flex-sm-column";
                 td23.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRIKOD != "") {
                     lab23.innerHTML = fitered[i].ISEMRIKOD;
@@ -3448,6 +3450,117 @@
                
             }
             
+            var values = $("#rulokodufilter").val();
+            var renk = $("#renkkodufilter").val();
+            var kal = $("#kalinlikfilter").val();
+            var gen = $("#genislikfilter").val();
+            var men = $("#menseifilter").val();
+
+            if (values != "") {
+                fitered = fitered.filter(x => values.includes(x.RULOKODU));
+            } else {
+                var valf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!valf.includes(fitered[i].RULOKODU)) {
+                        valf.push(fitered[i].RULOKODU);
+                    }
+                }
+                valf.sort();
+                document.getElementById("rulokodufilter").replaceChildren();
+                for (let i = 0; i < valf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = valf[i];
+                    if (valf[i].length == 6) {
+                        option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
+                    } else {
+                        option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
+                    }
+                    document.getElementById("rulokodufilter").appendChild(option);
+                }
+            }
+
+            if (renk != "") {
+
+                fitered = fitered.filter(x => renk.includes(x.RENKKODU));
+
+            } else {
+                var renkf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!renkf.includes(fitered[i].RENKKODU)) {
+                        renkf.push(fitered[i].RENKKODU);
+                    }
+                }
+                renkf.sort();
+                document.getElementById("renkkodufilter").replaceChildren();
+                for (let i = 0; i < renkf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = renkf[i];
+                    option.innerHTML = renkf[i];
+                    document.getElementById("renkkodufilter").appendChild(option);
+                }
+            }
+            if (kal != "") {
+
+                fitered = fitered.filter(x => kal.includes(x.KALINLIK));
+            } else {
+                var kalf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
+                        kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
+                    }
+                }
+                kalf.sort(function (a, b) { return a - b });
+                document.getElementById("kalinlikfilter").replaceChildren();
+                for (let i = 0; i < kalf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = kalf[i];
+                    option.innerHTML = (parseFloat((kalf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
+                    document.getElementById("kalinlikfilter").appendChild(option);
+                }
+            }
+            if (gen != "") {
+
+                fitered = fitered.filter(x => gen.includes(x.GENISLIK));
+            } else {
+                var genf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(",", ".")))) {
+                        genf.push(parseFloat(fitered[i].GENISLIK.replace(",", ".")));
+                    }
+                }
+                document.getElementById("genislikfilter").replaceChildren();
+                genf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < genf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = genf[i];
+                    option.innerHTML = genf[i].toString().replace(".", ",");;
+                    document.getElementById("genislikfilter").appendChild(option);
+                }
+            }
+            if (men != "") {
+
+                fitered = fitered.filter(x => men.includes(x.MENSEI));
+            } else {
+                var menf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!menf.includes(fitered[i].MENSEI.trim())) {
+                        menf.push(fitered[i].MENSEI.trim());
+                    }
+                }
+                document.getElementById("menseifilter").replaceChildren();
+                menf.sort();
+                for (let i = 0; i < menf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = menf[i];
+                    option.innerHTML = menf[i];
+                    document.getElementById("menseifilter").appendChild(option);
+                }
+            }
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -3489,7 +3602,7 @@
                 }
                 tr.style = "background-color:" + color;
                 td.appendChild(lab);
-                td.className = "border-bottom-1 border-gray";
+                td.className = "border-bottom-1 border-gray  flex-sm-column";
                 td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                 if (fitered[i].RULOKODU.length == 6) {
@@ -3506,7 +3619,7 @@
                 //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                 //td1.appendChild(lab1);
-                //td1.className = "border-bottom-1 border-gray";
+                //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td1.style = "height:50px;";
                 //lab1.innerHTML = data[i].BOBINNO;
                 //tr.appendChild(td1);
@@ -3516,7 +3629,7 @@
                 lab2.style = "background-color: transparent;border: none; text-align: center";
 
                 td2.appendChild(lab2);
-                td2.className = "border-bottom-1 border-gray";
+                td2.className = "border-bottom-1 border-gray  flex-sm-column";
                 td2.style = "height:50px;text-align: center";
                 if (fitered[i].KONUM != "") {
                     lab2.innerHTML = fitered[i].KONUM;
@@ -3531,7 +3644,7 @@
                 lab3.style = "background-color: transparent;border: none; text-align: center";
 
                 td3.appendChild(lab3);
-                td3.className = "border-bottom-1 border-gray";
+                td3.className = "border-bottom-1 border-gray  flex-sm-column";
                 td3.style = "height:50px;text-align: center";
                 if (fitered[i].RENKKODU != "") {
                     lab3.innerHTML = fitered[i].RENKKODU;
@@ -3546,7 +3659,7 @@
                 lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                 td4.appendChild(lab4);
-                td4.className = "border-bottom-1 border-gray";
+                td4.className = "border-bottom-1 border-gray  flex-sm-column";
                 td4.style = "height:50px;text-align: center";
                 if (fitered[i].KALINLIK != "") {
                     lab4.innerHTML = (parseFloat((fitered[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -3561,7 +3674,7 @@
                 lab5.style = "background-color: transparent;border: none; text-align: center";
 
                 td5.appendChild(lab5);
-                td5.className = "border-bottom-1 border-gray";
+                td5.className = "border-bottom-1 border-gray  flex-sm-column";
                 td5.style = "height:50px;text-align: center";
                 if (fitered[i].GENISLIK != "") {
                     lab5.innerHTML = fitered[i].GENISLIK;
@@ -3577,7 +3690,7 @@
                 lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                 td6.appendChild(lab6);
-                td6.className = "border-bottom-1 border-gray";
+                td6.className = "border-bottom-1 border-gray  flex-sm-column";
                 td6.style = "height:50px;text-align: center";
                 if (fitered[i].KALITE != "") {
                     lab6.innerHTML = fitered[i].KALITE;
@@ -3592,7 +3705,7 @@
                 lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                 td7.appendChild(lab7);
-                td7.className = "border-bottom-1 border-gray";
+                td7.className = "border-bottom-1 border-gray  flex-sm-column";
                 td7.style = "height:50px;text-align: center";
                 if (fitered[i].KAPLAMA != "") {
                     lab7.innerHTML = fitered[i].KAPLAMA;
@@ -3611,7 +3724,7 @@
                 lab8.style = "background-color: transparent;border: none; text-align: center";
 
                 td8.appendChild(lab8);
-                td8.className = "border-bottom-1 border-gray";
+                td8.className = "border-bottom-1 border-gray  flex-sm-column";
                 td8.style = "height:50px;text-align: center ";
                 if (fitered[i].MENSEI != "") {
                     lab8.innerHTML = fitered[i].MENSEI;
@@ -3626,7 +3739,7 @@
                 lab9.style = "background-color: transparent;border: none; text-align: center";
 
                 td9.appendChild(lab9);
-                td9.className = "border-bottom-1 border-gray";
+                td9.className = "border-bottom-1 border-gray  flex-sm-column";
                 td9.style = "height:50px;text-align: center ";
                 if (fitered[i].RESERVETARIH != "") {
                     lab9.innerHTML = fitered[i].RESERVETARIH.split(' ')[0];
@@ -3641,7 +3754,7 @@
                 lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                 td10.appendChild(lab10);
-                td10.className = "border-bottom-1 border-gray";
+                td10.className = "border-bottom-1 border-gray  flex-sm-column";
                 td10.style = "height:50px;text-align: center";
                 if (fitered[i].RESERVEACIKLAMA != "") {
                     lab10.innerHTML = fitered[i].RESERVEACIKLAMA;
@@ -3656,7 +3769,7 @@
                 lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                 td11.appendChild(lab11);
-                td11.className = "border-bottom-1 border-gray";
+                td11.className = "border-bottom-1 border-gray  flex-sm-column";
                 td11.style = "height:50px;text-align: center;";
                 lab11.innerHTML = (parseFloat(fitered[i].TONAJ)).toLocaleString('tr-TR');
                 tr.appendChild(td11);
@@ -3666,7 +3779,7 @@
                 lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                 td12.appendChild(lab12);
-                td12.className = "border-bottom-1 border-gray";
+                td12.className = "border-bottom-1 border-gray  flex-sm-column";
                 td12.style = "height:50px;text-align: center;";
                 lab12.innerHTML = fitered[i].ADET;
 
@@ -3678,7 +3791,7 @@
                 lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td14.appendChild(lab14);
-                td14.className = "border-bottom-1 border-gray";
+                td14.className = "border-bottom-1 border-gray  flex-sm-column";
                 td14.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td14);
                 if (fitered[i].STOKSAHASI != "") {
@@ -3693,7 +3806,7 @@
                 lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td15.appendChild(lab15);
-                td15.className = "border-bottom-1 border-gray";
+                td15.className = "border-bottom-1 border-gray  flex-sm-column";
                 td15.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].RULOBANTGIRISTARIH != "") {
                     lab15.innerHTML = fitered[i].RULOBANTGIRISTARIH;
@@ -3707,7 +3820,7 @@
                 lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td16.appendChild(lab16);
-                td16.className = "border-bottom-1 border-gray";
+                td16.className = "border-bottom-1 border-gray  flex-sm-column";
                 td16.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRITARIHI != "") {
                     lab16.innerHTML = fitered[i].ISEMRITARIHI;
@@ -3721,7 +3834,7 @@
                 //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td17.appendChild(lab17);
-                //td17.className = "border-bottom-1 border-gray";
+                //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td17.style = "height:50px";
                 //lab17.innerHTML = data[i].URETILMETARIHI;
                 //tr.appendChild(td17);
@@ -3731,7 +3844,7 @@
                 lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td17.appendChild(lab17);
-                td17.className = "border-bottom-1 border-gray";
+                td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 td17.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].IRSALIYENO != "") {
                     lab17.innerHTML = fitered[i].IRSALIYENO;
@@ -3751,7 +3864,7 @@
                 }
 
                 td18.appendChild(lab18);
-                td18.className = "border-bottom-1 border-gray";
+                td18.className = "border-bottom-1 border-gray  flex-sm-column";
                 td18.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td18);
                 var td19 = document.createElement("td");
@@ -3760,7 +3873,7 @@
                 lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td19.appendChild(lab19);
-                td19.className = "border-bottom-1 border-gray";
+                td19.className = "border-bottom-1 border-gray  flex-sm-column";
                 td19.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].URETILECEKMALZEMEADI != "") {
                     lab19.innerHTML = fitered[i].URETILECEKMALZEMEADI;
@@ -3775,7 +3888,7 @@
                 //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td20.appendChild(lab20);
-                //td20.className = "border-bottom-1 border-gray";
+                //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td20.style = "height:50px";
                 //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                 //tr.appendChild(td20);
@@ -3785,7 +3898,7 @@
                 //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td21.appendChild(lab21);
-                //td21.className = "border-bottom-1 border-gray";
+                //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td21.style = "height:50px";
                 //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                 //tr.appendChild(td21);
@@ -3795,7 +3908,7 @@
                 //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td22.appendChild(lab22);
-                //td22.className = "border-bottom-1 border-gray";
+                //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td22.style = "height:50px";
                 //lab22.innerHTML = data[i].KURAL;
                 //tr.appendChild(td22);
@@ -3805,7 +3918,7 @@
                 lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td23.appendChild(lab23);
-                td23.className = "border-bottom-1 border-gray";
+                td23.className = "border-bottom-1 border-gray  flex-sm-column";
                 td23.style = "height:50px;text-align: center;display:none";
                 if (fitered[i].ISEMRIKOD != "") {
                     lab23.innerHTML = fitered[i].ISEMRIKOD;
@@ -3829,6 +3942,117 @@
 
 
                     }
+                }
+            }
+            var values = $("#rulokodufilter").val();
+            var renk = $("#renkkodufilter").val();
+            var kal = $("#kalinlikfilter").val();
+            var gen = $("#genislikfilter").val();
+            var men = $("#menseifilter").val();
+
+            if (values != "") {
+                fitered = fitered.filter(x => values.includes(x.RULOKODU));
+            } else {
+                var valf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!valf.includes(fitered[i].RULOKODU)) {
+                        valf.push(fitered[i].RULOKODU);
+                    }
+                }
+                valf.sort();
+                document.getElementById("rulokodufilter").replaceChildren();
+                for (let i = 0; i < valf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = valf[i];
+                    if (valf[i].length == 6) {
+                        option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
+                    } else {
+                        option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
+                    }
+                    document.getElementById("rulokodufilter").appendChild(option);
+                }
+            }
+
+            if (renk != "") {
+
+                fitered = fitered.filter(x => renk.includes(x.RENKKODU));
+
+            } else {
+                var renkf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!renkf.includes(fitered[i].RENKKODU)) {
+                        renkf.push(fitered[i].RENKKODU);
+                    }
+                }
+                renkf.sort();
+                document.getElementById("renkkodufilter").replaceChildren();
+                for (let i = 0; i < renkf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = renkf[i];
+                    option.innerHTML = renkf[i];
+                    document.getElementById("renkkodufilter").appendChild(option);
+                }
+            }
+            if (kal != "") {
+
+                fitered = fitered.filter(x => kal.includes(x.KALINLIK));
+            } else {
+                var kalf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
+                        kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
+                    }
+                }
+                kalf.sort(function (a, b) { return a - b });
+                document.getElementById("kalinlikfilter").replaceChildren();
+                for (let i = 0; i < kalf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = kalf[i];
+                    option.innerHTML = (parseFloat((kalf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
+                    document.getElementById("kalinlikfilter").appendChild(option);
+                }
+            }
+            if (gen != "") {
+
+                fitered = fitered.filter(x => gen.includes(x.GENISLIK));
+            } else {
+                var genf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(",", ".")))) {
+                        genf.push(parseFloat(fitered[i].GENISLIK.replace(",", ".")));
+                    }
+                }
+                document.getElementById("genislikfilter").replaceChildren();
+                genf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < genf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = genf[i];
+                    option.innerHTML = genf[i].toString().replace(".", ",");;
+                    document.getElementById("genislikfilter").appendChild(option);
+                }
+            }
+            if (men != "") {
+
+                fitered = fitered.filter(x => men.includes(x.MENSEI));
+            } else {
+                var menf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!menf.includes(fitered[i].MENSEI.trim())) {
+                        menf.push(fitered[i].MENSEI.trim());
+                    }
+                }
+                document.getElementById("menseifilter").replaceChildren();
+                menf.sort();
+                for (let i = 0; i < menf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = menf[i];
+                    option.innerHTML = menf[i];
+                    document.getElementById("menseifilter").appendChild(option);
                 }
             }
         }
@@ -3858,7 +4082,7 @@
                     }
                     tr.style = "background-color:" + color;
                     td.appendChild(lab);
-                    td.className = "border-bottom-1 border-gray";
+                    td.className = "border-bottom-1 border-gray  flex-sm-column";
                     td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                     if (fitered[i].RULOKODU.length == 6) {
@@ -3875,7 +4099,7 @@
                     //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                     //td1.appendChild(lab1);
-                    //td1.className = "border-bottom-1 border-gray";
+                    //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td1.style = "height:50px;";
                     //lab1.innerHTML = data[i].BOBINNO;
                     //tr.appendChild(td1);
@@ -3885,7 +4109,7 @@
                     lab2.style = "background-color: transparent;border: none; text-align: center";
 
                     td2.appendChild(lab2);
-                    td2.className = "border-bottom-1 border-gray";
+                    td2.className = "border-bottom-1 border-gray  flex-sm-column";
                     td2.style = "height:50px;text-align: center";
                     if (fitered[i].KONUM != "") {
                         lab2.innerHTML = fitered[i].KONUM;
@@ -3900,7 +4124,7 @@
                     lab3.style = "background-color: transparent;border: none; text-align: center";
 
                     td3.appendChild(lab3);
-                    td3.className = "border-bottom-1 border-gray";
+                    td3.className = "border-bottom-1 border-gray  flex-sm-column";
                     td3.style = "height:50px;text-align: center";
                     if (fitered[i].RENKKODU != "") {
                         lab3.innerHTML = fitered[i].RENKKODU;
@@ -3915,7 +4139,7 @@
                     lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                     td4.appendChild(lab4);
-                    td4.className = "border-bottom-1 border-gray";
+                    td4.className = "border-bottom-1 border-gray  flex-sm-column";
                     td4.style = "height:50px;text-align: center";
                     if (fitered[i].KALINLIK != "") {
                         lab4.innerHTML = (parseFloat((fitered[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -3930,7 +4154,7 @@
                     lab5.style = "background-color: transparent;border: none; text-align: center";
 
                     td5.appendChild(lab5);
-                    td5.className = "border-bottom-1 border-gray";
+                    td5.className = "border-bottom-1 border-gray  flex-sm-column";
                     td5.style = "height:50px;text-align: center";
                     if (fitered[i].GENISLIK != "") {
                         lab5.innerHTML = fitered[i].GENISLIK;
@@ -3946,7 +4170,7 @@
                     lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                     td6.appendChild(lab6);
-                    td6.className = "border-bottom-1 border-gray";
+                    td6.className = "border-bottom-1 border-gray  flex-sm-column";
                     td6.style = "height:50px;text-align: center";
                     if (fitered[i].KALITE != "") {
                         lab6.innerHTML = fitered[i].KALITE;
@@ -3961,7 +4185,7 @@
                     lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                     td7.appendChild(lab7);
-                    td7.className = "border-bottom-1 border-gray";
+                    td7.className = "border-bottom-1 border-gray  flex-sm-column";
                     td7.style = "height:50px;text-align: center";
                     if (fitered[i].KAPLAMA != "") {
                         lab7.innerHTML = fitered[i].KAPLAMA;
@@ -3980,7 +4204,7 @@
                     lab8.style = "background-color: transparent;border: none; text-align: center";
 
                     td8.appendChild(lab8);
-                    td8.className = "border-bottom-1 border-gray";
+                    td8.className = "border-bottom-1 border-gray  flex-sm-column";
                     td8.style = "height:50px;text-align: center ";
                     if (fitered[i].MENSEI != "") {
                         lab8.innerHTML = fitered[i].MENSEI;
@@ -3995,7 +4219,7 @@
                     lab9.style = "background-color: transparent;border: none; text-align: center";
 
                     td9.appendChild(lab9);
-                    td9.className = "border-bottom-1 border-gray";
+                    td9.className = "border-bottom-1 border-gray  flex-sm-column";
                     td9.style = "height:50px;text-align: center ";
                     if (fitered[i].RESERVETARIH != "") {
                         lab9.innerHTML = fitered[i].RESERVETARIH.split(' ')[0];
@@ -4010,7 +4234,7 @@
                     lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                     td10.appendChild(lab10);
-                    td10.className = "border-bottom-1 border-gray";
+                    td10.className = "border-bottom-1 border-gray  flex-sm-column";
                     td10.style = "height:50px;text-align: center";
                     if (fitered[i].RESERVEACIKLAMA != "") {
                         lab10.innerHTML = fitered[i].RESERVEACIKLAMA;
@@ -4025,7 +4249,7 @@
                     lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                     td11.appendChild(lab11);
-                    td11.className = "border-bottom-1 border-gray";
+                    td11.className = "border-bottom-1 border-gray  flex-sm-column";
                     td11.style = "height:50px;text-align: center;";
                     lab11.innerHTML = (parseFloat(fitered[i].TONAJ)).toLocaleString('tr-TR');
                     tr.appendChild(td11);
@@ -4035,19 +4259,19 @@
                     lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                     td12.appendChild(lab12);
-                    td12.className = "border-bottom-1 border-gray";
+                    td12.className = "border-bottom-1 border-gray  flex-sm-column";
                     td12.style = "height:50px;text-align: center;";
                     lab12.innerHTML = fitered[i].ADET;
 
                     tr.appendChild(td12);
-                   
+
                     var td14 = document.createElement("td");
                     var lab14 = document.createElement("label");
 
                     lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td14.appendChild(lab14);
-                    td14.className = "border-bottom-1 border-gray";
+                    td14.className = "border-bottom-1 border-gray  flex-sm-column";
                     td14.style = "height:50px;text-align: center;display:none";
                     tr.appendChild(td14);
                     if (fitered[i].STOKSAHASI != "") {
@@ -4062,7 +4286,7 @@
                     lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td15.appendChild(lab15);
-                    td15.className = "border-bottom-1 border-gray";
+                    td15.className = "border-bottom-1 border-gray  flex-sm-column";
                     td15.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].RULOBANTGIRISTARIH != "") {
                         lab15.innerHTML = fitered[i].RULOBANTGIRISTARIH;
@@ -4076,7 +4300,7 @@
                     lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td16.appendChild(lab16);
-                    td16.className = "border-bottom-1 border-gray";
+                    td16.className = "border-bottom-1 border-gray  flex-sm-column";
                     td16.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].ISEMRITARIHI != "") {
                         lab16.innerHTML = fitered[i].ISEMRITARIHI;
@@ -4090,7 +4314,7 @@
                     //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td17.appendChild(lab17);
-                    //td17.className = "border-bottom-1 border-gray";
+                    //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td17.style = "height:50px";
                     //lab17.innerHTML = data[i].URETILMETARIHI;
                     //tr.appendChild(td17);
@@ -4100,7 +4324,7 @@
                     lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td17.appendChild(lab17);
-                    td17.className = "border-bottom-1 border-gray";
+                    td17.className = "border-bottom-1 border-gray  flex-sm-column";
                     td17.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].IRSALIYENO != "") {
                         lab17.innerHTML = fitered[i].IRSALIYENO;
@@ -4120,7 +4344,7 @@
                     }
 
                     td18.appendChild(lab18);
-                    td18.className = "border-bottom-1 border-gray";
+                    td18.className = "border-bottom-1 border-gray  flex-sm-column";
                     td18.style = "height:50px;text-align: center;display:none";
                     tr.appendChild(td18);
                     var td19 = document.createElement("td");
@@ -4129,7 +4353,7 @@
                     lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td19.appendChild(lab19);
-                    td19.className = "border-bottom-1 border-gray";
+                    td19.className = "border-bottom-1 border-gray  flex-sm-column";
                     td19.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].URETILECEKMALZEMEADI != "") {
                         lab19.innerHTML = fitered[i].URETILECEKMALZEMEADI;
@@ -4144,7 +4368,7 @@
                     //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td20.appendChild(lab20);
-                    //td20.className = "border-bottom-1 border-gray";
+                    //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td20.style = "height:50px";
                     //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                     //tr.appendChild(td20);
@@ -4154,7 +4378,7 @@
                     //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td21.appendChild(lab21);
-                    //td21.className = "border-bottom-1 border-gray";
+                    //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td21.style = "height:50px";
                     //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                     //tr.appendChild(td21);
@@ -4164,7 +4388,7 @@
                     //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     //td22.appendChild(lab22);
-                    //td22.className = "border-bottom-1 border-gray";
+                    //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                     //td22.style = "height:50px";
                     //lab22.innerHTML = data[i].KURAL;
                     //tr.appendChild(td22);
@@ -4174,7 +4398,7 @@
                     lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                     td23.appendChild(lab23);
-                    td23.className = "border-bottom-1 border-gray";
+                    td23.className = "border-bottom-1 border-gray  flex-sm-column";
                     td23.style = "height:50px;text-align: center;display:none";
                     if (fitered[i].ISEMRIKOD != "") {
                         lab23.innerHTML = fitered[i].ISEMRIKOD;
@@ -4184,7 +4408,7 @@
 
                     tr.appendChild(td23);
                     document.getElementById("tbody").appendChild(tr);
-                   
+
                 }
                 var table = document.getElementById("tbody");
                 var tr = table.getElementsByTagName("tr");
@@ -4200,25 +4424,118 @@
                         }
                     }
                 }
-            } else {
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.addEventListener('mouseenter', Swal.stopTimer)
-                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                var values = $("#rulokodufilter").val();
+                var renk = $("#renkkodufilter").val();
+                var kal = $("#kalinlikfilter").val();
+                var gen = $("#genislikfilter").val();
+                var men = $("#menseifilter").val();
+
+                if (values != "") {
+                    fitered = fitered.filter(x => values.includes(x.RULOKODU));
+                } else {
+                    var valf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!valf.includes(fitered[i].RULOKODU)) {
+                            valf.push(fitered[i].RULOKODU);
+                        }
                     }
-                })
+                    valf.sort();
+                    document.getElementById("rulokodufilter").replaceChildren();
+                    for (let i = 0; i < valf.length; i++) {
 
-                Toast.fire({
-                    icon: 'error',
-                    title: 'İstenilen kritere göre sonuç bulunamadı!'
-                });
+                        var option = document.createElement("option");
+                        option.value = valf[i];
+                        if (valf[i].length == 6) {
+                            option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
+                        } else {
+                            option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
+                        }
+                        document.getElementById("rulokodufilter").appendChild(option);
+                    }
+                }
+
+                if (renk != "") {
+
+                    fitered = fitered.filter(x => renk.includes(x.RENKKODU));
+
+                } else {
+                    var renkf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!renkf.includes(fitered[i].RENKKODU)) {
+                            renkf.push(fitered[i].RENKKODU);
+                        }
+                    }
+                    renkf.sort();
+                    document.getElementById("renkkodufilter").replaceChildren();
+                    for (let i = 0; i < renkf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = renkf[i];
+                        option.innerHTML = renkf[i];
+                        document.getElementById("renkkodufilter").appendChild(option);
+                    }
+                }
+                if (kal != "") {
+
+                    fitered = fitered.filter(x => kal.includes(x.KALINLIK));
+                } else {
+                    var kalf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
+                            kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
+                        }
+                    }
+                    kalf.sort(function (a, b) { return a - b });
+                    document.getElementById("kalinlikfilter").replaceChildren();
+                    for (let i = 0; i < kalf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = kalf[i];
+                        option.innerHTML = (parseFloat((kalf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
+                        document.getElementById("kalinlikfilter").appendChild(option);
+                    }
+                }
+                if (gen != "") {
+
+                    fitered = fitered.filter(x => gen.includes(x.GENISLIK));
+                } else {
+                    var genf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(",", ".")))) {
+                            genf.push(parseFloat(fitered[i].GENISLIK.replace(",", ".")));
+                        }
+                    }
+                    document.getElementById("genislikfilter").replaceChildren();
+                    genf.sort(function (a, b) { return a - b });
+                    for (let i = 0; i < genf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = genf[i];
+                        option.innerHTML = genf[i].toString().replace(".", ",");;
+                        document.getElementById("genislikfilter").appendChild(option);
+                    }
+                }
+                if (men != "") {
+
+                    fitered = fitered.filter(x => men.includes(x.MENSEI));
+                } else {
+                    var menf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!menf.includes(fitered[i].MENSEI.trim())) {
+                            menf.push(fitered[i].MENSEI.trim());
+                        }
+                    }
+                    document.getElementById("menseifilter").replaceChildren();
+                    menf.sort();
+                    for (let i = 0; i < menf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = menf[i];
+                        option.innerHTML = menf[i];
+                        document.getElementById("menseifilter").appendChild(option);
+                    }
+                }
             }
-
         }
         function refresh() {
             
@@ -4248,8 +4565,8 @@
                 if (!genislikfilter.includes(parseFloat(data[i].GENISLIK.replace(',', '.')))) {
                     genislikfilter.push(parseFloat(data[i].GENISLIK.replace(',', '.')));
                 }
-                if (!menseifilter.includes(data[i].MENSEI)) {
-                    menseifilter.push(data[i].MENSEI);
+                if (!menseifilter.includes(data[i].MENSEI.trim())) {
+                    menseifilter.push(data[i].MENSEI.trim());
                 }
                 var color = "";
                 if (data[i].KURAL == 1) {
@@ -4265,7 +4582,7 @@
                 }
                 tr.style = "background-color:" + color;
                 td.appendChild(lab);
-                td.className = "border-bottom-1 border-gray";
+                td.className = "border-bottom-1 border-gray  flex-sm-column";
                 td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
 
                 if (data[i].RULOKODU.length == 6) {
@@ -4282,7 +4599,7 @@
                 //lab1.style = "background-color: transparent;border: none; text-align: center";
 
                 //td1.appendChild(lab1);
-                //td1.className = "border-bottom-1 border-gray";
+                //td1.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td1.style = "height:50px;";
                 //lab1.innerHTML = data[i].BOBINNO;
                 //tr.appendChild(td1);
@@ -4292,7 +4609,7 @@
                 lab2.style = "background-color: transparent;border: none; text-align: center";
 
                 td2.appendChild(lab2);
-                td2.className = "border-bottom-1 border-gray";
+                td2.className = "border-bottom-1 border-gray  flex-sm-column";
                 td2.style = "height:50px;text-align: center";
                 if (data[i].KONUM != "") {
                     lab2.innerHTML = data[i].KONUM;
@@ -4307,7 +4624,7 @@
                 lab3.style = "background-color: transparent;border: none; text-align: center";
 
                 td3.appendChild(lab3);
-                td3.className = "border-bottom-1 border-gray";
+                td3.className = "border-bottom-1 border-gray  flex-sm-column";
                 td3.style = "height:50px;text-align: center";
                 if (data[i].RENKKODU != "") {
                     lab3.innerHTML = data[i].RENKKODU;
@@ -4322,7 +4639,7 @@
                 lab4.style = "background-color: transparent;border: none ;text-align: center";
 
                 td4.appendChild(lab4);
-                td4.className = "border-bottom-1 border-gray";
+                td4.className = "border-bottom-1 border-gray  flex-sm-column";
                 td4.style = "height:50px;text-align: center";
                 if (data[i].KALINLIK != "") {
                     lab4.innerHTML = (parseFloat((data[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
@@ -4337,7 +4654,7 @@
                 lab5.style = "background-color: transparent;border: none; text-align: center";
 
                 td5.appendChild(lab5);
-                td5.className = "border-bottom-1 border-gray";
+                td5.className = "border-bottom-1 border-gray  flex-sm-column";
                 td5.style = "height:50px;text-align: center";
                 if (data[i].GENISLIK != "") {
                     lab5.innerHTML = data[i].GENISLIK;
@@ -4353,7 +4670,7 @@
                 lab6.style = "background-color: transparent;border: none ;text-align: center";
 
                 td6.appendChild(lab6);
-                td6.className = "border-bottom-1 border-gray";
+                td6.className = "border-bottom-1 border-gray  flex-sm-column";
                 td6.style = "height:50px;text-align: center";
                 if (data[i].KALITE != "") {
                     lab6.innerHTML = data[i].KALITE;
@@ -4368,7 +4685,7 @@
                 lab7.style = "background-color: transparent;border: none ;text-align: center";
 
                 td7.appendChild(lab7);
-                td7.className = "border-bottom-1 border-gray";
+                td7.className = "border-bottom-1 border-gray  flex-sm-column";
                 td7.style = "height:50px;text-align: center";
                 if (data[i].KAPLAMA != "") {
                     lab7.innerHTML = data[i].KAPLAMA;
@@ -4387,7 +4704,7 @@
                 lab8.style = "background-color: transparent;border: none; text-align: center";
 
                 td8.appendChild(lab8);
-                td8.className = "border-bottom-1 border-gray";
+                td8.className = "border-bottom-1 border-gray  flex-sm-column";
                 td8.style = "height:50px;text-align: center ";
                 if (data[i].MENSEI != "") {
                     lab8.innerHTML = data[i].MENSEI;
@@ -4402,7 +4719,7 @@
                 lab9.style = "background-color: transparent;border: none; text-align: center";
 
                 td9.appendChild(lab9);
-                td9.className = "border-bottom-1 border-gray";
+                td9.className = "border-bottom-1 border-gray  flex-sm-column";
                 td9.style = "height:50px;text-align: center ";
                 if (data[i].RESERVETARIH != "") {
                     lab9.innerHTML = data[i].RESERVETARIH.split(' ')[0];
@@ -4417,7 +4734,7 @@
                 lab10.style = "background-color: transparent;border: none ;text-align: center";
 
                 td10.appendChild(lab10);
-                td10.className = "border-bottom-1 border-gray";
+                td10.className = "border-bottom-1 border-gray  flex-sm-column";
                 td10.style = "height:50px;text-align: center";
                 if (data[i].RESERVEACIKLAMA != "") {
                     lab10.innerHTML = data[i].RESERVEACIKLAMA;
@@ -4432,7 +4749,7 @@
                 lab11.style = "background-color: transparent;border: none ;text-align: center";
 
                 td11.appendChild(lab11);
-                td11.className = "border-bottom-1 border-gray";
+                td11.className = "border-bottom-1 border-gray  flex-sm-column";
                 td11.style = "height:50px;text-align: center;";
                 lab11.innerHTML = (parseFloat(data[i].TONAJ)).toLocaleString('tr-TR');
                 tr.appendChild(td11);
@@ -4442,7 +4759,7 @@
                 lab12.style = "background-color: transparent;border: none ;text-align: center";
 
                 td12.appendChild(lab12);
-                td12.className = "border-bottom-1 border-gray";
+                td12.className = "border-bottom-1 border-gray  flex-sm-column";
                 td12.style = "height:50px;text-align: center;";
                 lab12.innerHTML = data[i].ADET;
 
@@ -4454,7 +4771,7 @@
                 lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td14.appendChild(lab14);
-                td14.className = "border-bottom-1 border-gray";
+                td14.className = "border-bottom-1 border-gray  flex-sm-column";
                 td14.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td14);
                 if (data[i].STOKSAHASI != "") {
@@ -4469,7 +4786,7 @@
                 lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td15.appendChild(lab15);
-                td15.className = "border-bottom-1 border-gray";
+                td15.className = "border-bottom-1 border-gray  flex-sm-column";
                 td15.style = "height:50px;text-align: center;display:none";
                 if (data[i].RULOBANTGIRISTARIH != "") {
                     lab15.innerHTML = data[i].RULOBANTGIRISTARIH;
@@ -4483,7 +4800,7 @@
                 lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td16.appendChild(lab16);
-                td16.className = "border-bottom-1 border-gray";
+                td16.className = "border-bottom-1 border-gray  flex-sm-column";
                 td16.style = "height:50px;text-align: center;display:none";
                 if (data[i].ISEMRITARIHI != "") {
                     lab16.innerHTML = data[i].ISEMRITARIHI;
@@ -4497,7 +4814,7 @@
                 //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td17.appendChild(lab17);
-                //td17.className = "border-bottom-1 border-gray";
+                //td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td17.style = "height:50px";
                 //lab17.innerHTML = data[i].URETILMETARIHI;
                 //tr.appendChild(td17);
@@ -4507,7 +4824,7 @@
                 lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td17.appendChild(lab17);
-                td17.className = "border-bottom-1 border-gray";
+                td17.className = "border-bottom-1 border-gray  flex-sm-column";
                 td17.style = "height:50px;text-align: center;display:none";
                 if (data[i].IRSALIYENO != "") {
                     lab17.innerHTML = data[i].IRSALIYENO;
@@ -4527,7 +4844,7 @@
                 }
 
                 td18.appendChild(lab18);
-                td18.className = "border-bottom-1 border-gray";
+                td18.className = "border-bottom-1 border-gray  flex-sm-column";
                 td18.style = "height:50px;text-align: center;display:none";
                 tr.appendChild(td18);
                 var td19 = document.createElement("td");
@@ -4536,7 +4853,7 @@
                 lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td19.appendChild(lab19);
-                td19.className = "border-bottom-1 border-gray";
+                td19.className = "border-bottom-1 border-gray  flex-sm-column";
                 td19.style = "height:50px;text-align: center;display:none";
                 if (data[i].URETILECEKMALZEMEADI != "") {
                     lab19.innerHTML = data[i].URETILECEKMALZEMEADI;
@@ -4551,7 +4868,7 @@
                 //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td20.appendChild(lab20);
-                //td20.className = "border-bottom-1 border-gray";
+                //td20.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td20.style = "height:50px";
                 //lab20.innerHTML = data[i].MALZEMEKALINLIK;
                 //tr.appendChild(td20);
@@ -4561,7 +4878,7 @@
                 //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td21.appendChild(lab21);
-                //td21.className = "border-bottom-1 border-gray";
+                //td21.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td21.style = "height:50px";
                 //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
                 //tr.appendChild(td21);
@@ -4571,7 +4888,7 @@
                 //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 //td22.appendChild(lab22);
-                //td22.className = "border-bottom-1 border-gray";
+                //td22.className = "border-bottom-1 border-gray  flex-sm-column";
                 //td22.style = "height:50px";
                 //lab22.innerHTML = data[i].KURAL;
                 //tr.appendChild(td22);
@@ -4581,7 +4898,7 @@
                 lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
                 td23.appendChild(lab23);
-                td23.className = "border-bottom-1 border-gray";
+                td23.className = "border-bottom-1 border-gray  flex-sm-column";
                 td23.style = "height:50px;text-align: center;display:none";
                 if (data[i].ISEMRIKOD != "") {
                     lab23.innerHTML = data[i].ISEMRIKOD;

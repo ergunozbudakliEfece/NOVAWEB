@@ -460,6 +460,15 @@ namespace NOVA.Controllers
             IsEmri Isemri = default(IsEmri);
             Isemri = kernel.yeniIsEmri(sirket);
             Isemri.kayitOku(TOkumaTipi.otSon);
+            Cari cari= default(Cari);
+            cari = kernel.yeniCari(sirket);
+            
+            CariRiskBilgi risk=default(CariRiskBilgi);
+            cari.kayitOku(TOkumaTipi.otAc, "");
+            {
+                cari.kayitOku(TOkumaTipi.otIlk);
+                double v=risk.Irsaliye;
+            };
             
             Isemri.IsEmriNo = IsEmriModel[0].ISEMRINO;
             //Isemri.Tarih = Convert.ToDateTime(isemri.TARIH);

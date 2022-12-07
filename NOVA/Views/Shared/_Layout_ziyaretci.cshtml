@@ -13,7 +13,7 @@
           content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
     <meta name="viewport" content="user-scalable=no, width=device-width" />
-    <title>Nova | Efece Galvaniz/Sipariş Raporu</title>
+    <title>Nova | Efece Galvaniz/Hammadde Listesi</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/img/icons/brands/Nova_White.png" />
@@ -42,13 +42,13 @@
           rel="stylesheet" type="text/css" />
 
     <!-- Icons. Uncomment required icon fonts -->
-   
+
 
 </head>
 <body>
 
 
-    <div class="layout-wrapper layout-content-navbar">
+    <div class="layout-wrapper layout-content-navbar" style="z-index:0">
         <div class="layout-container">
             <!-- Menu -->
 
@@ -80,7 +80,7 @@
                             <span class="menu-header-text">Modüller</span>
                         </li>
                         <!-- Layouts -->
-                        <li class="menu-item" style="display: @ViewBag.DisplaySatis">
+                        <li class="menu-item open" style="display: @ViewBag.DisplaySatis">
                             <a href="javascript:void(0);" class="menu-link menu-toggle">
                                 <i class="menu-icon tf-icons bx bx-dollar"></i>
                                 <div data-i18n="Layouts">Satış</div>
@@ -92,7 +92,7 @@
                                         <div data-i18n="Without menu">Stok</div>
                                     </a>
                                 </li>
-                                <li class="menu-item" style="display: @ViewBag.DisplaySiparis">
+                                <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplaySiparis">
                                     <a href="@Url.Action("DetayliSiparis", "Satis")" class="menu-link">
                                         <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
                                     </a>
@@ -107,15 +107,20 @@
                                         <div data-i18n="Without menu">Fabrika Stok</div>
                                     </a>
                                 </li>
+                                <li class="menu-item active" style="font-weight:normal;display: @ViewBag.DisplayFiyatsizStok">
+                                    <a href="@Url.Action("ZiyaretKaydiListesi", "Satis")" class="menu-link">
+                                        <div data-i18n="Without menu">Müşteri Ziyaret Kaydı</div>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
-                        <li class="menu-item active open" style="display: @ViewBag.DisplaySevkiyat">
-                            <a href="javascript:void(0);" class="menu-link menu-toggle" >
+                        <li class="menu-item" style="display: @ViewBag.DisplaySevkiyat">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
                                 <i class="menu-icon tf-icons bx bxs-truck"></i>
                                 <div data-i18n="Layouts">Sevkiyat</div>
                             </a>
                             <ul class="menu-sub">
-                                <li class="menu-item active" style="display: @ViewBag.DisplaySiparisRaporu">
+                                <li class="menu-item" style="display: @ViewBag.DisplaySiparisRaporu">
                                     <a href="@Url.Action("SiparisRaporu", "Sevkiyat")" class="menu-link">
                                         <div data-i18n="Without menu">Müşteri Siparişi Raporu</div>
                                     </a>
@@ -149,7 +154,7 @@
 
                         </li>
                         <li class="menu-item" style="display: @ViewBag.DisplaySatinAlma">
-                            <a href="javascript:void(0);" class="menu-link menu-toggle" >
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
                                 <i class="menu-icon tf-icons bx bx-credit-card"></i>
                                 <div data-i18n="Authentications">Satın Alma</div>
                             </a>
@@ -247,8 +252,8 @@
             </aside>
 
             <div class="layout-page">
-                <nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme sticky-top position-sticky"
-                     id="layout-navbar" style="max-height:40px">
+                <nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme sticky-top position-sticky "
+                     id="layout-navbar" style="max-height:50px">
                     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
                         <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
                             <i class="bx bx-menu bx-sm"></i>
@@ -272,7 +277,8 @@
                                        class="form-control border-0 shadow-none"
                                        id="search"
                                        placeholder="Arama"
-                                       aria-label="Arama" />
+                                       aria-label="Arama"
+                                       onkeyup="myFunction()" />
                             </div>
                         </div>
                         <!-- /Search -->
@@ -358,31 +364,7 @@
                                         data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                             </div>
-                            @{
 
-                                using (Html.BeginForm("ChangePassword", "Home", FormMethod.Post, new { @id = "myForm" }))
-                                {
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <label>Eski Şifre:</label>
-                                            @Html.TextBoxFor(m => m.PasswordChange.OLD_PASSWORD, new { @class = "form-control" })
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Yeni Şifre:</label>
-                                            @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD, new { @class = "form-control", @minlength = "6" })
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Yeni Şifre Tekrar:</label>
-                                            @Html.TextBoxFor(m => m.PasswordChange.NEW_PASSWORD_REPEAT, new { @class = "form-control", @minlength = "6" })
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="ekle btn btn-outline-info">DEĞİŞTİR</button>
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">KAPAT</button>
-                                    </div>
-                                }
-                            }
 
 
                         </div>
@@ -416,156 +398,6 @@
 
 
 
-    <!-- Core JS -->
-    <!-- build:js assets/vendor/js/core.js -->
-    <!-- Place this tag in your head or just before your close body tag. -->
-
-
-
-
-
-
-    <script type="text/javascript">
-        getPagination('.sorttable');
-        //getPagination('.table-class');
-        //getPagination('table');
-
-        /*					PAGINATION
-        - on change max rows select options fade out all rows gt option value mx = 5
-        - append pagination list as per numbers of rows / max rows option (20row/5= 4pages )
-        - each pagination li on click -> fade out all tr gt max rows * li num and (5*pagenum 2 = 10 rows)
-        - fade out all tr lt max rows * li num - max rows ((5*pagenum 2 = 10) - 5)
-        - fade in all tr between (maxRows*PageNum) and (maxRows*pageNum)- MaxRows
-        */
-
-
-        function getPagination(table) {
-            var lastPage = 1;
-
-            $('#maxRows')
-                .on('change', function (evt) {
-                    //$('.paginationprev').html('');						// reset pagination
-
-                    lastPage = 1;
-                    $('.pagination')
-                        .find('li')
-                        .slice(1, -1)
-                        .remove();
-                    var trnum = 0; // reset tr counter
-                    var maxRows = parseInt($(this).val()); // get Max Rows from select option
-
-                    if (maxRows == 5000) {
-                        $('.pagination').hide();
-                    } else {
-                        $('.pagination').show();
-                    }
-
-                    var totalRows = $(table + ' tbody tr').length; // numbers of rows
-                    $(table + ' tr:gt(0)').each(function () {
-                        // each TR in  table and not the header
-                        trnum++; // Start Counter
-                        if (trnum > maxRows) {
-                            // if tr number gt maxRows
-
-                            $(this).hide(); // fade it out
-                        }
-                        if (trnum <= maxRows) {
-                            $(this).show();
-                        } // else fade in Important in case if it ..
-                    }); //  was fade out to fade it in
-                    if (totalRows > maxRows) {
-                        // if tr total rows gt max rows option
-                        var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
-                        //	numbers of pages
-                        for (var i = 1; i <= pagenum;) {
-                            // for each page append pagination li
-                            $('.pagination #prev')
-                                .before(
-                                    '<li data-page="' +
-                                    i +
-                                    '">\
-                                                                                                                                      <span>' +
-                                    i++ +
-                                    '<span class="sr-only">(current)</span></span>\
-                                                                                                                                    </li>'
-                                )
-                                .show();
-                        } // end for i
-                    } // end if row count > max rows
-                    $('.pagination [data-page="1"]').addClass('active'); // add active class to the first li
-                    $('.pagination li').on('click', function (evt) {
-                        // on click each page
-                        evt.stopImmediatePropagation();
-                        evt.preventDefault();
-                        var pageNum = $(this).attr('data-page'); // get it's number
-
-                        var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
-
-                        if (pageNum == 'prev') {
-                            if (lastPage == 1) {
-                                return;
-                            }
-                            pageNum = --lastPage;
-                        }
-                        if (pageNum == 'next') {
-                            if (lastPage == $('.pagination li').length - 2) {
-                                return;
-                            }
-                            pageNum = ++lastPage;
-                        }
-
-                        lastPage = pageNum;
-                        var trIndex = 0; // reset tr counter
-                        $('.pagination li').removeClass('active'); // remove active class from all li
-                        $('.pagination [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
-                        // $(this).addClass('active');					// add active class to the clicked
-                        limitPagging();
-                        $(table + ' tr:gt(0)').each(function () {
-                            // each tr in table not the header
-                            trIndex++; // tr index counter
-                            // if tr index gt maxRows*pageNum or lt maxRows*pageNum-maxRows fade if out
-                            if (
-                                trIndex > maxRows * pageNum ||
-                                trIndex <= maxRows * pageNum - maxRows
-                            ) {
-                                $(this).hide();
-                            } else {
-                                $(this).show();
-                            } //else fade in
-                        }); // end of for each tr in table
-                    }); // end of on click pagination list
-                    limitPagging();
-                })
-                .val(1000)
-                .change();
-
-            // end of on select change
-
-            // END OF PAGINATION
-        }
-
-        function limitPagging() {
-            // alert($('.pagination li').length)
-
-            if ($('.pagination li').length > 7) {
-                if ($('.pagination li.active').attr('data-page') <= 3) {
-                    $('.pagination li:gt(5)').hide();
-                    $('.pagination li:lt(5)').show();
-                    $('.pagination [data-page="next"]').show();
-                } if ($('.pagination li.active').attr('data-page') > 3) {
-                    $('.pagination li:gt(0)').hide();
-                    $('.pagination [data-page="next"]').show();
-                    for (let i = (parseInt($('.pagination li.active').attr('data-page')) - 2); i <= (parseInt($('.pagination li.active').attr('data-page')) + 2); i++) {
-                        $('.pagination [data-page="' + i + '"]').show();
-
-                    }
-
-                }
-            }
-        }
-
-    </script>
-    
     <script>
         var browserZoomLevel = Math.round(window.devicePixelRatio * 100);
         if (browserZoomLevel == 125 || browserZoomLevel == 150) {

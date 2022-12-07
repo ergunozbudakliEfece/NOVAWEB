@@ -1,0 +1,568 @@
+﻿
+@{
+    Layout = "/Views/Shared/_Layout_ziyaretci_notlarim.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <!-- Fonts -->
+    <!-- Icons. Uncomment required icon fonts -->
+    <!-- Core CSS -->
+
+
+
+    <meta name="viewport" content="user-scalable=no, width=device-width" />
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Page CSS -->
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+
+    <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+
+    <link href="~/assets/vendor/css/accordion.css" rel="stylesheet" />
+    <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
+
+
+
+
+
+
+    <style>
+        tbody tr:hover {
+            background-color: transparent;
+            color: black;
+            transform: scale(1.01);
+        }
+
+        .centercontent {
+            position: absolute;
+            max-width: 100%;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+
+
+        .btn-grad {
+            background-image: linear-gradient(to right, #616161 0%, #9bc5c3 51%, #616161 100%);
+            margin: 10px;
+            padding: 5px 15px;
+            text-align: center;
+            text-transform: uppercase;
+            transition: 0.5s;
+            background-size: 200% auto;
+            color: white;
+            box-shadow: 0 0 20px #eee;
+            border-radius: 10px;
+            display: block;
+            border-style: none;
+        }
+
+            .btn-grad:hover {
+                background-position: right center; /* change the direction of the change here */
+                color: #fff;
+                text-decoration: none;
+            }
+
+        .btn1:hover {
+            background-position: right center; /* change the direction of the change here */
+            color: #009ffb;
+            text-decoration: none;
+        }
+
+        .btn1 {
+            display: inline-block;
+            font-weight: 400;
+            line-height: 1.53;
+            color: #697a8d;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: 0.4375rem 1.25rem;
+            padding-top: 0.4375rem;
+            padding-right: 1.25rem;
+            padding-bottom: 0.4375rem;
+            padding-left: 1.25rem;
+            font-size: 0.9375rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+    <style>
+
+        tr {
+            animation: fadeInAnimation ease 3s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        @@keyframes fadeInAnimation {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+    <script data-require="jquery@2.0.3" data-semver="2.0.3" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+
+    <script src="~/assets/vendor/css/scripts.js"></script>
+</head>
+<body>
+    <div class="container-fluid mt-1">
+
+        <form id="myForm" method="post">
+            <div class="card mt-3">
+                <div class="card-header">
+
+
+
+                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        <input type="radio" class="btn-check" onclick="change(1)" name="btnradio" id="btnradio1" checked="" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="btnradio1">Yeni Müşteri</label>
+                        <input type="radio" class="btn-check" onclick="change(2)" name="btnradio" id="btnradio2" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="btnradio2">Kayıtlı Müşteri</label>
+
+                    </div>
+
+
+
+                </div>
+                <div class="card-body mt-3">
+
+                    <div class="row">
+                        <div class="col-sm mb-2">
+
+
+                            <input class="form-control" type="text" value="" placeholder="Müşteri İsmi" id="ISIM" name="MUSTERI_ADI">
+                            <select id="musteri" onchange="musterichange(this.value)" style="display:none;width:100%">
+                                <option selected disabled>Müşteri Seçin</option>
+                            </select>
+
+
+                        </div>
+                        <div class="col-sm mb-2">
+
+                            <select class="form-select" id="plasiyer" onchange="" name="PLASIYER">
+                                <option disabled>Plasiyer Seçin</option>
+                                <option selected value="@Request.Cookies["UserName"].Value">@Request.Cookies["UserName"].Value</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="row ">
+                        <div class="col-sm d-flex mb-2">
+
+
+                            <select class="form-select" id="il" name="MUSTERI_IL" placeholder="İl" onchange="citychange(this.value)">
+                                <option selected disabled>Şehir Seçin</option>
+                            </select>
+
+                        </div>
+                        <div class="col-sm d-flex mb-2">
+
+
+                            <select class="form-select" id="ilce" name="MUSTERI_ILCE" placeholder="İlçe">
+                                <option selected disabled>İlçe</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm d-flex mb-2">
+
+
+                            <input class="form-control" type="text" value="" placeholder="Tel 1" id="tel1" name="MUSTERI_TEL1">
+
+                        </div>
+                        <div class="col-sm d-flex mb-2">
+
+
+                            <input class="form-control" type="text" value="" placeholder="Tel 2" id="tel2" name="MUSTERI_TEL2">
+
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 d-flex mb-2">
+
+
+                            <input class="form-control" type="email" value="" placeholder="example@example.com" id="mail" name="MUSTERI_MAIL">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm d-flex mb-2">
+                            <select class="form-select" onchange="sektorchange(this.value)" id="sektor" name="MUSTERI_SEKTOR">
+                                <option selected disabled>Sektör</option>
+                                <option value="Demir-Çelik">
+                                    Demir - Çelik </ option >
+                                <option value="Mobilya">
+                                    Mobilya
+                                </option>
+                                <option value="Yapı Market"> Yapı Market</option>
+                                <option value="Seracı">
+                                    Seracı
+                                </option>
+                                <option value="Nalbur">
+                                    Nalbur
+                                </option>
+                                <option value="Diger">
+                                    Diğer
+                                </option>
+                            </select>
+
+                        </div>
+                        <div class="col-sm d-flex mb-2">
+
+
+                            <input class="form-control" style="display:none" type="text" name="MUSTERI_SEKTOR_DIGER" id="diger" value="" placeholder="Sektör Girin" />
+
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm d-flex mb-2">
+
+
+                            <select class="form-select" id="nitelik" name="MUSTERI_NITELIK">
+                                <option selected disabled>Nitelik</option>
+                                <option value="Toptancı">
+                                    Toptancı
+                                </option>
+                                <option value="Perakendeci">
+                                    Perakendeci
+                                </option>
+                                <option value="Uygulayıcı">
+                                    Uygulayıcı
+                                </option>
+                                <option value="Son Kullanıcı">
+                                    Son Kullanıcı
+                                </option>
+                            </select>
+
+                        </div>
+
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm">
+
+
+                            <textarea class="form-control" id="not" name="MUSTERI_NOTU" placeholder="Not" rows="4" cols="50"></textarea>
+
+                        </div>
+
+                    </div>
+                    @*<div class="row mb-2">
+                            <div class="col-sm mb-2">
+
+
+                                <select class="form-select" id="urungrubu" name="urungrubu">
+                                    <option>Ürün Grubu</option>
+                                </select>
+
+                            </div>
+                            <div class="col-sm mb-2">
+
+
+                                <input class="form-control h-px-30" type="number" value="" placeholder="Yıllık Kullanım" id="Yillik">
+
+                            </div>
+                            <div class="col-sm mb-2">
+
+
+                                <select class="form-select" id="olcubirimi">
+                                    <option>Ölçü Birimi</option>
+                                    <option>AD</option>
+                                    <option>KG</option>
+                                    <option>MT</option>
+                                    <option>M2</option>
+                                    <option>M3</option>
+                                    <option>PK</option>
+                                </select>
+
+                            </div>
+
+                        </div>*@
+
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-info float-start" type="submit" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px">KAYDET</button>
+                    @*<button class="float-end" id="addRw" onclick="addRw()" style="cursor: pointer; background-color: transparent; background-repeat: no-repeat; border: none;"><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC" /></button>*@
+
+                </div>
+            </div>
+        </form>
+
+
+        <script>
+                function sektorchange(value)
+                {
+                if (value == "Diger")
+                {
+                document.getElementById("diger").style.display = "block";
+                }
+                else
+                {
+                document.getElementById("diger").style.display = "none";
+                }
+                }
+        </script>
+
+        <script>
+           $(function(){
+        $("#myForm").submit(function(){
+            event.preventDefault();    // Stops the default Beginform functionallity
+
+            var formdata = $("#myForm").serialize();    // Serializes the form
+
+            $.ajax({
+                url: '@Url.Action("PostData", "Satis")',
+                type:'POST',
+                data: formdata,
+                success: function(result){
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Müşteri başarıyla kaydedildi!'
+                    });
+                },
+                error: function () {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Müşteri kaydedilemedi!'
+                    });
+                }
+            });
+        });
+    })
+        </script>
+
+    </div>
+    <script type="text/javascript" src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/popper/popper.js"></script>
+    <script type="text/javascript" src="/assets/vendor/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script type="text/javascript" src="/assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script type="text/javascript" src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script type="text/javascript" src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script type="text/javascript" src="/assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+
+
+    <script type="text/javascript" async defer src="/Scripts/buttons.js"></script>
+    <script type="text/javascript" src="/Scripts/boxicons.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $('#il').select2({
+            sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)),
+        });
+        $("#ilce").select2({
+            sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)),
+        });
+        $("#sektor").select2({
+            sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)),
+        });
+        $("#nitelik").select2({
+            sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)),
+        });
+    </script>
+    <script>
+        var districts = @Html.Raw(Json.Encode(ViewBag.Districts));
+        var activeusers = @Html.Raw(Json.Encode(ViewBag.Actives));
+        var cities = @Html.Raw(Json.Encode(ViewBag.Cities));
+        var musteriler = @Html.Raw(Json.Encode(ViewBag.Musteriler));
+        $(document).ready(function () {
+            $('.form-select').select2();
+
+
+            var sl = document.getElementById("il");
+            var plasiyer = document.getElementById("plasiyer");
+            var musteri = document.getElementById("musteri");
+
+            for (let i = 0; i < musteriler.length; i++) {
+                var option = document.createElement("option");
+                option.innerHTML = musteriler[i].MUSTERI_ADI;
+                option.value = musteriler[i].MUSTERI_ID;
+                musteri.appendChild(option);
+            }
+
+            for (let i = 0; i < cities.length; i++) {
+                var option = document.createElement("option");
+                option.innerHTML = cities[i].CITYNAME;
+                option.value = cities[i].ID;
+                sl.appendChild(option);
+            }
+
+            for (let i = 0; i < activeusers.length; i++) {
+                if (activeusers[i].USER_NAME != "admin" && activeusers[i].USER_NAME != "test") {
+                    var option = document.createElement("option");
+                    option.innerHTML = activeusers[i].USER_NAME;
+                    option.value = activeusers[i].USER_NAME;
+                    plasiyer.appendChild(option);
+                }
+
+            }
+
+
+        })
+        function change(value) {
+
+            if (value == 1) {
+                $("#ISIM").show();
+                $("#musteri").select2("destroy");
+                $("#musteri").removeAttr("style").hide();
+                $("#il").val('1').trigger("change");
+                $("#ilce").val('1').trigger("change");
+                $("#ISIM").val(null);
+                $("#musteri").val(null).trigger("change");
+                $("#tel1").val(null);
+                $("#tel2").val(null);
+                $("#mail").val(null);
+                $("#plasiyer").prop("disabled", false);
+            } else {
+                $("#ISIM").removeAttr("style").hide();
+                $("#musteri").show();
+                $("#musteri").attr("style", "width:100%");
+                $("#musteri").select2();
+                $("#plasiyer").prop("disabled", true);
+            }
+
+
+        }
+        function citychange(value) {
+            var selected = districts.filter(x => x.SEHIRID == parseInt(value));
+            var ilce = document.getElementById("ilce");
+            ilce.replaceChildren();
+            for (let i = 0; i < selected.length; i++) {
+               var option = document.createElement("option");
+                option.innerHTML = selected[i].ILCENAME;
+                option.value = selected[i].ILCENAME;
+                ilce.appendChild(option);
+            }
+
+        }
+        function addRw() {
+            var card = document.getElementsByClassName("card-body")[0];
+            var row = document.createElement("div");
+            row.className = "row mb-2";
+            var col = document.createElement("div");
+            col.className = "col-sm mb-2";
+            var urun = document.createElement("select");
+            urun.className = "form-select";
+            var opurun = document.createElement("option");
+            opurun.innerHTML = "Ürün Grubu";
+            opurun.selected = true;
+            urun.append(opurun);
+            col.appendChild(urun);
+
+            var col2 = document.createElement("div");
+            col2.className = "col-sm mb-2";
+            var inp = document.createElement("input");
+            inp.className = "form-control h-px-30";
+            inp.placeholder = "Yıllık Kullanım";
+            inp.type = "number";
+            col2.appendChild(inp);
+
+
+            var col3 = document.createElement("div");
+            col3.className = "col-sm mb-2";
+            var olcu = document.createElement("select");
+
+            olcu.className = "form-select";
+            var opolcu = document.createElement("option");
+            opolcu.innerHTML = "Ölçü Birimi";
+            opolcu.selected = true;
+            olcu.appendChild(opolcu);
+            opolcu = document.createElement("option");
+            opolcu.innerHTML = "AD";
+            olcu.appendChild(opolcu);
+            opolcu = document.createElement("option");
+            opolcu.innerHTML = "KG";
+            olcu.appendChild(opolcu);
+            opolcu = document.createElement("option");
+            opolcu.innerHTML = "MT";
+            olcu.appendChild(opolcu);
+            opolcu = document.createElement("option");
+            opolcu.innerHTML = "M2";
+            olcu.appendChild(opolcu);
+            opolcu = document.createElement("option");
+            opolcu.innerHTML = "M3";
+            olcu.appendChild(opolcu);
+            opolcu = document.createElement("option");
+            opolcu.innerHTML = "PK";
+            olcu.appendChild(opolcu);
+            col3.appendChild(olcu);
+            row.appendChild(col);
+            row.appendChild(col2);
+            row.appendChild(col3);
+            card.appendChild(row);
+            $('.form-select').select2();
+        }
+        function musterichange(value) {
+            var bilgiler = musteriler.filter(x => x.MUSTERI_ID == value);
+            var id = cities.filter(x => x.CITYNAME == bilgiler[0].MUSTERI_IL)[0].ID;
+            $('#il').val(id).trigger('change');
+            $('#sektor').val(bilgiler[0].MUSTERI_SEKTOR).trigger('change');
+            $('#nitelik').val(bilgiler[0].MUSTERI_NITELIK).trigger('change');
+            $('#not').val(bilgiler[0].MUSTERI_NOTU);
+            document.getElementById("ilce").value = bilgiler[0].MUSTERI_ILCE;
+            document.getElementById("tel1").value = bilgiler[0].MUSTERI_TEL1;
+            document.getElementById("tel2").value = bilgiler[0].MUSTERI_TEL2;
+            document.getElementById("mail").value = bilgiler[0].MUSTERI_MAIL;
+        }
+    </script>
+</body>
+</html>

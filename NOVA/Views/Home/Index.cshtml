@@ -126,7 +126,7 @@
                         </div>
                     </div>
 
-
+                    @{ var onlineusers = ViewBag.OnlineUsers; int a = 0;}
                     <div class="card col" style="display:unset">
                         <div class="table-responsive text-nowrap mt-3">
                             <table class="table table-hover results sorttable centered" id="sortTable">
@@ -139,33 +139,33 @@
                                     <tr>
                                         <td>
                                             <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                                @foreach (var item in ViewBag.OnlineUsers)
+                                                @while (a<onlineusers.Count)
                                                 {
-                                                    var resim = item.USER_ID + ".png?" + DateTime.Now.Ticks.ToString();
-                                                    var isim = item.USER_NAME;
+                                                    var resim = onlineusers[a].USER_ID + ".png?" + DateTime.Now.Ticks.ToString();
+                                                    var isim = onlineusers[a].USER_NAME;
                                                     var status = "";
-                                                    if (item.ACTIVITY_TYPE == "login")
+                                                    if (onlineusers[a].ACTIVITY_TYPE == "login")
                                                     {
                                                         status = "online";
                                                     }
-                                                    else if (item.ACTIVITY_TYPE == "Busy")
+                                                    else if (onlineusers[a].ACTIVITY_TYPE == "Busy")
                                                     {
                                                         status = "away";
                                                     }
 
-                                                    if (item.PLATFORM == "Android App")
+                                                    if (onlineusers[a].PLATFORM == "Android App")
                                                     {
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" class=" avatar avatar-mobile avatar-md pull-up durum" title="" data-bs-original-title="<span><i class='bx bx-mobile'></i> @item.USER_NAME</span>">
+                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" class=" avatar avatar-mobile avatar-md pull-up durum" title="" data-bs-original-title="<span><i class='bx bx-mobile'></i> @onlineusers[a].USER_NAME</span>">
                                                             <img src="/assets/img/avatars/@resim" alt="Avatar" class="rounded-circle">
                                                         </li>
                                                     }
                                                     else
                                                     {
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" class=" avatar avatar-@status  avatar-online avatar-md pull-up durum" title="" data-bs-original-title="<span> @item.USER_NAME</span>">
+                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" class=" avatar avatar-@status  avatar-online avatar-md pull-up durum" title="" data-bs-original-title="<span> @onlineusers[a].USER_NAME</span>">
                                                             <img src="/assets/img/avatars/@resim" alt="Avatar" class="rounded-circle">
                                                         </li>
                                                     }
-
+                                                    a++;
 
                                                 }
 
@@ -185,46 +185,47 @@
                                     </tr>
                                 </thead>
                                 <tbody class="table-border-bottom-0">
+                                    @{ var offlineusers = ViewBag.OfflineUsers; int b = 0;}
                                     <tr>
                                         <td>
                                             <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                                @for (int i = 0; i < ViewBag.OfflineUsers.Count; i++)
+                                                @while (b < offlineusers.Count)
                                                 {
                                                     var offlineduratıon1 = " önce";
-                                                    var isim1 = ViewBag.OfflineUsers[i].USER_NAME + "</br>";
+                                                    var isim1 = offlineusers[b].USER_NAME + "</br>";
                                                     var gun1 = "";
                                                     var saat1 = "";
                                                     var dakika1 = "";
-                                                    var resim1 = ViewBag.OfflineUsers[i].USER_ID + ".png?" + DateTime.Now.Ticks.ToString();
-                                                    if (ViewBag.OfflineDate[i] != " ")
+                                                    var resim1 = offlineusers[b].USER_ID + ".png?" + DateTime.Now.Ticks.ToString();
+                                                    if (ViewBag.OfflineDate[b] != " ")
                                                     {
 
 
-                                                        if (ViewBag.OfflineDay[i] == "0")
+                                                        if (ViewBag.OfflineDay[b] == "0")
                                                         {
 
                                                         }
                                                         else
                                                         {
-                                                            gun1 = ViewBag.OfflineDay[i] + " gün ";
+                                                            gun1 = ViewBag.OfflineDay[b] + " gün ";
                                                         }
-                                                        if (ViewBag.OfflineHour[i] == "0")
+                                                        if (ViewBag.OfflineHour[b] == "0")
                                                         {
 
                                                         }
                                                         else
                                                         {
-                                                            saat1 = ViewBag.OfflineHour[i] + " saat ";
+                                                            saat1 = ViewBag.OfflineHour[b] + " saat ";
                                                         }
-                                                        if (ViewBag.OfflineMinute[i] == "0")
+                                                        if (ViewBag.OfflineMinute[b] == "0")
                                                         {
 
                                                         }
                                                         else
                                                         {
-                                                            dakika1 = ViewBag.OfflineMinute[i] + " dakika ";
+                                                            dakika1 = ViewBag.OfflineMinute[b] + " dakika ";
                                                         }
-                                                        if (ViewBag.OfflineDay[i] == "0" && ViewBag.OfflineHour[i] == "0" && ViewBag.OfflineMinute[i] == "0")
+                                                        if (ViewBag.OfflineDay[b] == "0" && ViewBag.OfflineHour[b] == "0" && ViewBag.OfflineMinute[b] == "0")
                                                         {
                                                             isim1 = isim1 + "az önce";
                                                         }
@@ -250,7 +251,7 @@
 
 
 
-
+                                                    b++;
                                                 }
 
 
@@ -353,7 +354,7 @@
 
 
 
-        setTimeout(logOut, 1800000)
+        setTimeout(logOut, 7200000)
         function logOut() {
 
             $.ajax({
