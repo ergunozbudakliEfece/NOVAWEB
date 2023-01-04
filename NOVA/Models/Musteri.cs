@@ -13,6 +13,11 @@ namespace NOVA.Models
         public string MUSTERI_ADI { get; set; }
         public string MUSTERI_IL { get; set; }
         public string MUSTERI_ILCE { get; set; }
+
+        public string MUSTERI_MAHALLE { get; set; }
+        public string MUSTERI_ADRES { get; set; }
+        public string FIRMA_YETKILISI { get; set; }
+
         public string MUSTERI_TEL1 { get; set; }
         public string MUSTERI_TEL2 { get; set; }
         public string MUSTERI_MAIL { get; set; }
