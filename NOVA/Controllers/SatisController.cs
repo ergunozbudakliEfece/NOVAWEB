@@ -1,5 +1,12 @@
+
+﻿using Microsoft.Ajax.Utilities;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Newtonsoft.Json;
+//using NetOpenX50;
+
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using NetOpenX50;
+
 using NOVA.Models;
 using ServiceStack;
 
@@ -84,6 +91,15 @@ namespace NOVA.Controllers
             var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
             if (yetkifiyatsizstok != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";
@@ -275,6 +291,8 @@ namespace NOVA.Controllers
         }
         public ActionResult Test()
         {
+            var yetki = GetYetki();
+            ViewBag.OzelYetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).UPDATE_AUTH;
             return View();
         }
        public class StokListeLocal
@@ -318,8 +336,16 @@ namespace NOVA.Controllers
         }
         public ActionResult ZiyaretKaydiListesi()
         {
+
+            if (Request.Cookies["Id"] == null)
+            {
+                FormsAuthentication.SignOut();
+                TempData["LOG"] = "ok";
+                return RedirectToAction("Login", "Login");
+            }
             var yetki = GetYetki();
-            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28);
+            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30);
+
             if (yetkiKontrol.SELECT_AUTH != true)
             {
                 Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
@@ -348,6 +374,18 @@ namespace NOVA.Controllers
             var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
+
+
             if (yetkifiyatsizstok != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";
@@ -528,31 +566,651 @@ namespace NOVA.Controllers
                 ViewBag.Display6 = "unset";
             }
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
-            ViewBag.Cities = GetCities();
-            ViewBag.Districts = GetDistricts();
-            ViewBag.Actives = GetActiveUsers();
-            ViewBag.Musteriler = GetMusteriler().Where(x => x.PLASIYER == Request.Cookies["UserName"].Value);
+
+            ViewBag.Name = Request.Cookies["UserName"].Value.ToString();
+            ViewBag.OzelYetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).UPDATE_AUTH;
+
+
             return View();
         }
-       
+        public ActionResult MusteriRaporu()
+        {
+            if (Request.Cookies["Id"] == null)
+            {
+                FormsAuthentication.SignOut();
+                TempData["LOG"] = "ok";
+                return RedirectToAction("Login", "Login");
+            }
+            var yetki = GetYetki();
+            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 32);
+            if (yetkiKontrol.SELECT_AUTH != true)
+            {
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
+            }
+            if (yetkiKontrol.UPDATE_AUTH == true)
+            {
+                ViewBag.Update = "Yetkili";
+            }
+            var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
+            var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
+            var yetkiKontrolUretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 3).USER_AUTH;
+            var yetkiKontrolSatinAlma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 4).USER_AUTH;
+            var yetkiKontrolFinans = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 5).USER_AUTH;
+            var yetkiKontrolMuhasebe = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 6).USER_AUTH;
+            var yetkiKontrol1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 9).USER_AUTH;
+            var kullaniciayar = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 10).USER_AUTH;
+            var kullaniciyetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 11).USER_AUTH;
+            var istatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 12).USER_AUTH;
+            var yetkiKontrolYonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 8).USER_AUTH;
+            var yetkiKontrolSube = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 15).USER_AUTH;
+            var yetkiKontrolSevkiyat = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 17).USER_AUTH;
+            var yetkiKontrolDetayliSip = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 16).USER_AUTH;
+            var yetkiKontrolSiparisRaporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 18).USER_AUTH;
+            var yetkidetaylisatinalma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 19).USER_AUTH;
+            var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
+            var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
+            var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 32).USER_AUTH;
+            if (musteriraporu != true)
+            {
+                ViewBag.DisplayMusteriRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMusteriRaporu = "unset";
+            }
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
+            if (yetkifiyatsizstok != true)
+            {
+                ViewBag.DisplayFiyatsizStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatsizStok = "unset";
+            }
+            if (yetkifiyatlistok != true)
+            {
+                ViewBag.DisplayFiyatliStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatliStok = "unset";
+            }
+            if (yetkisaticisiparisi != true)
+            {
+                ViewBag.DisplaySaticiSiparisRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySaticiSiparisRaporu = "unset";
+            }
+            if (yetkidetaylisatinalma != true)
+            {
+                ViewBag.DisplaySatinAlmaRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatinAlmaRaporu = "unset";
+            }
+            if (yetkiKontrolSiparisRaporu != true)
+            {
+                ViewBag.DisplaySiparisRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySiparisRaporu = "unset";
+            }
+            if (yetkiKontrolSevkiyat != true)
+            {
+                ViewBag.DisplaySevkiyat = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySevkiyat = "unset";
+            }
+            if (yetkiKontrolDetayliSip != true)
+            {
+                ViewBag.DisplaySiparis = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySiparis = "unset";
+            }
+            if (yetkiKontrolSube != true)
+            {
+                ViewBag.Sube = "none";
+            }
+            else
+            {
+                ViewBag.Sube = "unset";
+            }
+            if (yetkiKontrolYonetim != true)
+            {
+                ViewBag.DisplayYonetim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayYonetim = "unset";
+            }
+            if (yetkiKontrolUretim != true)
+            {
+                ViewBag.DisplayUretim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayUretim = "unset";
+            }
+            if (yetkiKontrolSatinAlma != true)
+            {
+                ViewBag.DisplaySatinAlma = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatinAlma = "unset";
+            }
+            if (yetkiKontrolFinans != true)
+            {
+                ViewBag.DisplayFinans = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFinans = "unset";
+            }
+            if (yetkiKontrolMuhasebe != true)
+            {
+                ViewBag.DisplayMuhasebe = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMuhasebe = "unset";
+            }
+            if (yetkiKontrolStok != true)
+            {
+                ViewBag.DisplayStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayStok = "unset";
+            }
+            if (yetkiKontrolSatis != true)
+            {
+                ViewBag.DisplaySatis = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatis = "unset";
+            }
+            if (yetkiKontrol1 != true)
+            {
+                ViewBag.Display = "none";
+            }
+            else
+            {
+                ViewBag.Display = "unset";
+            }
+            if (kullaniciayar != true)
+            {
+                ViewBag.Display1 = "none";
+            }
+            else
+            {
+                ViewBag.Display1 = "unset";
+            }
+            if (kullaniciyetki != true)
+            {
+                ViewBag.Display2 = "none";
+            }
+            else
+            {
+                ViewBag.Display2 = "unset";
+            }
+            if (istatistik != true)
+            {
+                ViewBag.Display3 = "none";
+            }
+            else
+            {
+                ViewBag.Display3 = "unset";
+            }
+            var ik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 7).USER_AUTH;
+            if (ik != true)
+            {
+                ViewBag.Display4 = "none";
+            }
+            else
+            {
+                ViewBag.Display4 = "unset";
+            }
+            var ik1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 13).USER_AUTH;
+            if (ik1 != true)
+            {
+                ViewBag.Display5 = "none";
+            }
+            else
+            {
+                ViewBag.Display5 = "unset";
+            }
+            var ik2 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 14).USER_AUTH;
+            if (ik2 != true)
+            {
+                ViewBag.Display6 = "none";
+            }
+            else
+            {
+                ViewBag.Display6 = "unset";
+            }
+            ViewBag.Id = Request.Cookies["Id"].Value.ToString();
+            ViewBag.Name = Request.Cookies["UserName"].Value.ToString();
+
+
+            return View();
+        }
+        public ActionResult MusteriRaporuOzel()
+        {
+            if (Request.Cookies["Id"] == null)
+            {
+                FormsAuthentication.SignOut();
+                TempData["LOG"] = "ok";
+                return RedirectToAction("Login", "Login");
+            }
+            var yetki = GetYetki();
+            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33);
+            if (yetkiKontrol.SELECT_AUTH != true)
+            {
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
+            }
+            if (yetkiKontrol.UPDATE_AUTH == true)
+            {
+                ViewBag.Update = "Yetkili";
+            }
+            var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
+            var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
+            var yetkiKontrolUretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 3).USER_AUTH;
+            var yetkiKontrolSatinAlma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 4).USER_AUTH;
+            var yetkiKontrolFinans = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 5).USER_AUTH;
+            var yetkiKontrolMuhasebe = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 6).USER_AUTH;
+            var yetkiKontrol1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 9).USER_AUTH;
+            var kullaniciayar = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 10).USER_AUTH;
+            var kullaniciyetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 11).USER_AUTH;
+            var istatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 12).USER_AUTH;
+            var yetkiKontrolYonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 8).USER_AUTH;
+            var yetkiKontrolSube = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 15).USER_AUTH;
+            var yetkiKontrolSevkiyat = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 17).USER_AUTH;
+            var yetkiKontrolDetayliSip = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 16).USER_AUTH;
+            var yetkiKontrolSiparisRaporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 18).USER_AUTH;
+            var yetkidetaylisatinalma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 19).USER_AUTH;
+            var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
+            var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
+            var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 32).USER_AUTH;
+            var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            if (musteriraporuozel != true)
+            {
+                ViewBag.DisplayMusteriOzel = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMusteriOzel = "unset";
+            }
+            if (musteriraporu != true)
+            {
+                ViewBag.DisplayMusteriRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMusteriRaporu = "unset";
+            }
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
+            if (yetkifiyatsizstok != true)
+            {
+                ViewBag.DisplayFiyatsizStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatsizStok = "unset";
+            }
+            if (yetkifiyatlistok != true)
+            {
+                ViewBag.DisplayFiyatliStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatliStok = "unset";
+            }
+            if (yetkisaticisiparisi != true)
+            {
+                ViewBag.DisplaySaticiSiparisRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySaticiSiparisRaporu = "unset";
+            }
+            if (yetkidetaylisatinalma != true)
+            {
+                ViewBag.DisplaySatinAlmaRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatinAlmaRaporu = "unset";
+            }
+            if (yetkiKontrolSiparisRaporu != true)
+            {
+                ViewBag.DisplaySiparisRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySiparisRaporu = "unset";
+            }
+            if (yetkiKontrolSevkiyat != true)
+            {
+                ViewBag.DisplaySevkiyat = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySevkiyat = "unset";
+            }
+            if (yetkiKontrolDetayliSip != true)
+            {
+                ViewBag.DisplaySiparis = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySiparis = "unset";
+            }
+            if (yetkiKontrolSube != true)
+            {
+                ViewBag.Sube = "none";
+            }
+            else
+            {
+                ViewBag.Sube = "unset";
+            }
+            if (yetkiKontrolYonetim != true)
+            {
+                ViewBag.DisplayYonetim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayYonetim = "unset";
+            }
+            if (yetkiKontrolUretim != true)
+            {
+                ViewBag.DisplayUretim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayUretim = "unset";
+            }
+            if (yetkiKontrolSatinAlma != true)
+            {
+                ViewBag.DisplaySatinAlma = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatinAlma = "unset";
+            }
+            if (yetkiKontrolFinans != true)
+            {
+                ViewBag.DisplayFinans = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFinans = "unset";
+            }
+            if (yetkiKontrolMuhasebe != true)
+            {
+                ViewBag.DisplayMuhasebe = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMuhasebe = "unset";
+            }
+            if (yetkiKontrolStok != true)
+            {
+                ViewBag.DisplayStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayStok = "unset";
+            }
+            if (yetkiKontrolSatis != true)
+            {
+                ViewBag.DisplaySatis = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatis = "unset";
+            }
+            if (yetkiKontrol1 != true)
+            {
+                ViewBag.Display = "none";
+            }
+            else
+            {
+                ViewBag.Display = "unset";
+            }
+            if (kullaniciayar != true)
+            {
+                ViewBag.Display1 = "none";
+            }
+            else
+            {
+                ViewBag.Display1 = "unset";
+            }
+            if (kullaniciyetki != true)
+            {
+                ViewBag.Display2 = "none";
+            }
+            else
+            {
+                ViewBag.Display2 = "unset";
+            }
+            if (istatistik != true)
+            {
+                ViewBag.Display3 = "none";
+            }
+            else
+            {
+                ViewBag.Display3 = "unset";
+            }
+            var ik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 7).USER_AUTH;
+            if (ik != true)
+            {
+                ViewBag.Display4 = "none";
+            }
+            else
+            {
+                ViewBag.Display4 = "unset";
+            }
+            var ik1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 13).USER_AUTH;
+            if (ik1 != true)
+            {
+                ViewBag.Display5 = "none";
+            }
+            else
+            {
+                ViewBag.Display5 = "unset";
+            }
+            var ik2 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 14).USER_AUTH;
+            if (ik2 != true)
+            {
+                ViewBag.Display6 = "none";
+            }
+            else
+            {
+                ViewBag.Display6 = "unset";
+            }
+            ViewBag.Id = Request.Cookies["Id"].Value.ToString();
+            ViewBag.Name = Request.Cookies["UserName"].Value.ToString();
+
+
+            return View();
+        }
+        public JsonResult GetMusteriUrun()
+        {
+            string URI = "http://192.168.2.13:83/api/login/login";
+            string myParameters = "Email=ergunozbudakli@efecegalvaniz.com&Password=begum142088";
+            string HtmlResult = "";
+            using (WebClient wc = new WebClient())
+            {
+                wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+                HtmlResult = wc.UploadString(URI, myParameters);
+
+            }
+
+            var apiUrl = "http://192.168.2.13:83/api/musteri/urun";
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            client.Headers.Add("Authorization", "Bearer " + HtmlResult);
+            string json = client.DownloadString(url);
+            //END
+
+            //JSON Parse START
+           
+
+            //END
+
+            return Json(json, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetRandevu()
+        {
+            string URI = "http://192.168.2.13:83/api/login/login";
+            string myParameters = "Email=ergunozbudakli@efecegalvaniz.com&Password=begum142088";
+            string HtmlResult = "";
+            using (WebClient wc = new WebClient())
+            {
+                wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+                HtmlResult = wc.UploadString(URI, myParameters);
+
+            }
+
+            var apiUrl = "http://192.168.2.13:83/api/musteri/randevu";
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            client.Headers.Add("Authorization", "Bearer " + HtmlResult);
+            string json = client.DownloadString(url);
+            
+
+            //END
+
+            return Json(json, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetUser()
+        {
+           
+
+            var apiUrl = "http://192.168.2.13:83/api/user";
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            string json = client.DownloadString(url);
+
+
+            //END
+
+            return Json(json, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<JsonResult> RandevuEkleGuncelle(MusteriRandevu m)
+        {
+
+            MusteriRandevu musteri = new MusteriRandevu();
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+            string apiUrl = "http://192.168.2.13:83/api/musteri/randevu";
+
+            if (m.INCKEY == 0)
+            {
+                musteri.MUSTERI_ID = m.MUSTERI_ID;
+                musteri.KAYIT_YAPAN_KULLANICI_ID = Request.Cookies["Id"].Value.ToInt();
+                musteri.RANDEVU_NOTU = m.RANDEVU_NOTU;
+                musteri.PLANLANAN_TARIH = DateTime.Parse(m.PLANLANAN_TARIH.ToString()).AddHours(3);
+                request = new HttpRequestMessage(HttpMethod.Post, apiUrl)
+                {
+                    Content = new StringContent(new JavaScriptSerializer().Serialize(musteri), Encoding.UTF8, "application/json")
+                };
+            }
+            else
+            {
+                musteri.INCKEY = m.INCKEY;
+                musteri.MUSTERI_ID = m.MUSTERI_ID;
+                musteri.DEGISIKLIK_YAPAN_KULLANICI_ID = Request.Cookies["Id"].Value.ToInt();
+                if (m.RANDEVU_NOTU != null)
+                {
+                    musteri.RANDEVU_NOTU = m.RANDEVU_NOTU;
+                }
+                else
+                {
+                    var randevular = JsonConvert.DeserializeObject<List<MusteriRandevu>>((string)GetRandevu().Data);
+                    musteri.RANDEVU_NOTU = randevular.Where(x => x.INCKEY == m.INCKEY).ToList()[0].RANDEVU_NOTU;
+                }
+                
+                musteri.PLANLANAN_TARIH = DateTime.Parse(m.PLANLANAN_TARIH.ToString()).AddHours(3);
+                
+                request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+                {
+                    Content = new StringContent(new JavaScriptSerializer().Serialize(musteri), Encoding.UTF8, "application/json")
+                };
+            }
+         
+            response = await httpClient.SendAsync(request);
+            if (m.GERCEKLESEN_TARIH!=null)
+            {
+                _ = RandevuGerceklesen(m.INCKEY);
+            }
+
+            return Json(request, JsonRequestBehavior.AllowGet);
+        }
         public async Task<ActionResult> PostData(Musteri m)
         {
             Musteri musteri = new Musteri();
             var httpClient = new HttpClient();
             HttpRequestMessage request;
             HttpResponseMessage response;
-           
+            var decities = JsonConvert.DeserializeObject<List<DistrictsModel>>((string)GetDistricts().Data);
 
-            
+            var demah = JsonConvert.DeserializeObject<List<MahalleModel>>((string)GetMahalleler(m.MUSTERI_ILCE).Data);
+
+
             string apiUrl = "http://192.168.2.13:83/api/musteri/";
 
             musteri.MUSTERI_ADI = m.MUSTERI_ADI;
-            musteri.MUSTERI_IL = GetCities().Where(x => x.ID == m.MUSTERI_IL.ToInt()).ToList()[0].CITYNAME;
-            musteri.MUSTERI_ILCE = m.MUSTERI_ILCE;
+            musteri.MUSTERI_IL = m.MUSTERI_IL;
+            musteri.MUSTERI_ILCE = decities.Where(x => x.ILCEID == m.MUSTERI_ILCE.ToInt()).ToList()[0].ILCEADI;
+            musteri.MUSTERI_MAHALLE = demah.Where(x => x.MAHID == m.MUSTERI_MAHALLE.ToInt()).ToList()[0].MAHALLEADI;
+            musteri.MUSTERI_ADRES = m.MUSTERI_ADRES;
+            musteri.FIRMA_YETKILISI = m.FIRMA_YETKILISI;
+
             musteri.MUSTERI_TEL1 = m.MUSTERI_TEL1;
             musteri.MUSTERI_TEL2 = m.MUSTERI_TEL2;
             musteri.MUSTERI_MAIL = m.MUSTERI_MAIL;
             musteri.MUSTERI_SEKTOR = m.MUSTERI_SEKTOR;
+
+            musteri.MUSTERI_SEKTOR_DIGER = m.MUSTERI_SEKTOR_DIGER;
+
             musteri.MUSTERI_NITELIK = m.MUSTERI_NITELIK;
             musteri.MUSTERI_NOTU = m.MUSTERI_NOTU;
             musteri.PLASIYER = m.PLASIYER;
@@ -569,6 +1227,167 @@ namespace NOVA.Controllers
 
             return null;
         }
+
+        public async Task<ActionResult> MusteriGuncelle(Musteri m)
+        {
+            Musteri musteri = new Musteri();
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+            var decities = JsonConvert.DeserializeObject<List<DistrictsModel>>((string)GetDistricts().Data);
+
+            var demah = JsonConvert.DeserializeObject<List<MahalleModel>>((string)GetMahalleler(m.MUSTERI_ILCE).Data);
+            string apiUrl = "http://192.168.2.13:83/api/musteri";
+
+
+            musteri.MUSTERI_IL = m.MUSTERI_IL;
+            musteri.MUSTERI_ILCE = decities.Where(x => x.ILCEID == m.MUSTERI_ILCE.ToInt()).ToList()[0].ILCEADI;
+            musteri.MUSTERI_MAHALLE = demah.Where(x => x.MAHID == m.MUSTERI_MAHALLE.ToInt()).ToList()[0].MAHALLEADI;
+            musteri.MUSTERI_ADRES = m.MUSTERI_ADRES;
+            musteri.FIRMA_YETKILISI = m.FIRMA_YETKILISI;
+            musteri.MUSTERI_TEL1 = m.MUSTERI_TEL1;
+            musteri.MUSTERI_TEL2 = m.MUSTERI_TEL2;
+            musteri.MUSTERI_ID = m.MUSTERI_ID;
+            musteri.MUSTERI_MAIL = m.MUSTERI_MAIL;
+            musteri.MUSTERI_SEKTOR = m.MUSTERI_SEKTOR;
+            musteri.MUSTERI_SEKTOR_DIGER = m.MUSTERI_SEKTOR_DIGER;
+            musteri.MUSTERI_NITELIK = m.MUSTERI_NITELIK;
+            musteri.MUSTERI_NITELIK_DIGER = m.MUSTERI_NITELIK_DIGER;
+            musteri.MUSTERI_NOTU = m.MUSTERI_NOTU;
+            musteri.PLASIYER = Request.Cookies["UserName"].Value; 
+            musteri.DUZELTME_YAPAN_KULLANICI = Request.Cookies["UserName"].Value;
+
+            request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(musteri), Encoding.UTF8, "application/json")
+            };
+
+            response = await httpClient.SendAsync(request);
+
+
+            return Json(request, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<JsonResult> UrunGonder(MusteriUrunModel m)
+        {
+            MusteriUrunModel musteri = new MusteriUrunModel();
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+
+            string apiUrl = "http://192.168.2.13:83/api/musteri/urun";
+            musteri.URUN_ID = m.URUN_ID;
+            musteri.URUN_GRUBU = m.URUN_GRUBU;
+            musteri.OLCU_BIRIMI = m.OLCU_BIRIMI;
+            musteri.MUSTERI_ID = m.MUSTERI_ID;
+            musteri.YILLIK_KULLANIM = m.YILLIK_KULLANIM;
+            musteri.KAYIT_YAPAN_KULLANICI= Request.Cookies["UserName"].Value;
+            try
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, apiUrl)
+                {
+                    Content = new StringContent(new JavaScriptSerializer().Serialize(musteri), Encoding.UTF8, "application/json")
+                };
+
+                response = await httpClient.SendAsync(request);
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+            
+
+            return Json(request, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<JsonResult> UrunGuncelle(MusteriUrunModel m)
+        {
+            MusteriUrunModel musteri = new MusteriUrunModel();
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+
+            string apiUrl = "http://192.168.2.13:83/api/musteri/guncelle";
+            musteri.URUN_ID = m.URUN_ID;
+            musteri.URUN_GRUBU = m.URUN_GRUBU;
+            musteri.OLCU_BIRIMI = m.OLCU_BIRIMI;
+            musteri.MUSTERI_ID = m.MUSTERI_ID;
+            musteri.YILLIK_KULLANIM = m.YILLIK_KULLANIM;
+            musteri.DEGISIKLIK_YAPAN_KULLANICI = Request.Cookies["UserName"].Value;
+
+            request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(musteri), Encoding.UTF8, "application/json")
+            };
+
+            response = await httpClient.SendAsync(request);
+
+            ViewBag.Urunler = GetMusteriUrun();
+           
+            return Json(request, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<JsonResult> RandevuGerceklesen(int id)
+        {
+            MusteriUrunModel musteri = new MusteriUrunModel();
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+
+            string apiUrl = "http://192.168.2.13:83/api/musteri/randevu/"+id;
+
+
+
+            request = new HttpRequestMessage(HttpMethod.Put, apiUrl);
+
+            response = await httpClient.SendAsync(request);
+
+            return Json(request, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<JsonResult> UrunSil(MusteriUrunModel m)
+        {
+            MusteriUrunModel musteri = new MusteriUrunModel();
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+
+            string apiUrl = "http://192.168.2.13:83/api/musteri/sil/"+m.MUSTERI_ID+ "/"+ m.URUN_GRUBU;
+
+           
+
+            request = new HttpRequestMessage(HttpMethod.Delete, apiUrl);
+
+            response = await httpClient.SendAsync(request);
+            return Json(request, JsonRequestBehavior.AllowGet); 
+        }
+        public async Task<JsonResult> RandevuSil(MusteriRandevu m)
+        {
+            MusteriUrunModel musteri = new MusteriUrunModel();
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+
+            string apiUrl = "http://192.168.2.13:83/api/musteri/randevu";
+
+
+
+            request = new HttpRequestMessage(HttpMethod.Delete, apiUrl)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(m), Encoding.UTF8, "application/json")
+            };
+
+            response = await httpClient.SendAsync(request);
+            return Json(request, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult DetayliSiparis()
         {
             
@@ -698,6 +1517,15 @@ namespace NOVA.Controllers
             var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
             if (yetkifiyatsizstok != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";
@@ -917,6 +1745,15 @@ namespace NOVA.Controllers
             var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
             if (yetkifiyatsizstok != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";
@@ -1345,7 +2182,7 @@ namespace NOVA.Controllers
             var teslimArray=teslim.Split(',');
             var cariArray = cari.Split(',');
             var plasiyerArray = plasiyer.Split(',');
-
+            var ustkalem = GetSiparisUstKAlem();
 
 
             if (filter != null)
@@ -1360,7 +2197,7 @@ namespace NOVA.Controllers
                             {
                                 foreach (var item3 in plasiyerArray)
                                 {
-                                    x = x.Concat(GetSiparisUstKAlem().Where(t => t.TESLIM_YERI == item && t.CARI_DOVIZ_TIPI == item2 && t.PLASIYER_ADI == item3&&t.URETILECEKMI=="E")).ToList();
+                                    x = x.Concat(ustkalem.Where(t => t.TESLIM_YERI == item && t.CARI_DOVIZ_TIPI == item2 && t.PLASIYER_ADI == item3&&t.URETILECEKMI=="E")).ToList();
                                     z.Add(item);
                                     m.Add(item2);
                                     y.Add(item3);
@@ -1375,7 +2212,7 @@ namespace NOVA.Controllers
                             foreach (var item2 in cariArray)
                             {
 
-                                x = x.Concat(GetSiparisUstKAlem().Where(t => t.TESLIM_YERI == item && t.CARI_DOVIZ_TIPI == item2 && t.URETILECEKMI == "E")).ToList();
+                                x = x.Concat(ustkalem.Where(t => t.TESLIM_YERI == item && t.CARI_DOVIZ_TIPI == item2 && t.URETILECEKMI == "E")).ToList();
                                 z.Add(item);
                                 m.Add(item2);
 
@@ -1389,7 +2226,7 @@ namespace NOVA.Controllers
                         {
 
 
-                            x = x.Concat(GetSiparisUstKAlem().Where(t => t.TESLIM_YERI == item && t.URETILECEKMI == "E")).ToList();
+                            x = x.Concat(ustkalem.Where(t => t.TESLIM_YERI == item && t.URETILECEKMI == "E")).ToList();
                             z.Add(item);
 
 
@@ -1401,7 +2238,7 @@ namespace NOVA.Controllers
 
 
 
-                        x = GetSiparisUstKAlem().Where(t=>t.URETILECEKMI == "E").ToList();
+                        x = ustkalem.Where(t=>t.URETILECEKMI == "E").ToList();
 
 
 
@@ -1413,7 +2250,7 @@ namespace NOVA.Controllers
                         {
 
 
-                            x = x.Concat(GetSiparisUstKAlem().Where(t => t.CARI_DOVIZ_TIPI == item && t.URETILECEKMI == "E")).ToList();
+                            x = x.Concat(ustkalem.Where(t => t.CARI_DOVIZ_TIPI == item && t.URETILECEKMI == "E")).ToList();
 
                             m.Add(item);
 
@@ -1425,7 +2262,7 @@ namespace NOVA.Controllers
                         {
 
 
-                            x = x.Concat(GetSiparisUstKAlem().Where(t => t.PLASIYER_ADI == item && t.URETILECEKMI == "E")).ToList();
+                            x = x.Concat(ustkalem.Where(t => t.PLASIYER_ADI == item && t.URETILECEKMI == "E")).ToList();
                             y.Add(item);
 
 
@@ -1437,7 +2274,7 @@ namespace NOVA.Controllers
                         {
                             foreach (var item2 in cariArray)
                             {
-                                x = x.Concat(GetSiparisUstKAlem().Where(t => t.PLASIYER_ADI == item && t.CARI_DOVIZ_TIPI == item2 && t.URETILECEKMI == "E")).ToList();
+                                x = x.Concat(ustkalem.Where(t => t.PLASIYER_ADI == item && t.CARI_DOVIZ_TIPI == item2 && t.URETILECEKMI == "E")).ToList();
                                 m.Add(item2);
                                 y.Add(item);
                             }
@@ -1454,7 +2291,7 @@ namespace NOVA.Controllers
                         {
                             foreach (var item2 in plasiyerArray)
                             {
-                                x = x.Concat(GetSiparisUstKAlem().Where(t => t.TESLIM_YERI == item && t.PLASIYER_ADI == item2 && t.URETILECEKMI == "E")).ToList();
+                                x = x.Concat(ustkalem.Where(t => t.TESLIM_YERI == item && t.PLASIYER_ADI == item2 && t.URETILECEKMI == "E")).ToList();
                                 y.Add(item2);
                                 z.Add(item);
                             }
@@ -1476,7 +2313,7 @@ namespace NOVA.Controllers
                             {
                                 foreach (var item3 in plasiyerArray)
                                 {
-                                    x = x.Concat(GetSiparisUstKAlem().Where(t => t.TESLIM_YERI == item && t.CARI_DOVIZ_TIPI == item2 && t.PLASIYER_ADI == item3)).ToList();
+                                    x = x.Concat(ustkalem.Where(t => t.TESLIM_YERI == item && t.CARI_DOVIZ_TIPI == item2 && t.PLASIYER_ADI == item3)).ToList();
                                     z.Add(item);
                                     m.Add(item2);
                                     y.Add(item3);
@@ -1491,7 +2328,7 @@ namespace NOVA.Controllers
                             foreach (var item2 in cariArray)
                             {
 
-                                x = x.Concat(GetSiparisUstKAlem().Where(t => t.TESLIM_YERI == item && t.CARI_DOVIZ_TIPI == item2)).ToList();
+                                x = x.Concat(ustkalem.Where(t => t.TESLIM_YERI == item && t.CARI_DOVIZ_TIPI == item2)).ToList();
                                 z.Add(item);
                                 m.Add(item2);
 
@@ -1505,7 +2342,7 @@ namespace NOVA.Controllers
                         {
 
 
-                            x = x.Concat(GetSiparisUstKAlem().Where(t => t.TESLIM_YERI == item)).ToList();
+                            x = x.Concat(ustkalem.Where(t => t.TESLIM_YERI == item)).ToList();
                             z.Add(item);
 
 
@@ -1517,7 +2354,7 @@ namespace NOVA.Controllers
 
 
 
-                        x = GetSiparisUstKAlem().ToList();
+                        x = ustkalem.ToList();
 
 
 
@@ -1529,7 +2366,7 @@ namespace NOVA.Controllers
                         {
 
 
-                            x = x.Concat(GetSiparisUstKAlem().Where(t => t.CARI_DOVIZ_TIPI == item)).ToList();
+                            x = x.Concat(ustkalem.Where(t => t.CARI_DOVIZ_TIPI == item)).ToList();
 
                             m.Add(item);
 
@@ -1541,7 +2378,7 @@ namespace NOVA.Controllers
                         {
 
 
-                            x = x.Concat(GetSiparisUstKAlem().Where(t => t.PLASIYER_ADI == item)).ToList();
+                            x = x.Concat(ustkalem.Where(t => t.PLASIYER_ADI == item)).ToList();
                             y.Add(item);
 
 
@@ -1553,7 +2390,7 @@ namespace NOVA.Controllers
                         {
                             foreach (var item2 in cariArray)
                             {
-                                x = x.Concat(GetSiparisUstKAlem().Where(t => t.PLASIYER_ADI == item && t.CARI_DOVIZ_TIPI == item2)).ToList();
+                                x = x.Concat(ustkalem.Where(t => t.PLASIYER_ADI == item && t.CARI_DOVIZ_TIPI == item2)).ToList();
                                 m.Add(item2);
                                 y.Add(item);
                             }
@@ -1570,7 +2407,7 @@ namespace NOVA.Controllers
                         {
                             foreach (var item2 in plasiyerArray)
                             {
-                                x = x.Concat(GetSiparisUstKAlem().Where(t => t.TESLIM_YERI == item && t.PLASIYER_ADI == item2)).ToList();
+                                x = x.Concat(ustkalem.Where(t => t.TESLIM_YERI == item && t.PLASIYER_ADI == item2)).ToList();
                                 y.Add(item2);
                                 z.Add(item);
                             }
@@ -1589,17 +2426,17 @@ namespace NOVA.Controllers
             var list = x;
             if (filter.BASLANGIC_TARIH != null && filter.BITIS_TARIH == null)
             {
-                Session["Filter"] = x.Where(t=>t.TARIH>=filter.BASLANGIC_TARIH);
+                Session["Filter"] = x.Where(t=>t.TARIH>=filter.BASLANGIC_TARIH).ToList(); 
                 list= x.Where(t => t.TARIH >= filter.BASLANGIC_TARIH).ToList();
             }
             else if(filter.BASLANGIC_TARIH == null && filter.BITIS_TARIH != null)
             {
-                Session["Filter"] = x.Where(t => t.TARIH <= filter.BITIS_TARIH);
+                Session["Filter"] = x.Where(t => t.TARIH <= filter.BITIS_TARIH).ToList(); 
                 list = x.Where(t => t.TARIH <= filter.BITIS_TARIH).ToList();
             }
             else if(filter.BASLANGIC_TARIH != null && filter.BITIS_TARIH != null)
             {
-                Session["Filter"] = x.Where(t => t.TARIH <= filter.BITIS_TARIH && t.TARIH>=filter.BASLANGIC_TARIH);
+                Session["Filter"] = x.Where(t => t.TARIH <= filter.BITIS_TARIH && t.TARIH>=filter.BASLANGIC_TARIH).ToList(); 
                 list = x.Where(t => t.TARIH <= filter.BITIS_TARIH && t.TARIH >= filter.BASLANGIC_TARIH).ToList();
             }
             else
@@ -1738,37 +2575,39 @@ namespace NOVA.Controllers
 
             return jsonList;
         }
-        public List<CityModel> GetCities()
+
+        public JsonResult GetCities()
         {
-            string URI = "http://192.168.2.13:83/api/login/login";
-            string myParameters = "Email=ergunozbudakli@efecegalvaniz.com&Password=begum142088";
-            string HtmlResult = "";
-            using (WebClient wc = new WebClient())
-            {
-                wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-                HtmlResult = wc.UploadString(URI, myParameters);
-               
-            }
+            
+
 
             var apiUrl = "http://192.168.2.13:83/api/location/cities";
             //Connect API
             Uri url = new Uri(apiUrl);
             WebClient client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
-            client.Headers.Add("Authorization", "Bearer "+HtmlResult);
+
             string json = client.DownloadString(url);
-            //END
+            
 
-            //JSON Parse START
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            ser.MaxJsonLength = int.MaxValue;
-            List<CityModel> jsonList = ser.Deserialize<List<CityModel>>(json);
-
-            //END
-
-            return jsonList;
+            return Json(json, JsonRequestBehavior.AllowGet);
         }
-        public List<ActiveUsers> GetActiveUsers()
+       
+        public JsonResult GetMahalleler(string e)
+        {
+
+
+            var apiUrl = "http://192.168.2.13:83/api/location/mahalle/"+e;
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            string json = client.DownloadString(url);
+           
+            return Json(json, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetActiveUsers()
+
         {
             string URI = "http://192.168.2.13:83/api/login/login";
             string myParameters = "Email=ergunozbudakli@efecegalvaniz.com&Password=begum142088";
@@ -1787,18 +2626,15 @@ namespace NOVA.Controllers
             client.Encoding = System.Text.Encoding.UTF8;
             client.Headers.Add("Authorization", "Bearer " + HtmlResult);
             string json = client.DownloadString(url);
-            //END
 
-            //JSON Parse START
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            ser.MaxJsonLength = int.MaxValue;
-            List<ActiveUsers> jsonList = ser.Deserialize<List<ActiveUsers>>(json);
+
 
             //END
 
-            return jsonList;
+            return Json(json, JsonRequestBehavior.AllowGet);
         }
-        public List<Musteri> GetMusteriler()
+        public JsonResult GetMusteriler()
+
         {
             string URI = "http://192.168.2.13:83/api/login/login";
             string myParameters = "Email=ergunozbudakli@efecegalvaniz.com&Password=begum142088";
@@ -1817,46 +2653,31 @@ namespace NOVA.Controllers
             client.Encoding = System.Text.Encoding.UTF8;
             client.Headers.Add("Authorization", "Bearer " + HtmlResult);
             string json = client.DownloadString(url);
-            //END
 
-            //JSON Parse START
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            ser.MaxJsonLength = int.MaxValue;
-            List<Musteri> jsonList = ser.Deserialize<List<Musteri>>(json);
+
 
             //END
 
-            return jsonList;
+            return Json(json, JsonRequestBehavior.AllowGet);
         }
-        public List<DistrictsModel> GetDistricts()
+        public JsonResult GetDistricts()
         {
-            string URI = "http://192.168.2.13:83/api/login/login";
-            string myParameters = "Email=ergunozbudakli@efecegalvaniz.com&Password=begum142088";
-            string HtmlResult = "";
-            using (WebClient wc = new WebClient())
-            {
-                wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-                HtmlResult = wc.UploadString(URI, myParameters);
+            
 
-            }
 
             var apiUrl = "http://192.168.2.13:83/api/location/districts";
             //Connect API
             Uri url = new Uri(apiUrl);
             WebClient client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
-            client.Headers.Add("Authorization", "Bearer " + HtmlResult);
+
             string json = client.DownloadString(url);
-            //END
-
-            //JSON Parse START
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            ser.MaxJsonLength = int.MaxValue;
-            List<DistrictsModel> jsonList = ser.Deserialize<List<DistrictsModel>>(json);
+            
 
             //END
 
-            return jsonList;
+            return Json(json, JsonRequestBehavior.AllowGet);
+
         }
         public List<SiparisModel> GetSiparisApiData()
         {
@@ -2149,7 +2970,16 @@ namespace NOVA.Controllers
 
                 string body = "";
                 var stoklar = GetSiparisApiDataExcel();
-                System.IO.MemoryStream str = DataToExcel(ToDataTable(stoklar));
+                System.IO.MemoryStream str = null;
+                if (stoklar.Count > 600)
+                {
+                    str = DataToExcel(ToDataTable(stoklar.Take(600).ToList()));
+                }
+                else
+                {
+                    str = DataToExcel(ToDataTable(stoklar));
+                }
+
                 Attachment at = new Attachment(str, "DetayliSiparisBilgisi_" + DateTime.Now + ".xls");
                 //WebMail.SmtpServer = "192.168.2.13";
                 //WebMail.Send(Request.Cookies["Mail"].Value, subject, body, "sistem@efecegalvaniz.com", null,null, true, null, null, null, null, "High", null);
@@ -2244,8 +3074,11 @@ namespace NOVA.Controllers
 
     public class DistrictsModel
     {
-        public int SEHIRID { get; set; }
-        public string ILCENAME { get; set; }
+
+        public int ILCEID { get; set; }
+        public string ILCEADI { get; set; }
+        public string SEHIRADI { get; set; }
+
     }
 
     public class CityModel
@@ -2253,4 +3086,11 @@ namespace NOVA.Controllers
         public string CITYNAME { get; set; }
         public int ID { get; set; }
     }
+
+    public class MahalleModel
+    {
+        public string MAHALLEADI { get; set; }
+        public int MAHID { get; set; }
+    }
+
 }

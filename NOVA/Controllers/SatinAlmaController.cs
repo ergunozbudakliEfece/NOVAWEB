@@ -221,6 +221,15 @@ namespace NOVA.Controllers
             var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
             if (yetkifiyatsizstok != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";

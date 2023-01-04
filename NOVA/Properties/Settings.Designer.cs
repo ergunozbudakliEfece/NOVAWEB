@@ -8,18 +8,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NOVA.Properties {
+namespace Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-#pragma warning disable CS1069 // 'GeneratedCodeAttribute' tür adı 'System.CodeDom.Compiler' ad alanında bulunamadı. Bu tür 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089' derlemesine iletilmiş Bu derlemeye bir başvuru eklemeyi deneyin.
-#pragma warning disable CS1069 // 'GeneratedCodeAttributeAttribute' tür adı 'System.CodeDom.Compiler' ad alanında bulunamadı. Bu tür 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089' derlemesine iletilmiş Bu derlemeye bir başvuru eklemeyi deneyin.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.1.0.0")]
-#pragma warning restore CS1069 // 'GeneratedCodeAttributeAttribute' tür adı 'System.CodeDom.Compiler' ad alanında bulunamadı. Bu tür 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089' derlemesine iletilmiş Bu derlemeye bir başvuru eklemeyi deneyin.
-#pragma warning restore CS1069 // 'GeneratedCodeAttribute' tür adı 'System.CodeDom.Compiler' ad alanında bulunamadı. Bu tür 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089' derlemesine iletilmiş Bu derlemeye bir başvuru eklemeyi deneyin.
-#pragma warning disable CS0234 // 'ApplicationSettingsBase' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-#pragma warning restore CS0234 // 'ApplicationSettingsBase' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
@@ -29,17 +23,9 @@ namespace NOVA.Properties {
             }
         }
         
-#pragma warning disable CS0234 // 'ApplicationScopedSettingAttribute' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
-#pragma warning disable CS0234 // 'ApplicationScopedSettingAttributeAttribute' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
-#pragma warning restore CS0234 // 'ApplicationScopedSettingAttributeAttribute' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
-#pragma warning restore CS0234 // 'ApplicationScopedSettingAttribute' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-#pragma warning disable CS0234 // 'DefaultSettingValueAttributeAttribute' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
-#pragma warning disable CS0234 // 'DefaultSettingValueAttribute' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-#pragma warning restore CS0234 // 'DefaultSettingValueAttribute' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
-#pragma warning restore CS0234 // 'DefaultSettingValueAttributeAttribute' tür veya ad alanı adı 'System.Configuration' ad alanında yok (bir derleme başvurunuz mu eksik?)
         public string Ayar {
             get {
                 return ((string)(this["Ayar"]));

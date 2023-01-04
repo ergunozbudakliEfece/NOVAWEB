@@ -21,6 +21,7 @@ namespace NOVA.Controllers
         // GET: Sevkiyat
         public ActionResult SiparisRaporu()
         {
+            var ses = GetSession(Request.Cookies["Id"].Value.ToInt())[0];
             if (Session["Filter"] != null)
             {
 
@@ -37,11 +38,11 @@ namespace NOVA.Controllers
                 ViewBag.UstKalem = GetSiparisUstKAlem();
                 ViewBag.AltKalem = GetSiparisApiData();
             }
-            if (GetSession(Request.Cookies["Id"].Value.ToInt())[0].LOG_DATETIME != null)
+            if (ses.LOG_DATETIME != null)
             {
-                var xm = DateTime.Parse(GetSession(Request.Cookies["Id"].Value.ToInt())[0].LOG_DATETIME);
+                var xm = DateTime.Parse(ses.LOG_DATETIME);
                 var xn = DateTime.Parse(Request.Cookies["SignIn"].Value).AddHours(-3);
-                if ((xm != xn) && GetSession(Request.Cookies["Id"].Value.ToInt())[0].ACTIVITY_TYPE == "login")
+                if ((xm != xn) && ses.ACTIVITY_TYPE == "login")
                 {
                     FormsAuthentication.SignOut();
                     return RedirectToAction("Login", "Login");
@@ -78,6 +79,15 @@ namespace NOVA.Controllers
             var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
             if (yetkifiyatsizstok != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";
@@ -459,6 +469,15 @@ namespace NOVA.Controllers
             var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
             if (yetkifiyatsizstok != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";

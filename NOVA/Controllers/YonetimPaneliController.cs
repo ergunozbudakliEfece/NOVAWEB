@@ -1,4 +1,5 @@
-﻿using NetOpenX50;
+﻿
+//using NetOpenX50;
 using NOVA.Models;
 using ServiceStack;
 
@@ -109,6 +110,16 @@ namespace NOVA.Controllers
             var yetkisaticisiparisi = GetYetki(Request.Cookies["Id"].Value.ToInt(), 20)[0];
             var yetkifiyatlistok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 28)[0];
             var yetkifiyatsizstok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 29)[0];
+            var ziyaretkaydi = GetYetki(Request.Cookies["Id"].Value.ToInt(), 30)[0];
+            
+            if (ziyaretkaydi.USER_AUTH != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
             if (yetkifiyatsizstok.USER_AUTH != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";
@@ -403,6 +414,16 @@ namespace NOVA.Controllers
             var yetkisaticisiparisi = GetYetki(Request.Cookies["Id"].Value.ToInt(), 20)[0];
             var yetkifiyatlistok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 28)[0];
             var yetkifiyatsizstok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 29)[0];
+            var ziyaretkaydi = GetYetki(Request.Cookies["Id"].Value.ToInt(), 30)[0];
+
+            if (ziyaretkaydi.USER_AUTH != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
             if (yetkifiyatsizstok.USER_AUTH != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";
@@ -906,7 +927,7 @@ namespace NOVA.Controllers
                         {
                             subject = "NOVA | Kullanıcı Bilgileriniz";
                         }
-                        string body = model.Icerik;
+                        string body = model.Icerik+ "Yeni yılınız kutlu olsun!</br>Efece'de \"Dijital Dönüşüm Süreci\" nin başladığı ve en önemli adımlarından biri olan Nova ile tanıştığımız 2022 yılına veda ederken;</br>Geliştirilen yeni modülleriyle beraber aktif olarak kullanıldığı son 6 ayında Nova Web ve Nova Android uygulamalarındaki kullanım istatistiklerini paylaşmak istedik.</br></br>En Fazla Oturum Sayısı:</br></br>1.\tmustafaduzdaslik</br>2.\tahmetkoparan</br>3.\tmuratruzgar</br>4.\tselineken</br>5.\tbugraguclu</br>6.\tfikretcetin</br>7.\tyusufakgul</br>8.\tmanar</br>9.\terkangundogan</br>10.\tyaseminkurutac</br>En Fazla Oturum Açılan Platform:</br>1.\tAndroid App       →  % 44</br>2.\tGoogle Chrome →  % 43</br>3.\tOpera                   →  %  7</br>4.\tSafari                     →  %  3</br>5.\tMicrosoft Edge  →  %  2</br>6.\tFirefox                  →  %  1</br></br>İlk 10'a giren kullanıcılara teşekkürlerimizi sunar, 2023 yılının Nova'nın daha da aktif kullanıldığı, sağlıklı, mutlu, huzurlu ve başarılı bir yıl olmasını dileriz.</br>";
 
                         WebMail.SmtpServer = "192.168.2.13";
                         WebMail.Send(model.MailAdresi[i].ToString(), subject, body, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);

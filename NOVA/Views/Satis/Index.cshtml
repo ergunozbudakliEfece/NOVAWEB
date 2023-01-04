@@ -1,1191 +1,437 @@
-﻿
-
-@model NOVA.Models.StokListe
-
-
-<!DOCTYPE html>
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
 
 
-<html lang="en"
-      class="light-style layout-menu-fixed"
-      dir="ltr"
-      data-theme="theme-default"
-      data-assets-path="/assets/"
-      data-template="vertical-menu-template-free">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
-    <title>Nova | Efece Galvaniz</title>
+<link href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<link href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<style>
+    .ph-item,
+    .ph-picture {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
+</style>
+<style>
+    .card-view {
+        border-bottom: 1px dashed gray;
+        margin-top: 2px;
+    }
+    .card-view-value {
+        margin-left: 5px;
+        white-space: normal;
+    }
 
-    <meta name="description" content="" />
-    <meta http-equiv='cache-control' content='no-cache'>
-    <meta http-equiv='expires' content='0'>
-    <meta http-equiv='pragma' content='no-cache'>
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/assets/img/icons/brands/Nova_White.png" />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
-          rel="stylesheet" type="text/css" />
-
-    <!-- Icons. Uncomment required icon fonts -->
-
-    <link href="\assets\boxicons-2.1.2\css\boxicons.css" rel="stylesheet" type="text/css" />
-    <link href="\assets\boxicons-2.1.2\css\animations.css" rel="stylesheet" type="text/css" />
-    <link href="\assets\boxicons-2.1.2\css\transformations.css" rel="stylesheet" type="text/css" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\theme-default.css" class="template-customizer-theme-css" />
-    <link rel="stylesheet" type="text/css" href="\assets\css\demo.css" />
-
-    <!-- Vendors CSS -->
-    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
-
-    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs/apex-charts/apex-charts.css" />
-
-    <!-- Page CSS -->
-    <!-- Helpers -->
-    <script type="text/javascript" src="\assets\vendor\js\helpers.js"></script>
-    <script src="~/Scripts/jquery-3.6.0.js"></script>
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
-    <script type="text/javascript" src="\assets\js\config.js"></script>
-    <script src="/Scripts/jquery.validate.js" type='text/javascript'></script>
-    <script src="/Scripts/jquery.validate.unobtrusive.js" type='text/javascript'></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <style>
-        .centercontent {
-            position: absolute;
-            max-width: 100%;
-            height: auto;
-            top: 50%;
-            left: 53.5%;
-            transform: translate(-50%, -50%);
-            z-index: 5;
-        }
-
-        tr {
-            animation: fadeInAnimation ease 1.5s;
-            animation-iteration-count: 1;
-            animation-fill-mode: forwards;
-        }
-
-        @@keyframes fadeInAnimation {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-    </style>
+    .card-view-title {
+        border-right: 1px dashed gray;
+    }
+    .menu1 {
+        display: none;
+    }
    
-   
-</head>
+    @@media screen and (max-width: 600px) {
+       
 
-<body>
+        .menu1 {
+            display: inline-flex;
+        }
+        .btn-group {
+            display: none;
+        }
+    }
+</style>
 
-
-    <div class="layout-wrapper layout-content-navbar">
-        <div class="layout-container">
-            <!-- Menu -->
-
-            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-                <div class="app-brand demo">
-                    <a href="@Url.Action("Index", "Home" )" class="app-brand-link">
-                        <span class="app-brand-logo demo">
-                            <img src="/Content/Images/efece_logo.png" alt class="w-px-200 h-auto" />
-                        </span>
-                    </a>
-
-                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
-                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
-                    </a>
-                </div>
-
-                <div class="menu-inner-shadow"></div>
-
-                <ul class="menu-inner py-1">
-                    <!-- ANASAYFA -->
-                    <li class="menu-item">
-                        <a href="@Url.Action("Index", "Home" )" class="menu-link">
-                            <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                            <div data-i18n="Analytics">Anasayfa</div>
-                        </a>
+<div class="container img-fluid">
+    
+    <div class="card">
+        <div class="card-header pb-0">
+            <div class="btn-group menu1">
+                <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bx bx-dots-vertical-rounded"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="">
+                    <li><a class="dropdown-item" onclick="change(1)">Standart</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
                     </li>
-                    <li class="menu-header small text-uppercase">
-                        <span class="menu-header-text">Modüller</span>
-                    </li>
-                    <!-- Layouts -->
-                    <li class="menu-item active open" style="display: @ViewBag.DisplaySatis">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-dollar"></i>
-                            <div data-i18n="Layouts">Satış</div>
-                        </a>
+                    <li><a class="dropdown-item" onclick="change(2)">Detaylı</a></li>
 
-                        <ul class="menu-sub">
-                            <li class="menu-item active" style="display: @ViewBag.DisplayStok">
-                                <a href="@Url.Action("Index", "Satis" )" class="menu-link">
-                                    <div data-i18n="Without menu">Stok</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.DisplaySiparis">
-                                <a href="@Url.Action("DetayliSiparis", "Satis" )" class="menu-link">
-                                    <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatliStok">
-                                <a href="@Url.Action("HammaddeListesi", "Satis")" class="menu-link">
-                                    <div data-i18n="Without menu">* Fabrika Stok</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="font-weight:normal;display: @ViewBag.DisplayFiyatsizStok">
-                                <a href="@Url.Action("FiyatsizHammaddeListesi", "Satis")" class="menu-link">
-                                    <div data-i18n="Without menu">Fabrika Stok</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.DisplaySevkiyat">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bxs-truck"></i>
-                            <div data-i18n="Layouts">Sevkiyat</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.DisplaySiparisRaporu">
-                                <a href="@Url.Action("SiparisRaporu", "Sevkiyat" )" class="menu-link">
-                                    <div data-i18n="Without menu">Müşteri Siparişi Raporu</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.DisplaySaticiSiparisRaporu">
-                                <a href="@Url.Action("SaticiSiparisRaporu", "Sevkiyat")" class="menu-link">
-                                    <div data-i18n="Without menu">Satıcı Siparişi Raporu</div>
-                                </a>
-                            </li>
-                        </ul>
-
-                    </li>
-
-
-                    <li class="menu-item open active" style="display:none">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bxs-hard-hat"></i>
-                            <div data-i18n="Account Settings">Üretim</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item active" style="display:none">
-                                <a href="@Url.Action("Index", "Uretim")" class="menu-link">
-                                    <div data-i18n="Without menu">Anlık Üretim</div>
-                                </a>
-                            </li>
-                        </ul>
-
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.DisplaySatinAlma">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-credit-card"></i>
-                            <div data-i18n="Authentications">Satın Alma</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.DisplaySatinAlmaRaporu">
-                                <a href="@Url.Action("SatinAlmaRaporu", "SatinAlma" )" class="menu-link">
-                                    <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
-                                </a>
-                            </li>
-                        </ul>
-
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.DisplayFinans">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
-                            <i class="menu-icon tf-icons bx bx-trending-up"></i>
-                            <div data-i18n="Misc">Finans</div>
-                        </a>
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.DisplayMuhasebe">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
-                            <i class="menu-icon tf-icons bx bx-calculator"></i>
-                            <div data-i18n="Misc">Muhasebe</div>
-                        </a>
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.Display4">
-
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-male-female"></i>
-                            <div data-i18n="Misc">İnsan Kaynakları</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.Display5">
-                                <a href="@Url.Action("PersonelBilgi", "IK" )" class="menu-link">
-                                    <div data-i18n="Without menu">Personel Bilgi Girişi</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.Display6">
-                                <a href="@Url.Action("PersonelBilgiYonetim", "IK" )" class="menu-link">
-                                    <div data-i18n="Without menu">Personel Bilgi Yönetimi</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.Sube">
-                                <a href="@Url.Action("PersonelSubeYonetim", "IK" )" class="menu-link">
-                                    <div data-i18n="Without menu">Şube Bazında Personel Bilgi Yönetimi</div>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.DisplayYonetim">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
-                            <i class="menu-icon tf-icons bx bx-sitemap"></i>
-                            <div data-i18n="Misc">Yönetim</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.DisplayIstatistik">
-                                <a href="@Url.Action("Index", "Yonetim")" class="menu-link">
-                                    <div data-i18n="Without menu">Personel İstatistikleri</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.Display">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bxs-report"></i>
-                            <div data-i18n="Misc">Yönetim Paneli</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.Display1">
-                                <a href="@Url.Action("KullaniciAyar", "YonetimPaneli" )" class="menu-link">
-                                    <div data-i18n="Without menu">Kullanıcı Ayarları</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.Display2">
-                                <a href="@Url.Action("YetkiAyar", "YonetimPaneli" )" class="menu-link">
-                                    <div data-i18n="Without navbar">Kullanıcı Yetkileri</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.Display3">
-                                <a href="#" class="menu-link">
-                                    <div data-i18n="Without navbar">Kullanıcı İstatistikleri</div>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-                    <li class="menu-item">
-                        <a href="javascript:void(0);" class="menu-link" data-i18n="Misc" data-bs-toggle="modal"
-                           data-bs-target="#cikis">
-                            <i class="menu-icon tf-icons bx bx-lock"></i>
-
-                            Çıkış
-
-                        </a>
-                    </li>
 
                 </ul>
-            </aside>
-            <!-- / Menu -->
-            <!-- Layout container -->
-            <div class="layout-page overflow-hidden">
-                <!-- Navbar -->
+            </div>
 
-                <nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
-                     id="layout-navbar">
-                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                            <i class="bx bx-menu bx-sm"></i>
-                        </a>
-                    </div>
+            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" onclick="change(1)" name="btnradio" id="btnradio1" checked="" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="btnradio1">Standart</label>
+                <input type="radio" class="btn-check" onclick="change(2)" name="btnradio" id="btnradio2" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="btnradio2">Detaylı</label>
 
-                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="z-index:0;">
-                        <!-- Search -->
-                        <div class="navbar-nav align-items-center">
-                            <div class="nav-item d-flex align-items-center">
-                                <i id="click" class="bx bx-search fs-4 lh-0"></i>
-                                <input type="text"
-                                       class="form-control border-0 shadow-none"
-                                       id="search"
-                                       placeholder="Arama..."
-                                       aria-label="Search..."
-                                       onkeyup="myFunction()" />
+            </div>
+            <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                @{
+                    string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                }
+                <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                    <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                </object>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href='@Url.Action("Index","Profil")'>
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="avatar avatar-online">
+                                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                    </object>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                @if (@Request.Cookies["Name"] != null)
+                                {
+                                    <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                    <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                }
+                                else
+                                {
+                                    <span class="fw-semibold d-block">Test</span>
+                                    <small class="text-muted">Yetki: Test</small>
+                                }
+
                             </div>
                         </div>
-                        <!-- /Search -->
+                    </a>
+                </li>
 
-                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <li>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#cikis">
+                        <i class="bx bx-power-off me-2"></i>
+                        <span class="align-middle">Oturumu Kapat</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div id="toolbar" class="row">
+                <div class="col-12 form-multiple-select">
+                    <select id="filter" multiple="multiple" name="filterAlgorithm" style="width: 100%">
+                        <optgroup label="Grup Adı" id="grup">
+                        </optgroup>
 
-                            @{
-                                string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
-                            }
-                            <!-- User -->
-                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                                    <div class="avatar avatar-online">
-                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
-                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto ">
-                                        </object>
-                                    </div>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href='@Url.Action("Index","Profil")'>
-                                            <div class="d-flex">
-                                                <div class="flex-shrink-0 me-3">
-                                                    <div class="avatar avatar-online">
-                                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
-                                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto ">
-                                                        </object>
-                                                    </div>
-                                                </div>
-                                                @{var fullname = "";
-                                                    if (Session["Name"] == null)
-                                                    {
-                                                        fullname = Request.Cookies["Name"].Value;
-                                                    }
-                                                    else
-                                                    {
-                                                        fullname = Session["Name"].ToString();
-                                                    }
-                                                }
-                                                <div class="flex-grow-1">
-                                                    <span class="fw-semibold d-block">@fullname</span>
-                                                    <small class="text-muted">Yetki: @ViewBag.RoleName</small>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                           data-bs-target="#cikis">
-                                            <i class="bx bx-power-off me-2"></i>
-                                            <span class="align-middle">Oturumu Kapat</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <!--/ User -->
-                        </ul>
-                    </div>
-                </nav>
-                <div id="cikis" class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="modalCenterTitle">ÇIKIŞ</h5>
-                                <button type="button"
-                                        class="btn-close"
-                                        data-bs-dismiss="modal"
-                                        aria-label="Close">
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <h5 class="modal-body">Çıkış yapmak istediğinize emin misiniz?</h5>
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("LogOff", "Login")'">EVET</button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">HAYIR</button>
-                            </div>
-                        </div>
-                    </div>
+                    </select>
                 </div>
+            </div>
+            <div id="toolbar2" class="row">
+                <div class="col-12 form-multiple-select">
+                    <select id="filter2" multiple="multiple" name="filterAlgorithm2" style="width: 100%">
+                        <optgroup label="Grup Adı" id="grup2">
+                        </optgroup>
 
-
-
-                <div id="page">
-                    <div class="container-fluid flex-grow-1 container-p-y">
-
-                        <div class="centercontent">
-                            <img id="progress" src="~/assets/img/elements/load.gif" style="width:150px;margin-left:5%" />
-                        </div>
-
-                        @if (Session["Info"] != null)
-                        {
-                            <div class="row mb-1">
-                                <div class="alert alert-success" role="alert">
-                                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                                    Mail başarıyla gönderilmiştir.
-                                </div>
-                            </div>
-                            Session["Info"] = null;
-                        }
-                        <div class="row mb-1">
-                            <div class="col">
-                                <label><b>Son Güncelleme:</b> @DateTime.Now.ToShortDateString()  @DateTime.Now.ToShortTimeString()</label>
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-1">
-                            <div class="col">
-                                <button type="button" class="btn btn-success float-end" onclick="myUpdateFunction()" data-bs-toggle='tooltip' data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title='<i class="bx bxs-info-circle bx-xs" ></i> <span>Güncel tüm stok bilgisini mail olarak gönderir.</span>' style="background-color: #BBBBBD; border-color: #B7B7BA; box-shadow: 0.125rem 0.25rem 0 rgb(0 0 0 / 40%); "><i class='bx bx-mail-send'></i></button>
-                               
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col d-flex">
-                                <select disabled id="select1" class="form-select w-50">
-                                    <option value="" selected>Hepsi</option>
-                                </select>
-
-                            </div>
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col">
-
-
-
-                                <div class="card" style="max-height:70vh;" id="table">
-                                    <div role="region" aria-labelledby="HeadersCol" tabindex="0" class="rowheaders">
-                                        <table class="table table-responsive sorttable " id="sorttable">
-                                            <thead class="table-secondary ">
-                                                <tr class="sticky-top">
-                                                    <th style="text-align: center;position:sticky; left: 0;width:120px;">STOK ADI</th>
-                                                    <th style="text-align: right; width: 70px;">SATIŞA HAZIR</th>
-                                                    <th style="text-align: right; width: 70px;">BEKLEYEN SİPARİŞ</th>
-                                                    <th style="text-align: right; width: 70px;">BAKİYE</th>
-                                                    <th style="text-align: right; width: 70px;">BEKLEYEN İŞ EMRİ</th>
-                                                    <th style="text-align: right; width: 70px;">FABRİKA STOK</th>
-                                                    <th style="text-align: center; width: 70px;">ALIŞ FİYATI</th>
-                                                    <th style="text-align: center; width: 70px;">SATIŞ FİYATI</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tbody">
-                                            </tbody>
-                                        </table>
-
-                                    </div>
-
-                                </div>
-
-
-                            </div>
-
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col">
-                                <div style="padding-left:33vw">
-                                    ©
-                                    <script>document.write(new Date().getFullYear());</script>
-                                    , designed by
-                                    <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
-                                </div>
-                            </div>
-                        </div>
-                        <!--/ Accordion -->
-                        <!--/ Advance Styling Options -->
-
-
-                    </div>
+                    </select>
                 </div>
+            </div>
+            <div id="employeeTableWrapper" class="tableWrapper table-responsive">
+                <table id="table"
+                       class="table table-striped"
+                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                       data-toggle="table"
+                       data-show-export="true"
+                       data-export-data-type="all"
+                       data-export-types="['excel']"
+                       data-pagination="true"
+                       data-search="true"
+                       data-toolbar="#toolbar"
+                       data-show-columns="true"
+                       data-show-columns-toggle-all="true"
+                       data-locale="tr-TR"
+                       data-filter-control="true"
+                       data-filter-control-multiple-search="true"
+                       data-url="http://192.168.2.13:83/api/stok"
+                       data-loading-template="loadingTemplate"
+                       data-mobile-responsive="true">
+                    <thead>
+                        <tr>
+                            <th data-field="STOK_ADI" data-sortable="true">Stok Adı</th>
+                            <th data-field="SATISA_HAZIR" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
+                            <th data-field="BEKLEYEN_SIPARIS" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
+                            <th data-field="BAKIYE" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
+                            <th data-field="BEKL_IE_MIKTAR" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
+                            <th data-field="FAB_STOK_MIK" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
+                            <th data-field="ALISFIYAT1" data-sortable="true" data-formatter="alisFormatter">Alış Fiyatı</th>
+                            <th data-field="SATISFIYAT1" data-sortable="true" data-formatter="satisFormatter">Satış Fiyatı</th>
+                            <th data-field="GRUP_ISIM" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
+                            <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
+                        </tr>
+                    </thead>
+                </table>
 
 
-
-
-
-                <script>
-                    var stoks = [];
-                    var grupkodlari = [];
-                    var grupisimleri = [];
-                    var termin = [];
-                    $(document).ready(function () {
-                        
-                        $.getJSON('http://192.168.2.13:83/api/UretimTermin', function (data) {
-                            termin = data;
-                           
-                        })
-                       
-                        // PAGE IS FULLY LOADED
-                        // FADE OUT YOUR OVERLAYING DIV
-                        $.getJSON('http://192.168.2.13:83/api/stok', function (data) {
-                            stoks = data;
-                           
-                            
-                            $('#select1').select2();
-                            $('#maxRows').select2();
-                            var i = 0;
-                            var a = 0;
-                            var len = data.length;
-                            while ( i < len) {
-                                if (!grupkodlari.includes(data[i].GRUP_KODU)) {
-                                    grupkodlari.push(data[i].GRUP_KODU);
-                                    grupisimleri.push(data[i].GRUP_ISIM);
-                                }
-                                var test = termin.find(x => x.STOK_KODU == data[i].STOK_KODU);
-                                if (test == null) {
-                                    test = "boş";
-                                }
-                                var tr = document.createElement("tr");
-                                
-                                
-                                var td = document.createElement("td");
-                                var lab = document.createElement("label");
-                               
-                                lab.innerHTML = data[i].STOK_ADI;
-                                lab.style = "width:120px;font-size:12px;font-weight:bold;";
-                                
-                                td.appendChild(lab);
-                                td.className = "border-bottom-0";
-                                
-                               
-                                td.style = "position:sticky;left:0;width:120px;background-color:white;height:100%;z-index:5";
-                                
-                                tr.appendChild(td);
-                                var td1 = document.createElement("td");
-                                var lab1 = document.createElement("label");
-                                if (data[i].SAT_HZR_ADET <= 0) {
-                                   
-                                        lab1.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                  
-                                    
-                                } else {
-                                    lab1.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                
-                                    
-                                
-                                td1.appendChild(lab1);
-                                td1.className = "border-bottom-1 border-gray";
-                                td1.style = "height:50px;width:85px;z-index:-1;";
-                                var olcubr = "";
-                                if (data[i].OLCU_BIRIMI == "M2") {
-                                    olcubr = "M²";
-                                } else {
-                                    olcubr = data[i].OLCU_BIRIMI;
-                                }
-                                lab1.innerHTML = (data[i].SATISA_HAZIR).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
-                                
-                               
-                                tr.appendChild(td1);
-                                var td2 = document.createElement("td");
-                                var lab2 = document.createElement("label");
-                                if (data[i].BEKLEYEN_SIPARIS <= 0) {
-                                    lab2.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab2.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td2.appendChild(lab2);
-                                td2.className = "border-bottom-1 border-gray";
-                                td2.style = "height:50px;width:85px;";
-                                lab2.innerHTML = (data[i].BEKLEYEN_SIPARIS).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
-                                tr.appendChild(td2);
-                                var td3 = document.createElement("td");
-                                var lab3 = document.createElement("label");
-                                if (data[i].BAKIYE <= 0) {
-                                    lab3.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab3.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td3.appendChild(lab3);
-                                td3.className = "border-bottom-1 border-gray";
-                                td3.style = "height:50px;width:85px;";
-                                lab3.innerHTML = (data[i].BAKIYE).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
-                                tr.appendChild(td3);
-                                var td4 = document.createElement("td");
-                                var lab4 = document.createElement("label");
-                                
-                                if (data[i].BEKL_IE_MIKTAR <= 0) {
-                                    lab4.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab4.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                lab4.setAttribute("data-toggle", "tooltip");
-                                lab4.setAttribute("data-placement", "top");
-                                if (test.TESLIM_TARIHI != null) {
-                                    var old = test.TESLIM_TARIHI.split('T')[0];
-                                    var year = old.split('-')[0];
-                                    var month = old.split('-')[1];
-                                    var day = old.split('-')[2];
-                                    var newdate= day + "/" + month + "/" + year;
-                                    lab4.setAttribute("title", "Termin: "+newdate);
-                                } else {
-                                   
-                                    lab4.setAttribute("title", "Termin tarihi belirlenmemiş.");
-                                }
-                                
-                                td4.appendChild(lab4);
-                                td4.className = "border-bottom-1 border-gray";
-                                td4.style = "height:50px;width:85px;";
-                                lab4.innerHTML = (data[i].BEKL_IE_MIKTAR).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
-                               
-                                tr.appendChild(td4);
-                                var td5 = document.createElement("td");
-                                var lab5 = document.createElement("label");
-                                if (data[i].FAB_STOK_AD <= 0) {
-                                    lab5.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab5.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td5.appendChild(lab5);
-                                td5.className = "border-bottom-1 border-gray";
-                                td5.style = "height:50px";
-                                lab5.innerHTML = (data[i].FAB_STOK_AD).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr +"</span>";
-
-                                tr.appendChild(td5);
-                                var td6 = document.createElement("td");
-                                var lab6 = document.createElement("label");
-                                if (data[i].ALISFIYAT1 <= 0) {
-                                    lab6.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab6.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td6.appendChild(lab6);
-                                td6.className = "border-bottom-1 border-gray";
-                                td6.style = "height:50px";
-                                lab6.innerHTML = (data[i].ALISFIYAT1).toLocaleString('tr-TR');
-                                tr.appendChild(td6);
-                                var td7 = document.createElement("td");
-                                var lab7 = document.createElement("label");
-                                if (data[i].SATISFIYAT1 <= 0) {
-                                    lab7.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab7.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td7.appendChild(lab7);
-                                td7.className = "border-bottom-1 border-gray";
-                                td7.style = "width:80px;height:50px";
-                                lab7.innerHTML = (data[i].SATISFIYAT1).toLocaleString('tr-TR') ;
-                                tr.appendChild(td7);
-                                document.getElementById("tbody").appendChild(tr);
-
-                                var tr1 = document.createElement("tr");
-                                var bos = document.createElement("td");
-                                bos.className = "border-bottom-1 border-info";
-                                bos.style = "position:sticky;left:0;width:120px;background-color:white;height:100%;z-index:5";
-                                tr1.appendChild(bos);
-                                var td8 = document.createElement("td");
-                                var lab8 = document.createElement("label");
-                                if (data[i].SAT_HZR_ADET <= 0) {
-                                    lab8.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab8.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td8.appendChild(lab8);
-                                td8.className = "border-bottom-1 border-info";
-                                td8.style = "height:50px; width:85px;font-style: normal !important";
-                                  
-                                lab8.innerHTML = (data[i].SAT_HZR_ADET).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
-                                
-                              
-                                tr1.appendChild(td8);
-                                var td9 = document.createElement("td");
-                                var lab9 = document.createElement("label");
-                                if (data[i].BEK_SIP_ADET <= 0) {
-                                    lab9.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab9.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td9.appendChild(lab9);
-                                td9.className = "border-bottom-1 border-info";
-                                td9.style = "height:50px; width:85px;";
-                                lab9.innerHTML = (data[i].BEK_SIP_ADET).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp" ;
-                                tr1.appendChild(td9);
-                                var td10 = document.createElement("td");
-                                var lab10 = document.createElement("label");
-                                if (data[i].AD_BAKIYE <= 0) {
-                                    lab10.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab10.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td10.appendChild(lab10);
-                                td10.className = "border-bottom-1 border-info";
-                                td10.style = "height:50px";
-                                lab10.innerHTML = (data[i].AD_BAKIYE).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp" ;
-                                tr1.appendChild(td10);
-                                var td11 = document.createElement("td");
-                                var lab11 = document.createElement("label");
-                                if (data[i].BEKL_IE_AD <= 0) {
-                                    lab11.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab11.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td11.appendChild(lab11);
-                                td11.className = "border-bottom-1 border-info";
-                                td11.style = "height:50px";
-                                lab11.setAttribute("data-toggle", "tooltip");
-                                lab11.setAttribute("data-placement", "top");
-                                if (test.TESLIM_TARIHI != null) {
-                                    var old = test.TESLIM_TARIHI.split('T')[0];
-                                    var year = old.split('-')[0];
-                                    var month = old.split('-')[1];
-                                    var day = old.split('-')[2];
-                                    var newdate = day + "/" + month + "/" + year;
-                                    lab11.setAttribute("title", "Termin: " + newdate);
-                                } else {
-                                    lab11.setAttribute("title", "Termin tarihi belirlenmemiş.");
-                                }
-                                lab11.innerHTML = (data[i].BEKL_IE_AD).toLocaleString('tr-TR') +"&nbsp&nbsp&nbsp&nbsp&nbsp";
-                                tr1.appendChild(td11);
-                                var td12 = document.createElement("td");
-                                var lab12 = document.createElement("label");
-                                if (data[i].FAB_STOK_MIK <= 0) {
-                                    lab12.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab12.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td12.appendChild(lab12);
-                                td12.className = "border-bottom-1 border-info";
-                                td12.style = "height:50px";
-                                lab12.innerHTML = (data[i].FAB_STOK_MIK).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
-                                lab12.className = "arkada";
-                                tr1.appendChild(td12);
-                                var td13 = document.createElement("td");
-                                var lab13 = document.createElement("label");
-                                if (data[i].ALISFIYAT3 <= 0) {
-                                    lab13.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab13.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-                                td13.appendChild(lab13);
-                                td13.className = "border-bottom-1 border-info";
-                                td13.style = "height:50px";
-                                lab13.innerHTML = (data[i].ALISFIYAT3).toLocaleString('tr-TR');
-                                tr1.appendChild(td13);
-                                var td14 = document.createElement("td");
-                                var lab14 = document.createElement("label");
-                                if (data[i].SATISFIYAT3 <= 0) {
-                                    lab14.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                } else {
-                                    lab14.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px;font-size:13px";
-                                }
-
-                                td14.appendChild(lab14);
-                                td14.className = "border-bottom-1 border-info";
-                                td14.style = "height:50px";
-                                lab14.innerHTML = (data[i].SATISFIYAT3).toLocaleString('tr-TR');
-                                tr1.appendChild(td14);
-                                document.getElementById("tbody").appendChild(tr1);
-                                i++;
-                            }
-                            var gruplen = grupisimleri.length;
-                            while (a < gruplen) {
-                                var option = document.createElement("option");
-                                option.innerHTML = grupisimleri[a];
-                                option.value = grupkodlari[a];
-                                document.getElementById("select1").appendChild(option);
-                                a++;
-                            }
-                        }).done(function () {
-                            document.getElementById("select1").removeAttribute("disabled");
-                        });
-
-
-                    }).ajaxStop(function () {
-                        document.getElementById("progress").style.display = "none";
-                        // selecting the elements for which we want to add a tooltip
-                        const target = document.getElementsByClassName("tooltip-button");
-                        var targetlen = target.length
-                        const tooltip = document.getElementsByClassName("tooltip-text");
-                        var i = 0;
-                        while (i < targetlen) {
-                            target[i].addEventListener('mouseover', () => {
-                                tooltip[i].style.display = 'block';
-                            }, false);
-
-                            // change display to 'none' on mouseleave
-                            target[i].addEventListener('mouseleave', () => {
-                                tooltip[i].style.display = 'none';
-                            }, false);
-                            i++;
-                        }
-                       
-                        
-                    });
-
-
-
-
-
-                    $('#select1').change(function () {
-                        document.body.style.cursor = "wait";
-                        $.ajax(updateDiv(this.value)).then(function () {
-
-                        }).done(function () {
-                            document.body.style.cursor = "default";
-                        });
-                    });
-                    function updateDiv(selected_value) {
-
-                        if (selected_value != "") {
-                            var upt = stoks.filter(x => x.GRUP_KODU === selected_value);
-                        } else {
-
-                            var upt = stoks;
-                        }
-
-
-                        document.getElementById("tbody").replaceChildren();
-                        var i = 0;
-                        var len = upt.length;
-                        while ( i < len) {
-
-                            var tr = document.createElement("tr");
-                            var td = document.createElement("td");
-                            var lab = document.createElement("label");
-                            var test1 = termin.find(x => x.STOK_KODU == upt[i].STOK_KODU);
-                            if (test1 == null) {
-                                test1 = "boş";
-                            }
-                            td.appendChild(lab);
-                            td.className = "border-bottom-1 border-info";
-                            td.style = "background-color:white;position:sticky;left:0;width:120px;";
-                            td.rowSpan = 2;
-
-                            lab.innerHTML = upt[i].STOK_ADI;
-                            lab.style = "width:120;font-size:12px;font-weight:bold";
-                            tr.appendChild(td);
-                            var td1 = document.createElement("td");
-                            var lab1 = document.createElement("label");
-                            if (upt[i].SAT_HZR_ADET <= 0) {
-                                lab1.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab1.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td1.appendChild(lab1);
-                            td1.className = "border-bottom-1 border-gray";
-                            td1.style = "height:50px;width:85px;";
-                            var olcubr = "";
-                            if (upt[i].OLCU_BIRIMI == "M2") {
-                                olcubr = "M²";
-                            } else {
-                                olcubr = upt[i].OLCU_BIRIMI;
-                            }
-                            lab1.innerHTML = (upt[i].SATISA_HAZIR).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";
-                            tr.appendChild(td1);
-                            var td2 = document.createElement("td");
-                            var lab2 = document.createElement("label");
-                            if (upt[i].BEKLEYEN_SIPARIS <= 0) {
-                                lab2.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab2.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td2.appendChild(lab2);
-                            td2.className = "border-bottom-1 border-gray";
-                            td2.style = "height:50px;width:85px;";
-                            lab2.innerHTML = (upt[i].BEKLEYEN_SIPARIS).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";;
-                            tr.appendChild(td2);
-                            var td3 = document.createElement("td");
-                            var lab3 = document.createElement("label");
-                            if (upt[i].BAKIYE <= 0) {
-                                lab3.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab3.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td3.appendChild(lab3);
-                            td3.className = "border-bottom-1 border-gray";
-                            td3.style = "height:50px;width:85px;";
-                            lab3.innerHTML = (upt[i].BAKIYE).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";;
-                            tr.appendChild(td3);
-                            var td4 = document.createElement("td");
-                            var lab4 = document.createElement("label");
-                            if (upt[i].BEKL_IE_MIKTAR <= 0) {
-                                lab4.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab4.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td4.appendChild(lab4);
-                            td4.className = "border-bottom-1 border-gray";
-                            td4.style = "height:50px;width:85px;";
-                            lab4.setAttribute("data-toggle", "tooltip");
-                            lab4.setAttribute("data-placement", "top");
-                            lab4.setAttribute("data-toggle", "tooltip");
-                            lab4.setAttribute("data-placement", "top");
-                            if (test1.TESLIM_TARIHI != null) {
-                                var old = test1.TESLIM_TARIHI.split('T')[0];
-                                var year = old.split('-')[0];
-                                var month = old.split('-')[1];
-                                var day = old.split('-')[2];
-                                var newdate = day + "/" + month + "/" + year;
-                                lab4.setAttribute("title", "Termin: " + newdate);
-                            } else {
-                                lab4.setAttribute("title", "Termin tarihi belirlenmemiş.");
-                            }
-                            lab4.innerHTML = (upt[i].BEKL_IE_MIKTAR).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";;
-                            tr.appendChild(td4);
-                            var td5 = document.createElement("td");
-                            var lab5 = document.createElement("label");
-                            if (upt[i].FAB_STOK_AD <= 0) {
-                                lab5.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab5.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td5.appendChild(lab5);
-                            td5.className = "border-bottom-1 border-gray";
-                            td5.style = "height:50px";
-                            lab5.innerHTML = (upt[i].FAB_STOK_AD).toLocaleString('tr-TR') + " <span style='font-size:10px'>" + olcubr + "</span>";;
-
-                            tr.appendChild(td5);
-                            var td6 = document.createElement("td");
-                            var lab6 = document.createElement("label");
-                            if (upt[i].ALISFIYAT1 <= 0) {
-                                lab6.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab6.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td6.appendChild(lab6);
-                            td6.className = "border-bottom-1 border-gray";
-                            td6.style = "height:50px";
-                            lab6.innerHTML = (upt[i].ALISFIYAT1).toLocaleString('tr-TR');
-                            tr.appendChild(td6);
-                            var td7 = document.createElement("td");
-                            var lab7 = document.createElement("label");
-                            if (upt[i].SATISFIYAT1 <= 0) {
-                                lab7.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab7.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td7.appendChild(lab7);
-                            td7.className = "border-bottom-1 border-gray";
-                            td7.style = "height:50px";
-                            lab7.innerHTML = (upt[i].SATISFIYAT1).toLocaleString('tr-TR');
-                            tr.appendChild(td7);
-                            document.getElementById("tbody").appendChild(tr);
-
-                            var tr1 = document.createElement("tr");
-
-                            var td8 = document.createElement("td");
-                            var lab8 = document.createElement("label");
-                            if (upt[i].SAT_HZR_ADET <= 0) {
-                                lab8.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab8.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td8.appendChild(lab8);
-                            td8.className = "border-bottom-1 border-info";
-                            td8.style = "height:50px; width:85px";
-                            lab8.innerHTML = (upt[i].SAT_HZR_ADET).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
-                            tr1.appendChild(td8);
-                            var td9 = document.createElement("td");
-                            var lab9 = document.createElement("label");
-                            if (upt[i].BEK_SIP_ADET <= 0) {
-                                lab9.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab9.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td9.appendChild(lab9);
-                            td9.className = "border-bottom-1 border-info";
-                            td9.style = "height:50px; width:85px";
-                            lab9.innerHTML = (upt[i].BEK_SIP_ADET).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
-                            tr1.appendChild(td9);
-                            var td10 = document.createElement("td");
-                            var lab10 = document.createElement("label");
-                            if (upt[i].AD_BAKIYE <= 0) {
-                                lab10.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab10.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td10.appendChild(lab10);
-                            td10.className = "border-bottom-1 border-info";
-                            td10.style = "height:50px";
-                            lab10.innerHTML = (upt[i].AD_BAKIYE).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
-                            tr1.appendChild(td10);
-                            var td11 = document.createElement("td");
-                            var lab11 = document.createElement("label");
-                            if (upt[i].BEKL_IE_AD <= 0) {
-                                lab11.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab11.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td11.appendChild(lab11);
-                            td11.className = "border-bottom-1 border-info";
-                            td11.style = "height:50px";
-                            lab11.setAttribute("data-toggle", "tooltip");
-                            lab11.setAttribute("data-placement", "top");
-                            lab11.setAttribute("data-toggle", "tooltip");
-                            lab11.setAttribute("data-placement", "top");
-                            if (test1.TESLIM_TARIHI != null) {
-                                var old = test1.TESLIM_TARIHI.split('T')[0];
-                                var year = old.split('-')[0];
-                                var month = old.split('-')[1];
-                                var day = old.split('-')[2];
-                                var newdate = day + "/" + month + "/" + year;
-                                lab11.setAttribute("title", "Termin: " + newdate);
-                            } else {
-                                lab11.setAttribute("title", "Termin tarihi belirlenmemiş.");
-                            }
-                            lab11.innerHTML = (upt[i].BEKL_IE_AD).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
-                            tr1.appendChild(td11);
-                            var td12 = document.createElement("td");
-                            var lab12 = document.createElement("label");
-                            if (upt[i].FAB_STOK_MIK <= 0) {
-                                lab12.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab12.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td12.appendChild(lab12);
-                            td12.className = "border-bottom-1 border-info";
-                            td12.style = "height:50px";
-                            lab12.innerHTML = (upt[i].FAB_STOK_MIK).toLocaleString('tr-TR') + "&nbsp&nbsp&nbsp&nbsp&nbsp";
-
-                            tr1.appendChild(td12);
-                            var td13 = document.createElement("td");
-                            var lab13 = document.createElement("label");
-                            if (upt[i].ALISFIYAT3 <= 0) {
-                                lab13.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab13.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-                            td13.appendChild(lab13);
-                            td13.className = "border-bottom-1 border-info";
-                            td13.style = "height:50px";
-                            lab13.innerHTML = (upt[i].ALISFIYAT3).toLocaleString('tr-TR');
-                            tr1.appendChild(td13);
-                            var td14 = document.createElement("td");
-                            var lab14 = document.createElement("label");
-                            if (upt[i].SATISFIYAT3 <= 0) {
-                                lab14.style = "background-color: transparent;border: none;color:red;float: right;width:85px;text-align: end;font-size:13px";
-                            } else {
-                                lab14.style = "background-color: transparent;border: none;color:green;float: right;width:85px;text-align: end;font-size:13px";
-                            }
-
-                            td14.appendChild(lab14);
-                            td14.className = "border-bottom-1 border-info";
-                            td14.style = "height:50px";
-                            lab14.innerHTML = (upt[i].SATISFIYAT3).toLocaleString('tr-TR');
-                            tr1.appendChild(td14);
-                            document.getElementById("tbody").appendChild(tr1);
-                            i++;
-                        }
-
-
-                    }
-
-
-
-
-
-
-
-
-
-
-
-
-                </script>
-
-
-                <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                <script type="text/javascript">
-                    function myUpdateFunction() {
-                        
-                        Swal.fire({
-                            title: 'Mail göndermek istediğinize emin misiniz?',
-                            icon: 'question',
-                            showDenyButton: false,
-                            showCancelButton: true,
-                            confirmButtonText: 'Evet',
-                            cancelButtonText: 'Hayır',
-                            confirmButtonColor: '#03c3ec',
-                            confirmButtonBorderColor: '#03c3ec',
-                            cancelButtonColor: '#ff3e1d',
-                        }).then((result) => {
-                            /* Read more about isConfirmed, isDenied below */
-                            if (result.isConfirmed) {
-                                
-                                var grupkodu = (document.getElementById("select1").value).toString();
-                                $.post("/Satis/GetStoksApiExcelDetails?grupkodu=" + grupkodu);
-                               
-
-                                
-                               
-                            }
-                            
-                        }).then(function () {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                }
-                            })
-
-                            Toast.fire({
-                                icon: 'success',
-                                title: 'Mail başarıyla gönderildi!'
-                            });
-                        })
-                    }
-                </script>
+            </div>
+            <div id="employeeTableWrapper2" class="tableWrapper">
+                <table id="table2"
+                       class="table table-striped"
+                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                       data-page-list="[5,10, 25, 50, 100, 200, All]"
+                       data-page-size="5"
+                       data-toggle="table"
+                       data-show-export="true"
+                       data-export-data-type="all"
+                       data-export-types="['excel']"
+                       data-pagination="true"
+                       data-search="true"
+                       data-toolbar="#toolbar2"
+                       data-show-columns="true"
+                       data-show-columns-toggle-all="true"
+                       data-locale="tr-TR"
+                       data-filter-control="true"
+                       data-filter-control-multiple-search="true"
+                       data-url="http://192.168.2.13:83/api/stok"
+                       data-loading-template="loadingTemplate"
+                       data-mobile-responsive="true">
+                    <thead>
+                        <tr>
+                            <th data-field="STOK_ADI" data-sortable="true">Stok Adı</th>
+                            <th data-field="SATISA_HAZIR" data-sortable="true"  data-formatter="fabadFormatter">Satışa Hazır Miktar</th>
+                            <th data-field="SAT_HZR_ADET" data-sortable="true"  data-formatter="fabadFormatter">Satışa Hazır Adet</th>
+                            <th data-field="BEKLEYEN_SIPARIS" ddata-sortable="true"  data-formatter="fabadFormatter">Bekleyen Sipariş Miktar</th>
+                            <th data-field="BEK_SIP_ADET" ddata-sortable="true"  data-formatter="fabadFormatter">Bekleyen Sipariş Adet</th>
+                            <th data-field="BAKIYE" data-sortable="true"  data-formatter="fabadFormatter">Bakiye Miktar</th>
+                            <th data-field="AD_BAKIYE" data-sortable="true"  data-formatter="fabadFormatter">Bakiye Adet</th>
+                            <th data-field="BEKL_IE_MIKTAR" data-sortable="true"  data-formatter="fabadFormatter">Bekleyen İş Emri Miktar</th>
+                            <th data-field="BEKL_IE_AD" data-sortable="true"  data-formatter="fabadFormatter">Bekleyen İş Emri Adet</th>
+                            <th data-field="FAB_STOK_MIK" data-sortable="true"  data-formatter="fabadFormatter">Fabrika Stok Miktar</th>
+                            <th data-field="FAB_STOK_AD" data-sortable="true" data-formatter="fabadFormatter">Fabrika Stok Adet</th>
+                            <th data-field="ALISFIYAT1" data-sortable="true"  data-formatter="fabadFormatter">Alış Fiyatı</th>
+                            <th data-field="ALISFIYAT2" data-sortable="true"  data-formatter="fabadFormatter">Alış Fiyatı 2</th>
+                            <th data-field="SATISFIYAT1" data-sortable="true"  data-formatter="fabadFormatter">Satış Fiyatı</th>
+                            <th data-field="SATISFIYAT2" data-sortable="true"  data-formatter="fabadFormatter">Satış Fiyatı 2</th>
+                            <th data-field="GRUP_ISIM" data-visible="false"   data-filter-strict-search="false">Grup Adı</th>
+                            <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
+                        </tr>
+                    </thead>
+                </table>
 
             </div>
         </div>
-    </div>
-    <script>
-        function myFunction() {
-            var input, filter, table, tr, label, i, txtValue;
-            input = document.getElementById("search");
-            filter = input.value.toUpperCase();
-            table = document.getElementById("sorttable");
-            tr = table.getElementsByTagName("tr");
-            for (i = 1; i < tr.length; i = i + 2) {
-                label = tr[i].getElementsByTagName("label")[0];
-                txtValue = label.textContent || label.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                    tr[i + 1].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
-                    tr[i + 1].style.display = "none";
-                }
+
+        </div>
+</div>
+<script>
+    var type = 'fa'
+
+    function loadingTemplate(message) {
+        if (type === 'fa') {
+            return '<i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>'
+        }
+        if (type === 'pl') {
+            return '<div class="ph-item"><div class="ph-picture"></div></div>'
+        }
+    }
+    var grupisimleri = [];
+    var termin = [];
+    $.getJSON('http://192.168.2.13:83/api/UretimTermin', function (data) {
+        termin = data;
+
+    })
+    $.getJSON('http://192.168.2.13:83/api/stok', function (data) {
+        for (let i = 0; i < data.length; i++) {
+            if (!grupisimleri.includes(data[i].GRUP_ISIM)) {
+                grupisimleri.push(data[i].GRUP_ISIM);
             }
         }
-    </script>
+
+    }).done(function () {
+        for (let i = 0; i < grupisimleri.length; i++) {
+            var opt = document.createElement("option");
+            opt.innerHTML = grupisimleri[i];
+            var opt2 = document.createElement("option");
+            opt2.innerHTML = grupisimleri[i];
+            document.getElementById("grup").appendChild(opt);
+            document.getElementById("grup2").appendChild(opt2);
+        }
+    })
+    $('#filter').select2({ width: '25vw', placeholder: 'Grup Filtresi' });
+    $('#filter2').select2({ width: '25vw', placeholder: 'Grup Filtresi' });
+    function terminFormatter(value, row, index) {
+        var val = termin.find(x => x.STOK_KODU == row.STOK_KODU);
+        var str = "";
+        if (val != null) {
+            var old = val.TESLIM_TARIHI.split('T')[0];
+            var year = old.split('-')[0];
+            var month = old.split('-')[1];
+            var day = old.split('-')[2];
+            var newdate = day + "/" + month + "/" + year;
+            str = newdate;
+        } else {
+            str = "Termin tarihi belirlenmemiş."
+        }
+        return str;
+    }
+    function alisFormatter(value, row, index) {
+        var val = "";
+        var val2 = "";
+        if (value > 0) {
+            val = "green";
+        } else {
+            val = "red";
+        }
+        if (row.ALISFIYAT2 > 0) {
+            val2 = "green";
+        } else {
+            val2 = "red";
+        }
+        return "<span style='color:" + val + "'>" + value.toLocaleString("tr-TR") + "</span>" + "</br><span style='color:" + val2 + "'>" + row.ALISFIYAT2.toLocaleString("tr-TR") + "</span>";
+    }
+    function satisFormatter(value, row, index) {
+        var val = "";
+        var val2 = "";
+        if (value > 0) {
+            val = "green";
+        } else {
+            val = "red";
+        }
+        if (row.SATISFIYAT2 > 0) {
+            val2 = "green";
+        } else {
+            val2 = "red";
+        }
+        return "<span style='color:" + val + "'>" + value.toLocaleString("tr-TR") + "</span>" + "</br><span style='color:" + val + "'>" + row.SATISFIYAT2.toLocaleString("tr-TR") + "</span>";
+    }
+    function fabadFormatter(value, row, index) {
+
+        return value.toLocaleString("tr-TR");
+    }
+    function satishzrFormatter(value, row, index) {
+        var val = "";
+        var val2 = "";
+        if (value > 0) {
+            val = "green";
+        } else {
+            val = "red";
+        }
+        if (row.SAT_HZR_ADET > 0) {
+            val2 = "green";
+        } else {
+            val2 = "red";
+        }
+        return "<span style='color:" + val + "'>" + value.toLocaleString("tr-TR") + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.SAT_HZR_ADET.toLocaleString("tr-TR") + "</span>";
+
+    }
+    function fabFormatter(value, row, index) {
+        var val = "";
+        var val2 = "";
+        if (value > 0) {
+            val = "green";
+        } else {
+            val = "red";
+        }
+        if (row.FAB_STOK_AD > 0) {
+            val2 = "green";
+        } else {
+            val2 = "red";
+        }
+        return "<span style='color:" + val + "'>" + value.toLocaleString("tr-TR") + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.FAB_STOK_AD.toLocaleString("tr-TR") + "</span>";
+
+    }
+    function ieFormatter(value, row, index) {
+        var val = "";
+        var val2 = "";
+        if (value > 0) {
+            val = "green";
+        } else {
+            val = "red";
+        }
+        if (row.BEKL_IE_AD > 0) {
+            val2 = "green";
+        } else {
+            val2 = "red";
+        }
+        return "<span style='color:" + val + "'>" + value.toLocaleString("tr-TR") + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.BEKL_IE_AD.toLocaleString("tr-TR") + "</span>";
+
+    }
+    function bakiyeFormatter(value, row, index) {
+        var val = "";
+        var val2 = "";
+        if (value > 0) {
+            val = "green";
+        } else {
+            val = "red";
+        }
+        if (row.AD_BAKIYE > 0) {
+            val2 = "green";
+        } else {
+            val2 = "red";
+        }
+        return "<span style='color:" + val + "'>" + value.toLocaleString("tr-TR") + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.AD_BAKIYE.toLocaleString("tr-TR") + "</span>";
+
+    }
+    function sipFormatter(value, row, index) {
+        var val = "";
+        var val2 = "";
+        if (value > 0) {
+            val = "green";
+        } else {
+            val = "red";
+        }
+        if (row.BEK_SIP_ADET > 0) {
+            val2 = "green";
+        } else {
+            val2 = "red";
+        }
+        return "<span style='color:" + val + "'>" + value.toLocaleString("tr-TR") + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.BEK_SIP_ADET.toLocaleString("tr-TR") + "</span>";
+
+    }
+
+</script>
+<script>
+    $('#toolbar').change(function (e) {
+        var filterAlgorithm = $('[name="filterAlgorithm"]').val()
 
 
-    <script type="text/javascript" src="\assets\vendor\libs\popper/popper.js"></script>
-    <script type="text/javascript" src="\assets\vendor\js\bootstrap.js"></script>
-    <script type="text/javascript" src="\assets\vendor\libs/perfect-scrollbar\perfect-scrollbar.js"></script>
+        if (filterAlgorithm.length > 0) {
+            $('#table').bootstrapTable('filterBy', {
+                GRUP_ISIM: filterAlgorithm
+            })
+        } else {
+            $('#table').bootstrapTable('filterBy', {});
 
-    <script src="\assets\vendor\js\menu.js"></script>
-    <!-- endbuild -->
-    <!-- Vendors JS -->
-    <script type="text/javascript" src="\assets\vendor\libs\apex-charts\apexcharts.js"></script>
+        }
 
-    <!-- Main JS -->
-    <script type="text/javascript" src="\assets\js\main.js"></script>
-
-    <!-- Page JS -->
-    <script type="text/javascript" src="\assets\js\dashboards-analytics.js"></script>
-   
-    <div class="layout-overlay layout-menu-toggle"></div>
-   <script>
-       setTimeout(logOut, 7200000)
-       function logOut() {
-
-           $.ajax({
-               type: "GET",
-               url: '/Login/Logoff',
-               contentType: "application/json; charset=utf-8",
-               success: function (data) {
+    })
+    $('#toolbar2').change(function (e) {
+        var filterAlgorithm2 = $('[name="filterAlgorithm2"]').val()
 
 
-                   return data;
-               },
-               complete: function () {
+        if (filterAlgorithm2.length > 0) {
+            $('#table2').bootstrapTable('filterBy', {
+                GRUP_ISIM: filterAlgorithm2
+            })
+        } else {
+            $('#table2').bootstrapTable('filterBy', {});
 
-                   window.location.href = '/Login/Login';
+        }
 
-               }
-           });
+    })
+    function change(value) {
+        if (value == 1) {
+            $('#employeeTableWrapper2').hide();
+            $('#employeeTableWrapper').show();
+        } else {
+            $('#employeeTableWrapper2').show();
+            $('#employeeTableWrapper').hide();
+        }
+    }
+    $(document).ready(function () {
+        $('#employeeTableWrapper2').hide();
+    })
+</script>
 
-
-
-       }
-   </script>
-</body>
-
-</html >
 

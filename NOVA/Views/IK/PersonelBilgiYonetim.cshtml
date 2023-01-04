@@ -7,19 +7,36 @@
 
 <html>
 <head>
+
+    <link href="https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        
+
 
         $('select').on('select2:opening select2:closing', function (event) {
             var $searchfield = $('#' + event.target.id).parent().find('.select2-search__field');
             $searchfield.prop('disabled', true);
         });
     </script>
+    <style>
+        .no-records-found {
+            display:none;
+        }
+    </style>
 </head>
 <body onclose="close()">
-    <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="container-xxl">
+        <div class="col">
+            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" onclick="change(1)" name="btnradio" id="btnradio1" checked="" autocomplete="off">
+                <label class="btn btn-outline-primary" for="btnradio1">Personel Bilgi Yönetimi</label>
+                <input type="radio" class="btn-check" onclick="change(2)" name="btnradio" id="btnradio2" autocomplete="off">
+                <label class="btn btn-outline-primary" for="btnradio2">Personel Raporu</label>
+            </div>
+        </div>
+    </div>
+    <div id="con1" class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col">
                 <select name="state" id="select-state" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Seçilen personele göre liste güncellenir</span>" onchange="location.href='@Url.Action("GET", "IK")/'+value" class="js-example-matcher-start form-select dropdown-toggle">
@@ -55,6 +72,7 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <div class="row">
+
                             <div class="col">
                                 <h5>Personel Bilgileri Yönetimi</h5>
                             </div>
@@ -5957,9 +5975,98 @@
             </div>
         </div>
     </div>
+    <div id="con2" class="container-xxl">
+        <div id="employeeTableWrapper" class="tableWrapper table-responsive">
+            <table id="table"
+                   class="table table-striped"
+                   data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                   data-toggle="table"
+                   data-show-export="true"
+                   data-export-data-type="all"
+                   data-export-types="['excel']"
+                   data-pagination="true"
+                   data-show-toggle="true"
+                   data-search="true"
+                   data-show-columns="true"
+                   data-show-columns-toggle-all="true"
+                   data-locale="tr-TR"
+                   data-filter-control="true"
+                   data-filter-control-multiple-search="true"
+                   data-export-options='{"fileName": "IK_Personel_Bilgileri"}'
+                   data-url="http://192.168.2.13:83/api/personel">
+                <thead>
+                    <tr>
+                        <th data-field="ISIM" data-sortable="true">ISIM</th>
+                        <th data-field="SOYISIM" data-sortable="true">SOYISIM</th>
+                        <th data-field="SUBE" data-sortable="true">ŞUBE</th>
+                        <th data-field="CINSIYET" data-sortable="true">CİNSİYET</th>
+                        <th data-field="TCKN" data-sortable="true">TCKN</th>
+                        <th data-field="DOGUM_TARIHI" data-sortable="true" data-formatter="tarihFormatter">DOGUM TARIHI</th>
+                        <th data-field="DOGUM_YERI_IL" data-sortable="true" data-visible="false">DOGUM YERI IL</th>
+                        <th data-field="DOGUM_YERI_ILCE" data-sortable="true" data-visible="false">DOGUM YERI ILCE</th>
+                        <th data-field="OGRENIM_DURUMU" data-sortable="true" data-visible="false">OGRENIM DURUMU</th>
+                        <th data-field="MEZUN_OKUL" data-sortable="true" data-visible="false">MEZUN OKUL</th>
+                        <th data-field="MEZUN_BOLUM" data-sortable="true" data-visible="false">MEZUN BOLUM</th>
+                        <th data-field="MEZUN_YIL" data-sortable="true" data-visible="false">MEZUN YIL</th>
+                        <th data-field="IKAMETGAH_ADRES" data-sortable="true" data-visible="false">IKAMETGAH ADRES</th>
+                        <th data-field="IKAMETGAH_IL" data-sortable="true" data-visible="false">IKAMETGAH IL</th>
+                        <th data-field="IKAMETGAH_ILCE" data-sortable="true" data-visible="false">IKAMETGAH ILCE</th>
+                        <th data-field="MEDENI_HAL" data-sortable="true" data-visible="false">MEDENI HAL</th>
+                        <th data-field="ES_CALISMA_DURUMU" data-sortable="true" data-visible="false">ES CALISMA DURUMU</th>
+                        <th data-field="ES_CALISMA_FIRMA" data-sortable="true" data-visible="false">ES CALISMA FIRMA</th>
+                        <th data-field="ES_UNVANI" data-sortable="true" data-visible="false">ES UNVANI</th>
+                        <th data-field="COCUK_SAYI" data-sortable="true" data-visible="false">COCUK SAYI</th>
+                        <th data-field="IKAMET_EV_DURUM" data-sortable="true" data-visible="false">IKAMET EV DURUM</th>
+                        <th data-field="ARAC_DURUM" data-sortable="true" data-visible="false">ARAC DURUM</th>
+                        <th data-field="ARAC_PLAKA" data-sortable="true" data-visible="false">ARAC PLAKA</th>
+                        <th data-field="EHLIYET_VAR" data-sortable="true" data-visible="false">EHLIYET VAR</th>
+                        <th data-field="EHLIYET_SINIF" data-sortable="true" data-visible="false">EHLIYET SINIF</th>
+                        <th data-field="MEVCUT_IS_ILK_TARIH" data-sortable="true" data-formatter="tarihFormatter">EFECE'DE İŞE BAŞLAMA TARİHİ</th>
+                        <th data-field="ILETISIM_BILGI_MAIL" data-sortable="true" data-visible="false">ILETISIM BILGI MAIL</th>
+                        <th data-field="ACIL_DURUM_KISI" data-sortable="true" data-visible="false">ACIL DURUM KISI</th>
+                        <th data-field="ACIL_DURUM_KISI_ILETISIM" data-sortable="true" data-visible="false">ACIL DURUM KISI ILETISIM</th>
+                        <th data-field="ILETISIM_BILGI_TEL" data-sortable="true">ILETISIM BILGI TEL</th>
+                        <th data-field="COVID_ASI_DURUM" data-sortable="true" data-visible="false">COVID ASI DURUM</th>
+                        <th data-field="VARSA_SUREKLI_KULL_ILAC" data-sortable="true" data-visible="false">VARSA SUREKLI KULL ILAC</th>
+                        <th data-field="VARSA_ENGEL_DURUM" data-sortable="true" data-visible="false">VARSA ENGEL DURUM</th>
+                        <th data-field="VARSA_SUREKLI_HAST" data-sortable="true" data-visible="false">VARSA SUREKLI HAST</th>
+                        <th data-field="KAN_GRUP" data-sortable="true" data-visible="false">KAN GRUP</th>
+                        <th data-field="ILK_IS_TARIH" data-sortable="true" data-formatter="tarihFormatter" data-visible="false">ILK IS TARIH</th>
+                        <th data-field="GOREV" data-sortable="true" data-visible="false">GOREV</th>
+                        <th data-field="CALISILAN_BIRIM" data-sortable="true">CALISILAN BIRIM</th>
+                        <th data-field="IS_CIKIS_TARIH" data-sortable="true" data-formatter="tarihFormatter" data-visible="false">IS CIKIS TARIH</th>
+                    </tr>
+                </thead>
+            </table>
+
+        </div>
+    </div>
 
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table-locale-all.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+
+
+
+
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+
+    <script type="text/javascript" src="/assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+    <!-- Main JS -->
+    <script type="text/javascript" src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script type="text/javascript" src="/assets/js/dashboards-analytics.js"></script>
     <script type="text/javascript">
         function myKaydetFunction() {
             Swal.fire({
@@ -6012,114 +6119,33 @@
 
 
     </script>
+  
     <script>
-        function matchStart(params, data) {
-            // If there are no search terms, return all of the data
-            if ($.trim(params.term) === '') {
-                return data;
-            }
+        $(document).ready(function () {
 
-            // Skip if there is no 'children' property
-            if (typeof data.children === 'undefined') {
-                return null;
-            }
-
-            // `data.children` contains the actual options that we are matching against
-            var filteredChildren = [];
-            $.each(data.children, function (idx, child) {
-                if (child.text.toUpperCase().indexOf(params.term.toUpperCase()) == 0) {
-                    filteredChildren.push(child);
-                }
-            });
-
-            // If we matched any of the timezone group's children, then set the matched children on the group
-            // and return the group object
-            if (filteredChildren.length) {
-                var modifiedData = $.extend({}, data, true);
-                modifiedData.children = filteredChildren;
-
-                // You can return modified objects from here
-                // This includes matching the `children` how you want in nested data sets
-                return modifiedData;
-            }
-
-            // Return `null` if the term should not be displayed
-            return null;
-        }
-
-       
-        
-        function readURL(input) {
-            document.getElementById("resimKaydet").removeAttribute("disabled")
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    $('#blah')
-                        .attr('src', e.target.result);
-                };
-
-                reader.readAsDataURL(input.files[0]);
+            $('#con2').hide();
+            $('#table').bootstrapTable();
+        })
+        function change(value) {
+            if (value == 1) {
+                $('#con2').hide();
+                $('#con1').show();
+            } else {
+                $('#con2').show();
+                $('#con1').hide();
             }
         }
-        function close() {
-            @{Session["Alert"] = null;
-                Session["Personel"] = null;
-                Session["Ekle"] = null;
+        function tarihFormatter(value, row, index) {
+            if (value != null) {
+                var old = value.split('T')[0];
+                var year = old.split('-')[0];
+                var month = old.split('-')[1];
+                var day = old.split('-')[2];
+                var newdate = day + "/" + month + "/" + year;
+                return newdate;
             }
+            return value;
         }
-
     </script>
-    <script>
-        const isNumericInput = (event) => {
-            const key = event.keyCode;
-            return ((key >= 48 && key <= 57) || // Allow number line
-                (key >= 96 && key <= 105) // Allow number pad
-            );
-        };
-
-        const isModifierKey = (event) => {
-            const key = event.keyCode;
-            return (event.shiftKey === true || key === 35 || key === 36) || // Allow Shift, Home, End
-                (key === 8 || key === 9 || key === 13 || key === 46) || // Allow Backspace, Tab, Enter, Delete
-                (key > 36 && key < 41) || // Allow left, up, right, down
-                (
-                    // Allow Ctrl/Command + A,C,V,X,Z
-                    (event.ctrlKey === true || event.metaKey === true) &&
-                    (key === 65 || key === 67 || key === 86 || key === 88 || key === 90)
-                )
-        };
-
-        const enforceFormat = (event) => {
-            // Input must be of a valid number format or a modifier key, and not longer than ten digits
-            if (!isNumericInput(event) && !isModifierKey(event)) {
-                event.preventDefault();
-            }
-        };
-
-        const formatToPhone = (event) => {
-            if (isModifierKey(event)) { return; }
-
-            const input = event.target.value.replace(/\D/g, '').substring(0, 10); // First ten digits of input only
-            const areaCode = input.substring(0, 3);
-            const middle = input.substring(3, 6);
-            const last = input.substring(6, 8);
-            const last2 = input.substring(8, 10);
-
-            if (input.length > 6) { event.target.value = `(${areaCode}) ${middle}  ${last}  ${last2}`; }
-            else if (input.length > 3) { event.target.value = `(${areaCode}) ${middle}`; }
-            else if (input.length > 0) { event.target.value = `(${areaCode}`; }
-        };
-
-        const inputElement = document.getElementById('ILETISIM_BILGI_TEL');
-        inputElement.addEventListener('keydown', enforceFormat);
-        inputElement.addEventListener('keyup', formatToPhone);
-        const inputElement1 = document.getElementById('ACIL_DURUM_KISI_ILETISIM');
-        inputElement1.addEventListener('keydown', enforceFormat);
-        inputElement1.addEventListener('keyup', formatToPhone);
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script type="text/javascript" src="/assets/vendor/libs/jquery/jquery.js"></script>
-
 </body>
 </html>

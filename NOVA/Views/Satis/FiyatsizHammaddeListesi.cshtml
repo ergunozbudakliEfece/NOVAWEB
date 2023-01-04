@@ -293,8 +293,7 @@
     <script type="text/javascript" async defer src="/Scripts/buttons.js"></script>
     <script type="text/javascript" src="/Scripts/boxicons.js"></script>
 
-    <script src="
-            s://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 
@@ -527,7 +526,7 @@
                     lab12.innerHTML = data[i].ADET;
 
                     tr.appendChild(td12);
-                   
+
                     var td14 = document.createElement("td");
                     var lab14 = document.createElement("label");
 
@@ -721,25 +720,25 @@
                 }
                 filtereddata = data;
             }).done(function () {
+               
+                document.getElementById("progress").style.display = "none";
                 $('#rulokodufilter').select2();
                 $('#renkkodufilter').select2();
                 $('#kalinlikfilter').select2();
                 $('#genislikfilter').select2();
                 $('#menseifilter').select2();
-            });
+                var fiyatlar = [];
+                var rows = document.getElementById("tbody").getElementsByTagName("tr");
 
+                for (let i = 1; i < rows.length; i++) {
+                    fiyatlar.push(parseFloat((rows[i].getElementsByTagName("label")[12].innerHTML).split(' ')[1]));
+                }
 
-        }).ajaxStop(function () {
-            document.getElementById("progress").style.display = "none";
-            var fiyatlar = [];
-            var rows = document.getElementById("tbody").getElementsByTagName("tr");
-
-            for (let i = 1; i < rows.length; i++) {
-                fiyatlar.push(parseFloat((rows[i].getElementsByTagName("label")[12].innerHTML).split(' ')[1]));
-            }
-
-            document.getElementById("ortfiyat").innerHTML = "<b>Ortalama Fiyat:</b> $ " + (fiyatlar.reduce((partialSum, a) => partialSum + a, 0) / fiyatlar.length).toFixed(4);
+                document.getElementById("ortfiyat").innerHTML = "<b>Ortalama Fiyat:</b> $ " + (fiyatlar.reduce((partialSum, a) => partialSum + a, 0) / fiyatlar.length).toFixed(4);
+            })
         });
+
+        
         var g = 0;
         function genislet() {
             if (g == 0) {
@@ -761,7 +760,8 @@
 
                     }
                 }
-            } else {
+            }
+            else {
                 var tb = document.getElementById("sorttable");
                 var th = tb.getElementsByTagName("th");
                 var tr = tb.getElementsByTagName("tr");

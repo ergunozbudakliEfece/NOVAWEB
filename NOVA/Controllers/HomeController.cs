@@ -22,7 +22,11 @@ namespace NOVA.Controllers
     {
         [HandleError]
         // GET: SecondPage
-        public ActionResult Index()
+        public ActionResult mutluyillar()
+        {
+            return View();
+                }
+            public ActionResult Index()
         {
             if (Request.Cookies["Id"] == null){
                 FormsAuthentication.SignOut();
@@ -77,11 +81,23 @@ namespace NOVA.Controllers
                             var log = GetSession(Request.Cookies["Id"].Value.ToInt())[0].ACTIVITY_TYPE;
                             if (((xm != xn) && log == "login") || log == "logout")
                             {
-                            if (TempData["LOG"].ToString() != "ok"|| log == "logout")
+                            if (TempData["LOG"] != null)
                             {
-                                FormsAuthentication.SignOut();
-                                return RedirectToAction("Login", "Login");
+                                if (TempData["LOG"].ToString() != "ok" || log == "logout")
+                                {
+                                    FormsAuthentication.SignOut();
+                                    return RedirectToAction("Login", "Login");
+                                }
                             }
+                            else
+                            {
+                                if (log == "logout")
+                                {
+                                    FormsAuthentication.SignOut();
+                                    return RedirectToAction("Login", "Login");
+                                }
+                            }
+                            
                            
 
                             }
@@ -138,6 +154,33 @@ namespace NOVA.Controllers
             var yetkianlikuretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 26).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 32).USER_AUTH;
+            var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            if (musteriraporuozel != true)
+            {
+                ViewBag.DisplayMusteriOzel = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMusteriOzel = "unset";
+            }
+            if (musteriraporu != true)
+            {
+                ViewBag.DisplayMusteriRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMusteriRaporu = "unset";
+            }
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
             if (yetkifiyatsizstok != true)
             {
                 ViewBag.DisplayFiyatsizStok = "none";

@@ -123,10 +123,7 @@
     <script src="~/assets/vendor/css/scripts.js"></script>
 </head>
 <body onload="move()" onclose="close()" style="background-color: #f5f5f9 !important;font-size:12px !important;overflow:hidden">
-    <script>
-        var g = 0;
-       
-    </script>
+   
 
     <div class="container-fluid mt-1">
         <div class="centercontent">
@@ -302,8 +299,12 @@
     <script>
         var upt = [];
         var filtereddata = [];
+        var g = 0;
+        var w = false;
+        var k1 = false;
+        var k3 = false;
         $(document).ready(function () {
-
+            
             $.getJSON('http://192.168.2.13:83/api/ExcelTest', function (data) {
                 upt=data;
                 var renkfilter = [];
@@ -817,6 +818,15 @@
             document.getElementById("tbody").replaceChildren();
             if (values != "") {
                 var fitered = upt.filter(x => values.includes(x.RULOKODU));
+                if (w == true) {
+                    fitered = upt.filter(x => x.KURAL == 0);
+                }
+                if (k1 == true) {
+                    fitered = upt.filter(x => x.KURAL == 1);
+                }
+                if (k3 == true) {
+                    fitered = upt.filter(x => x.KURAL == 3);
+                }
             } else {
                 var fitered = upt;
             }
@@ -884,7 +894,8 @@
             if (men != "") {
 
                 fitered = fitered.filter(x => men.includes(x.MENSEI));
-            } else {
+            }
+            else {
                 var menf = [];
                 for (let i = 0; i < fitered.length; i++) {
                     if (!menf.includes(fitered[i].MENSEI.trim())) {
@@ -902,11 +913,7 @@
                 }
             }
            
-            
-            
-            
-           
-           
+
             for (let i = 0; i < fitered.length; i++) {
 
                 var tr = document.createElement("tr");
@@ -914,9 +921,9 @@
                 var lab = document.createElement("label");
                 
                 var color = "";
-                if (fitered[i].KURAL == 1) {
+                if (fitered[i].KURAL == "1") {
                     color = "#EAFFF1";
-                } else if (fitered[i].KURAL == 0) {
+                } else if (fitered[i].KURAL == "0") {
                     color = "white";
                 }
                 else {
@@ -1297,6 +1304,7 @@
                 }
             }
             filtereddata = fitered;
+           
         }
         function changerenk() {
             var fiyatlar = [];
@@ -1311,6 +1319,15 @@
                 document.getElementById("tbody").replaceChildren();
                 if (renk != "") {
                     var fitered = upt.filter(x => renk.includes(x.RENKKODU));
+                    if (w == true) {
+                        fitered = upt.filter(x => x.KURAL == 0);
+                    }
+                    if (k1 == true) {
+                        fitered = upt.filter(x => x.KURAL == 1);
+                    }
+                    if (k3 == true) {
+                        fitered = upt.filter(x => x.KURAL == 3);
+                    }
                 } else {
                     var fitered = upt;
                 }
@@ -1399,7 +1416,7 @@
                         document.getElementById("menseifilter").appendChild(option);
                     }
                 }
-
+               
 
 
 
@@ -1809,13 +1826,34 @@
             var kal = $("#kalinlikfilter").val();
             var gen = $("#genislikfilter").val();
             var men = $("#menseifilter").val();
+            
             document.getElementById("tbody").replaceChildren();
             if (kal != "") {
+               
                 var fitered = upt.filter(x => kal.includes(x.KALINLIK));
+               
+                if (w == true) {
+                   
+                    fitered = fitered.filter(x => x.KURAL==0);
+                }
+                if (k1 == true) {
+                   
+                    fitered = fitered.filter(x => x.KURAL == 1);
+                   
+                }
+                if (k3 == true) {
+                   
+                    fitered = fitered.filter(x => x.KURAL == 3);
+                }
+                
+                
             } else {
+
                 var fitered = upt;
+               
             }
-           
+
+            
             if (values != "") {
 
                 fitered = fitered.filter(x => values.includes(x.RULOKODU));
@@ -1899,7 +1937,7 @@
                     document.getElementById("menseifilter").appendChild(option);
                 }
             }
-
+            
             for (let i = 0; i < fitered.length; i++) {
 
                 var tr = document.createElement("tr");
@@ -1907,9 +1945,9 @@
                 var lab = document.createElement("label");
 
                 var color = "";
-                if (fitered[i].KURAL == 1) {
+                if (fitered[i].KURAL == "1") {
                     color = "#EAFFF1";
-                } else if (fitered[i].KURAL == 0) {
+                } else if (fitered[i].KURAL == "0") {
                     color = "white";
                 }
                 else {
@@ -2303,6 +2341,15 @@
             
             if (gen != "") {
                 var fitered = upt.filter(x => gen.includes(x.GENISLIK));
+                if (w == true) {
+                    fitered = upt.filter(x => x.KURAL == 0);
+                }
+                if (k1 == true) {
+                    fitered = upt.filter(x => x.KURAL == 1);
+                }
+                if (k3 == true) {
+                    fitered = upt.filter(x => x.KURAL == 3);
+                }
             } else {
                 var fitered = upt;
             }
@@ -2388,8 +2435,7 @@
                     document.getElementById("menseifilter").appendChild(option);
                 }
             }
-
-
+           
 
             for (let i = 0; i < fitered.length; i++) {
 
@@ -2794,6 +2840,15 @@
             
             if (men != "") {
                 var fitered = upt.filter(x => men.includes(x.MENSEI));
+                if (w == true) {
+                    fitered = upt.filter(x => x.KURAL == 0);
+                }
+                if (k1 == true) {
+                    fitered = upt.filter(x => x.KURAL == 1);
+                }
+                if (k3 == true) {
+                    fitered = upt.filter(x => x.KURAL == 3);
+                }
             } else {
                 var fitered = upt;
             }
@@ -2879,8 +2934,7 @@
                     document.getElementById("genislikfilter").appendChild(option);
                 }
             }
-
-
+            
 
             for (let i = 0; i < fitered.length; i++) {
 
@@ -3274,10 +3328,124 @@
             filtereddata = fitered;
         }
         function white() {
+            w = true;
+            k1 = false;
+            k3 = false;
             var fiyatlar = [];
             var fiyatlarton = [];
             document.getElementById("tbody").replaceChildren();
             var fitered = filtereddata.filter(x => x.KURAL == "0");
+            var values = $("#rulokodufilter").val();
+            var renk = $("#renkkodufilter").val();
+            var kal = $("#kalinlikfilter").val();
+            var gen = $("#genislikfilter").val();
+            var men = $("#menseifilter").val();
+
+            if (values != "") {
+                fitered = fitered.filter(x => values.includes(x.RULOKODU));
+            } else {
+                var valf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!valf.includes(fitered[i].RULOKODU)) {
+                        valf.push(fitered[i].RULOKODU);
+                    }
+                }
+                valf.sort();
+                document.getElementById("rulokodufilter").replaceChildren();
+                for (let i = 0; i < valf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = valf[i];
+                    if (valf[i].length == 6) {
+                        option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
+                    } else {
+                        option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
+                    }
+                    document.getElementById("rulokodufilter").appendChild(option);
+                }
+            }
+
+            if (renk != "") {
+
+                fitered = fitered.filter(x => renk.includes(x.RENKKODU));
+
+            } else {
+                var renkf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!renkf.includes(fitered[i].RENKKODU)) {
+                        renkf.push(fitered[i].RENKKODU);
+                    }
+                }
+                renkf.sort();
+                document.getElementById("renkkodufilter").replaceChildren();
+                for (let i = 0; i < renkf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = renkf[i];
+                    option.innerHTML = renkf[i];
+                    document.getElementById("renkkodufilter").appendChild(option);
+                }
+            }
+            if (kal != "") {
+
+                fitered = fitered.filter(x => kal.includes(x.KALINLIK));
+            } else {
+                var kalf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
+                        kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
+                    }
+                }
+                document.getElementById("kalinlikfilter").replaceChildren();
+                kalf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kalf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = (kalf[i]).toString().replace('.', ',');
+                    option.innerHTML = (parseFloat((kalf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
+                    document.getElementById("kalinlikfilter").appendChild(option);
+                }
+            }
+            if (gen != "") {
+
+                fitered = fitered.filter(x => gen.includes(x.GENISLIK));
+            } else {
+                var genf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(",", ".")))) {
+                        genf.push(parseFloat(fitered[i].GENISLIK.replace(",", ".")));
+                    }
+                }
+                document.getElementById("genislikfilter").replaceChildren();
+                genf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < genf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = genf[i];
+                    option.innerHTML = genf[i].toString().replace(".", ",");;
+                    document.getElementById("genislikfilter").appendChild(option);
+                }
+            }
+            if (men != "") {
+
+                fitered = fitered.filter(x => men.includes(x.MENSEI));
+            } else {
+                var menf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!menf.includes(fitered[i].MENSEI.trim())) {
+                        menf.push(fitered[i].MENSEI.trim());
+                    }
+                }
+                document.getElementById("menseifilter").replaceChildren();
+                menf.sort();
+                for (let i = 0; i < menf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = menf[i];
+                    option.innerHTML = menf[i];
+                    document.getElementById("menseifilter").appendChild(option);
+                }
+            }
             for (let i = 0; i < fitered.length; i++) {
 
                 var tr = document.createElement("tr");
@@ -3667,123 +3835,129 @@
                     }
                 }
             }
-            var values = $("#rulokodufilter").val();
-            var renk = $("#renkkodufilter").val();
-            var kal = $("#kalinlikfilter").val();
-            var gen = $("#genislikfilter").val();
-            var men = $("#menseifilter").val();
-
-            if (values != "") {
-                fitered = fitered.filter(x => values.includes(x.RULOKODU));
-            } else {
-                var valf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!valf.includes(fitered[i].RULOKODU)) {
-                        valf.push(fitered[i].RULOKODU);
-                    }
-                }
-                valf.sort();
-                document.getElementById("rulokodufilter").replaceChildren();
-                for (let i = 0; i < valf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = valf[i];
-                    if (valf[i].length == 6) {
-                        option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
-                    } else {
-                        option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
-                    }
-                    document.getElementById("rulokodufilter").appendChild(option);
-                }
-            }
-
-            if (renk != "") {
-
-                fitered = fitered.filter(x => renk.includes(x.RENKKODU));
-
-            } else {
-                var renkf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!renkf.includes(fitered[i].RENKKODU)) {
-                        renkf.push(fitered[i].RENKKODU);
-                    }
-                }
-                renkf.sort();
-                document.getElementById("renkkodufilter").replaceChildren();
-                for (let i = 0; i < renkf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = renkf[i];
-                    option.innerHTML = renkf[i];
-                    document.getElementById("renkkodufilter").appendChild(option);
-                }
-            }
-            if (kal != "") {
-
-                fitered = fitered.filter(x => kal.includes(x.KALINLIK));
-            } else {
-                var kalf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
-                        kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
-                    }
-                }
-                kalf.sort(function (a, b) { return a - b });
-                document.getElementById("kalinlikfilter").replaceChildren();
-                for (let i = 0; i < kalf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = kalf[i];
-                    option.innerHTML = (parseFloat((kalf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
-                    document.getElementById("kalinlikfilter").appendChild(option);
-                }
-            }
-            if (gen != "") {
-
-                fitered = fitered.filter(x => gen.includes(x.GENISLIK));
-            } else {
-                var genf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(",", ".")))) {
-                        genf.push(parseFloat(fitered[i].GENISLIK.replace(",", ".")));
-                    }
-                }
-                document.getElementById("genislikfilter").replaceChildren();
-                genf.sort(function (a, b) { return a - b });
-                for (let i = 0; i < genf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = genf[i];
-                    option.innerHTML = genf[i].toString().replace(".", ",");;
-                    document.getElementById("genislikfilter").appendChild(option);
-                }
-            }
-            if (men != "") {
-
-                fitered = fitered.filter(x => men.includes(x.MENSEI));
-            } else {
-                var menf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!menf.includes(fitered[i].MENSEI.trim())) {
-                        menf.push(fitered[i].MENSEI.trim());
-                    }
-                }
-                document.getElementById("menseifilter").replaceChildren();
-                menf.sort();
-                for (let i = 0; i < menf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = menf[i];
-                    option.innerHTML = menf[i];
-                    document.getElementById("menseifilter").appendChild(option);
-                }
-            }
+           
+           
         }
         function kural1() {
+            k1 = true;
+            w = false;
+            k3 = false;
             var fiyatlar = [];
             var fiyatlarton = [];
+            var values = $("#rulokodufilter").val();
+            var renk = $("#renkkodufilter").val();
+            var kal = $("#kalinlikfilter").val();
+            var gen = $("#genislikfilter").val();
+            var men = $("#menseifilter").val();
             document.getElementById("tbody").replaceChildren();
-            var fitered = filtereddata.filter(x => x.KURAL == "1");
+            var fitered = upt.filter(x => x.KURAL == 1);
+
+            if (values != "") {
+                fitered = fitered.filter(x => values.includes(x.RULOKODU));
+            } else {
+                var valf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!valf.includes(fitered[i].RULOKODU)) {
+                        valf.push(fitered[i].RULOKODU);
+                    }
+                }
+                valf.sort();
+                document.getElementById("rulokodufilter").replaceChildren();
+                for (let i = 0; i < valf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = valf[i];
+                    if (valf[i].length == 6) {
+                        option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
+                    } else {
+                        option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
+                    }
+                    document.getElementById("rulokodufilter").appendChild(option);
+                }
+            }
+
+            if (renk != "") {
+
+                fitered = fitered.filter(x => renk.includes(x.RENKKODU));
+
+            } else {
+                var renkf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!renkf.includes(fitered[i].RENKKODU)) {
+                        renkf.push(fitered[i].RENKKODU);
+                    }
+                }
+                renkf.sort();
+                document.getElementById("renkkodufilter").replaceChildren();
+                for (let i = 0; i < renkf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = renkf[i];
+                    option.innerHTML = renkf[i];
+                    document.getElementById("renkkodufilter").appendChild(option);
+                }
+            }
+            if (kal != "") {
+               
+                fitered = fitered.filter(x => kal.includes(x.KALINLIK));
+                
+            } else {
+                var kalf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
+                        kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
+                    }
+                }
+                document.getElementById("kalinlikfilter").replaceChildren();
+                kalf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kalf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = (kalf[i]).toString().replace('.', ',');
+                    option.innerHTML = (parseFloat((kalf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
+                    document.getElementById("kalinlikfilter").appendChild(option);
+                }
+            }
+            if (gen != "") {
+
+                fitered = fitered.filter(x => gen.includes(x.GENISLIK));
+            } else {
+                var genf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(",", ".")))) {
+                        genf.push(parseFloat(fitered[i].GENISLIK.replace(",", ".")));
+                    }
+                }
+                document.getElementById("genislikfilter").replaceChildren();
+                genf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < genf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = genf[i];
+                    option.innerHTML = genf[i].toString().replace(".", ",");;
+                    document.getElementById("genislikfilter").appendChild(option);
+                }
+            }
+            if (men != "") {
+
+                fitered = fitered.filter(x => men.includes(x.MENSEI));
+            } else {
+                var menf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!menf.includes(fitered[i].MENSEI.trim())) {
+                        menf.push(fitered[i].MENSEI.trim());
+                    }
+                }
+                document.getElementById("menseifilter").replaceChildren();
+                menf.sort();
+                for (let i = 0; i < menf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = menf[i];
+                    option.innerHTML = menf[i];
+                    document.getElementById("menseifilter").appendChild(option);
+                }
+            }
             for (let i = 0; i < fitered.length; i++) {
 
                 var tr = document.createElement("tr");
@@ -4175,124 +4349,131 @@
                     }
                 }
             }
-            var values = $("#rulokodufilter").val();
-            var renk = $("#renkkodufilter").val();
-            var kal = $("#kalinlikfilter").val();
-            var gen = $("#genislikfilter").val();
-            var men = $("#menseifilter").val();
+            
 
-            if (values != "") {
-                fitered = fitered.filter(x => values.includes(x.RULOKODU));
-            } else {
-                var valf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!valf.includes(fitered[i].RULOKODU)) {
-                        valf.push(fitered[i].RULOKODU);
-                    }
-                }
-                valf.sort();
-                document.getElementById("rulokodufilter").replaceChildren();
-                for (let i = 0; i < valf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = valf[i];
-                    if (valf[i].length == 6) {
-                        option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
-                    } else {
-                        option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
-                    }
-                    document.getElementById("rulokodufilter").appendChild(option);
-                }
-            }
-
-            if (renk != "") {
-
-                fitered = fitered.filter(x => renk.includes(x.RENKKODU));
-
-            } else {
-                var renkf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!renkf.includes(fitered[i].RENKKODU)) {
-                        renkf.push(fitered[i].RENKKODU);
-                    }
-                }
-                renkf.sort();
-                document.getElementById("renkkodufilter").replaceChildren();
-                for (let i = 0; i < renkf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = renkf[i];
-                    option.innerHTML = renkf[i];
-                    document.getElementById("renkkodufilter").appendChild(option);
-                }
-            }
-            if (kal != "") {
-
-                fitered = fitered.filter(x => kal.includes(x.KALINLIK));
-            } else {
-                var kalf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
-                        kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
-                    }
-                }
-                kalf.sort(function (a, b) { return a - b });
-                document.getElementById("kalinlikfilter").replaceChildren();
-                for (let i = 0; i < kalf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = kalf[i];
-                    option.innerHTML = (parseFloat((kalf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
-                    document.getElementById("kalinlikfilter").appendChild(option);
-                }
-            }
-            if (gen != "") {
-
-                fitered = fitered.filter(x => gen.includes(x.GENISLIK));
-            } else {
-                var genf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(",", ".")))) {
-                        genf.push(parseFloat(fitered[i].GENISLIK.replace(",", ".")));
-                    }
-                }
-                document.getElementById("genislikfilter").replaceChildren();
-                genf.sort(function (a, b) { return a - b });
-                for (let i = 0; i < genf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = genf[i];
-                    option.innerHTML = genf[i].toString().replace(".", ",");;
-                    document.getElementById("genislikfilter").appendChild(option);
-                }
-            }
-            if (men != "") {
-
-                fitered = fitered.filter(x => men.includes(x.MENSEI));
-            } else {
-                var menf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!menf.includes(fitered[i].MENSEI.trim())) {
-                        menf.push(fitered[i].MENSEI.trim());
-                    }
-                }
-                document.getElementById("menseifilter").replaceChildren();
-                menf.sort();
-                for (let i = 0; i < menf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = menf[i];
-                    option.innerHTML = menf[i];
-                    document.getElementById("menseifilter").appendChild(option);
-                }
-            }
+         
         }
         function kural3() {
+            k3 = true;
+            k1 = false;
+            w = false;
             var fiyatlar = [];
             var fiyatlarton = [];
             document.getElementById("tbody").replaceChildren();
             var fitered = filtereddata.filter(x => x.KURAL == "3");
-            if (fitered != null) {
+           
+                var values = $("#rulokodufilter").val();
+                var renk = $("#renkkodufilter").val();
+                var kal = $("#kalinlikfilter").val();
+                var gen = $("#genislikfilter").val();
+                var men = $("#menseifilter").val();
+
+                if (values != "") {
+                    fitered = fitered.filter(x => values.includes(x.RULOKODU));
+                } else {
+                    var valf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!valf.includes(fitered[i].RULOKODU)) {
+                            valf.push(fitered[i].RULOKODU);
+                        }
+                    }
+                    valf.sort();
+                    document.getElementById("rulokodufilter").replaceChildren();
+                    for (let i = 0; i < valf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = valf[i];
+                        if (valf[i].length == 6) {
+                            option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
+                        } else {
+                            option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
+                        }
+                        document.getElementById("rulokodufilter").appendChild(option);
+                    }
+                }
+
+                if (renk != "") {
+
+                    fitered = fitered.filter(x => renk.includes(x.RENKKODU));
+
+                } else {
+                    var renkf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!renkf.includes(fitered[i].RENKKODU)) {
+                            renkf.push(fitered[i].RENKKODU);
+                        }
+                    }
+                    renkf.sort();
+                    document.getElementById("renkkodufilter").replaceChildren();
+                    for (let i = 0; i < renkf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = renkf[i];
+                        option.innerHTML = renkf[i];
+                        document.getElementById("renkkodufilter").appendChild(option);
+                    }
+                }
+                if (kal != "") {
+
+                    fitered = fitered.filter(x => kal.includes(x.KALINLIK));
+                } else {
+                    var kalf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
+                            kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
+                        }
+                    }
+                    kalf.sort(function (a, b) { return a - b });
+                    document.getElementById("kalinlikfilter").replaceChildren();
+                    for (let i = 0; i < kalf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = kalf[i];
+                        option.innerHTML = (parseFloat((kalf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
+                        document.getElementById("kalinlikfilter").appendChild(option);
+                    }
+                }
+                if (gen != "") {
+
+                    fitered = fitered.filter(x => gen.includes(x.GENISLIK));
+                } else {
+                    var genf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(",", ".")))) {
+                            genf.push(parseFloat(fitered[i].GENISLIK.replace(",", ".")));
+                        }
+                    }
+                    document.getElementById("genislikfilter").replaceChildren();
+                    genf.sort(function (a, b) { return a - b });
+                    for (let i = 0; i < genf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = genf[i];
+                        option.innerHTML = genf[i].toString().replace(".", ",");
+                        document.getElementById("genislikfilter").appendChild(option);
+                    }
+                }
+                if (men != "") {
+
+                    fitered = fitered.filter(x => men.includes(x.MENSEI));
+                } else {
+                    var menf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!menf.includes(fitered[i].MENSEI.trim())) {
+                            menf.push(fitered[i].MENSEI.trim());
+                        }
+                    }
+                    document.getElementById("menseifilter").replaceChildren();
+                    menf.sort();
+                    for (let i = 0; i < menf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = menf[i];
+                        option.innerHTML = menf[i];
+                        document.getElementById("menseifilter").appendChild(option);
+                    }
+                }
+                
                 for (let i = 0; i < fitered.length; i++) {
 
                     var tr = document.createElement("tr");
@@ -4682,137 +4863,13 @@
                         }
                     }
                 }
-            } else {
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.addEventListener('mouseenter', Swal.stopTimer)
-                        toast.addEventListener('mouseleave', Swal.resumeTimer)
-                    }
-                })
-
-                Toast.fire({
-                    icon: 'error',
-                    title: 'İstenilen kritere göre sonuç bulunamadı!'
-                });
-            }
-            var values = $("#rulokodufilter").val();
-            var renk = $("#renkkodufilter").val();
-            var kal = $("#kalinlikfilter").val();
-            var gen = $("#genislikfilter").val();
-            var men = $("#menseifilter").val();
-
-            if (values != "") {
-                fitered = fitered.filter(x => values.includes(x.RULOKODU));
-            } else {
-                var valf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!valf.includes(fitered[i].RULOKODU)) {
-                        valf.push(fitered[i].RULOKODU);
-                    }
-                }
-                valf.sort();
-                document.getElementById("rulokodufilter").replaceChildren();
-                for (let i = 0; i < valf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = valf[i];
-                    if (valf[i].length == 6) {
-                        option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
-                    } else {
-                        option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
-                    }
-                    document.getElementById("rulokodufilter").appendChild(option);
-                }
-            }
-
-            if (renk != "") {
-
-                fitered = fitered.filter(x => renk.includes(x.RENKKODU));
-
-            } else {
-                var renkf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!renkf.includes(fitered[i].RENKKODU)) {
-                        renkf.push(fitered[i].RENKKODU);
-                    }
-                }
-                renkf.sort();
-                document.getElementById("renkkodufilter").replaceChildren();
-                for (let i = 0; i < renkf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = renkf[i];
-                    option.innerHTML = renkf[i];
-                    document.getElementById("renkkodufilter").appendChild(option);
-                }
-            }
-            if (kal != "") {
-
-                fitered = fitered.filter(x => kal.includes(x.KALINLIK));
-            } else {
-                var kalf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
-                        kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
-                    }
-                }
-                kalf.sort(function (a, b) { return a - b });
-                document.getElementById("kalinlikfilter").replaceChildren();
-                for (let i = 0; i < kalf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = kalf[i];
-                    option.innerHTML = (parseFloat((kalf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
-                    document.getElementById("kalinlikfilter").appendChild(option);
-                }
-            }
-            if (gen != "") {
-
-                fitered = fitered.filter(x => gen.includes(x.GENISLIK));
-            } else {
-                var genf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(",", ".")))) {
-                        genf.push(parseFloat(fitered[i].GENISLIK.replace(",", ".")));
-                    }
-                }
-                document.getElementById("genislikfilter").replaceChildren();
-                genf.sort(function (a, b) { return a - b });
-                for (let i = 0; i < genf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = genf[i];
-                    option.innerHTML = genf[i].toString().replace(".", ",");
-                    document.getElementById("genislikfilter").appendChild(option);
-                }
-            }
-            if (men != "") {
-
-                fitered = fitered.filter(x => men.includes(x.MENSEI));
-            } else {
-                var menf = [];
-                for (let i = 0; i < fitered.length; i++) {
-                    if (!menf.includes(fitered[i].MENSEI.trim())) {
-                        menf.push(fitered[i].MENSEI.trim());
-                    }
-                }
-                document.getElementById("menseifilter").replaceChildren();
-                menf.sort();
-                for (let i = 0; i < menf.length; i++) {
-
-                    var option = document.createElement("option");
-                    option.value = menf[i];
-                    option.innerHTML = menf[i];
-                    document.getElementById("menseifilter").appendChild(option);
-                }
-            }
-        }
+            } 
+           
+        
         function refresh() {
+            k1 = false;
+            k3 = false;
+            w = false;
             var fiyatlar = [];
             var fiyatlarton = [];
             document.getElementById('rulokodufilter').replaceChildren();
@@ -5271,7 +5328,7 @@
                     }
                 }
             }
-            filtereddata = data;
+            filtereddata = fitered;
         }
     </script>
     <script>
