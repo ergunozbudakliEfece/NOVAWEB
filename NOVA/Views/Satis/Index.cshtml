@@ -28,23 +28,30 @@
         margin-left: 5px;
         white-space: normal;
     }
-
-    .card-view-title {
-        border-right: 1px dashed gray;
+    .select2-container {
+        width: 100%;
+    }
+    
+    .search {
+        width: 100%;
+    }
+    #filter {
+        width: 100%;
     }
     .menu1 {
         display: none;
     }
-   
+    
     @@media screen and (max-width: 600px) {
        
 
         .menu1 {
             display: inline-flex;
         }
-        .btn-group {
+       /* .btn-group {
             display: none;
-        }
+        }*/
+       
     }
 </style>
 
@@ -120,107 +127,109 @@
             </ul>
         </div>
         <div class="card-body">
-            <div id="toolbar" class="row">
-                <div class="col-12 form-multiple-select">
-                    <select id="filter" multiple="multiple" name="filterAlgorithm" style="width: 100%">
-                        <optgroup label="Grup Adı" id="grup">
-                        </optgroup>
+            
+                <div id="toolbar" class="row mt-2">
+                    <div class="col-sm">
+                        <select id="filter" multiple="multiple" name="filterAlgorithm">
+                            <optgroup label="Grup Adı" id="grup">
+                            </optgroup>
 
-                    </select>
+                        </select>
+                    </div>
+                </div>
+                <div id="toolbar2" class="row d-flex">
+                    <div class="col-12 form-multiple-select">
+                        <select id="filter2" multiple="multiple" name="filterAlgorithm2" style="width: 100%">
+                            <optgroup label="Grup Adı" id="grup2">
+                            </optgroup>
+
+                        </select>
+                    </div>
+                </div>
+                <div id="employeeTableWrapper" class="tableWrapper table-responsive">
+                    <table id="table"
+                           class="table table-striped"
+                           data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                           data-toggle="table"
+                           data-show-export="true"
+                           data-export-data-type="all"
+                           data-export-types="['excel']"
+                           data-pagination="true"
+                           data-search="true"
+                           data-toolbar="#toolbar"
+                           data-show-columns="true"
+                           data-show-columns-toggle-all="true"
+                           data-locale="tr-TR"
+                           data-filter-control="true"
+                           data-filter-control-multiple-search="true"
+                           data-url="http://192.168.2.13:83/api/stok"
+                           data-loading-template="loadingTemplate"
+                           data-mobile-responsive="true"
+                           data-show-footer="false">
+                        <thead>
+                            <tr>
+                                <th data-field="STOK_ADI" data-sortable="true">Stok Adı</th>
+                                <th data-field="SATISA_HAZIR" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
+                                <th data-field="BEKLEYEN_SIPARIS" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
+                                <th data-field="BAKIYE" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
+                                <th data-field="BEKL_IE_MIKTAR" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
+                                <th data-field="FAB_STOK_MIK" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
+                                <th data-field="ALISFIYAT1" data-sortable="true" data-formatter="alisFormatter" >Alış Fiyatı</th>
+                                <th data-field="SATISFIYAT1" data-sortable="true" data-formatter="satisFormatter">Satış Fiyatı</th>
+                                <th data-field="GRUP_ISIM" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
+                                <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    
+
+                </div>
+                <div id="employeeTableWrapper2" class="tableWrapper">
+                    <table id="table2"
+                           class="table table-striped"
+                           data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                           data-page-list="[5,10, 25, 50, 100, 200, All]"
+                           data-page-size="5"
+                           data-toggle="table"
+                           data-show-export="true"
+                           data-export-data-type="all"
+                           data-export-types="['excel']"
+                           data-pagination="true"
+                           data-search="true"
+                           data-toolbar="#toolbar2"
+                           data-show-columns="true"
+                           data-show-columns-toggle-all="true"
+                           data-locale="tr-TR"
+                           data-filter-control="true"
+                           data-filter-control-multiple-search="true"
+                           data-url="http://192.168.2.13:83/api/stok"
+                           data-loading-template="loadingTemplate"
+                           data-mobile-responsive="true">
+                        <thead>
+                            <tr>
+                                <th data-field="STOK_ADI" data-sortable="true">Stok Adı</th>
+                                <th data-field="SATISA_HAZIR" data-sortable="true" data-formatter="fabadFormatter">Satışa Hazır Miktar</th>
+                                <th data-field="SAT_HZR_ADET" data-sortable="true" data-formatter="fabadFormatter">Satışa Hazır Adet</th>
+                                <th data-field="BEKLEYEN_SIPARIS" ddata-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Miktar</th>
+                                <th data-field="BEK_SIP_ADET" ddata-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Adet</th>
+                                <th data-field="BAKIYE" data-sortable="true" data-formatter="fabadFormatter">Bakiye Miktar</th>
+                                <th data-field="AD_BAKIYE" data-sortable="true" data-formatter="fabadFormatter">Bakiye Adet</th>
+                                <th data-field="BEKL_IE_MIKTAR" data-sortable="true" data-formatter="fabadFormatter">Bekleyen İş Emri Miktar</th>
+                                <th data-field="BEKL_IE_AD" data-sortable="true" data-formatter="fabadFormatter">Bekleyen İş Emri Adet</th>
+                                <th data-field="FAB_STOK_MIK" data-sortable="true" data-formatter="fabadFormatter">Fabrika Stok Miktar</th>
+                                <th data-field="FAB_STOK_AD" data-sortable="true" data-formatter="fabadFormatter">Fabrika Stok Adet</th>
+                                <th data-field="ALISFIYAT1" data-sortable="true" data-formatter="fabadFormatter">Alış Fiyatı</th>
+                                <th data-field="ALISFIYAT2" data-sortable="true" data-formatter="fabadFormatter">Alış Fiyatı 2</th>
+                                <th data-field="SATISFIYAT1" data-sortable="true" data-formatter="fabadFormatter">Satış Fiyatı</th>
+                                <th data-field="SATISFIYAT2" data-sortable="true" data-formatter="fabadFormatter">Satış Fiyatı 2</th>
+                                <th data-field="GRUP_ISIM" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
+                                <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
+                            </tr>
+                        </thead>
+                    </table>
+
                 </div>
             </div>
-            <div id="toolbar2" class="row">
-                <div class="col-12 form-multiple-select">
-                    <select id="filter2" multiple="multiple" name="filterAlgorithm2" style="width: 100%">
-                        <optgroup label="Grup Adı" id="grup2">
-                        </optgroup>
-
-                    </select>
-                </div>
-            </div>
-            <div id="employeeTableWrapper" class="tableWrapper table-responsive">
-                <table id="table"
-                       class="table table-striped"
-                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
-                       data-toggle="table"
-                       data-show-export="true"
-                       data-export-data-type="all"
-                       data-export-types="['excel']"
-                       data-pagination="true"
-                       data-search="true"
-                       data-toolbar="#toolbar"
-                       data-show-columns="true"
-                       data-show-columns-toggle-all="true"
-                       data-locale="tr-TR"
-                       data-filter-control="true"
-                       data-filter-control-multiple-search="true"
-                       data-url="http://192.168.2.13:83/api/stok"
-                       data-loading-template="loadingTemplate"
-                       data-mobile-responsive="true">
-                    <thead>
-                        <tr>
-                            <th data-field="STOK_ADI" data-sortable="true">Stok Adı</th>
-                            <th data-field="SATISA_HAZIR" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
-                            <th data-field="BEKLEYEN_SIPARIS" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
-                            <th data-field="BAKIYE" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
-                            <th data-field="BEKL_IE_MIKTAR" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
-                            <th data-field="FAB_STOK_MIK" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
-                            <th data-field="ALISFIYAT1" data-sortable="true" data-formatter="alisFormatter">Alış Fiyatı</th>
-                            <th data-field="SATISFIYAT1" data-sortable="true" data-formatter="satisFormatter">Satış Fiyatı</th>
-                            <th data-field="GRUP_ISIM" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
-                            <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
-                        </tr>
-                    </thead>
-                </table>
-
-
-            </div>
-            <div id="employeeTableWrapper2" class="tableWrapper">
-                <table id="table2"
-                       class="table table-striped"
-                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
-                       data-page-list="[5,10, 25, 50, 100, 200, All]"
-                       data-page-size="5"
-                       data-toggle="table"
-                       data-show-export="true"
-                       data-export-data-type="all"
-                       data-export-types="['excel']"
-                       data-pagination="true"
-                       data-search="true"
-                       data-toolbar="#toolbar2"
-                       data-show-columns="true"
-                       data-show-columns-toggle-all="true"
-                       data-locale="tr-TR"
-                       data-filter-control="true"
-                       data-filter-control-multiple-search="true"
-                       data-url="http://192.168.2.13:83/api/stok"
-                       data-loading-template="loadingTemplate"
-                       data-mobile-responsive="true">
-                    <thead>
-                        <tr>
-                            <th data-field="STOK_ADI" data-sortable="true">Stok Adı</th>
-                            <th data-field="SATISA_HAZIR" data-sortable="true"  data-formatter="fabadFormatter">Satışa Hazır Miktar</th>
-                            <th data-field="SAT_HZR_ADET" data-sortable="true"  data-formatter="fabadFormatter">Satışa Hazır Adet</th>
-                            <th data-field="BEKLEYEN_SIPARIS" ddata-sortable="true"  data-formatter="fabadFormatter">Bekleyen Sipariş Miktar</th>
-                            <th data-field="BEK_SIP_ADET" ddata-sortable="true"  data-formatter="fabadFormatter">Bekleyen Sipariş Adet</th>
-                            <th data-field="BAKIYE" data-sortable="true"  data-formatter="fabadFormatter">Bakiye Miktar</th>
-                            <th data-field="AD_BAKIYE" data-sortable="true"  data-formatter="fabadFormatter">Bakiye Adet</th>
-                            <th data-field="BEKL_IE_MIKTAR" data-sortable="true"  data-formatter="fabadFormatter">Bekleyen İş Emri Miktar</th>
-                            <th data-field="BEKL_IE_AD" data-sortable="true"  data-formatter="fabadFormatter">Bekleyen İş Emri Adet</th>
-                            <th data-field="FAB_STOK_MIK" data-sortable="true"  data-formatter="fabadFormatter">Fabrika Stok Miktar</th>
-                            <th data-field="FAB_STOK_AD" data-sortable="true" data-formatter="fabadFormatter">Fabrika Stok Adet</th>
-                            <th data-field="ALISFIYAT1" data-sortable="true"  data-formatter="fabadFormatter">Alış Fiyatı</th>
-                            <th data-field="ALISFIYAT2" data-sortable="true"  data-formatter="fabadFormatter">Alış Fiyatı 2</th>
-                            <th data-field="SATISFIYAT1" data-sortable="true"  data-formatter="fabadFormatter">Satış Fiyatı</th>
-                            <th data-field="SATISFIYAT2" data-sortable="true"  data-formatter="fabadFormatter">Satış Fiyatı 2</th>
-                            <th data-field="GRUP_ISIM" data-visible="false"   data-filter-strict-search="false">Grup Adı</th>
-                            <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
-                        </tr>
-                    </thead>
-                </table>
-
-            </div>
-        </div>
 
         </div>
 </div>
@@ -258,7 +267,7 @@
             document.getElementById("grup2").appendChild(opt2);
         }
     })
-    $('#filter').select2({ width: '25vw', placeholder: 'Grup Filtresi' });
+    $('#filter').select2({placeholder: 'Grup Filtresi' });
     $('#filter2').select2({ width: '25vw', placeholder: 'Grup Filtresi' });
     function terminFormatter(value, row, index) {
         var val = termin.find(x => x.STOK_KODU == row.STOK_KODU);

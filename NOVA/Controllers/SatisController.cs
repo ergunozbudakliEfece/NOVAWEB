@@ -289,7 +289,7 @@ namespace NOVA.Controllers
         {
             return View();
         }
-        public ActionResult Test()
+        public ActionResult ZiyaretPlanlari()
         {
             var yetki = GetYetki();
             ViewBag.OzelYetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).UPDATE_AUTH;
@@ -1147,7 +1147,7 @@ namespace NOVA.Controllers
                 musteri.MUSTERI_ID = m.MUSTERI_ID;
                 musteri.KAYIT_YAPAN_KULLANICI_ID = Request.Cookies["Id"].Value.ToInt();
                 musteri.RANDEVU_NOTU = m.RANDEVU_NOTU;
-                musteri.PLANLANAN_TARIH = DateTime.Parse(m.PLANLANAN_TARIH.ToString()).AddHours(3);
+                musteri.PLANLANAN_TARIH = DateTime.Parse(m.PLANLANAN_TARIH.ToString()).ToLocalTime();
                 request = new HttpRequestMessage(HttpMethod.Post, apiUrl)
                 {
                     Content = new StringContent(new JavaScriptSerializer().Serialize(musteri), Encoding.UTF8, "application/json")
@@ -1164,11 +1164,22 @@ namespace NOVA.Controllers
                 }
                 else
                 {
-                    var randevular = JsonConvert.DeserializeObject<List<MusteriRandevu>>((string)GetRandevu().Data);
-                    musteri.RANDEVU_NOTU = randevular.Where(x => x.INCKEY == m.INCKEY).ToList()[0].RANDEVU_NOTU;
+                    
+                    musteri.RANDEVU_NOTU = "";
                 }
-                
-                musteri.PLANLANAN_TARIH = DateTime.Parse(m.PLANLANAN_TARIH.ToString()).AddHours(3);
+                if (m.GERCEKLESEN_TARIH != null)
+                {if(m.GERCEKLESEN_TARIH== DateTime.Parse("1970-12-12"))
+                    {
+                        musteri.GERCEKLESEN_TARIH = null;
+                    }
+                    else
+                    {
+                        musteri.GERCEKLESEN_TARIH = DateTime.Parse(m.GERCEKLESEN_TARIH.ToString()).ToLocalTime();
+                    }
+                    
+                }
+               
+                musteri.PLANLANAN_TARIH = DateTime.Parse(m.PLANLANAN_TARIH.ToString()).ToLocalTime();
                 
                 request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
                 {
@@ -1177,10 +1188,7 @@ namespace NOVA.Controllers
             }
          
             response = await httpClient.SendAsync(request);
-            if (m.GERCEKLESEN_TARIH!=null)
-            {
-                _ = RandevuGerceklesen(m.INCKEY);
-            }
+            
 
             return Json(request, JsonRequestBehavior.AllowGet);
         }

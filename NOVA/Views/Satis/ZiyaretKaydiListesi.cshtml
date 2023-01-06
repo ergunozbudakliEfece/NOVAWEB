@@ -231,12 +231,13 @@ table th {
         var mahalleler = null;
         var urungruplari = null;
         $.getJSON('http://192.168.2.13:83/api/musteri/urungruplari', function (data) {
-            
 
-        }).done(function (result) {
-            urungruplari = result;
+            urungruplari = data;
         })
+            
+       
         var musteriler = null;
+        var filt = null;
         var c = "";
 
             var urunler =@Html.Raw(Json.Encode(ViewBag.Urunler));
@@ -786,7 +787,8 @@ table th {
                                 <table class="table table-striped table-bordered" id="example1">
                                     <thead class="thead-dark" id="thead">
                                         <tr>
-                                            <th scope="col" ->Planlanan Tarih</th>
+                                            <th scope="col">Planlanan Tarih</th>
+                                            <th scope="col">Gerçekleşen Tarih</th>
                                             <th scope="col">Ziyaret Notu</th>
                                             <th scope="col">Onay</th>
                                         </tr>
@@ -1363,6 +1365,7 @@ table th {
                             for (let i = 0; i < u.length; i++) {
                                 var tr = document.createElement("tr");
                                 var td = document.createElement("td");
+                                var td2 = document.createElement("td");
                                 var td3 = document.createElement("td");
                                 var td4 = document.createElement("td");
                                 var td5 = document.createElement("td");
@@ -1376,6 +1379,7 @@ table th {
                                 span.onclick = function () {
                                     var bdy1 = document.getElementById("bdy1");
                                     var t = bdy1.getElementsByTagName("tr");
+                                    d = t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value;
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].removeAttribute("readonly");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].removeAttribute("disabled");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[0].style.display = "none";
@@ -1389,11 +1393,11 @@ table th {
                                 span2.onclick = function () {
                                     var bdy1 = document.getElementById("bdy1");
                                     var t = bdy1.getElementsByTagName("tr");
-                                    if (t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[3].innerHTML != "") {
+                                    if (t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[4].innerHTML != "") {
                                         $.ajax({
                                             type: 'POST',
                                             url: '@Url.Action("RandevuSil", "Satis")',
-                                            data: JSON.stringify({ "INCKEY": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[3].innerHTML }),
+                                            data: JSON.stringify({ "INCKEY": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[4].innerHTML }),
                                             contentType: "application/json",
                                             success: function () {
                                                 const Toast = Swal.mixin({
@@ -1426,48 +1430,16 @@ table th {
                                 span3.innerHTML = "<i class='bx bx-like bx-md bx-tada-hover'></i>";
                                 span3.style.cursor = "pointer";
                                 span3.onclick = function () {
-                                    Swal.fire({
-                                        title: 'Ziyaret Onay',
-                                        text: "Ziyareti gerçekleşti olarak güncellemek istediğinize emin misiniz?",
-                                        icon: 'warning',
-                                        showCancelButton: true,
-                                        confirmButtonColor: '#3085d6',
-                                        cancelButtonColor: '#d33',
-                                        cancelButtonText: 'Hayır',
-                                        confirmButtonText: 'Evet, güncelle'
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            $.ajax({
-                                                type: 'POST',
-                                                url: '@Url.Action("RandevuGerceklesen", "Satis")',
-                                                data: JSON.stringify({ "id": parseInt(td5.innerHTML) }),
-                                                contentType: "application/json",
-                                                success: function () {
-                                                    const Toast = Swal.mixin({
-                                                        toast: true,
-                                                        position: 'center',
-                                                        showConfirmButton: false,
-                                                        timer: 3000,
-                                                        timerProgressBar: true,
-                                                        didOpen: (toast) => {
-                                                            toast.addEventListener('mouseenter', Swal.stopTimer)
-                                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                                        }
-                                                    })
-
-                                                    Toast.fire({
-                                                        icon: 'success',
-                                                        title: 'Ziyaret başarıyla güncellendi!'
-                                                    });
-                                                    musterichange(document.getElementById("musteriselect").value);
-                                                },
-                                                error: function () {
-
-                                                },
-                                                dataType: 'json'
-                                            });
-                                        }
-                                    })
+                                    var bdy1 = document.getElementById("bdy1");
+                                    var t = bdy1.getElementsByTagName("tr");
+                                    y = t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].value;
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].removeAttribute("readonly");
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].removeAttribute("disabled");
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[0].style.display = "none";
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[1].style.display = "none";
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[2].style.display = "none";
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[3].style.display = "inline-block";
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[4].style.display = "inline-block";
                                 }
                                 var span4 = document.createElement("a");
                                 span4.innerHTML = "<i class='bx bx-md bxs-check-circle bx-md bx-tada-hover'></i>";
@@ -1487,21 +1459,21 @@ table th {
                                     $.ajax({
                                         type: 'POST',
                                         url: '@Url.Action("RandevuEkleGuncelle", "Satis")',
-                                        data: JSON.stringify({ "INCKEY": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[3].innerHTML, "MUSTERI_ID": parseInt(document.getElementById("musteriselect").value), "RANDEVU_NOTU": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].value, "PLANLANAN_TARIH": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value }),
+                                        data: JSON.stringify({ "INCKEY": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[4].innerHTML, "MUSTERI_ID": parseInt(document.getElementById("musteriselect").value), "RANDEVU_NOTU": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].value, "PLANLANAN_TARIH": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value, "GERCEKLESEN_TARIH": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].value }),
                                         contentType: "application/json",
                                         success: function () {
                                             const Toast = Swal.mixin({
                                                 toast: true,
                                                 position: 'center',
                                                 showConfirmButton: false,
-                                                timer: 3000,
+                                                timer: 1000,
                                                 timerProgressBar: true,
                                                 didOpen: (toast) => {
                                                     toast.addEventListener('mouseenter', Swal.stopTimer)
                                                     toast.addEventListener('mouseleave', Swal.resumeTimer)
                                                 }
                                             })
-
+                                            musterichange(value);
                                             Toast.fire({
                                                 icon: 'success',
                                                 title: 'Ziyaret başarıyla güncellendi!'
@@ -1520,7 +1492,9 @@ table th {
                                     var t = bdy1.getElementsByTagName("tr");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].setAttribute("readonly", "");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].setAttribute("disabled", "true");
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].setAttribute("disabled", "true");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value = d;
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].value = y;
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[0].style.display = "inline-block";
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[1].style.display = "inline-block";
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[2].style.display = "inline-block";
@@ -1531,14 +1505,16 @@ table th {
                                 span5.style.display = "none";
 
                                 td.innerHTML = "<label class='label text-center mb-2'><b>ZİYARET TARİHİ</b></label><input class='form-control' style='width:100%' type='datetime-local' value='" + u[i].PLANLANAN_TARIH + "' disabled='true'></input>";
+                                td2.innerHTML = "<label class='label text-center mb-2'><b>GERÇEKLEŞEN TARİH</b></label><input class='form-control' style='width:100%' type='datetime-local'  disabled='true'></input>";
                                 var n = " ";
                                 if (u[i].RANDEVU_NOTU != null) {
                                     n = u[i].RANDEVU_NOTU;
                                 }
                                 td3.innerHTML = "<label class='label text-center  mb-2'><b>ZİYARET NOTU</b></label><textarea readonly class='form-control' placeholder='Not' rows='4' cols='50'>" + n + "</textarea>";
                                 tr.appendChild(td);
-
+                                tr.appendChild(td2);
                                 tr.appendChild(td3);
+
                                 td4.appendChild(span);
                                 td4.appendChild(span2);
                                 td4.appendChild(span3);
@@ -1567,17 +1543,52 @@ table th {
                                     var t = bdy1.getElementsByTagName("tr");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].removeAttribute("readonly");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].removeAttribute("disabled");
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].removeAttribute("disabled");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[0].style.display = "none";
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[1].style.display = "none";
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[2].style.display = "inline-block";
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[3].style.display = "inline-block";
-                                 
+
                                 };
                                 var span2 = document.createElement("a");
                                 span2.style.cursor = "pointer";
-                               
+
                                 span2.innerHTML = "<i class='bx bx-trash bx-md bx-tada-hover'></i>";
-                                
+                                span2.onclick = function () {
+                                    var bdy1 = document.getElementById("bdy2");
+                                    var t = bdy1.getElementsByTagName("tr");
+                                    if (t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[1].innerHTML != "") {
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: '@Url.Action("RandevuSil", "Satis")',
+                                            data: JSON.stringify({ "INCKEY": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[1].innerHTML }),
+                                            contentType: "application/json",
+                                            success: function () {
+                                                const Toast = Swal.mixin({
+                                                    toast: true,
+                                                    position: 'center',
+                                                    showConfirmButton: false,
+                                                    timer: 3000,
+                                                    timerProgressBar: true,
+                                                    didOpen: (toast) => {
+                                                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                                                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                                    }
+                                                })
+                                                musterichange(value);
+                                                Toast.fire({
+                                                    icon: 'success',
+                                                    title: 'Ziyaret başarıyla silindi!'
+                                                });
+                                            },
+                                            error: function () {
+
+                                            },
+                                            dataType: 'json'
+                                        });
+                                    }
+                                    document.getElementById("bdy1").deleteRow(this.parentNode.parentNode.rowIndex - 1);
+                                };
                                 var span4 = document.createElement("a");
                                 span4.innerHTML = "<i class='bx bx-md bxs-check-circle bx-md bx-tada-hover'></i>";
                                 span4.style.display = "none";
@@ -1585,18 +1596,19 @@ table th {
                                 span4.onclick = function () {
                                     var bdy1 = document.getElementById("bdy2");
                                     var t = bdy1.getElementsByTagName("tr");
-                                   
+
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].setAttribute("readonly", "");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].setAttribute("disabled", "true");
+                                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].setAttribute("disabled", "true");
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[0].style.display = "inline-block";
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[1].style.display = "inline-block";
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[2].style.display = "none";
                                     t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[3].style.display = "none";
-                                    alert(t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[1].innerHTML);
+                                    
                                     $.ajax({
                                         type: 'POST',
                                         url: '@Url.Action("RandevuEkleGuncelle", "Satis")',
-                                        data: JSON.stringify({ "INCKEY": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[1].innerHTML, "MUSTERI_ID": parseInt(document.getElementById("musteriselect").value), "RANDEVU_NOTU": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].value, "PLANLANAN_TARIH": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value }),
+                                        data: JSON.stringify({ "INCKEY": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[1].innerHTML, "MUSTERI_ID": parseInt(document.getElementById("musteriselect").value), "RANDEVU_NOTU": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].value, "PLANLANAN_TARIH": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value, "GERCEKLESEN_TARIH": t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].value }),
                                         contentType: "application/json",
                                         success: function () {
                                             const Toast = Swal.mixin({
@@ -1624,7 +1636,7 @@ table th {
                                 }
                                 var span5 = document.createElement("a");
                                 span5.style.cursor = "pointer";
-                                
+
                                 span5.innerHTML = "<i class='bx bxs-x-circle bx-md bx-tada-hover'></i>";
                                 span5.style.display = "none";
                                     span5.onclick = function () {
@@ -1632,6 +1644,7 @@ table th {
                                         var t = bdy1.getElementsByTagName("tr");
                                         t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].setAttribute("readonly", "");
                                         t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].setAttribute("disabled", "true");
+                                        t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].setAttribute("disabled", "true");
                                         t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[0].style.display = "inline-block";
                                         t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[1].style.display = "inline-block";
                                         t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[2].style.display = "none";
@@ -1768,12 +1781,15 @@ table th {
                             success: function (data) {
                                 var e = @Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
                                 var ozelyetki = @Html.Raw(Json.Encode(ViewBag.OzelYetki));
+                                var filt = null;
                                 if (ozelyetki != 1) {
-                                    var filt = JSON.parse(data).filter(x => x.MUSTERI_ID == $('#musteriselect').val());
-                                } else {
-                                    var filt = JSON.parse(data).filter(x => x.MUSTERI_ID == $('#musteriselect').val() && x.PLASIYER == e);
-                                }
+                                    filt = JSON.parse(data).filter(x => x.MUSTERI_ID == value && x.PLASIYER == e);
 
+                                } else {
+
+                                    filt = JSON.parse(data).filter(x => x.MUSTERI_ID == value);
+
+                                }
 
                                 if (filt.length > 0) {
                                     for (let i = 0; i < filt.length; i++) {
@@ -1788,7 +1804,7 @@ table th {
                                             opt.innerHTML = urungruplari[a].URUN_GRUBU;
                                             opt.value = urungruplari[a].ID;
                                             if (filt[i].URUN_GRUBU == urungruplari[a].URUN_GRUBU) {
-                                                opt.selected = "true";
+                                                opt.selected = true;
                                             }
                                             urungrubu.appendChild(opt);
 
@@ -1910,7 +1926,7 @@ table th {
                                                 }
                                             }
 
-                                            var f = filt.filter(x => x.URUN_ID == t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("selct")[0].value);
+                                            var f = filt.filter(x => x.URUN_ID == t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("select")[0].value);
                                             if (f.length > 0) {
                                                 $.ajax({
                                                     type: 'POST',
@@ -2010,6 +2026,7 @@ table th {
 
                                 }
                                 else {
+
                                     var tr = document.createElement("tr");
                                     var td = document.createElement("td");
                                     var urungrubu = document.createElement("select");
@@ -2198,7 +2215,7 @@ table th {
 
                              var tr = document.createElement("tr");
                             var td = document.createElement("td");
-
+                            var td2 = document.createElement("td");
 
 
 
@@ -2213,13 +2230,16 @@ table th {
                             var span = document.createElement("a");
                             span.innerHTML = "<i class='bx bx-edit bx-md bx-tada-hover'></i>"
                             span.style.cursor = "pointer";
-                            var d = "";
+               var d = "";
+               var y = "";
                             span.onclick = function () {
                                 var bdy1 = document.getElementById("bdy1");
                                 var t = bdy1.getElementsByTagName("tr");
                                 d = t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value;
+                                y = t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].value;
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].removeAttribute("readonly");
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].removeAttribute("disabled");
+                                t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].removeAttribute("disabled");
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[0].style.display = "none";
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[1].style.display = "none";
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[2].style.display = "none";
@@ -2320,7 +2340,8 @@ table th {
                    var t = bdy1.getElementsByTagName("tr");
                    d = t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value;
                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].setAttribute("readonly","");
-                   t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].setAttribute("disabled","true");
+                   t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].setAttribute("disabled", "true");
+                   t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].setAttribute("disabled", "true");
                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[0].style.display = "inline-block";
                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[1].style.display = "inline-block";
                    t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[2].style.display = "inline-block";
@@ -2364,6 +2385,8 @@ table th {
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("textarea")[0].setAttribute("readonly","");
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].setAttribute("disabled", "true");
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value = d;
+                                t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].setAttribute("disabled", "true");
+                                t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[1].value = y;
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[0].style.display = "inline-block";
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[1].style.display = "inline-block";
                                 t[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("a")[2].style.display = "inline-block";
@@ -2373,10 +2396,10 @@ table th {
                             span5.innerHTML = "<i class='bx bxs-x-circle bx-md bx-tada-hover'></i>";
 
                             td.innerHTML = "<label class='label text-center mb-2'><b>ZİYARET TARİHİ</b></label><input class='form-control' style='width:100%' type='datetime-local' value=''></input>";
-
+                            td2.innerHTML = "<label class='label text-center mb-2'><b>GERCEKLEŞME TARİHİ</b></label><input class='form-control' style='width:100%' type='datetime-local' value=''></input>";
                             td3.innerHTML = "<label class='label text-center  mb-2'><b>ZİYARET NOTU</b></label><textarea class='form-control' placeholder='Not' rows='4' cols='50'></textarea>";
                             tr.appendChild(td);
-
+               tr.appendChild(td2);
                             tr.appendChild(td3);
                             td4.appendChild(span);
                             td4.appendChild(span2);

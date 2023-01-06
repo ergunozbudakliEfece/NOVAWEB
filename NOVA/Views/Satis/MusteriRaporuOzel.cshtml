@@ -65,7 +65,10 @@
                         <hr class="dropdown-divider">
                     </li>
                     <li><a class="dropdown-item" onclick="change(3)">Gerçekleşen</a></li>
-
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" onclick="change(4)">Ürünler</a></li>
                 </ul>
             </div>
 
@@ -76,56 +79,58 @@
                 <label class="btn btn-outline-primary" for="btnradio2">Planlanan</label>
                 <input type="radio" class="btn-check" onclick="change(3)" name="btnradio" id="btnradio3" autocomplete="off">
                 <label class="btn btn-outline-primary" for="btnradio3">Gerçekleşen</label>
+                <input type="radio" class="btn-check" onclick="change(4)" name="btnradio" id="btnradio4" autocomplete="off">
+                <label class="btn btn-outline-primary" for="btnradio4">Ürünler</label>
 
             </div>
-           
-                
-                    <div class="avatar avatar-online float-end" data-bs-toggle="dropdown">
-                        @{
-                            string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
-                        }
-                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
-                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
-                        </object>
-                    </div>
-              
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href='@Url.Action("Index","Profil")'>
-                            <div class="d-flex">
-                                <div class="flex-shrink-0 me-3">
-                                    <div class="avatar avatar-online">
-                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
-                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
-                                        </object>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1">
-                                    @if (@Request.Cookies["Name"] != null)
-                                    {
-                                        <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
-                                        <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
-                                    }
-                                    else
-                                    {
-                                        <span class="fw-semibold d-block">Test</span>
-                                        <small class="text-muted">Yetki: Test</small>
-                                    }
 
+
+            <div class="avatar avatar-online float-end" data-bs-toggle="dropdown">
+                @{
+                    string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                }
+                <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                    <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                </object>
+            </div>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href='@Url.Action("Index","Profil")'>
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="avatar avatar-online">
+                                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                    </object>
                                 </div>
                             </div>
-                        </a>
-                    </li>
+                            <div class="flex-grow-1">
+                                @if (@Request.Cookies["Name"] != null)
+                                {
+                                    <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                    <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                }
+                                else
+                                {
+                                    <span class="fw-semibold d-block">Test</span>
+                                    <small class="text-muted">Yetki: Test</small>
+                                }
 
-                    <li>
-                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                           data-bs-target="#cikis">
-                            <i class="bx bx-power-off me-2"></i>
-                            <span class="align-middle">Oturumu Kapat</span>
-                        </a>
-                    </li>
-                </ul>
-            
+                            </div>
+                        </div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#cikis">
+                        <i class="bx bx-power-off me-2"></i>
+                        <span class="align-middle">Oturumu Kapat</span>
+                    </a>
+                </li>
+            </ul>
+
         </div>
         <div class="card-body" id="bdy1">
 
@@ -136,17 +141,15 @@
                        data-pagination="true"
                        data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
                        data-search="true"
-                       data-toolbar="#toolbar"
+                       data-show-toggle="true"
                        data-show-columns="true"
                        data-sticky-header="true"
-                       data-mobile-responsive="true"
                        data-export-data-type="all"
                        data-export-types="['excel']"
                        data-show-export="true"
-                       data-show-toggle="true"
                        data-filter-control="true"
                        data-filter-control-multiple-search="true"
-                       data-loading-template="loadingTemplate"
+                       data-mobile-responsive="true"
                        data-locale="tr-TR">
                     <thead>
                         <tr>
@@ -159,6 +162,7 @@
                             <th data-field="MUSTERI_NOTU" data-sortable="true" data-formatter="notFormatter">Notu</th>
                             <th data-field="PLASIYER" data-sortable="true" data-formatter="plasiyerFormatter1">Plasiyer</th>
                             <th data-field="KAYIT_TARIHI" data-sortable="true" data-formatter="teslimFormatter">Kayıt Tarihi</th>
+
                         </tr>
                     </thead>
                 </table>
@@ -179,10 +183,8 @@
                        data-pagination="true"
                        data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
                        data-search="true"
-                       data-toolbar="#toolbar"
                        data-show-toggle="true"
                        data-show-columns="true"
-                       data-sticky-header="true"
                        data-export-data-type="all"
                        data-export-types="['excel']"
                        data-show-export="true"
@@ -212,14 +214,13 @@
                 <table id="table3"
                        class="table table-striped"
                        data-pagination="true"
-                        data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
                        data-search="true"
-                       data-toolbar="#toolbar"
                        data-show-columns="true"
                        data-export-data-type="all"
                        data-export-types="['excel']"
                        data-show-toggle="true"
-                        data-show-export="true"
+                       data-show-export="true"
                        data-locale="tr-TR"
                        data-mobile-responsive="true">
                     <thead>
@@ -228,6 +229,39 @@
                             <th data-field="PLANLANAN_TARIH" data-sortable="true" data-formatter="planlananFormatter">Planlanan Tarih</th>
                             <th data-field="GERCEKLESEN_TARIH" data-sortable="true" data-formatter="gerceklesenFormatter">Gerçekleşen Tarih</th>
                             <th data-field="MUSTERI_ID" data-sortable="true" data-formatter="plasiyerFormatter">Plasiyer</th>
+                        </tr>
+                    </thead>
+                </table>
+
+
+            </div>
+
+
+
+        </div>
+        <div class="card-body" id="bdy4">
+
+
+            <div id="employeeTableWrapper3" class="tableWrapper table-responsive">
+                <table id="table4"
+                       class="table table-striped"
+                       data-pagination="true"
+                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                       data-search="true"
+                       data-show-columns="true"
+                       data-export-data-type="all"
+                       data-export-types="['excel']"
+                       data-show-toggle="true"
+                       data-show-export="true"
+                       data-locale="tr-TR"
+                       data-mobile-responsive="true">
+                    <thead>
+                        <tr>
+                            <th data-field="MUSTERI_ID" data-sortable="true" data-formatter="musteriadiFormatter">Müşteri Adı</th>
+                            <th data-field="URUN_GRUBU" data-sortable="true">Ürün Grubu</th>
+                            <th data-field="YILLIK_KULLANIM" data-sortable="true">Yıllık Kullanım</th>
+                            <th data-field="OLCU_BIRIMI" data-sortable="true">Ölçü Birimi</th>
+                            <th data-field="KAYIT_YAPAN_KULLANICI" data-formatter="plasiyerFormatter1">PLASIYER</th>
                         </tr>
                     </thead>
                 </table>
@@ -255,6 +289,11 @@
             var username = null;
             var userid = null;
             var sor1 = null;
+             async function getUrunlerAsync() {
+                let response = await fetch(`@Url.Action("GetMusteriUrun", "Satis")`);
+                let data = await response.json()
+                return data;
+            }
             async function getMusterilerAsync() {
                 let response = await fetch(`@Url.Action("GetMusteriler","Satis")`);
                 let data = await response.json()
@@ -270,59 +309,102 @@
                 let data = await response.json()
                 return data;
             }
+
             $(document).ready(function () {
                 $('#bdy2').hide();
                 $('#bdy3').hide();
-                getMusterilerAsync()
-                    .then(function (result) {
-                        degismez = JSON.parse(result);
-                        getUserAsync().then(function (data) {
-                            user = JSON.parse(data);
-                            $('#table').bootstrapTable({ data: JSON.parse(result) })
-                        })
+                $('#bdy4').hide();
 
-                    });
-                
+                getUserAsync().then(function (data) {
+                    user = JSON.parse(data);
+                }).then(function () {
+                    getMusterilerAsync().then(function (res) {
+                        degismez = JSON.parse(res);
+
+                        $('#table').bootstrapTable({ data: degismez });
+                    })
+                })
+
+                     
+
+               
+               
 
             })
 
                 function change(value) {
                     if (value == 1) {
+                        $('#bdy4').hide();
                         $('#bdy2').hide();
                         $('#bdy3').hide();
                         $('#bdy1').show();
+                        getMusterilerAsync().then(function (data) {
+                            var musteriler = JSON.parse(data);
+
+                            $('#table').bootstrapTable({ data: musteriler });
+                        })
                     } else if (value == 2) {
                         $('#bdy1').hide();
                         $('#bdy2').show();
                         getRandevuAsync().then(function (data) {
                             var randevular = JSON.parse(data).filter(x => x.GERCEKLESEN_TARIH == null);
-                           
+
                             $('#table2').bootstrapTable({ data: randevular });
                         })
                         $('#bdy3').hide();
-                    } else {
+                        $('#bdy4').hide();
+                    } else if (value == 3) {
                         $('#bdy1').hide();
                         $('#bdy2').hide();
                         $('#bdy3').show();
-                         $.getJSON('@Url.Action("GetRandevu", "Satis")', function (data) {
+                        $('#bdy4').hide();
+                        $.getJSON('@Url.Action("GetRandevu", "Satis")', function (data) {
 
 
-                }).done(function (result) {
+                        }).done(function (result) {
 
 
-                    $(function () {
+                            $(function () {
 
 
-                        sor2 = JSON.parse(result).filter(x => x.GERCEKLESEN_TARIH != null);
-                        $('#table3').bootstrapTable({ data: sor2 })
+                                sor2 = JSON.parse(result).filter(x => x.GERCEKLESEN_TARIH != null);
+                                $('#table3').bootstrapTable({ data: sor2 })
 
-                    })
-                })
+                            })
+                        })
+                    } else {
+                        $('#bdy1').hide();
+                        $('#bdy2').hide();
+                        getUrunlerAsync().then(function (data) {
+                            var urunler = JSON.parse(data);
+
+                            $('#table4').bootstrapTable({ data: urunler });
+                        })
+                        $('#bdy3').hide();
+                        $('#bdy4').show();
                     }
                 }
 
+            function plasiyerFormatter(value, row, index) {
+
+                var isim = degismez.filter(x => x.MUSTERI_ID == row.MUSTERI_ID);
+                var u = user.filter(x => x.USER_NAME == isim[0].PLASIYER);
+                return u[0].USER_FIRSTNAME + " " + u[0].USER_LASTNAME;
 
 
+            }
+            function plasiyerFormatter1(value, row, index) {
+                if (value == null) {
+                    return "";
+                }
+
+                var a = user.filter(x => x.USER_NAME == value);
+                var y = a[0].USER_FIRSTNAME + " " + a[0].USER_LASTNAME;
+                
+                return y;
+
+
+            }
             function mailFormatter(value, row, index) {
 
 
@@ -331,7 +413,9 @@
 
             function notFormatter(value, row, index) {
 
-
+                if (value == null) {
+                    value = "";
+                }
                 return "<textarea disabled>"+value+"</textarea>";
             }
             function adresFormatter(value, row, index) {
@@ -365,6 +449,9 @@
                 var newdate = day + "/" + month + "/" + year;
                 return newdate;
             }
+            function customSearchFormatter(value, row, index) {
+                return value;
+            }
             function gerceklesenFormatter(value, row, index) {
                 var old = value.split('T')[0];
                 var year = old.split('-')[0];
@@ -379,17 +466,8 @@
 
                     return isim[0].MUSTERI_ADI;
             }
-            function plasiyerFormatter(value, row, index) {
 
-                var isim = degismez.filter(x => x.MUSTERI_ID == value);
-                var u = user.filter(x => x.USER_NAME == isim[0].PLASIYER);
-                return u[0].USER_FIRSTNAME + " " + u[0].USER_LASTNAME;
-            }
-            function plasiyerFormatter1(value, row, index) {
 
-                var u = user.filter(x => x.USER_NAME == value);
-                return u[0].USER_FIRSTNAME + " " + u[0].USER_LASTNAME;
-            }
 
         </script>
     </div>
