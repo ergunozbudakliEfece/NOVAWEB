@@ -155,8 +155,17 @@ namespace NOVA.Controllers
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
             var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
-            var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 32).USER_AUTH;
-            var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
+            var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            if (ziyaretplani != true)
+            {
+                ViewBag.DisplayZiyaretPlani = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretPlani = "unset";
+            }
             if (musteriraporuozel != true)
             {
                 ViewBag.DisplayMusteriOzel = "none";
@@ -165,13 +174,14 @@ namespace NOVA.Controllers
             {
                 ViewBag.DisplayMusteriOzel = "unset";
             }
-            if (musteriraporu != true)
+            if ((musteriraporu == true && musteriraporuozel==false)||(Request.Cookies["Id"].Value=="10001" || Request.Cookies["Id"].Value == "10002"))
             {
-                ViewBag.DisplayMusteriRaporu = "none";
+                ViewBag.DisplayMusteriRaporu = "unset";
             }
             else
             {
-                ViewBag.DisplayMusteriRaporu = "unset";
+                ViewBag.DisplayMusteriRaporu = "none";
+                
             }
             if (ziyaretkaydi != true)
             {

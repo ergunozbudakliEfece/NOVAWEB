@@ -3,44 +3,93 @@
   
     Layout = "~/Views/Shared/_Layout_ZiyaretPlanlari.cshtml";
 }
+<style>
+    img:hover {
+        opacity: 0.7
+    }
 
+    
+    
+    .modal-content {
+        height: 100%
+    }
+
+    
+   
+</style>
 <body>
+
+    <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true" style="display: none;">
+
+        <div class="modal-dialog modal-dialog-scrollable" role="dialog">
+            <div class="modal-content">
+
+                <div  class="modal-body mb-3" style="overflow-y: hidden;">
+
+                    <iframe style="width:100%;height:100%" src="@Url.Action("ZiyaretKaydiListesi")"></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="modal fade" id="musteriraporu" tabindex="-1" aria-hidden="true" style="display: none;">
+
+        <div class="modal-dialog modal-dialog-scrollable" role="dialog">
+            <div class="modal-content">
+
+                <div  class="modal-body p-1" style="overflow-y: hidden;">
+                    @{
+if (ViewBag.OzelYetki == true)
+            {
+                                        <iframe style="width:100%;height:100%" src="@Url.Action("MusteriRaporuOzel")"></iframe>
+}
+else
+            {
+                <iframe style="width:100%;height:100%" src="@Url.Action("MusteriRaporu")"></iframe>
+            }
+                    }
+                    
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
     <div class="container-fluid">
         <div class="row">
-
-
 
             <div id="menu1" class="col-sm-1">
 
                 <div id='external-events'>
+                    <div class="row">
+                        <div class="col d-flex">
+                            <select class="form-control" id="plasiyer" onchange="plasiyerchange(this.value)" name="PLASIYER">
+                            </select>
+                            <img onclick="musterirapor()" class="ms-1" src="~/images/online-survey.png" style="width:33px;cursor:pointer">
+                            <img onclick="musteritakip()" class="ms-1" src="~/images/form.png" style="width:33px;cursor:pointer">
+                        </div>
 
-                    <select class="form-control" id="plasiyer" onchange="plasiyerchange(this.value)" name="PLASIYER">
-                    </select>
+                    </div>
+                    <script>
+                        function musteritakip() {
+                            $('#basicModal').modal('show');
+                        }
+                        function musterirapor() {
+                            $('#musteriraporu').modal('show');
+                        }
+                    </script>
                     <script>
                         Date.prototype.addHours = function (h) {
                             this.setTime(this.getTime() + (h * 60 * 60 * 1000));
                             return this;
                         }
-                        $.ajax({
-                            url: '@Url.Action("GetActiveUsers", "Satis")',
-                            type: 'POST',
-                            success: function (result) {
-                        var data = JSON.parse(result);
+
                     var username=@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
-                 for (let i = 0; i < data.length; i++) {
-                     if (data[i].USER_NAME != "admin" && data[i].USER_NAME != "test") {
-                         var option = document.createElement("option");
-                         option.innerHTML = data[i].USER_NAME;
-                         option.value = data[i].USER_NAME;
-                         if (data[i].USER_NAME == username) {
-                             option.selected = "true";
-                         }
-                         $("#plasiyer").append(option);
-                     }
-                     $("#plasiyer").select2();
-                 }
-                            }
-                 })
+
+
+
                         function plasiyerchange(value) {
 
 
@@ -104,7 +153,7 @@
                                                             backgroundColor: color
                                                         });
                                                     }
-                                                    
+
                                                 }
 
                                             }
@@ -144,7 +193,7 @@
                                                     var d = JSON.parse(data).filter(x => x.INCKEY == info.event.extendedProps.inckey);
                                                     $('#datepickermodal').modal('show');
                                                     $('#planlanan').val(d[0].PLANLANAN_TARIH);
-                                                    
+
                                                     $('#inckey').val(d[0].INCKEY);
                                                     $('#musid').val(d[0].MUSTERI_ID);
                                                     $('#musadi').text(info.event.title);
@@ -243,7 +292,7 @@
                         </div>
                     </div>
                     <script>
-function myFunction() {
+                        function myFunction() {
                             var input = document.getElementById("Search");
                             var filter = input.value.toLowerCase().replace('ı', 'i');
                             var nodes = document.getElementsByClassName('m1');
@@ -255,7 +304,7 @@ function myFunction() {
                                     nodes[i].style.display = "none";
                                 }
                             }
-}
+                        }
                     </script>
 
 
@@ -272,29 +321,18 @@ function myFunction() {
 
             <div class="col-sm-1">
                 <div id='external-events1'>
-                    <select class="form-control" id="plasiyer1" onchange="plasiyerchange(this.value)" name="PLASIYER">
-                    </select>
+                    <div class="row">
+                        <div class="col d-flex">
+                            <select class="form-control" id="plasiyer1" onchange="plasiyerchange(this.value)" name="PLASIYER">
+                            </select>
+                            <img onclick="musterirapor()" class="ms-1" src="~/images/online-survey.png" style="width:25px;cursor:pointer">
+                            <img onclick="musteritakip()" class="ms-1" src="~/images/form.png" style="width:25px;cursor:pointer">
+                        </div>
+
+                    </div>
+
                     <script>
-                        $.ajax({
-                            url: '@Url.Action("GetActiveUsers", "Satis")',
-                            type: 'POST',
-             success: function (result) {
-                 var data = JSON.parse(result);
-                  var username=@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
-                 for (let i = 0; i < data.length; i++) {
-                     if (data[i].USER_NAME != "admin" && data[i].USER_NAME != "test") {
-                         var option = document.createElement("option");
-                         option.innerHTML = data[i].USER_NAME;
-                         option.value = data[i].USER_NAME;
-                         if (data[i].USER_NAME == username) {
-                             option.selected = "true";
-                         }
-                         $("#plasiyer1").append(option);
-                     }
-                     $("#plasiyer1").select2();
-                 }
-                            }
-                 })
+
                         function plasiyerchange1(value) {
 
 
@@ -349,7 +387,7 @@ function myFunction() {
                                                             backgroundColor: color
                                                         });
                                                     }
-                                                    
+
                                                 }
 
                                             }
@@ -541,8 +579,8 @@ function myFunction() {
                                         <tbody id="bdy1">
                                             <tr>
                                                 <td scope="col" class="text-center"><label class="form-label fw-bold" id="musadi" /></td>
-                                                <td scope="col"><span class="deleteicon"><input class="form-control" type="datetime-local" id="planlanan" /></span></td>
-                                                <td scope="col" id="gercekkolon"><span class="deleteicon"><input class="form-control" type="datetime-local" id="gerceklesen" /></span></td>
+                                                <td scope="col"><input class="form-control" type="datetime-local" id="planlanan" /></td>
+                                                <td scope="col" id="gercekkolon"><input class="form-control" type="datetime-local" id="gerceklesen" /></td>
                                                 <td scope="col"><textarea class="form-control" id="not" rows="4" cols="4"></textarea></td>
                                                 <td scope="col" class="d-none"><input class="form-control" type="text" id="inckey" /></td>
                                                 <td scope="col" class="d-none"><input class="form-control" type="text" id="musid" /></td>
@@ -574,8 +612,8 @@ function myFunction() {
 
     <script>
         function gerceklesen() {
-            
-           
+
+
             $('#guncellebutton').show();
             $('#iptalbutton').show();
             $('#deletebutton').hide();
@@ -623,7 +661,7 @@ function myFunction() {
                             });
             }
         function guncelle1() {
-          
+
                 $('#guncellebutton').show();
                 $('#iptalbutton').show();
                 $('#deletebutton').hide();
@@ -647,7 +685,7 @@ function myFunction() {
         function guncelle() {
             var data = null;
 
-           
+
             var n = document.getElementById("not").value;
             if (n == null || n == "") {
                 n == " ";
@@ -657,13 +695,13 @@ function myFunction() {
             } else {
                 data = { "INCKEY": document.getElementById("inckey").value, "MUSTERI_ID": document.getElementById("musid").value, "RANDEVU_NOTU": n, "PLANLANAN_TARIH": document.getElementById("planlanan").value, "GERCEKLESEN_TARIH": document.getElementById("gerceklesen").value };
             }
-                
-                
-            
-               
-               
-            
-    
+
+
+
+
+
+
+
              $.ajax({
                         type: 'POST',
                  url: '@Url.Action("RandevuEkleGuncelle", "Satis")',
@@ -706,7 +744,7 @@ function myFunction() {
                 let data = await response.json()
                 return data;
         }
-        
+
         function refreshtable() {
             var username=@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
             getMusterilerAsync().then(function (data) {
@@ -780,6 +818,63 @@ function myFunction() {
             var musteriler = null;
             var musteriler20 = null;
         $(document).ready(function () {
+            var plasiyerlist = [];
+            var username =@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
+            $.ajax({
+                url: '@Url.Action("GetMusteriler", "Satis")',
+                type: 'POST',
+                success: function (result) {
+
+                    var data = JSON.parse(result);
+
+                    for (let i = 0; i < data.length; i++) {
+                        if (!plasiyerlist.includes(data[i].PLASIYER)) {
+                            plasiyerlist.push(data[i].PLASIYER);
+                        }
+                    }
+                    for (let i = 0; i < plasiyerlist.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.innerHTML = plasiyerlist[i];
+                        option.value = plasiyerlist[i];
+                        if (plasiyerlist[i] == username) {
+                            option.selected = "true";
+                        }
+                        $("#plasiyer").append(option);
+
+
+                    }
+
+                }
+            });
+            $.ajax({
+                url: '@Url.Action("GetMusteriler", "Satis")',
+                type: 'POST',
+                success: function (result) {
+
+                    var data = JSON.parse(result);
+
+                    for (let i = 0; i < data.length; i++) {
+                        if (!plasiyerlist.includes(data[i].PLASIYER)) {
+                            plasiyerlist.push(data[i].PLASIYER);
+                        }
+                    }
+                    for (let i = 0; i < plasiyerlist.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.innerHTML = plasiyerlist[i];
+                        option.value = plasiyerlist[i];
+                        if (plasiyerlist[i] == username) {
+                            option.selected = "true";
+                        }
+                        $("#plasiyer1").append(option);
+
+
+                    }
+
+                }
+            });
+
             $("#datepickermodal").on('hide.bs.modal', function () {
                 $("#gerceklesen").val(null);
                 $('#editbutton').show();
@@ -794,9 +889,18 @@ function myFunction() {
                 document.querySelector(".select2-container--open .select2-search__field").focus()
             })
             var ozelyetki = @Html.Raw(Json.Encode(ViewBag.OzelYetki));
-            if (ozelyetki != 1) {
-                $('#plasiyer').next(".select2-container").hide();
+
+            if (ozelyetki == 0) {
+
+                $("#plasiyer").hide();
+                $("#plasiyer1").hide();
+
+            } else {
+                $("#plasiyer").select2();
+                $("#plasiyer1").select2();
             }
+
+
             username = @Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
             id = @Html.Raw(Json.Encode(Request.Cookies["Id"].Value));
 
@@ -870,24 +974,15 @@ function myFunction() {
 
                             }
                             calendar.render();
-                            document.getElementsByClassName("fc-listMonth-button")[0].innerHTML = "Liste";
-                            document.getElementsByClassName("fc-listMonth-button")[0].onclick = function () {
-                                document.getElementsByClassName("fc-listMonth-button")[0].innerHTML = "Liste";
-                            }
-                            document.getElementsByClassName("fc-dayGridMonth-button")[0].onclick = function () {
-                                document.getElementsByClassName("fc-listMonth-button")[0].innerHTML = "Liste";
-                            }
-                            document.getElementsByClassName("fc-timeGridWeek-button")[0].onclick = function () {
-                                document.getElementsByClassName("fc-listMonth-button")[0].innerHTML = "Liste";
-                            }
-                            document.getElementsByClassName("fc-timeGridDay-button")[0].onclick = function () {
-                                document.getElementsByClassName("fc-listMonth-button")[0].innerHTML = "Liste";
-                            }
+
+
                         })
 
                 })
 
         })
+
+
     </script>
 
 </body>
