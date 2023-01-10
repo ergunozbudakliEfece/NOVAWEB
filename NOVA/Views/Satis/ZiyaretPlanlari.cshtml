@@ -1,0 +1,1046 @@
+﻿
+@{
+  
+    Layout = "~/Views/Shared/_Layout_ZiyaretPlanlari.cshtml";
+}
+<style>
+    img:hover {
+        opacity: 0.7
+    }
+
+
+    @@media screen and (max-width: 600px) {
+        .modal-body {
+            height: 100vh !important;
+        }
+
+        
+    }
+    
+    #calendar{max-height:750px}
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+   
+</style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<body>
+
+    <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true" style="display: none;">
+
+        <div class="modal-dialog modal-dialog-scrollable" role="dialog" style="max-width: 85vw !important;">
+            
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="centercontent" name="ilkspinner">
+                    <i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>
+                </div>
+                <div class="modal-body mb-3" style="overflow-y: hidden; max-width: 100vw !important; height: 75vh; background-color: white ">
+                    <iframe id="musif" loading="lazy" style="width: 100%; height: 100%" src="@Url.Action("ZiyaretKaydiListesi")"></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="modal fade" id="musteriraporu" tabindex="-1" aria-hidden="true" style="display: none;">
+
+        <div class="modal-dialog modal-dialog-scrollable" role="dialog" style="max-width: 85vw !important;">
+            <div class="modal-content" style="max-width: 100vw !important">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body p-1" style="overflow-y: hidden; max-width: 100vw !important; height: 75vh; background-color: white ">
+                    @{
+                        if (ViewBag.OzelYetki == true)
+                        {
+
+                            <div class="centercontent">
+                                <i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>
+                            </div>
+                            <iframe id="musrap" loading="lazy" style="width:100%;height:100%" src="@Url.Action("MusteriRaporuOzel")"></iframe>
+
+
+
+
+
+                        }
+                        else
+                        { <div class="centercontent">
+                                <i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>
+                            </div>
+                            <iframe id="musrap" loading="lazy" style="width: 100%; height: 100%" src="@Url.Action("MusteriRaporu")"></iframe>
+                        }
+                    }
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="container-fluid" style="font-family:Calibri;font-size:14px">
+        <div class="row">
+
+            <div id="menu1" class="col-sm-1">
+
+                <div id='external-events'>
+                    <div class="row">
+                        <div class="col d-flex">
+                            <select class="form-control" id="plasiyer" onchange="plasiyerchange(this.value)" name="PLASIYER">
+                            </select>
+                            <img data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Raporlar</span>" onclick="musterirapor()" class="ms-1" src="~/images/online-survey.png" style="width:33px;cursor:pointer">
+                            <img data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Müşteri Kayıt/Düzenle</span>" onclick="musteritakip()" class="ms-1" src="~/images/form.png" style="width:33px;cursor:pointer">
+                        </div>
+
+                    </div>
+                    <script>
+                        function musteritakip() {
+                            $('#basicModal').modal('show');
+                            document.getElementById("basicModal").getElementsByClassName("centercontent")[0].style.display = "unset";
+                            document.getElementById("musif").contentWindow.location.reload();
+                        }
+                        function musterirapor() {
+                            $('#musteriraporu').modal('show');
+                            document.getElementById("musrap").contentWindow.location.reload();
+                        }
+                    </script>
+                    <script>
+                        Date.prototype.addHours = function (h) {
+                            this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+                            return this;
+                        }
+
+                    var username=@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
+
+
+
+                        function plasiyerchange(value) {
+
+
+                            getMusterilerAsync().then(function (data) {
+                                $("#musterison20").empty();
+                                $("#musteri").empty();
+                                $("#musteri2").empty();
+                                $("#musterison200").empty();
+                                var musteriler = JSON.parse(data).filter(x => x.PLASIYER == value).sort((a, b) => (a.MUSTERI_ADI > b.MUSTERI_ADI) ? 1 : -1);
+
+                                var musteriler20 = JSON.parse(data).filter(x => x.PLASIYER == value).sort((a, b) => (a.KAYIT_TARIHI > b.KAYIT_TARIHI) ? -1 : 1);
+                                var leng = musteriler20.length;
+                                if (leng > 15) {
+                                    leng = 15;
+                                }
+                                mus.append("<input class=\"form-control position-sticky sticky-top mt-1\" type=\"text\" id=\"Search\" onkeyup=\"myFunction()\" placeholder=\"Müşteri Ara..\">")
+                                mus2.append("<input class=\"form-control position-sticky sticky-top mt-1\" type=\"text\" id=\"Search1\" onkeyup=\"myFunction1()\" placeholder=\"Müşteri Ara..\">")
+                                for (let i = 0; i < musteriler.length; i++) {
+                                    var st = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m1' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler[i].MUSTERI_ADI + "</div></div>"
+                                    mus.append(st);
+                                    var st1 = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m2' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler[i].MUSTERI_ADI + "</div></div>"
+                                    mus2.append(st1);
+                                }
+                                for (let i = 0; i < leng; i++) {
+                                    var st = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event' data-id=" + musteriler20[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler20[i].MUSTERI_ADI + "</div></div>"
+                                    var st1 = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event' data-id=" + musteriler20[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler20[i].MUSTERI_ADI + "</div></div>"
+                                    mus3.append(st);
+                                    mus4.append(st1);
+                                }
+                                getRandevuAsync()
+                                    .then(function (result) {
+                                        var musteriler = JSON.parse(data).filter(x => x.PLASIYER == value);
+                                        calendar.removeAllEvents();
+                                        var d = JSON.parse(result);
+                                        for (let i = 0; i < musteriler.length; i++) {
+                                            var musid = d.filter(x => x.MUSTERI_ID == musteriler[i].MUSTERI_ID);
+                                            if (musid.length > 0) {
+                                                var musadi = musteriler.filter(x => x.MUSTERI_ID == musid[0].MUSTERI_ID);
+                                                for (let a = 0; a < musid.length; a++) {
+                                                    var color = "";
+                                                    if (Date.parse(musid[a].PLANLANAN_TARIH) > Date.now()) {
+                                                        color = "#3D85C6";
+                                                    } else {
+                                                        color = "#C1C1C1";
+                                                    }
+                                                    if (musid[a].GERCEKLESEN_TARIH != null) {
+                                                        color = "#CC0000";
+                                                        calendar.addEvent({
+                                                            id: musid[a].MUSTERI_ID,
+                                                            title: musadi[0].MUSTERI_ADI,
+                                                            start: new Date(musid[a].GERCEKLESEN_TARIH),
+                                                            inckey: musid[a].INCKEY,
+                                                            backgroundColor: color
+                                                        });
+                                                    } else {
+                                                        calendar.addEvent({
+                                                            id: musid[a].MUSTERI_ID,
+                                                            title: musadi[0].MUSTERI_ADI,
+                                                            start: new Date(musid[a].PLANLANAN_TARIH),
+                                                            inckey: musid[a].INCKEY,
+                                                            backgroundColor: color
+                                                        });
+                                                    }
+
+                                                }
+
+                                            }
+
+
+
+                                        }
+
+
+
+
+
+                                    }).then(function () {
+                                        $('#editbutton').show();
+                                        $('#deletebutton').show();
+                                        $('#guncellebutton').hide();
+                                        $('#iptalbutton').hide();
+                                        $('#not').prop("disabled", true);
+                                        $('#planlanan').prop("disabled", true);
+                                        $('#gerceklesen').prop("disabled", true);
+                                        if (value != username) {
+                                            calendar.setOption('droppable', false);
+                                            calendar.setOption('editable', false);
+                                            calendar.setOption('eventClick', null);
+                                            calendar.setOption('eventReceive', function (info) {
+                                                info.revert();
+                                            });
+                                        } else {
+                                            calendar.setOption('droppable', true);
+                                            calendar.setOption('editable', true);
+                                            calendar.setOption('eventClick', function (info) {
+
+
+
+                                                getRandevuAsync().then(function (data) {
+
+                                                    var d = JSON.parse(data).filter(x => x.INCKEY == info.event.extendedProps.inckey);
+                                                    $('#datepickermodal').modal('show');
+                                                    $('#planlanan').val(d[0].PLANLANAN_TARIH);
+
+                                                    $('#inckey').val(d[0].INCKEY);
+                                                    $('#musid').val(d[0].MUSTERI_ID);
+                                                    $('#musadi').text(info.event.title);
+                                                    if (d[0].RANDEVU_NOTU != null) {
+                                                        $('#not').val(d[0].RANDEVU_NOTU);
+                                                    } else {
+                                                        $('#not').val(null);
+                                                    }
+                                                    if (d[0].GERCEKLESEN_TARIH != null) {
+                                                        gerceklesentarih = d[0].GERCEKLESEN_TARIH;
+                                                        $('#gercekkolon').show();
+                                                        $('#gercekth').show();
+                                                        $('#complatebutton').hide();
+                                                        $('#gerceklesen').val(d[0].GERCEKLESEN_TARIH);
+                                                        $('#gerceklesen').prop("disabled", true);
+                                                        $('#planlanan').prop("disabled", true);
+                                                    } else {
+                                                        $('#gercekkolon').hide();
+                                                        $('#gercekth').hide();
+                                                        $('#complatebutton').show();
+                                                        $('#planlanan').prop("disabled", false);
+                                                        $('#gerceklesen').prop("disabled", false);
+                                                    }
+                                                })
+
+
+
+
+                                                //info.event.remove();
+
+
+
+
+                                            });
+                                            calendar.setOption('eventReceive', function (info) {
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("RandevuEkleGuncelle", "Satis")',
+                        data: JSON.stringify({ "INCKEY": "", "MUSTERI_ID": parseInt(info.event.id), "RANDEVU_NOTU": "", "PLANLANAN_TARIH": (info.event.start).toLocaleString("tr-TR") }),
+                        contentType: "application/json",
+                        success: function () {
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'center',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            })
+                            refreshtable();
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Ziyaret başarıyla kaydedildi!'
+                            });
+                            info.revert();
+                        },
+                        error: function () {
+
+                        },
+                        dataType: 'json'
+                    })
+                                            });
+                                        }
+
+                                    })
+                            })
+                        }
+                    </script>
+                    <div class="accordion mt-2">
+                        <div class="accordion-item" style="background-color:transparent">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="true" aria-controls="flush-collapseOne">
+                                    En Son Eklenen Müşteriler
+                                </button>
+                            </h2>
+                            <div id="flush-collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#external-events">
+                                <div id="musterison20" style="max-height:700px;overflow-y:auto">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item mt-2 mb-2" style="background-color:transparent">
+                            <h2 class="accordion-header " id="headingtwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                                    Tüm Müşteriler
+                                </button>
+                            </h2>
+                            <div id="flush-collapseTwo" class="accordion-collapse collapse" style="background-color:transparent;border-style:hidden" aria-labelledby="headingtwo" data-bs-parent="#external-events">
+                                <div id="musteri" style="max-height:700px;overflow-y:auto">
+                                    <input class="form-control position-sticky stivky-top mt-1" type="text" id="Search" onkeyup="myFunction()" placeholder="Müşteri Ara..">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        function myFunction() {
+                            var input = document.getElementById("Search");
+                            var filter = input.value.toLowerCase().replace('ı', 'i');
+                            var nodes = document.getElementsByClassName('m1');
+
+                            for (i = 0; i < nodes.length; i++) {
+                                if (nodes[i].innerText.toLowerCase().includes(filter)) {
+                                    nodes[i].style.display = "block";
+                                } else {
+                                    nodes[i].style.display = "none";
+                                }
+                            }
+                        }
+                    </script>
+
+
+                </div>
+            </div>
+            <div class="col-sm">
+
+
+                <div id='calendar'></div>
+
+            </div>
+        </div>
+        <div id="menu2" class="row">
+
+            <div class="col-sm-1">
+                <div id='external-events1'>
+                    <div class="row">
+                        <div class="col d-flex">
+                            <select class="form-control" id="plasiyer1" onchange="plasiyerchange(this.value)" name="PLASIYER">
+                            </select>
+                            <img onclick="musterirapor()" class="ms-1" src="~/images/online-survey.png" style="width:25px;cursor:pointer">
+                            <img onclick="musteritakip()" class="ms-1" src="~/images/form.png" style="width:25px;cursor:pointer">
+                        </div>
+
+                    </div>
+
+                    <script>
+
+                        function plasiyerchange1(value) {
+
+
+                            getMusterilerAsync().then(function (data) {
+                                $("#musterison200").empty();
+                                $("#musteri2").empty();
+                                var musteriler2 = JSON.parse(data).filter(x => x.PLASIYER == value).sort((a, b) => (a.MUSTERI_ADI > b.MUSTERI_ADI) ? 1 : -1);
+
+                                var musteriler200 = JSON.parse(data).filter(x => x.PLASIYER == value).sort((a, b) => (a.KAYIT_TARIHI > b.KAYIT_TARIHI) ? -1 : 1);
+                                var leng = musteriler200.length;
+                                if (leng > 15) {
+                                    leng = 15;
+                                }
+                                mus3.append("<input class=\"form-control position-sticky sticky-top mt-1\" type=\"text\" id=\"Search\" onkeyup=\"myFunction()\" placeholder=\"Müşteri Ara..\">")
+                                for (let i = 0; i < leng; i++) {
+                                    var st = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event' data-id=" + musteriler200[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler200[i].MUSTERI_ADI + "</div></div>"
+                                    var st1 = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m2' data-id=" + musteriler2[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler2[i].MUSTERI_ADI + "</div></div>"
+                                    mus3.append(st1);
+                                    mus4.append(st);
+                                }
+                                getRandevuAsync()
+                                    .then(function (result) {
+                                        var musteriler = JSON.parse(data).filter(x => x.PLASIYER == value);
+                                        calendar.removeAllEvents();
+                                        var d = JSON.parse(result);
+                                        for (let i = 0; i < musteriler.length; i++) {
+                                            var musid = d.filter(x => x.MUSTERI_ID == musteriler[i].MUSTERI_ID);
+                                            if (musid.length > 0) {
+                                                var musadi = musteriler.filter(x => x.MUSTERI_ID == musid[0].MUSTERI_ID);
+                                                for (let a = 0; a < musid.length; a++) {
+                                                    var color = "";
+                                                    if (Date.parse(musid[a].PLANLANAN_TARIH) > Date.now()) {
+                                                        color = "#3D85C6";
+                                                    } else {
+                                                        color = "#C1C1C1";
+                                                    }
+                                                    if (musid[a].GERCEKLESEN_TARIH != null) {
+                                                        color = "#CC0000";
+                                                        calendar.addEvent({
+                                                            id: musid[a].MUSTERI_ID,
+                                                            title: musadi[0].MUSTERI_ADI,
+                                                            start: new Date(musid[a].GERCEKLESEN_TARIH),
+                                                            inckey: musid[a].INCKEY,
+                                                            backgroundColor: color
+                                                        });
+                                                    } else {
+                                                        calendar.addEvent({
+                                                            id: musid[a].MUSTERI_ID,
+                                                            title: musadi[0].MUSTERI_ADI,
+                                                            start: new Date(musid[a].PLANLANAN_TARIH),
+                                                            inckey: musid[a].INCKEY,
+                                                            backgroundColor: color
+                                                        });
+                                                    }
+
+                                                }
+
+                                            }
+
+
+
+                                        }
+
+
+
+
+
+                                    }).then(function () {
+                                        $('#editbutton').show();
+                                        $('#deletebutton').show();
+                                        $('#guncellebutton').hide();
+                                        $('#iptalbutton').hide();
+                                        $('#not').prop("disabled", true);
+                                        $('#planlanan').prop("disabled", true);
+                                        $('#gerceklesen').prop("disabled", true);
+                                        if (value != username) {
+                                            calendar.setOption('droppable', false);
+                                            calendar.setOption('editable', false);
+                                            calendar.setOption('eventClick', null);
+                                            calendar.setOption('eventReceive', function (info) {
+                                                info.revert();
+                                            });
+                                        } else {
+                                            calendar.setOption('droppable', true);
+                                            calendar.setOption('editable', true);
+                                            calendar.setOption('eventClick', function (info) {
+
+
+
+                                                getRandevuAsync().then(function (data) {
+
+                                                    var d = JSON.parse(data).filter(x => x.INCKEY == info.event.extendedProps.inckey);
+                                                    $('#datepickermodal').modal('show');
+                                                    $('#planlanan').val(d[0].PLANLANAN_TARIH);
+                                                    $('#inckey').val(d[0].INCKEY);
+                                                    $('#musid').val(d[0].MUSTERI_ID);
+                                                    $('#musadi').text(info.event.title);
+                                                    if (d[0].RANDEVU_NOTU != null) {
+                                                        $('#not').val(d[0].RANDEVU_NOTU);
+                                                    } else {
+                                                        $('#not').val(null);
+                                                    }
+                                                    if (d[0].GERCEKLESEN_TARIH != null) {
+                                                        gerceklesentarih = d[0].GERCEKLESEN_TARIH;
+                                                        $('#gercekkolon').show();
+                                                        $('#gercekth').show();
+                                                        $('#complatebutton').hide();
+                                                        $('#planlanan').prop("readonly", true);
+                                                        $('#gerceklesen').val(d[0].GERCEKLESEN_TARIH);
+                                                    } else {
+                                                        $('#gercekkolon').hide();
+                                                        $('#gercekth').hide();
+                                                        $('#complatebutton').show();
+                                                        $('#planlanan').prop("readonly", false);
+                                                        $('#gerceklesen').prop("readonly", false);
+                                                    }
+                                                })
+
+
+
+
+                                                //info.event.remove();
+
+
+
+
+                                            });
+                                            calendar.setOption('eventReceive', function (info) {
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("RandevuEkleGuncelle", "Satis")',
+                        data: JSON.stringify({ "INCKEY": "", "MUSTERI_ID": parseInt(info.event.id), "RANDEVU_NOTU": "", "PLANLANAN_TARIH": (info.event.start).toLocaleString("tr-TR") }),
+                        contentType: "application/json",
+                        success: function () {
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'center',
+                                showConfirmButton: false,
+                                timer:1000,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            })
+                            refreshtable();
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Ziyaret başarıyla kaydedildi!'
+                            });
+                            info.revert();
+                        },
+                        error: function () {
+
+                        },
+                        dataType: 'json'
+                    })
+                                            });
+                                        }
+
+                                    })
+                            })
+                        }
+                    </script>
+                    <div class="accordion mt-2">
+                        <div class="accordion-item" style="background-color:transparent">
+                            <h2 class="accordion-header" id="headingOne1">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne1" aria-expanded="true" aria-controls="flush-collapseOne1">
+                                    En Son Eklenen Müşteriler
+                                </button>
+                            </h2>
+                            <div id="flush-collapseOne1" class="accordion-collapse show" aria-labelledby="headingOne1" data-bs-parent="#external-events1">
+                                <div id="musterison200" style="max-height:700px;overflow-y:auto">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item mt-2 mb-2" style="background-color:transparent">
+                            <h2 class="accordion-header " id="headingtwo1">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo1" aria-expanded="false" aria-controls="flush-collapseTwo1">
+                                    Tüm Müşteriler
+                                </button>
+                            </h2>
+                            <div id="flush-collapseTwo1" class="accordion-collapse collapse" aria-labelledby="headingtwo1" data-bs-parent="#external-events1">
+                                <div id="musteri2" style="max-height:700px;overflow-y:auto">
+                                    <input class="form-control position-sticky sticky-top" type="text" id="Search1" onkeyup="myFunction1()" placeholder="Müşteri Ara..">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        function myFunction1() {
+                            var input = document.getElementById("Search1");
+                            var filter = input.value.toLowerCase().replace('ı', 'i');
+                            var nodes = document.getElementsByClassName('m2');
+
+                            for (i = 0; i < nodes.length; i++) {
+                                if (nodes[i].innerText.toLowerCase().includes(filter)) {
+                                    nodes[i].style.display = "block";
+                                } else {
+                                    nodes[i].style.display = "none";
+                                }
+                            }
+                        }
+                    </script>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="datepickermodal" tabindex="-1" aria-hidden="true" style="display: none;">
+
+            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+
+
+
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" id="close" aria-label="Close"></button>
+
+                    </div>
+                    <div id="planlarim" class="modal-body" style="display:block">
+                        <div class="row">
+
+
+
+                            <div class="col-sm">
+
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered" id="example1">
+                                        <thead class="thead-dark" id="thead">
+                                            <tr>
+                                                <th scope="col">Müşteri Adı</th>
+                                                <th scope="col">Planlanan Tarih</th>
+                                                <th scope="col" id="gercekth">Gerçekleşen Tarih</th>
+                                                <th scope="col">Ziyaret Notu</th>
+                                                <th scope="col">Onay</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bdy1">
+                                            <tr>
+                                                <td scope="col" class="text-center"><label class="form-label fw-bold" id="musadi" /></td>
+                                                <td scope="col"><input class="form-control" type="datetime-local" id="planlanan" /></td>
+                                                <td scope="col" id="gercekkolon"><input class="form-control" type="datetime-local" id="gerceklesen" /></td>
+                                                <td scope="col"><textarea class="form-control" id="not" rows="4" cols="4"></textarea></td>
+                                                <td scope="col" class="d-none"><input class="form-control" type="text" id="inckey" /></td>
+                                                <td scope="col" class="d-none"><input class="form-control" type="text" id="musid" /></td>
+                                                <td scope="col" class="text-center"><a onclick="guncelle1()" style="cursor: pointer;" id="editbutton"><i class="bx bx-edit bx-md bx-tada-hover"></i></a><a onclick="sil()" style="cursor: pointer;" id="deletebutton"><i class="bx bx-trash bx-md bx-tada-hover"></i></a><a onclick="gerceklesen()" style="cursor: pointer;" id="complatebutton"><i class="bx bx-like bx-md bx-tada-hover"></i></a><a onclick="guncelle()" style="cursor: pointer;" id="guncellebutton"><i class='bx bx-md bxs-check-circle bx-md bx-tada-hover'></i></a><a onclick="iptal()" style="cursor: pointer;" id="iptalbutton"><i class='bx bxs-x-circle bx-md bx-tada-hover'></i></a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+
+
+    <script>
+        function gerceklesen() {
+
+
+            $('#guncellebutton').show();
+            $('#iptalbutton').show();
+            $('#deletebutton').hide();
+            $('#editbutton').hide();
+            $('#complatebutton').hide();
+            $('#not').prop("disabled", false);
+            $('#planlanan').prop("disabled", false);
+            $('#gerceklesen').prop("disabled", false);
+            $('#gercekth').show();
+            $('#gercekkolon').show();
+
+            $('#gerceklesen').val((new Date().addHours(3)).toISOString().slice(0, 16));
+            $('#gerceklesen').focus();
+        }
+        function sil() {
+
+             $.ajax({
+                        type: 'POST',
+                 url: '@Url.Action("RandevuSil", "Satis")',
+                 data: JSON.stringify({ "INCKEY": document.getElementById("inckey").value }),
+                                contentType: "application/json",
+                 success: function () {
+                     $('#datepickermodal').modal('hide');
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: 'center',
+                                        showConfirmButton: false,
+                                        timer: 1000,
+                                        didOpen: (toast) => {
+                                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                        }
+                                    })
+                                    refreshtable();
+                                    Toast.fire({
+                                        icon: 'success',
+                                        title: 'Ziyaret başarıyla silindi!'
+                                    });
+
+                                },
+                                error: function () {
+
+                                },
+                                dataType: 'json'
+                            });
+            }
+        function guncelle1() {
+
+                $('#guncellebutton').show();
+                $('#iptalbutton').show();
+                $('#deletebutton').hide();
+                $('#editbutton').hide();
+                $('#complatebutton').hide();
+                $('#not').prop("disabled", false);
+            $('#planlanan').prop("disabled", false);
+            $('#planlanan').prop("readonly", false);
+                $('#gerceklesen').prop("disabled", false);
+            }
+        function iptal() {
+                $('#guncellebutton').hide();
+                $('#iptalbutton').hide();
+                $('#deletebutton').show();
+                $('#editbutton').show();
+                $('#complatebutton').show();
+                $('#not').prop("disabled", true);
+                $('#planlanan').prop("disabled", true);
+                $('#gerceklesen').prop("disabled", true);
+            }
+        function guncelle() {
+            var data = null;
+
+
+            var n = document.getElementById("not").value;
+            if (n == null || n == "") {
+                n == " ";
+            }
+            if (document.getElementById("gerceklesen").value == "") {
+                data = { "INCKEY": document.getElementById("inckey").value, "MUSTERI_ID": document.getElementById("musid").value, "RANDEVU_NOTU": n, "PLANLANAN_TARIH": document.getElementById("planlanan").value, "GERCEKLESEN_TARIH": "1970-12-12" };
+            } else {
+                data = { "INCKEY": document.getElementById("inckey").value, "MUSTERI_ID": document.getElementById("musid").value, "RANDEVU_NOTU": n, "PLANLANAN_TARIH": document.getElementById("planlanan").value, "GERCEKLESEN_TARIH": document.getElementById("gerceklesen").value };
+            }
+
+
+
+
+
+
+
+             $.ajax({
+                        type: 'POST',
+                 url: '@Url.Action("RandevuEkleGuncelle", "Satis")',
+                 data: JSON.stringify(data),
+                                contentType: "application/json",
+                 success: function () {
+
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: 'center',
+                                        showConfirmButton: false,
+                                        timer: 1000,
+                                        didOpen: (toast) => {
+                                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                        }
+                                    })
+                     $('#datepickermodal').modal('hide');
+                     refreshtable();
+                                    Toast.fire({
+                                        icon: 'success',
+                                        title: 'Ziyaret başarıyla güncellendi!'
+                                    });
+
+
+                                },
+                                error: function () {
+
+                                },
+                                dataType: 'json'
+                            });
+        }
+         async function getMusterilerAsync() {
+                let response = await fetch(`@Url.Action("GetMusteriler","Satis")`);
+                let data = await response.json()
+                return data;
+        }
+        async function getRandevuAsync() {
+                let response = await fetch(`@Url.Action("GetRandevu","Satis")`);
+                let data = await response.json()
+                return data;
+        }
+
+        function refreshtable() {
+            var username=@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
+            getMusterilerAsync().then(function (data) {
+                getRandevuAsync()
+                    .then(function (result) {
+                        var musteriler = JSON.parse(data).filter(x=>x.PLASIYER==username);
+                        calendar.removeAllEvents();
+                        var d = JSON.parse(result);
+                        for (let i = 0; i < musteriler.length; i++) {
+                            var musid = d.filter(x => x.MUSTERI_ID == musteriler[i].MUSTERI_ID);
+                            if (musid.length > 0) {
+                                var musadi = musteriler.filter(x => x.MUSTERI_ID == musid[0].MUSTERI_ID);
+                                for (let a = 0; a < musid.length; a++) {
+                                    var color = "";
+                                    if (Date.parse(musid[a].PLANLANAN_TARIH) > Date.now()) {
+                                        color = "#3D85C6";
+                                    } else {
+                                        color = "#C1C1C1";
+                                    }
+                                    if (musid[a].GERCEKLESEN_TARIH != null) {
+                                        color = "#CC0000";
+                                        calendar.addEvent({
+                                            id: musid[a].MUSTERI_ID,
+                                            title: musadi[0].MUSTERI_ADI,
+                                            start: new Date(musid[a].GERCEKLESEN_TARIH),
+                                            inckey: musid[a].INCKEY,
+                                            backgroundColor: color
+                                        });
+                                    } else {
+                                        calendar.addEvent({
+                                            id: musid[a].MUSTERI_ID,
+                                            title: musadi[0].MUSTERI_ADI,
+                                            start: new Date(musid[a].PLANLANAN_TARIH),
+                                            inckey: musid[a].INCKEY,
+                                            backgroundColor: color
+                                        });
+                                    }
+                                }
+
+                            }
+
+
+
+                        }
+
+
+
+
+
+                    }).then(function () {
+                        $('#editbutton').show();
+                        $('#deletebutton').show();
+                        $('#guncellebutton').hide();
+                        $('#iptalbutton').hide();
+                        $('#not').prop("disabled", true);
+                        $('#planlanan').prop("disabled", true);
+                        $('#gerceklesen').prop("disabled", true);
+                        calendar.render();
+                    })
+            })
+
+
+
+        }
+        var username= null;
+        var id = null;
+            var mus = $('#musteri');
+            var mus2 = $('#musteri2');
+            var mus3 = $('#musterison20');
+            var mus4 = $('#musterison200');
+            var musteriler = null;
+            var musteriler20 = null;
+        $(document).ready(function () {
+            var plasiyerlist = [];
+            var username =@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
+            $.ajax({
+                url: '@Url.Action("GetMusteriler", "Satis")',
+                type: 'POST',
+                success: function (result) {
+
+                    var data = JSON.parse(result);
+
+                    for (let i = 0; i < data.length; i++) {
+                        if (!plasiyerlist.includes(data[i].PLASIYER)) {
+                            plasiyerlist.push(data[i].PLASIYER);
+                        }
+                    }
+                    for (let i = 0; i < plasiyerlist.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.innerHTML = plasiyerlist[i];
+                        option.value = plasiyerlist[i];
+                        if (plasiyerlist[i] == username) {
+                            option.selected = "true";
+                        }
+                        $("#plasiyer").append(option);
+
+
+                    }
+
+                }
+            });
+            $.ajax({
+                url: '@Url.Action("GetMusteriler", "Satis")',
+                type: 'POST',
+                success: function (result) {
+
+                    var data = JSON.parse(result);
+
+                    for (let i = 0; i < data.length; i++) {
+                        if (!plasiyerlist.includes(data[i].PLASIYER)) {
+                            plasiyerlist.push(data[i].PLASIYER);
+                        }
+                    }
+                    for (let i = 0; i < plasiyerlist.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.innerHTML = plasiyerlist[i];
+                        option.value = plasiyerlist[i];
+                        if (plasiyerlist[i] == username) {
+                            option.selected = "true";
+                        }
+                        $("#plasiyer1").append(option);
+
+
+                    }
+
+                }
+            });
+
+            $("#datepickermodal").on('hide.bs.modal', function () {
+                $("#gerceklesen").val(null);
+                $('#editbutton').show();
+                $('#deletebutton').show();
+                $('#guncellebutton').hide();
+                $('#iptalbutton').hide();
+                $('#not').prop("disabled", true);
+                $('#planlanan').prop("disabled", true);
+                $('#gerceklesen').prop("disabled", true);
+            });
+            $(document).on("select2:open", () => {
+                document.querySelector(".select2-container--open .select2-search__field").focus()
+            })
+            var ozelyetki = @Html.Raw(Json.Encode(ViewBag.OzelYetki));
+
+            if (ozelyetki == 0) {
+
+                $("#plasiyer").hide();
+                $("#plasiyer1").hide();
+
+            } else {
+                $("#plasiyer").select2();
+                $("#plasiyer1").select2();
+            }
+
+
+            username = @Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
+            id = @Html.Raw(Json.Encode(Request.Cookies["Id"].Value));
+
+            $('#guncellebutton').hide();
+            $('#iptalbutton').hide();
+            $('#not').prop("disabled", true);
+            $('#planlanan').prop("disabled", true);
+            $('#gerceklesen').prop("disabled", true);
+            getMusterilerAsync()
+                .then(function (result) {
+
+                    musteriler = JSON.parse(result).filter(x => x.PLASIYER == username).sort((a, b) => (a.MUSTERI_ADI > b.MUSTERI_ADI) ? 1 : -1);
+
+                    musteriler20 = JSON.parse(result).filter(x => x.PLASIYER == username).sort((a, b) => (a.KAYIT_TARIHI > b.KAYIT_TARIHI) ? -1 : 1);
+                    var leng = musteriler20.length;
+                    if (leng > 15) {
+                        leng = 15;
+                    }
+                    for (let i = 0; i < musteriler.length; i++) {
+                        var st = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m1' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main' >" + musteriler[i].MUSTERI_ADI+"</div></div>"
+                        mus.append(st);
+                        var st1 = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m2' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler[i].MUSTERI_ADI + "</div></div>"
+                        mus2.append(st1);
+                    }
+                    for (let i = 0; i < leng; i++) {
+                        var st = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event' data-id=" + musteriler20[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler20[i].MUSTERI_ADI + "</div></div>"
+                        mus3.append(st);
+                        mus4.append(st);
+                    }
+
+                }).then(function () {
+                    getRandevuAsync()
+                        .then(function (result) {
+                            var d = JSON.parse(result);
+                            for (let i = 0; i < musteriler.length; i++) {
+                                var musid = d.filter(x => x.MUSTERI_ID == musteriler[i].MUSTERI_ID);
+                                if (musid.length > 0) {
+                                    var musadi = musteriler.filter(x => x.MUSTERI_ID == musid[0].MUSTERI_ID);
+                                    for (let a = 0; a < musid.length; a++) {
+                                        var color = "";
+                                        if (Date.parse(musid[a].PLANLANAN_TARIH) > new Date()) {
+
+                                            color = "#3D85C6";
+                                        } else {
+
+                                            color = "#C1C1C1";
+                                        }
+                                        if (musid[a].GERCEKLESEN_TARIH != null) {
+                                            color = "#CC0000";
+                                            calendar.addEvent({
+                                                id: musid[a].MUSTERI_ID,
+                                                title: musadi[0].MUSTERI_ADI,
+                                                start: new Date(musid[a].GERCEKLESEN_TARIH),
+                                                inckey: musid[a].INCKEY,
+                                                backgroundColor: color
+                                            });
+                                        } else {
+                                            calendar.addEvent({
+                                                id: musid[a].MUSTERI_ID,
+                                                title: musadi[0].MUSTERI_ADI,
+                                                start: new Date(musid[a].PLANLANAN_TARIH),
+                                                inckey: musid[a].INCKEY,
+                                                backgroundColor: color
+                                            });
+                                        }
+                                    }
+
+                                }
+
+
+
+                            }
+                            calendar.render();
+
+
+                        })
+
+                })
+
+        })
+
+
+    </script>
+    <script>
+        document.getElementById('musif').onload = function () {
+
+            var p = document.getElementById('musif').parentNode.parentElement;
+            p.getElementsByClassName("centercontent")[0].style.display = "none";
+         
+        };
+        document.getElementById('musrap').onload = function () {
+
+            var p = document.getElementById('musrap').parentNode;
+            p.getElementsByClassName("centercontent")[0].style.display = "none";
+            
+
+        };
+        $('#musteriraporu').on('hidden.bs.modal', function () {
+            var p = document.getElementById('musrap').parentNode;
+            p.getElementsByClassName("centercontent")[0].style.display = "unset";
+        })
+    </script>
+</body>
+
+
+

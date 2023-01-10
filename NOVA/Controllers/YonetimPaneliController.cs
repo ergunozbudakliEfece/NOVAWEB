@@ -30,7 +30,8 @@ namespace NOVA.Controllers
 
             // Stop Caching in Firefox
             Response.Cache.SetNoStore();
-            var yetkiKontrol = GetYetki(Request.Cookies["Id"].Value.ToInt(), 11)[0];
+            var yetki= GetYetki(Request.Cookies["Id"].Value.ToInt());
+            var yetkiKontrol = yetki.FirstOrDefault(x=> x.MODULE_INCKEY==11);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
                 Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
@@ -92,26 +93,26 @@ namespace NOVA.Controllers
             ViewBag.Name = Session["Name"];
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
-            var yetkiKontrolyonetim = GetYetki(Request.Cookies["Id"].Value.ToInt(), 9)[0];
-            var kullaniciayar = GetYetki(Request.Cookies["Id"].Value.ToInt(), 10)[0];
-            var kullaniciyetki = GetYetki(Request.Cookies["Id"].Value.ToInt(), 11)[0];
-            var istatistik = GetYetki(Request.Cookies["Id"].Value.ToInt(), 12)[0];
-            var yetkiKontrolSatis = GetYetki(Request.Cookies["Id"].Value.ToInt(), 1)[0];
-            var yetkiKontrolStok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 2)[0];
-            var yetkiKontrolUretim = GetYetki(Request.Cookies["Id"].Value.ToInt(), 3)[0];
-            var yetkiKontrolSatinAlma = GetYetki(Request.Cookies["Id"].Value.ToInt(), 4)[0];
-            var yetkiKontrolFinans = GetYetki(Request.Cookies["Id"].Value.ToInt(), 5)[0];
-            var yetkiKontrolMuhasebe = GetYetki(Request.Cookies["Id"].Value.ToInt(), 6)[0];
-            var yetkiKontrolYonetim = GetYetki(Request.Cookies["Id"].Value.ToInt(), 8)[0];
-            var yetkiKontrolSevkiyat = GetYetki(Request.Cookies["Id"].Value.ToInt(), 17)[0];
-            var yetkiKontrolDetayliSip = GetYetki(Request.Cookies["Id"].Value.ToInt(), 16)[0];
-            var yetkiKontrolSiparisRaporu = GetYetki(Request.Cookies["Id"].Value.ToInt(), 18)[0];
-            var yetkidetaylisatinalma = GetYetki(Request.Cookies["Id"].Value.ToInt(), 19)[0];
-            var yetkisaticisiparisi = GetYetki(Request.Cookies["Id"].Value.ToInt(), 20)[0];
-            var yetkifiyatlistok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 28)[0];
-            var yetkifiyatsizstok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 29)[0];
-            var ziyaretkaydi = GetYetki(Request.Cookies["Id"].Value.ToInt(), 30)[0];
-            
+            var yetkiKontrolyonetim = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 9);
+            var kullaniciayar = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 10);
+            var kullaniciyetki = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 11);
+            var istatistik = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 12);
+            var yetkiKontrolSatis = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 1);
+            var yetkiKontrolStok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 2);
+            var yetkiKontrolUretim = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 3);
+            var yetkiKontrolSatinAlma = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 4);
+            var yetkiKontrolFinans = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 5);
+            var yetkiKontrolMuhasebe = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 6);
+            var yetkiKontrolYonetim = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 8);
+            var yetkiKontrolSevkiyat = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 17);
+            var yetkiKontrolDetayliSip = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 16);
+            var yetkiKontrolSiparisRaporu = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 18);
+            var yetkidetaylisatinalma = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 19);
+            var yetkisaticisiparisi = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 20);
+            var yetkifiyatlistok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 18);
+            var yetkifiyatsizstok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 29);
+            var ziyaretkaydi = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 30);
+
             if (ziyaretkaydi.USER_AUTH != true)
             {
                 ViewBag.DisplayZiyaretKaydi = "none";
@@ -260,7 +261,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.Display3 = "unset";
             }
-            var ik = GetYetki(Request.Cookies["Id"].Value.ToInt(), 7)[0];
+            var ik = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 7);
             if (ik.USER_AUTH != true)
             {
                 ViewBag.Display4 = "none";
@@ -269,7 +270,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.Display4 = "unset";
             }
-            var ik1 = GetYetki(Request.Cookies["Id"].Value.ToInt(), 13)[0];
+            var ik1 = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 13);
             if (ik1.USER_AUTH != true)
             {
                 ViewBag.Display5 = "none";
@@ -278,7 +279,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.Display5 = "unset";
             }
-            var ik2 = GetYetki(Request.Cookies["Id"].Value.ToInt(), 14)[0];
+            var ik2 = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 14);
             if (ik2.USER_AUTH != true)
             {
                 ViewBag.Display6 = "none";
@@ -291,9 +292,9 @@ namespace NOVA.Controllers
             return View("Yetki");
         }
 
-        public List<User> GetYetki()
+        public List<User> GetYetki(int id)
         {
-            var apiUrl = "http://192.168.2.13:83/api/userwithroles";
+            var apiUrl = "http://192.168.2.13:83/api/userwithroles/"+id;
 
             //Connect API
             Uri url = new Uri(apiUrl);
@@ -331,23 +332,7 @@ namespace NOVA.Controllers
             return jsonList;
         }
 
-        public List<User> GetYetki(int id, int inckey)
-        {
-            var apiUrl = "http://192.168.2.13:83/api/userwithroles/" + id + "/" + inckey;
-
-            //Connect API
-            Uri url = new Uri(apiUrl);
-            WebClient client = new WebClient();
-            client.Encoding = System.Text.Encoding.UTF8;
-
-            string json = client.DownloadString(url);
-            //END
-
-            //JSON Parse START
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            List<User> jsonList = ser.Deserialize<List<User>>(json);
-            return jsonList;
-        }
+       
         public ActionResult KullaniciAyar()
         {
             if (Session["Durum"] != null)
@@ -359,10 +344,10 @@ namespace NOVA.Controllers
                 ViewBag.Durum = null;
             }
             Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
-
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             // Stop Caching in Firefox
             Response.Cache.SetNoStore();
-            var yetkiKontrol = GetYetki(Request.Cookies["Id"].Value.ToInt(), 10)[0];
+            var yetkiKontrol = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 10); 
             if (yetkiKontrol.SELECT_AUTH != true)
             {
                 Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
@@ -396,25 +381,25 @@ namespace NOVA.Controllers
 
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
             ViewBag.Name = Session["Name"];
-            var yetkiKontrolyonetim = GetYetki(Request.Cookies["Id"].Value.ToInt(), 9)[0];
-            var kullaniciayar = GetYetki(Request.Cookies["Id"].Value.ToInt(), 10)[0];
-            var kullaniciyetki = GetYetki(Request.Cookies["Id"].Value.ToInt(), 11)[0];
-            var istatistik = GetYetki(Request.Cookies["Id"].Value.ToInt(), 12)[0];
-            var yetkiKontrolSatis = GetYetki(Request.Cookies["Id"].Value.ToInt(), 1)[0];
-            var yetkiKontrolStok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 2)[0];
-            var yetkiKontrolUretim = GetYetki(Request.Cookies["Id"].Value.ToInt(), 3)[0];
-            var yetkiKontrolSatinAlma = GetYetki(Request.Cookies["Id"].Value.ToInt(), 4)[0];
-            var yetkiKontrolFinans = GetYetki(Request.Cookies["Id"].Value.ToInt(), 5)[0];
-            var yetkiKontrolMuhasebe = GetYetki(Request.Cookies["Id"].Value.ToInt(), 6)[0];
-            var yetkiKontrolYonetim = GetYetki(Request.Cookies["Id"].Value.ToInt(), 8)[0];
-            var yetkiKontrolSevkiyat = GetYetki(Request.Cookies["Id"].Value.ToInt(), 17)[0];
-            var yetkiKontrolDetayliSip = GetYetki(Request.Cookies["Id"].Value.ToInt(), 16)[0];
-            var yetkiKontrolSiparisRaporu = GetYetki(Request.Cookies["Id"].Value.ToInt(), 18)[0];
-            var yetkidetaylisatinalma = GetYetki(Request.Cookies["Id"].Value.ToInt(), 19)[0];
-            var yetkisaticisiparisi = GetYetki(Request.Cookies["Id"].Value.ToInt(), 20)[0];
-            var yetkifiyatlistok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 28)[0];
-            var yetkifiyatsizstok = GetYetki(Request.Cookies["Id"].Value.ToInt(), 29)[0];
-            var ziyaretkaydi = GetYetki(Request.Cookies["Id"].Value.ToInt(), 30)[0];
+            var yetkiKontrolyonetim = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 9);
+            var kullaniciayar = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 10);
+            var kullaniciyetki = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 11);
+            var istatistik = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 12);
+            var yetkiKontrolSatis = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 1);
+            var yetkiKontrolStok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 2);
+            var yetkiKontrolUretim = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 3);
+            var yetkiKontrolSatinAlma = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 4);
+            var yetkiKontrolFinans = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 5);
+            var yetkiKontrolMuhasebe = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 6);
+            var yetkiKontrolYonetim = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 8);
+            var yetkiKontrolSevkiyat = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 17);
+            var yetkiKontrolDetayliSip = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 16);
+            var yetkiKontrolSiparisRaporu = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 18);
+            var yetkidetaylisatinalma = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 19);
+            var yetkisaticisiparisi = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 20);
+            var yetkifiyatlistok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 18);
+            var yetkifiyatsizstok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 29);
+            var ziyaretkaydi = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 30);
 
             if (ziyaretkaydi.USER_AUTH != true)
             {
@@ -564,7 +549,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.Display3 = "unset";
             }
-            var ik = GetYetki(Request.Cookies["Id"].Value.ToInt(), 7)[0];
+            var ik = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 7);
             if (ik.USER_AUTH != true)
             {
                 ViewBag.Display4 = "none";
@@ -573,7 +558,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.Display4 = "unset";
             }
-            var ik1 = GetYetki(Request.Cookies["Id"].Value.ToInt(), 13)[0];
+            var ik1 = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 13);
             if (ik1.USER_AUTH != true)
             {
                 ViewBag.Display5 = "none";
@@ -582,7 +567,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.Display5 = "unset";
             }
-            var ik2 = GetYetki(Request.Cookies["Id"].Value.ToInt(), 14)[0];
+            var ik2 = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 14);
             if (ik2.USER_AUTH != true)
             {
                 ViewBag.Display6 = "none";
