@@ -8,25 +8,43 @@
         opacity: 0.7
     }
 
-    
-    
-    .modal-content {
-        height: 100%
-    }
 
+    @@media screen and (max-width: 600px) {
+        .modal-body {
+            height: 100vh !important;
+        }
+
+        
+    }
     
+    #calendar{max-height:750px}
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
    
 </style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 <body>
 
     <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true" style="display: none;">
 
-        <div class="modal-dialog modal-dialog-scrollable" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable" role="dialog" style="max-width: 85vw !important;">
+            
             <div class="modal-content">
-
-                <div  class="modal-body mb-3" style="overflow-y: hidden;">
-
-                    <iframe style="width:100%;height:100%" src="@Url.Action("ZiyaretKaydiListesi")"></iframe>
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="centercontent" name="ilkspinner">
+                    <i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>
+                </div>
+                <div class="modal-body mb-3" style="overflow-y: hidden; max-width: 100vw !important; height: 75vh; background-color: white ">
+                    <iframe id="musif" loading="lazy" style="width: 100%; height: 100%" src="@Url.Action("ZiyaretKaydiListesi")"></iframe>
                 </div>
             </div>
 
@@ -34,30 +52,46 @@
     </div>
     <div class="modal fade" id="musteriraporu" tabindex="-1" aria-hidden="true" style="display: none;">
 
-        <div class="modal-dialog modal-dialog-scrollable" role="dialog">
-            <div class="modal-content">
-
-                <div  class="modal-body p-1" style="overflow-y: hidden;">
+        <div class="modal-dialog modal-dialog-scrollable" role="dialog" style="max-width: 85vw !important;">
+            <div class="modal-content" style="max-width: 100vw !important">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body p-1" style="overflow-y: hidden; max-width: 100vw !important; height: 75vh; background-color: white ">
                     @{
-if (ViewBag.OzelYetki == true)
-            {
-                                        <iframe style="width:100%;height:100%" src="@Url.Action("MusteriRaporuOzel")"></iframe>
-}
-else
-            {
-                <iframe style="width:100%;height:100%" src="@Url.Action("MusteriRaporu")"></iframe>
-            }
+                        if (ViewBag.OzelYetki == true)
+                        {
+
+                            <div class="centercontent">
+                                <i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>
+                            </div>
+                            <iframe id="musrap" loading="lazy" style="width:100%;height:100%" src="@Url.Action("MusteriRaporuOzel")"></iframe>
+
+
+
+
+
+                        }
+                        else
+                        { <div class="centercontent">
+                                <i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>
+                            </div>
+                            <iframe id="musrap" loading="lazy" style="width: 100%; height: 100%" src="@Url.Action("MusteriRaporu")"></iframe>
+                        }
                     }
-                    
+
                 </div>
             </div>
 
         </div>
+
+
     </div>
 
 
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="font-family:Calibri;font-size:14px">
         <div class="row">
 
             <div id="menu1" class="col-sm-1">
@@ -67,17 +101,20 @@ else
                         <div class="col d-flex">
                             <select class="form-control" id="plasiyer" onchange="plasiyerchange(this.value)" name="PLASIYER">
                             </select>
-                            <img onclick="musterirapor()" class="ms-1" src="~/images/online-survey.png" style="width:33px;cursor:pointer">
-                            <img onclick="musteritakip()" class="ms-1" src="~/images/form.png" style="width:33px;cursor:pointer">
+                            <img data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Raporlar</span>" onclick="musterirapor()" class="ms-1" src="~/images/online-survey.png" style="width:33px;cursor:pointer">
+                            <img data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Müşteri Kayıt/Düzenle</span>" onclick="musteritakip()" class="ms-1" src="~/images/form.png" style="width:33px;cursor:pointer">
                         </div>
 
                     </div>
                     <script>
                         function musteritakip() {
                             $('#basicModal').modal('show');
+                            document.getElementById("basicModal").getElementsByClassName("centercontent")[0].style.display = "unset";
+                            document.getElementById("musif").contentWindow.location.reload();
                         }
                         function musterirapor() {
                             $('#musteriraporu').modal('show');
+                            document.getElementById("musrap").contentWindow.location.reload();
                         }
                     </script>
                     <script>
@@ -108,7 +145,7 @@ else
                                 mus.append("<input class=\"form-control position-sticky sticky-top mt-1\" type=\"text\" id=\"Search\" onkeyup=\"myFunction()\" placeholder=\"Müşteri Ara..\">")
                                 mus2.append("<input class=\"form-control position-sticky sticky-top mt-1\" type=\"text\" id=\"Search1\" onkeyup=\"myFunction1()\" placeholder=\"Müşteri Ara..\">")
                                 for (let i = 0; i < musteriler.length; i++) {
-                                    var st = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m1' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main' style='background-color:#697FC2;border-style:hidden'>" + musteriler[i].MUSTERI_ADI + "</div></div>"
+                                    var st = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m1' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler[i].MUSTERI_ADI + "</div></div>"
                                     mus.append(st);
                                     var st1 = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m2' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler[i].MUSTERI_ADI + "</div></div>"
                                     mus2.append(st1);
@@ -920,7 +957,7 @@ else
                         leng = 15;
                     }
                     for (let i = 0; i < musteriler.length; i++) {
-                        var st = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m1' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main' style='background-color:#697FC2;border-style:hidden'>" + musteriler[i].MUSTERI_ADI+"</div></div>"
+                        var st = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m1' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main' >" + musteriler[i].MUSTERI_ADI+"</div></div>"
                         mus.append(st);
                         var st1 = "<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m2' data-id=" + musteriler[i].MUSTERI_ID + "><div class='fc-event-main'>" + musteriler[i].MUSTERI_ADI + "</div></div>"
                         mus2.append(st1);
@@ -984,7 +1021,25 @@ else
 
 
     </script>
+    <script>
+        document.getElementById('musif').onload = function () {
 
+            var p = document.getElementById('musif').parentNode.parentElement;
+            p.getElementsByClassName("centercontent")[0].style.display = "none";
+         
+        };
+        document.getElementById('musrap').onload = function () {
+
+            var p = document.getElementById('musrap').parentNode;
+            p.getElementsByClassName("centercontent")[0].style.display = "none";
+            
+
+        };
+        $('#musteriraporu').on('hidden.bs.modal', function () {
+            var p = document.getElementById('musrap').parentNode;
+            p.getElementsByClassName("centercontent")[0].style.display = "unset";
+        })
+    </script>
 </body>
 
 

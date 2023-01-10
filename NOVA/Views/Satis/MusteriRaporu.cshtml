@@ -41,6 +41,15 @@
 <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
 <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/mobile/bootstrap-table-mobile.min.js"></script>
 <style>
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
     .menu1 {
         display: none;
     }
@@ -95,7 +104,10 @@
                 <hr class="dropdown-divider">
             </li>
             <li><a class="dropdown-item" onclick="change(3)">Gerçekleşen</a></li>
-
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" onclick="change(4)">Ürünler</a></li>
         </ul>
     </div>
 
@@ -106,7 +118,8 @@
         <label class="btn btn-outline-primary" for="btnradio2">Planlanan</label>
         <input type="radio" class="btn-check" onclick="change(3)" name="btnradio" id="btnradio3" autocomplete="off">
         <label class="btn btn-outline-primary" for="btnradio3">Gerçekleşen</label>
-
+        <input type="radio" class="btn-check" onclick="change(4)" name="btnradio" id="btnradio4" autocomplete="off">
+        <label class="btn btn-outline-primary" for="btnradio4">Ürünler</label>
     </div>
 
 
@@ -191,7 +204,31 @@
 
     </div>
 
+    <div id="employeeTableWrapper3" class="tableWrapper table-responsive">
+        <table id="table4"
+               class="table table-striped"
+               data-pagination="true"
+               data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+               data-search="true"
+               data-show-columns="true"
+               data-export-data-type="all"
+               data-export-types="['excel']"
+               data-show-export="true"
+               data-locale="tr-TR"
+               data-mobile-responsive="true">
+            <thead>
+                <tr>
+                    <th data-field="MUSTERI_ID" data-sortable="true" data-formatter="musteriadiFormatter">Müşteri Adı</th>
+                    <th data-field="URUN_GRUBU" data-sortable="true">Ürün Grubu</th>
+                    <th data-field="YILLIK_KULLANIM" data-sortable="true">Yıllık Kullanım</th>
+                    <th data-field="OLCU_BIRIMI" data-sortable="true">Ölçü Birimi</th>
+                    <th data-field="KAYIT_YAPAN_KULLANICI" data-formatter="plasiyerFormatter1">PLASIYER</th>
+                </tr>
+            </thead>
+        </table>
 
+
+    </div>
 
 
     <script>
@@ -199,24 +236,76 @@
         var r2 = null;
         var username = null;
         var userid = null;
+        var user=null
+         async function getUrunlerAsync() {
+                let response = await fetch(`@Url.Action("GetMusteriUrun", "Satis")`);
+                let data = await response.json()
+                return data;
+        }
+         async function getUserAsync() {
+                let response = await fetch(`@Url.Action("GetUser", "Satis")`);
+                let data = await response.json()
+                return data;
+            }
             $(document).ready(function () {
                 $('#employeeTableWrapper1').hide();
                 $('#employeeTableWrapper2').hide();
+                $('#employeeTableWrapper3').hide();
                 })
-
-                function change(value) {
+        getUserAsync().then(function (data) {
+            user = JSON.parse(data);
+        })
+                 function change(value) {
                     if (value == 1) {
+                        $('#employeeTableWrapper3').hide();
                         $('#employeeTableWrapper1').hide();
                         $('#employeeTableWrapper2').hide();
                         $('#employeeTableWrapper').show();
+                        getMusterilerAsync().then(function (data) {
+                            var musteriler = JSON.parse(data);
+
+                            $('#table').bootstrapTable({ data: musteriler });
+                        })
                     } else if (value == 2) {
                         $('#employeeTableWrapper').hide();
                         $('#employeeTableWrapper1').show();
+                        getRandevuAsync().then(function (data) {
+                            var randevular = JSON.parse(data).filter(x => x.GERCEKLESEN_TARIH == null);
+
+                            $('#table2').bootstrapTable({ data: randevular });
+                        })
                         $('#employeeTableWrapper2').hide();
-                    } else {
+                        $('#employeeTableWrapper3').hide();
+                    } else if (value == 3) {
                         $('#employeeTableWrapper').hide();
                         $('#employeeTableWrapper1').hide();
                         $('#employeeTableWrapper2').show();
+                        $('#employeeTableWrapper3').hide();
+                        var sor2 = null;
+                        $.getJSON('@Url.Action("GetRandevu", "Satis")', function (data) {
+
+
+                        }).done(function (result) {
+
+
+                            $(function () {
+
+
+                                sor2 = JSON.parse(result).filter(x => x.GERCEKLESEN_TARIH != null);
+                                $('#table3').bootstrapTable({ data: sor2 })
+
+                            })
+                        })
+                    } else {
+                        $('#employeeTableWrapper').hide();
+                        $('#employeeTableWrapper1').hide();
+                        getUrunlerAsync().then(function (data) {
+                            var urunler = JSON.parse(data).filter(x => x.KAYIT_YAPAN_KULLANICI==@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value)));
+
+                            $('#table4').bootstrapTable({ data: urunler });
+                        })
+                        $('#employeeTableWrapper2').hide();
+                        $('#employeeTableWrapper3').show();
                     }
                 }
                 $.getJSON('@Url.Action("GetMusteriler","Satis")', function (data) {
@@ -254,7 +343,18 @@
                 })
                 })
 
+        function plasiyerFormatter1(value, row, index) {
+            if (value == null) {
+                return "";
+            }
 
+            var a = user.filter(x => x.USER_NAME == value);
+            var y = a[0].USER_FIRSTNAME + " " + a[0].USER_LASTNAME;
+
+            return y;
+
+
+        }
             function teslimFormatter(value, row, index) {
                 var old = value.split('T')[0];
                 var year = old.split('-')[0];
