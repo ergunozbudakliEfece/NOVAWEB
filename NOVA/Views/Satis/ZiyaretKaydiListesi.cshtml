@@ -49,6 +49,7 @@
     <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <style>
+        #sil:hover{opacity:0.7}
         .centercontent {
             position: absolute;
             max-width: 100%;
@@ -268,17 +269,11 @@
 
 
         var activeusers = null;
-        $.ajax({
-                            url: '@Url.Action("GetActiveUsers", "Satis")',
-                            type: 'POST',
-             success: function (result) {
-                 activeusers = JSON.parse(result);
 
-                            }
-                 })
         var cities = null;
 
-        var districts = null;
+       
+        
         var constant = 0;
 
         var mahalleler = null;
@@ -298,10 +293,10 @@
 </head>
 <body style="background-color:white">
     
-    <div class="container-fluid">
+    <div class="container-fluid mt-2">
         
         
-        <form id="myForm" method="post">
+        <form id="myForm" method="post" autocomplete="off">
 
 
 
@@ -334,12 +329,13 @@
             <div class="row">
                 <div class="col-sm">
                     <div class="row">
-                        <div class="col-sm mb-2">
+                        <div class="col-sm d-flex mb-2">
 
 
                             <input class="form-control" type="text" value="" placeholder="Müşteri İsmi" id="ISIM" name="MUSTERI_ADI">
                             <select id="musteriselect" onchange="musterichange(this.value)" style="display:none;width:100%" name="MUSTERI_ID">
                             </select>
+                            <img id="sil" onclick="deletemusteri()" style="cursor:pointer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAKlJREFUSEvtlcERQDAQRZ9KlIBOlEIFlKQUOqASJjM4hJ0fIje5ZTbZ9//uJJuReGWJ86MANdABpSFkBlpgsIQqgEuQC5cjUL0FrPtFS4iKyxKpBCp+ARwXYnt/OvatJwccyqV1z6J5/nXzvgb4CtX+5Ic6UAmjS/QDLu/qaUn+HsivKbpEivAYEDJofOh0N/msl+xGZQ8USvoeX4DmbnSqkRmY3z6WHLABUDk4GfuOp84AAAAASUVORK5CYII=" />
 
 
                         </div>
@@ -546,7 +542,9 @@
                     if (value == 1) {
                         var m = document.getElementById("musteriselect");
                         if (m.value != "") {
+                            $('#basicModal').modal({ backdrop: 'static', keyboard: false })  
                             $('#basicModal').modal('show');
+                            $('#closebtn').modal('hide');
                         } else {
                             const Toast = Swal.mixin({
                                 toast: true,
@@ -568,6 +566,7 @@
                     } else {
                         var m = document.getElementById("musteriselect");
                         if (m.value != "") {
+                            $('#datepickermodal').modal({ backdrop: 'static', keyboard: false });  
                             $('#datepickermodal').modal('show');
                         } else {
                             const Toast = Swal.mixin({
@@ -672,8 +671,7 @@
                             toast: true,
                             position: 'center',
                             showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
+                            timer: 1000,
                             didOpen: (toast) => {
                                 toast.addEventListener('mouseenter', Swal.stopTimer)
                                 toast.addEventListener('mouseleave', Swal.resumeTimer)
@@ -1025,13 +1023,80 @@
                 }
 
             }
+             function deletemusteri() {
+                var m = document.getElementById("musteriselect");
+                 if (m.value != "") {
+                     var id = m.value;
+                     document.body.style.cursor = "wait";
+                     Swal.fire({
+                         title: 'Onay',
+                         icon: 'question',
+                         confirmButtonColor: '#3085d6',
+                         denyButtonColor: '#d33',
+                         text: "Seçili müşteriyi silmek istediğinizden emin misiniz?",
+                         showDenyButton: true,
+                         confirmButtonText: 'Sil',
+                         denyButtonText: `Hayır!`,
+                     }).then((result) => {
 
+                         if (result.isConfirmed) {
+                              $.ajax({
+                         url: '@Url.Action("MusteriSil", "Satis")',
+                         type: 'POST',
+                         data: { "id":id },
+                        success: function (result) {
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'center',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            })
+
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Müşteri başarıyla silindi!'
+                            });
+                            document.body.style.cursor = "default";
+                            $('#myForm').trigger("reset");
+                            $('#btnradio2').trigger("click");
+                        }
+
+                    })
+                         }
+
+                     })
+
+                } else {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'center',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Müşteri seçilmedi!'
+                    });
+                }
+
+            }
             $(document).ready(function () {
-
+                $("#sil").hide();
                 $("#save").show();
                 $("#update").hide();
                 $("#urunekle").hide();
                 $("#ziyaretplani").hide();
+
                 $.ajax({
                     url: '@Url.Action("GetCities", "Satis")',
                     type: 'POST',
@@ -1047,27 +1112,36 @@
                             option.value = f[i].CITYNAME;
                             sl.appendChild(option);
                         }
+                        $('#ilselect').val(null).trigger("change");
                     }
                 })
 
-
+                async function getPlasiyer() {
+                let response = await fetch(`@Url.Action("GetActiveUsers", "Satis")`);
+                    let data = await response.json()
+                    return JSON.parse(data);
+            }
                 var plasiyer = document.getElementById("plasiyer");
                 var cc = @Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
-
-                for (let i = 0; i < activeusers.length; i++) {
-                    if (activeusers[i].USER_NAME != "admin" && activeusers[i].USER_NAME != "test") {
-                        var option = document.createElement("option");
-                        option.innerHTML = activeusers[i].USER_NAME;
-                        option.value = activeusers[i].USER_NAME;
-                        if (activeusers[i].USER_NAME == cc) {
-                            option.selected = "true";
+                getPlasiyer().then(function (data) {
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].USER_NAME != "admin" && data[i].USER_NAME != "test") {
+                            var option = document.createElement("option");
+                            option.innerHTML = data[i].USER_NAME;
+                            option.value = data[i].USER_NAME;
+                            if (data[i].USER_NAME == cc) {
+                                option.selected = "true";
+                            }
+                            plasiyer.appendChild(option);
                         }
-                        plasiyer.appendChild(option);
-                    }
 
-                }
+                    }
+                })
+
                  var ozelyetki = @Html.Raw(Json.Encode(ViewBag.OzelYetki));
-                $("#plasiyer").select2();
+                $("#plasiyer").select2(
+                    { sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)), }
+                );
 
                 $("#plasiyer").val(cc).trigger("change");
                 if (ozelyetki != 1) {
@@ -1112,7 +1186,9 @@
                 $('#ilselect').select2({
                     placeholder: "İl Seçin",
                     allowClear: true,
+                    sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)),
                 });
+
                 $('#ilceselect').select2({
 
                     placeholder: "İlçe Seçin",
@@ -1237,7 +1313,7 @@
         function change(value) {
 
             if (value == 1) {
-
+                $("#sil").hide();
                 $("#save").show();
                 $("#update").hide();
                 $("#urunekle").hide();
@@ -1270,6 +1346,7 @@
 
             } else {
                 constant = 1;
+                $("#sil").show();
                 $("#save").hide();
                 $("#urunekle").show();
                 $("#ziyaretplani").show();
@@ -1306,56 +1383,52 @@
 
 
         }
-
+            async function getDis() {
+                let response = await fetch(`@Url.Action("GetDistricts", "Satis")`);
+                    let data = await response.json()
+                    return JSON.parse(data);
+            }
+           
             function citychange(value) {
+                getDis().then(function (data) {
+                    var selected = data.filter(x => x.SEHIRADI == value);
 
-                $.ajax({
-                    url: '@Url.Action("GetDistricts", "Satis")',
-                    type: 'POST',
-                    success: function (result) {
-
-                        var f = JSON.parse(result);
-
-                        var selected = f.filter(x => x.SEHIRADI == value);
-
-                        var ilce = document.getElementById("ilceselect");
-                        ilce.replaceChildren();
-                        for (let i = 0; i < selected.length; i++) {
-                            var option = document.createElement("option");
-                            option.innerHTML = selected[i].ILCEADI;
-                            option.value = selected[i].ILCEID;
-                            ilce.appendChild(option);
-
-                        }
-                    },
-                    complete: function () {
-
+                    var ilce = document.getElementById("ilceselect");
+                    ilce.replaceChildren();
+                    for (let i = 0; i < selected.length; i++) {
+                        var option = document.createElement("option");
+                        option.innerHTML = selected[i].ILCEADI;
+                        option.value = selected[i].ILCEID;
+                        ilce.appendChild(option);
 
                     }
                 })
 
+
+
+
+
             }
             function ilcechange(value) {
-                document.getElementById("mahalleselect").replaceChildren();
-                $.ajax({
-                            url: '@Url.Action("GetMahalleler", "Satis")',
-                    type: 'POST',
-                    data: {"e":value},
-                    success: function (result) {
-
-                        var d = JSON.parse(result);
-                         var mah = document.getElementById("mahalleselect");
-                         mah.replaceChildren();
-                         for (let i = 0; i < d.length; i++) {
-                             var option = document.createElement("option");
-                             option.innerHTML = d[i].MAHALLEADI;
-                             option.value = d[i].MAHID;
-                             mah.appendChild(option);
-
-                         }
+                var d = null;
+                $.getJSON("http://192.168.2.13:83/api/location/mahalle/" + value).then(function (data) {
+                    d = data;
+                }).then(function () {
+                    var mah = document.getElementById("mahalleselect");
+                 
+                    mah.replaceChildren();
+                    for (let i = 0; i < d.length; i++) {
+                        var option = document.createElement("option");
+                        option.innerHTML = d[i].MAHALLEADI;
+                        option.value = d[i].MAHID;
+                        mah.appendChild(option);
 
                     }
-                 })
+                })
+                
+                 
+                   
+               
 
             }
 
@@ -1825,7 +1898,7 @@
                                 var ozelyetki = @Html.Raw(Json.Encode(ViewBag.OzelYetki));
                                 var filt = null;
                                 if (ozelyetki != 1) {
-                                    filt = JSON.parse(data).filter(x => x.MUSTERI_ID == value && x.PLASIYER == e);
+                                    filt = JSON.parse(data).filter(x => x.MUSTERI_ID == value && x.KAYIT_YAPAN_KULLANICI == e);
 
                                 } else {
 
@@ -1861,7 +1934,7 @@
                                         input2.value = filt[i].YILLIK_KULLANIM.toLocaleString("en");
                                         input2.onkeydown = function (event) {
                                             var key = event.which;
-                                            if ((key < 48 || key > 57) && key != 8) event.preventDefault();
+                                            if (((key < 48 || key > 57) && (key < 96 || key > 105)) && key != 8) event.preventDefault();
                                         }
                                         input2.onkeyup = function (event) {
 
@@ -2091,7 +2164,7 @@
                                     input2.type = "text";
                                     input2.onkeydown = function (event) {
                                         var key = event.which;
-                                        if ((key < 48 || key > 57) && key != 8) event.preventDefault();
+                                        if ((((key < 48 || key > 57) && (key < 96 || key > 105)) && (key < 96 || key > 105) ) && key != 8) event.preventDefault();
                                     }
                                     input2.onkeyup = function (event) {
                                         var value = event.target.value.replace(/,/g, "");
@@ -2476,7 +2549,7 @@
                 input2.type = "text";
                 input2.onkeydown = function (event) {
                     var key = event.which;
-                    if ((key < 48 || key > 57) && key != 8) event.preventDefault();
+                    if (((key < 48 || key > 57) && (key < 96 || key > 105)) && key != 8) event.preventDefault();
                 }
                 input2.onkeyup = function (event) {
 
@@ -2624,7 +2697,10 @@
                 });
 
             }
-
+            $('#basicModal').on('hidden.bs.modal', function () {
+                $('#closebtn').show()
+            })
+            
         </script>
     </div>
 </body>

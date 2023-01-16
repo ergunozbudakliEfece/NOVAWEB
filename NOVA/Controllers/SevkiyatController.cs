@@ -1088,7 +1088,7 @@ namespace NOVA.Controllers
             {
                 Session["Filter"] = x;
             }
-            var ses = Session["Filter"] as List<USTKALEMMODEL>;
+            var ses = ((IEnumerable<USTKALEMMODEL>)Session["Filter"]).ToList() as List<USTKALEMMODEL>;
             Session["Filter"] = ses.OrderBy(t=>t.CARI_ISIM).ToList();
             ViewBag.FilterPlasiyer = y;
             ViewBag.FilterTeslim = z;

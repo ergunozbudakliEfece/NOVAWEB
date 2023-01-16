@@ -200,6 +200,7 @@
                    class="table table-striped"
                    data-pagination="true"
                    data-toolbar="#toolbar2"
+                    data-page-size="5"
                    data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
                    data-search="true"
                    data-show-columns="true"
@@ -214,8 +215,8 @@
                     <tr>
                         <th data-field="MUSTERI_ID" data-sortable="true" data-formatter="musteriadiFormatter">Müşteri Adı</th>
                         <th data-field="PLANLANAN_TARIH" data-sortable="true" data-formatter="planlananFormatter">Planlanan Tarih</th>
+                        <th data-field="RANDEVU_NOTU" data-sortable="true" data-formatter="notFormatter">Ziyaret Notu</th>
                         <th data-field="KAYIT_YAPAN_KULLANICI_ID" data-sortable="true" data-formatter="plasiyerFormatter">Plasiyer</th>
-
                     </tr>
                 </thead>
             </table>
@@ -238,6 +239,7 @@
             <table id="table3"
                    class="table table-striped"
                    data-pagination="true"
+                   data-page-size="5"
                    data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
                    data-search="true"
                    data-toolbar="#toolbar3"
@@ -252,6 +254,7 @@
                         <th data-field="MUSTERI_ID" data-sortable="true" data-formatter="musteriadiFormatter">Müşteri Adı</th>
                         <th data-field="PLANLANAN_TARIH" data-sortable="true" data-formatter="planlananFormatter">Planlanan Tarih</th>
                         <th data-field="GERCEKLESEN_TARIH" data-sortable="true" data-formatter="gerceklesenFormatter">Gerçekleşen Tarih</th>
+                        <th data-field="RANDEVU_NOTU" data-sortable="true" data-formatter="notFormatter">Ziyaret Notu</th>
                         <th data-field="KAYIT_YAPAN_KULLANICI_ID" data-sortable="true" data-formatter="plasiyerFormatter">Plasiyer</th>
                     </tr>
                 </thead>
@@ -277,7 +280,8 @@
                    data-export-types="['excel']"
                    data-show-export="true"
                    data-locale="tr-TR"
-                   data-mobile-responsive="true">
+                   data-mobile-responsive="true"
+                    data-page-size="5">
                 <thead>
                     <tr>
                         <th data-field="MUSTERI_ID" data-sortable="true" data-formatter="musteriadiFormatter">Müşteri Adı</th>
@@ -525,18 +529,28 @@
                 return newdate;
             }
             function telFormatter(value, row, index) {
-                var tel1 = value == null ? "-" : value;
-                var tel2 = row.MUSTERI_TEL2 == null ? "-" : row.MUSTERI_TEL2;
-
-
-                return tel1 + ", " + tel2;
+                var tel1 = value;
+                var tel2 = row.MUSTERI_TEL2;
+                var sum = "";
+                if (tel1 != null && tel2 != null) {
+                    sum = tel1 + ", " + tel2;
+                } else if (tel1 == null && tel2 != null) {
+                    sum = tel2;
+                } else if (tel1 != null && tel2 == null) {
+                    sum = tel1;
+                }
+                if (sum == "") {
+                    sum = "-";
+                }
+                return sum;
             }
             function planlananFormatter(value, row, index) {
                 var old = value.split('T')[0];
                 var year = old.split('-')[0];
                 var month = old.split('-')[1];
                 var day = old.split('-')[2];
-                var newdate = day + "/" + month + "/" + year;
+                var saat = value.split('T')[1].substring(0, 5);
+                var newdate = day + "/" + month + "/" + year+" "+saat;
                 return newdate;
             }
             function customSearchFormatter(value, row, index) {
@@ -547,7 +561,8 @@
                 var year = old.split('-')[0];
                 var month = old.split('-')[1];
                 var day = old.split('-')[2];
-                var newdate = day + "/" + month + "/" + year;
+                var saat = value.split('T')[1].substring(0, 5);
+                var newdate = day + "/" + month + "/" + year + " " + saat;
                 return newdate;
             }
             function musteriadiFormatter(value, row, index) {

@@ -1518,8 +1518,13 @@ namespace NOVA.Controllers
             HttpRequestMessage request;
             HttpResponseMessage response;
             var decities = JsonConvert.DeserializeObject<List<DistrictsModel>>((string)GetDistricts().Data);
-
-            var demah = JsonConvert.DeserializeObject<List<MahalleModel>>((string)GetMahalleler(m.MUSTERI_ILCE).Data);
+            
+            if (m.MUSTERI_MAHALLE != null)
+            {
+                var demah = JsonConvert.DeserializeObject<List<MahalleModel>>((string)GetMahalleler(m.MUSTERI_ILCE).Data);
+                musteri.MUSTERI_MAHALLE = demah.Where(x => x.MAHID == m.MUSTERI_MAHALLE.ToInt()).ToList()[0].MAHALLEADI;
+            }
+           
 
 
             string apiUrl = "http://192.168.2.13:83/api/musteri/";
@@ -1527,7 +1532,7 @@ namespace NOVA.Controllers
             musteri.MUSTERI_ADI = m.MUSTERI_ADI;
             musteri.MUSTERI_IL = m.MUSTERI_IL;
             musteri.MUSTERI_ILCE = decities.Where(x => x.ILCEID == m.MUSTERI_ILCE.ToInt()).ToList()[0].ILCEADI;
-            musteri.MUSTERI_MAHALLE = demah.Where(x => x.MAHID == m.MUSTERI_MAHALLE.ToInt()).ToList()[0].MAHALLEADI;
+           
             musteri.MUSTERI_ADRES = m.MUSTERI_ADRES;
             musteri.FIRMA_YETKILISI = m.FIRMA_YETKILISI;
 
@@ -1710,6 +1715,24 @@ namespace NOVA.Controllers
             {
                 Content = new StringContent(new JavaScriptSerializer().Serialize(m), Encoding.UTF8, "application/json")
             };
+
+            response = await httpClient.SendAsync(request);
+            return Json(request, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<JsonResult> MusteriSil(int id)
+        {
+            MusteriUrunModel musteri = new MusteriUrunModel();
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+
+            string apiUrl = "http://192.168.2.13:83/api/musteri/sil/"+id;
+
+
+
+            request = new HttpRequestMessage(HttpMethod.Delete, apiUrl);
 
             response = await httpClient.SendAsync(request);
             return Json(request, JsonRequestBehavior.AllowGet);
