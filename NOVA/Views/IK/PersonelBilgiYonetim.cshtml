@@ -11,14 +11,7 @@
     <link href="https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
 
-
-        $('select').on('select2:opening select2:closing', function (event) {
-            var $searchfield = $('#' + event.target.id).parent().find('.select2-search__field');
-            $searchfield.prop('disabled', true);
-        });
-    </script>
     <style>
         .no-records-found {
             display:none;
@@ -40,7 +33,7 @@
         <div class="row">
             <div class="col">
                 <select name="state" id="select-state" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Seçilen personele göre liste güncellenir</span>" onchange="location.href='@Url.Action("GET", "IK")/'+value" class="js-example-matcher-start form-select dropdown-toggle">
-                    <option id="0" selected="selected" value="0">PERSONEL SEÇİMİ</option>
+                    
 
                     @{
 
@@ -6122,9 +6115,13 @@
   
     <script>
         $(document).ready(function () {
-
+            $(document).on('select2:open', () => {
+                document.querySelector('.select2-search__field').focus();
+            });
             $('#con2').hide();
             $('#table').bootstrapTable();
+            $("#select-state").select2({ placeholder: 'PERSONEL SEÇİMİ' });
+
         })
         function change(value) {
             if (value == 1) {

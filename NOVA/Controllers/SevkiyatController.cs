@@ -300,7 +300,10 @@ namespace NOVA.Controllers
             ViewBag.Id= Request.Cookies["Id"].Value.ToInt();
             return View();
         }
-
+        public ActionResult Test()
+        {
+            return View();
+        }
         public ActionResult SaticiSiparisRaporu()
         {
             if (Session["Filter"] != null || Session["Filter1"] != null || Session["AltKalem"] != null)
@@ -784,6 +787,22 @@ namespace NOVA.Controllers
             //END
 
             return jsonList;
+        }
+        public JsonResult GetSip()
+        {
+
+
+            var apiUrl = "http://192.168.2.13:83/api/detaylisip";
+
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+
+            string json = client.DownloadString(url);
+         
+
+            return Json(json, JsonRequestBehavior.AllowGet);
         }
         public List<USTKALEMMODEL> GetSiparisUstKAlem()
         {

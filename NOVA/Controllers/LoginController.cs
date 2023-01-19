@@ -81,8 +81,8 @@ namespace NOVA.Controllers
                 }
 
                 string json = null;
-                User user = null;
-                var apiUrl = "http://192.168.2.13:83/api/user/" + username + "/" + password;
+                List<User> user = null;
+                var apiUrl = "http://192.168.2.13:83/api/user/exec/" + username + "/" + password;
                 Uri url = new Uri(apiUrl);
                 WebClient client = new WebClient();
                 client.Encoding = System.Text.Encoding.UTF8;
@@ -91,7 +91,7 @@ namespace NOVA.Controllers
 
                     json = client.DownloadString(url);
                     JavaScriptSerializer ser = new JavaScriptSerializer();
-                    user = ser.Deserialize<User>(json);
+                    user = ser.Deserialize<List<User>>(json);
                 }
                 catch (Exception)
                 {
@@ -99,9 +99,9 @@ namespace NOVA.Controllers
                 }
 
                 //Aşağıdaki if komutu gönderilen mail ve şifre doğrultusunda kullanıcı kontrolu yapar. Eğer kullanıcı var ise login olur.
-                if (user != null)
+                if (user.Count >0)
                 {
-                    if (user.ACTIVE == true)
+                    if (user[0].ACTIVE == true)
                     {
 
                         if (model.RememberMe == "on")
@@ -123,25 +123,25 @@ namespace NOVA.Controllers
                         }
                         FormsAuthentication.SetAuthCookie("Log", true);
 
-                        ViewBag.Name = user.USER_FIRSTNAME + " " + user.USER_LASTNAME;
+                        ViewBag.Name = user[0].USER_FIRSTNAME + " " + user[0].USER_LASTNAME;
 
 
                         HttpCookie cookiename = new HttpCookie("Name", ViewBag.Name);
                         Response.Cookies.Add(cookiename);
                         Session["Name"] = ViewBag.Name;
-                        HttpCookie cookierole = new HttpCookie("Role", user.USER_ROLE);
+                        HttpCookie cookierole = new HttpCookie("Role", user[0].USER_ROLE);
                         Response.Cookies.Add(cookierole);
-                        HttpCookie cookieid = new HttpCookie("Id", user.USER_ID);
+                        HttpCookie cookieid = new HttpCookie("Id", user[0].USER_ID);
                         Response.Cookies.Add(cookieid);
-                        HttpCookie cookiemail = new HttpCookie("Mail", user.USER_MAIL);
+                        HttpCookie cookiemail = new HttpCookie("Mail", user[0].USER_MAIL);
                         Response.Cookies.Add(cookiemail);
-                        HttpCookie cookiefn = new HttpCookie("FirstName", user.USER_FIRSTNAME);
+                        HttpCookie cookiefn = new HttpCookie("FirstName", user[0].USER_FIRSTNAME);
                         Response.Cookies.Add(cookiefn);
-                        HttpCookie cookieln = new HttpCookie("LastName", user.USER_LASTNAME);
+                        HttpCookie cookieln = new HttpCookie("LastName", user[0].USER_LASTNAME);
                         Response.Cookies.Add(cookieln);
                         //var l=LogKayıt(user);
-                        Session["UserId"] = user.USER_ID;
-                        Session["UserIdInt"] = user.USER_ID.ToInt();
+                        Session["UserId"] = user[0].USER_ID;
+                        Session["UserIdInt"] = user[0].USER_ID.ToInt();
                         HttpCookie cookieuserid = new HttpCookie("UserId", Session["UserId"].ToString());
                         Response.Cookies.Add(cookieuserid);
 
@@ -207,7 +207,7 @@ namespace NOVA.Controllers
                         {
                             
                             
-                            var session = GetSession(user.USER_ID.ToInt())[0];
+                            var session = GetSession(user[0].USER_ID.ToInt())[0];
                             if (session.ACTIVITY_TYPE == "login")
                             {
                                 ViewBag.Login = "Oturumunuz başka bir bilgisayarda açık. Oturum tüm diğer cihazlarda kapatılsın mı?";
