@@ -7,8 +7,9 @@
 <link href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 <link href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 
@@ -89,7 +90,7 @@
             </div>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                    <a class="dropdown-item" href='@Url.Action("Index","Profil")'>
+                    <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
                         <div class="d-flex">
                             <div class="flex-shrink-0 me-3">
                                 <div class="avatar avatar-online">
@@ -128,7 +129,7 @@
 
            
           
-            <div id="employeeTableWrapper" class="tableWrapper table-responsive">
+            <div id="employeeTableWrapper" class="tableWrapper" >
                 <div id="toolbar">
 
                     <select id="filter" multiple="multiple" name="filterAlgorithm">
@@ -137,12 +138,13 @@
                     </select>
 
                 </div>
+               
                 <table id="table"
                        class="table table-striped"
                        data-show-fullscreen="true"
                        data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
                        data-toggle="table"
-                       data-show-export="true"
+                       data-show-export="false"
                        data-export-data-type="all"
                        data-export-types="['excel']"
                        data-pagination="true"
@@ -155,6 +157,7 @@
                        data-filter-control-multiple-search="true"
                        data-url="http://192.168.2.13:83/api/stok"
                        data-loading-template="loadingTemplate"
+                       data-height="800"
                        data-mobile-responsive="true"
                        data-show-footer="false"
                        data-detail-view="false"
@@ -162,18 +165,24 @@
                        data-check-on-init="true">
                     <thead>
                         <tr>
-                            <th data-field="STOK_ADI" data-sortable="true" data-width="150" data-width-unit="px">Stok Adı</th>
-                            <th data-field="SATISA_HAZIR" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
-                            <th data-field="BEKLEYEN_SIPARIS" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
-                            <th data-field="BAKIYE" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
-                            <th data-field="BEKL_IE_MIKTAR" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
-                            <th data-field="FAB_STOK_MIK" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
-                            <th data-field="ALISFIYAT1" data-visible="false" data-sortable="true" data-formatter="alisFormatter">Alış Fiyatı</th>
-                            <th data-field="SATISFIYAT1" data-visible="false" data-sortable="true" data-formatter="satisFormatter">Satış Fiyatı</th>
-                            <th data-field="GRUP_ISIM" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
-                            <th data-formatter="girisFormatter" data-searchable="false">Son Girişler</th>
-                            <th data-formatter="cikisFormatter" data-searchable="false" data-width="250" data-width-unit="px">Son Çıkışlar</th>
-                            <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
+                            <th data-field="STOK_ADI" data-halign="center" data-sortable="true" data-width="150" data-width-unit="px">Stok Adı</th>
+                            <th data-field="SATISA_HAZIR" data-halign="center" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
+                            <th data-field="BEKLEYEN_SIPARIS" data-halign="center" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
+                            <th data-field="BAKIYE" data-halign="center" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
+                            <th data-field="BEKL_IE_MIKTAR" data-halign="center" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
+                            <th data-field="FAB_STOK_MIK" data-halign="center" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
+                            <th data-field="GRUP_ISIM" data-halign="center" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
+                            <th data-formatter="girisFormatter" data-halign="center" data-searchable="false" data-width="300" data-width-unit="px">Son Girişler</th>
+                            <th data-formatter="cikisFormatter" data-halign="center" data-searchable="false" data-width="300" data-width-unit="px">Son Çıkışlar</th>
+                            @{
+                                if (ViewBag.OzelYetki)
+                                {
+                                    <th data-formatter="listefiyatiFormatter" data-visible="false" data-halign="center" data-searchable="false">Liste Fiyatı</th>
+                                    <th data-formatter="iskontoFormatter" data-halign="center" data-searchable="false">İskonto</th>
+                                    <th data-formatter="fiyatlarFormatter" data-halign="center" data-searchable="false">Toptan/Perakende</th>
+                                }
+                            }
+                            <th data-sortable="true" data-visible="false" data-halign="center" data-formatter="terminFormatter">Termin Tarihi</th>
 
                         </tr>
                     </thead>
@@ -462,6 +471,9 @@
         getstokAsync().then(function (data) {
             stoklar = data;
         })
+        getstokfiatAsync().then(function (data) {
+            stokfiatlar = data;
+        })
        
     })
     function girisFormatter(index, row) {
@@ -473,7 +485,7 @@
             /*return "<table class='table table-responsive table-borderless'><tr><th class='text-center' style='color:green'>GİRİŞ 1</th><th class='text-center' style='color:green'>GİRİŞ 2</th><th class='text-center' style='color:green'>GİRİŞ 3</th><th class='text-center' style='color:red'>ÇIKIŞ 1</th><th class='text-center' style='color:red'>ÇIKIŞ 2</th><th class='text-center' style='color:red'>ÇIKIŞ 3</th></tr><tr><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON3_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON1_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON2_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON3_CIKIS_BIRIM_MIKTAR ?? "-") + "</td></tr></table>";*/
             return "<div class='row flex-nowrap '><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON1_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON1_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON1_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON2_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON2_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON2_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON2_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON3_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON3_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON3_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON3_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div>";
         } else {
-            return "Görüntülenecek veri yok.";
+            return "<div class='text-center'>-</div>";
         }
 
 
@@ -490,13 +502,59 @@
             /*return "<table class='table table-responsive table-borderless'><tr><th class='text-center' style='color:green'>GİRİŞ 1</th><th class='text-center' style='color:green'>GİRİŞ 2</th><th class='text-center' style='color:green'>GİRİŞ 3</th><th class='text-center' style='color:red'>ÇIKIŞ 1</th><th class='text-center' style='color:red'>ÇIKIŞ 2</th><th class='text-center' style='color:red'>ÇIKIŞ 3</th></tr><tr><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON3_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON1_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON2_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON3_CIKIS_BIRIM_MIKTAR ?? "-") + "</td></tr></table>";*/
             return "<div class='row flex-nowrap'><div class='col-6 text-center' style='color:red;font-size:12px'>" + (stok[0].SON1_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON1_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON1_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON1_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON2_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON2_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON2_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON2_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON3_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON3_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON3_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON3_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div>";
         } else {
-            return "Görüntülenecek veri yok.";
+            return "<div class='text-center'>-</div>";
         }
 
 
 
 
 
+    }
+
+    function toptanFormatter(value, row, index) {
+        var stok1 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
+        if (stok1.length > 0) {
+            return "<div class='text-center'>" + (stok1[0].TOPTAN_FIYAT ? parseFloat(stok1[0].TOPTAN_FIYAT).toFixed(2).toString().replace('.', ',') + " " + stok1[0].FIYATDOVIZTIPI : "-") + "</div>";
+        } else {
+            return "<div class='text-center'>-</div>";
+        }
+        
+
+    }
+    function fiyatlarFormatter(value, row, index) {
+        var stok2 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
+        var sayi = 0;
+        
+        
+        if (stok2.length > 0) {
+            if (stok2[0].FIYATDOVIZTIPI == "TRY") {
+                sayi = 2;
+            } else {
+                sayi = 3;
+            }
+            return "<div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].TOPTAN_FIYAT ? parseFloat(stok2[0].TOPTAN_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }) + "<span style='font-size:8px'> " + stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "</div></div><div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].PERAKENDE_FIYAT ? parseFloat(stok2[0].PERAKENDE_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }) + "<span style='font-size:8px'> " + stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "</div></div>";
+           
+        } else {
+            return "<div class='text-center'>-</div>";
+        }
+    }
+    function iskontoFormatter(value, row, index) {
+        var stok2 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
+        if (stok2.length > 0) {
+            return "<div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].TOPTAN_ISK ? parseFloat(stok2[0].TOPTAN_ISK).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "-") + "</div></div><div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].PERAKENDE_ISK ? parseFloat(stok2[0].PERAKENDE_ISK).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "-") + "</div></div>";
+
+        } else {
+            return "<div class='text-center'>-</div>";
+        }
+    }
+    function listefiyatiFormatter(value, row, index) {
+        var stok2 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
+        if (stok2.length > 0) {
+            return "<div class='text-center'>" + (stok2[0].LISTE_FIYATI ? parseFloat(stok2[0].LISTE_FIYATI).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'> " + stok2[0].FIYATDOVIZTIPI + "</span>" : "-") +"</div>";
+
+        } else {
+            return "<div class='text-center'>-</div>";
+        }
     }
         
 </script>

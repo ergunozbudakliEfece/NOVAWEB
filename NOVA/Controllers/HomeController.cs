@@ -158,6 +158,15 @@ namespace NOVA.Controllers
             var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            if (yonetimstok != true)
+            {
+                ViewBag.Stok = "none";
+            }
+            else
+            {
+                ViewBag.Stok = "unset";
+            }
             if (ziyaretplani != true)
             {
                 ViewBag.DisplayZiyaretPlani = "none";
