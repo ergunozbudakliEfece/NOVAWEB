@@ -18,6 +18,8 @@
     <link href="~/assets/vendor/css/accordion.css" rel="stylesheet" />
     <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
     <script type="text/javascript">
+        document.getElementById("sevkiyat").className = "menu-item open active";
+        document.getElementById("mussiparisrap").className = "menu-item active";
         function showHideRow(row) {
             $("#" + row).toggle("fast");
         }
@@ -120,17 +122,43 @@
             margin-top: -50px;
             background-size: 100%;
         }
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
+
+        @@keyframes heartbeat {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1.6);
+            }
+        }
+
+        .centercontent {
+            position: absolute;
+            max-width: 100%;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
     </style>
     <script data-require="jquery@2.0.3" data-semver="2.0.3" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="~/assets/vendor/css/scripts.js"></script>
 </head>
 <body style="background-color: #f5f5f9 !important;font-size:12px !important;overflow:hidden">
+    <div class="centercontent" id="spinner" style="display:none">
+        <div class="heart"><img src="~/images/novasaydam.png" style="max-width:5vw" /></div>
+    </div>
     <div class="container-fluid mt-2">
 
 
-        <div class="spinner spinner-border spinner-border-lg text-primary" role="status" style="z-index:10;display:none" id="spinner">
-            <span class="visually-hidden">Yükleniyor...</span>
-        </div>
+       
         <div class="row mt-2">
             <div class="container-fluid sticky-top position-sticky">
                 @using (Html.BeginForm("Filter", "Sevkiyat", FormMethod.Post, new { @id = "filterForm" }))

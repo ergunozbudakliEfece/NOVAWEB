@@ -152,6 +152,30 @@
             margin-top: -50px;
             background-size: 100%;
         }
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
+
+        @@keyframes heartbeat {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1.6);
+            }
+        }
+        .centercontent {
+            position: absolute;
+            max-width: 100%;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
     </style>
     <script type="text/javascript">
         function showHideRow(row) {
@@ -163,186 +187,18 @@
 </head>
 
 <body onclose="close()">
+    <div class="centercontent" id="spinner" style="display:none">
+        <div class="heart"><img src="~/images/novasaydam.png" style="max-width:5vw" /></div>
+    </div>
+    <div class="centercontent" id="spinner1" style="display:none">
+        <div class="heart"><img src="~/images/novasaydam.png" style="max-width:5vw" /></div>
+    </div>
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
             <!-- Menu -->
 
-            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-                <div class="app-brand demo">
-                    <a href="@Url.Action("Index", "Home" )" class="app-brand-link">
-                        <span class="app-brand-logo demo">
-                            <img src="/Content/Images/efece_logo.png" alt class="w-px-200 h-auto" />
-                        </span>
-                    </a>
-
-                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
-                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
-                    </a>
-                </div>
-
-                <div class="menu-inner-shadow"></div>
-
-                <ul class="menu-inner py-1">
-                    <!-- ANASAYFA -->
-                    <li class="menu-item">
-                        <a href="@Url.Action("Index", "Home" )" class="menu-link">
-                            <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                            <div data-i18n="Analytics">Anasayfa</div>
-                        </a>
-                    </li>
-                    <li class="menu-header small text-uppercase">
-                        <span class="menu-header-text">Modüller</span>
-                    </li>
-                    <!-- Layouts -->
-                    <li class="menu-item" style="display: @ViewBag.DisplaySatis">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-dollar"></i>
-                            <div data-i18n="Layouts">Satış</div>
-                        </a>
-
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.DisplayStok">
-                                <a href="@Url.Action("Index", "Satis" )" class="menu-link">
-                                    <div data-i18n="Without menu">Stok Değeri</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.DisplaySiparis">
-                                <a href="@Url.Action("DetayliSiparis", "Satis" )" class="menu-link">
-                                    <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-                    <li class="menu-item open active" style="display: @ViewBag.DisplaySevkiyat">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bxs-truck"></i>
-                            <div data-i18n="Layouts">Sevkiyat</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.DisplaySiparisRaporu">
-                                <a href="@Url.Action("SiparisRaporu", "Sevkiyat" )" class="menu-link">
-                                    <div data-i18n="Without menu">Müşteri Siparişi Raporu</div>
-                                </a>
-                            </li>
-                            <li class="menu-item active" style="display: @ViewBag.DisplaySaticiSiparisRaporu">
-                                <a href="@Url.Action("SaticiSiparisRaporu", "Sevkiyat")" class="menu-link">
-                                    <div data-i18n="Without menu">Satıcı Siparişi Raporu</div>
-                                </a>
-                            </li>
-                        </ul>
-
-                    </li>
-
-
-                    <li class="menu-item" style="display:none">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
-                            <i class="menu-icon tf-icons bx bxs-hard-hat"></i>
-                            <div data-i18n="Account Settings">Üretim</div>
-                        </a>
-
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.DisplaySatinAlma">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-credit-card"></i>
-                            <div data-i18n="Authentications">Satın Alma</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.DisplaySatinAlmaRaporu">
-                                <a href="@Url.Action("SatinAlmaRaporu", "SatinAlma" )" class="menu-link">
-                                    <div data-i18n="Without menu">Detaylı Sipariş Raporu</div>
-                                </a>
-                            </li>
-                        </ul>
-
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.DisplayFinans">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
-                            <i class="menu-icon tf-icons bx bx-trending-up"></i>
-                            <div data-i18n="Misc">Finans</div>
-                        </a>
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.DisplayMuhasebe">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
-                            <i class="menu-icon tf-icons bx bx-calculator"></i>
-                            <div data-i18n="Misc">Muhasebe</div>
-                        </a>
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.Display4">
-
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-male-female"></i>
-                            <div data-i18n="Misc">İnsan Kaynakları</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.Display5">
-                                <a href="@Url.Action("PersonelBilgi", "IK" )" class="menu-link">
-                                    <div data-i18n="Without menu">Personel Bilgi Girişi</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.Display6">
-                                <a href="@Url.Action("PersonelBilgiYonetim", "IK" )" class="menu-link">
-                                    <div data-i18n="Without menu">Personel Bilgi Yönetimi</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.Sube">
-                                <a href="@Url.Action("PersonelSubeYonetim", "IK" )" class="menu-link">
-                                    <div data-i18n="Without menu">Şube Bazında Personel Bilgi Yönetimi</div>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.DisplayYonetim">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bx-laptop bx-flashing' ></i> <span>Modül üzerinde çalışılmaktadır</span>">
-                            <i class="menu-icon tf-icons bx bx-sitemap"></i>
-                            <div data-i18n="Misc">Yönetim</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.DisplayIstatistik">
-                                <a href="@Url.Action("Index", "Yonetim")" class="menu-link">
-                                    <div data-i18n="Without menu">Personel İstatistikleri</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="menu-item" style="display: @ViewBag.Display">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bxs-report"></i>
-                            <div data-i18n="Misc">Yönetim Paneli</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item" style="display: @ViewBag.Display1">
-                                <a href="@Url.Action("KullaniciAyar", "YonetimPaneli" )" class="menu-link">
-                                    <div data-i18n="Without menu">Kullanıcı Ayarları</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.Display2">
-                                <a href="@Url.Action("YetkiAyar", "YonetimPaneli" )" class="menu-link">
-                                    <div data-i18n="Without navbar">Kullanıcı Yetkileri</div>
-                                </a>
-                            </li>
-                            <li class="menu-item" style="display: @ViewBag.Display3">
-                                <a href="#" class="menu-link">
-                                    <div data-i18n="Without navbar">Kullanıcı İstatistikleri</div>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-                    <li class="menu-item">
-                        <a href="javascript:void(0);" class="menu-link" data-i18n="Misc" data-bs-toggle="modal"
-                           data-bs-target="#cikis">
-                            <i class="menu-icon tf-icons bx bx-lock"></i>
-
-                            Çıkış
-
-                        </a>
-                    </li>
-
-                </ul>
-            </aside>
+            @Html.Partial("_Layout_menu")
             <!-- / Menu -->
             <!-- Layout container -->
             <div class="layout-page overflow-hidden">
@@ -477,6 +333,8 @@
                                     <input class="form-check-input" type="checkbox" id="mal" unchecked="" onclick="mal()">
                                 </div>
                                 <script>
+                                    document.getElementById("sevkiyat").className = "menu-item open active";
+                                    document.getElementById("saticisiprap").className = "menu-item active";
                                     function mal() {
 
                                         if (document.getElementById("mal").checked) {
@@ -682,9 +540,6 @@
                             <!-- Total Revenue -->
                             <div class="col-12 col-lg order-2 order-md-3 order-lg-2">
                                 <div class="card" onreset="refreshtable()">
-                                    <div class="spinner spinner-border spinner-border-lg text-primary" role="status" style="z-index:20;display:none" id="spinner">
-                                        <span class="visually-hidden">Yükleniyor...</span>
-                                    </div>
                                     <div class="row row-bordered g-0">
                                         <div class="col-md">
                                             <div class="table-responsive text-nowrap " style="max-height: 450px">
@@ -1148,9 +1003,8 @@
                             <!-- Total Revenue -->
                             <div class="col-12 col-lg order-2 order-md-3 order-lg-2 mb-4">
                                 <div class="card" onreset="refreshtable()" style="background-color:transparent">
-                                    <div class="spinner spinner-border spinner-border-lg text-primary" role="status" style="z-index:20;display:none" id="spinner1">
-                                        <span class="visually-hidden">Yükleniyor...</span>
-                                    </div>
+                                   
+
                                     <div class="row row-bordered g-0">
                                         <div class="col-md">
                                             <div class="table-responsive text-nowrap " style="max-height: 450px">

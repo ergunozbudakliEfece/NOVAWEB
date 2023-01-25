@@ -28,6 +28,21 @@
             transform: translate(-50%, -50%);
             z-index: 5;
         }
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
+
+        @@keyframes heartbeat {
+            from {
+                opacity: 0.3;
+                transform: scale(0.32);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(0.40);
+            }
+        }
     </style>
     
     
@@ -35,7 +50,9 @@
 </head>
 
 <body onload="script();" onclose="close()">
-   
+    <div class="centercontent" id="content" style="display:unset">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:5vw" /></div>
+    </div>
     @if ((string)Session["Onay"] == "onay")
     {
         <script>
@@ -301,12 +318,17 @@
         </footer>
     </div>
 
- 
+
 
 
     <script>
+
+
+            document.getElementById("anasayfa").className = "menu-item active";
+
         function script() {
             document.body.style.cursor = "default";
+            document.getElementById("content").style.display = "none";
         };
 
 
@@ -396,9 +418,7 @@
 
     <script>
         var userData = [];
-        $(document).ready(function () {
-            document.body.style.cursor = 'wait';
-        });
+
 
         userData.push({ USERID: "@Request.Cookies["UserId"].Value", USERNAME: "@Request.Cookies["UserName"].Value", PLATFORM: "@Request.Cookies["Platform"].Value" , LASTACTIVETIME: "@DateTime.Now.ToString()" });
 

@@ -3,9 +3,9 @@
 
     Layout = "~/Views/Shared/_Layout _yonetim_stok.cshtml";
 }
-<link href="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/group-by-v2/bootstrap-table-group-by.css" rel="stylesheet">
-<link href="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
-<link href="https://unpkg.com/bootstrap-table@1.21.2/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.css" rel="stylesheet">
+
+
+
 <link href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css" rel="stylesheet">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
@@ -83,7 +83,33 @@
         }*/
     }
 </style>
+<style>
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
 
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+</style>
 <div class="container-fluid d-flex h-100">
 
     <div class="card mx-auto" style="font-size:12px">
@@ -173,16 +199,22 @@
                 <div class="col-sm-2">
                     <label><b>Ʃ Toptan Değer TRY:</b></label>
                 </div>
-                <div class="col">
+                <div class="col-sm-2">
                     <label id="tl"></label>
+                </div>
+                <div class="col-sm-2 text-center">
+                    <label><b>USD/TRY:&nbsp;</b></label><label id="dol" class="text-center"></label>
                 </div>
             </div>
             <div class="row mt-1">
                 <div class="col-sm-2">
                     <label><b>Ʃ Toptan Değer USD:</b></label>
                 </div>
-                <div class="col">
+                <div class="col-sm-2">
                     <label id="dolar"></label>
+                </div>
+                <div class="col-sm-2 text-center">
+                    <label><b>EUR/TRY:&nbsp;</b></label><label id="er" class="text-center"></label>
                 </div>
             </div>
 
@@ -190,7 +222,7 @@
                 <div class="col-sm-2">
                     <label><b>Ʃ Toptan Değer EUR:</b></label>
                 </div>
-                <div class="col">
+                <div class="col-sm-2">
                     <label id="euro"></label>
                 </div>
             </div>
@@ -251,6 +283,8 @@
     </div>
 </div>
 <script>
+    document.getElementById("yonetim").className = "menu-item open active";
+    document.getElementById("stokdeger").className = "menu-item active";
     function change(value) {
         var listfk = [];
         var list = [];
@@ -516,7 +550,8 @@
 
         $.getJSON("http://192.168.2.13:83/api/stok/fiat", function (data) {
             tumliste = data;
-
+            document.getElementById("dol").innerHTML = " " + data.find(x => x.FIYATDOVIZTIPI == "USD").KUR;
+            document.getElementById("er").innerHTML = " " + data.find(x => x.FIYATDOVIZTIPI == "EUR").KUR;
             for (let i = 0; i < data.length; i++) {
                 if (data[i].FK_ACIKLAMA != null) {
                     if (!listfk.includes(data[i].FK_ACIKLAMA)) {
@@ -531,8 +566,6 @@
                 opt.value = listfk[i];
                 document.getElementById("filter").appendChild(opt);
             }
-
-            $('#filter').select2({ width: '50vw' ,placeholder:'Grup Filtresi'});
             for (let i = 0; i < listfk.length; i++) {
 
                 var sumbakiye = 0;
@@ -576,10 +609,8 @@
                 list.push({ FK_ACIKLAMA: listfk[i], BAKIYE: (sumbakiye).toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCUBR, TOPTAN_DEGER: parseInt(deger).toLocaleString(), PERAKENDE_DEGER: parseInt(pardeger).toLocaleString(), TOPTAN_DEGER_TL: parseInt(degertl).toLocaleString(), PERAKENDE_DEGER_TL: parseInt(pardegertl).toLocaleString(), FIYATKODU: fiyatkodu })
 
             }
-
             $('#table').bootstrapTable('load', list);
-
-
+            $('#filter').select2({ width: '50vw', placeholder: 'Grup Filtresi' });
         })
 
 
@@ -587,12 +618,10 @@
     var type = 'fa'
 
     function loadingTemplate(message) {
-        if (type === 'fa') {
-            return '<i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>'
-        }
-        if (type === 'pl') {
-            return '<div class="ph-item"><div class="ph-picture"></div></div>'
-        }
+      
+            return '<div class="heart"><img src="/images/novasaydam.png" style="max-width:15vw"/></div>'
+        
+        
     }
 
     function detailFormatter(index, row) {
@@ -611,7 +640,7 @@
             } else {
                 var top = (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString());
                 if (top.includes(',')) {
-                    top = (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[1] +"</span>"
+                    top = (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[1] + "</span>"
                 }
                 var par = parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString();
                 if (par.includes(',')) {
@@ -638,7 +667,7 @@
                     pardegtl = (parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString()).split(',')[1] + "</span>"
                 }
 
-              
+
                 st = st + "<tr><td>" + d[i].STOK_ADI + "</td>" + "<td>" + d[i].LISTE_FIYATI + "</td>" + "<td>" + (d[i].TOPTAN_ISK == "null" ? d[i].TOPTAN_ISK : "-") + "</td>" + "<td>" + (d[i].PERAKENDE_ISK == "null" ? d[i].PERAKENDE_ISK : "-") + "</td>" + "<td>" + top + "</td><td>" + par + "</td>" + "<td>" + d[i].FIYATDOVIZTIPI + "</td>" + "<td>" + d[i].OLCUBR + "</td><td>" + bak + "</td>" + "<td>" + topdeg + "</td><td>" + pardeg + "</td><td>" + topdegtl + "</td><td>" + pardegtl + "</td></tr>";
             }
 
@@ -697,9 +726,11 @@
             if (item.FIYATDOVIZTIPI == "USD") {
                 sumdeg = parseFloat(sumdeg) + parseFloat(item.TOPTAN_DEGER.replace('.', '').replace('.', ''));
 
+
             }
             if (item.FIYATDOVIZTIPI == "EUR") {
                 sumdegeu = parseFloat(sumdegeu) + parseFloat(item.TOPTAN_DEGER.replace('.', '').replace('.', ''));
+
 
             }
             if (item.FIYATDOVIZTIPI == "TRY") {

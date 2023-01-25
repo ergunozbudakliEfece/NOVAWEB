@@ -55,7 +55,21 @@
     <script src="/Scripts/jquery.validate.js" type='text/javascript'></script>
     <script src="/Scripts/jquery.validate.unobtrusive.js" type='text/javascript'></script>
     <style>
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
 
+        @@keyframes heartbeat {
+            from {
+                opacity: 0.3;
+                transform: scale(0.32);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(0.40);
+            }
+        }
         .btn-grad {
             background-image: linear-gradient(to right, #4b6cb7 0%, #182848 51%, #4b6cb7 100%);
             margin: 10px;
@@ -75,8 +89,16 @@
                 color: #fff;
                 text-decoration: none;
             }
-         
 
+        .centercontent {
+            position: absolute;
+            max-width: 100%;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
 
        
     </style>
@@ -88,7 +110,9 @@
     <video id="myVideo" autoplay muted loop>
         <source src="/Content/Images/2.mp4" type="video/mp4">
     </video>
-
+    <div class="centercontent" id="content" style="display:none">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:5vw" /></div>
+    </div>
     <!-- Content -->
     @if (Session["AlertLogin"] != null)
     {
@@ -125,7 +149,7 @@
     {
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
-           
+
                     @{Session["Onay"] = "onay";}
 
                         window.location.href = "/Login/LogOffAllDevice";
@@ -160,7 +184,7 @@
                                        value="@ViewBag.username"
                                        placeholder="Kullanıcı adınızı giriniz.."
                                        autofocus
-                                       style="color: #0e387a"/>
+                                       style="color: #0e387a" />
                             </div>
                             <div class="mb-0 form-password-toggle">
                                 <div class="d-flex justify-content-between">
@@ -176,26 +200,27 @@
                                            value="@ViewBag.password"
                                            placeholder="Şifrenizi giriniz.."
                                            aria-describedby="password"
-                                           style="color: #0e387a"/>
+                                           style="color: #0e387a" />
                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide" style="color: #0e387a"></i></span>
                                 </div>
                             </div>
 
-                            
-                                <div class="row" style="margin-right:1%">
-                                    <div class="col">
-                                        <button class="btn btn-grad w-100 mt-5" id="giris" type="submit" onclick="wait()">Giriş</button>
-                                    </div>
+
+                            <div class="row" style="margin-right:1%">
+                                <div class="col">
+                                    <button class="btn btn-grad w-100 mt-5" id="giris" type="submit" onclick="wait()">Giriş</button>
                                 </div>
-                                <script>
-                                    function wait() {
-                                        document.body.style.cursor = 'wait';
-                                    }
-                                </script>
-                            
+                            </div>
+                            <script>
+                                function wait() {
+                                    document.body.style.cursor = 'wait';
+                                    document.getElementById("content").style.display = 'unset';
+                                }
+                            </script>
+
                         </form>
 
-                        
+
                     </div>
                     <div style="border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem;margin-top:-15px">
                         <div class="mt-2" style="margin-left: 35%">
@@ -206,15 +231,15 @@
                             </div>
                         </div>
                         <p class="text-center mt-2" style="color: #0e387a">
-                            
-                                <span class="align-middle" data-bs-toggle="modal" data-bs-target="#mail" style="cursor:pointer">Şifremi Unuttum</span>
-                           
+
+                            <span class="align-middle" data-bs-toggle="modal" data-bs-target="#mail" style="cursor:pointer">Şifremi Unuttum</span>
+
 
 
 
                         </p>
                     </div>
-                        
+
                 </div>
 
                 <!-- /Register -->
@@ -487,23 +512,23 @@
     </script>
     <script>
         function logoff(data1) {
-            
+
             var data = {
                 USERNAME: JSON.parse(data1).USERNAME,
                 USERID: JSON.parse(data1).USERID,
                 LASTACTIVETIME: JSON.parse(data1).LASTACTIVETIME,
                 PLATFORM: JSON.parse(data1).PLATFORM,
             };
-            
+
             $.ajax({
                 url: "/Login/LogOut",
                 type: "POST",
                 dataType: "json",
                 data: data
             });
-       
-    }
-        
+
+        }
+
         if (localStorage.userlist != null && localStorage.userlist != "null") {
             var data = localStorage.userlist;
             logoff(data);

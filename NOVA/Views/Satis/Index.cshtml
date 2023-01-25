@@ -14,7 +14,22 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 
 <style>
-    
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+
     .card-view {
         border-bottom: 1px dashed gray;
         margin-top: 2px;
@@ -41,7 +56,7 @@
         display: none;
     }
 
-    
+
 
     @@media screen and (max-width: 600px) {
         .menu1 {
@@ -165,7 +180,7 @@
                        data-check-on-init="true">
                     <thead>
                         <tr>
-                            <th data-field="STOK_ADI" data-halign="center" data-sortable="true" data-width="150" data-width-unit="px">Stok Adı</th>
+                            <th data-field="STOK_ADI" data-halign="center" data-sortable="true" data-width="200" data-width-unit="px">Stok Adı</th>
                             <th data-field="SATISA_HAZIR" data-halign="center" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
                             <th data-field="BEKLEYEN_SIPARIS" data-halign="center" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
                             <th data-field="BAKIYE" data-halign="center" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
@@ -248,11 +263,13 @@
     </div>
 </div>
 <script>
+    document.getElementById("satis").className = "menu-item open active";
+    document.getElementById("stok").className = "menu-item active";
     var type = 'fa'
 
     function loadingTemplate(message) {
         if (type === 'fa') {
-            return '<i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>'
+            return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
         }
         if (type === 'pl') {
             return '<div class="ph-item"><div class="ph-picture"></div></div>'
@@ -350,7 +367,7 @@
         } else {
             val2 = "red";
         }
-        return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.SAT_HZR_ADET.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>";
+        return "<span style='color:" + val + "'>" + (value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })).split(',')[0] + "," + "<span style='font-size:10px'>" + (value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })).split(',')[1] + "</span>" + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.SAT_HZR_ADET.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + "<span style='font-size: 10px;color:" + val2 + "'>," + row.SAT_HZR_ADET.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "</span></span>";
 
     }
     function fabFormatter(value, row, index) {
@@ -366,7 +383,7 @@
         } else {
             val2 = "red";
         }
-        return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.FAB_STOK_AD.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>";
+        return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + "</span>" + "<span style='font-size: 10px;color:" + val + "'>," + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + " " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.FAB_STOK_AD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + "</span><span style='font-size:10px;color:" + val2 +"'>," + row.FAB_STOK_AD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "</span>";
 
     }
     function ieFormatter(value, row, index) {
@@ -382,7 +399,7 @@
         } else {
             val2 = "red";
         }
-        return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.BEKL_IE_AD.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>";
+        return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + "</span>" + "<span style='font-size: 10px;color:" + val + "'>," + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + " " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.BEKL_IE_AD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + row.BEKL_IE_AD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] +"</span></span>";
 
     }
     function bakiyeFormatter(value, row, index) {
@@ -398,7 +415,7 @@
         } else {
             val2 = "red";
         }
-        return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.AD_BAKIYE.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>";
+        return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + "</span>" + "<span style='font-size: 10px;color:" + val + "'>," + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + " " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.AD_BAKIYE.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + row.AD_BAKIYE.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] +"</span></span>";
 
     }
     function sipFormatter(value, row, index) {
@@ -414,7 +431,7 @@
         } else {
             val2 = "red";
         }
-        return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>" + "<span style='font-size: 10px;color:" + val + "'> " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.BEK_SIP_ADET.toLocaleString(undefined, { minimumFractionDigits:2,maximumFractionDigits:2 }) + "</span>";
+        return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + "</span>" + "<span style='font-size: 10px;color:" + val + "'>," + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + " " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.BEK_SIP_ADET.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + row.BEK_SIP_ADET.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] +"</span></span>";
 
     }
     function infoFormatter(value, row, index) {
@@ -482,8 +499,8 @@
         
         if (stok.length > 0) {
             
-            /*return "<table class='table table-responsive table-borderless'><tr><th class='text-center' style='color:green'>GİRİŞ 1</th><th class='text-center' style='color:green'>GİRİŞ 2</th><th class='text-center' style='color:green'>GİRİŞ 3</th><th class='text-center' style='color:red'>ÇIKIŞ 1</th><th class='text-center' style='color:red'>ÇIKIŞ 2</th><th class='text-center' style='color:red'>ÇIKIŞ 3</th></tr><tr><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON3_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON1_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON2_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON3_CIKIS_BIRIM_MIKTAR ?? "-") + "</td></tr></table>";*/
-            return "<div class='row flex-nowrap '><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON1_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON1_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON1_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON2_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON2_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON2_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON2_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON3_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON3_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:green;font-size:12px'>" + (stok[0].SON3_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON3_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div>";
+
+            return "<div class='row flex-nowrap '><div class='col-6 text-center ' style='color:green;font-size:10px'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON1_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON1_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:green;font-size:10px'>" + (stok[0].SON1_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON1_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON1_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:green;font-size:10px'>" + (stok[0].SON2_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON2_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON2_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:green;font-size:10px'>" + (stok[0].SON2_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON2_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON2_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:green;font-size:10px'>" + (stok[0].SON3_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON3_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON3_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:green;font-size:10px'>" + (stok[0].SON3_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON3_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON3_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</div></div>";
         } else {
             return "<div class='text-center'>-</div>";
         }
@@ -500,7 +517,7 @@
         if (stok.length > 0) {
 
             /*return "<table class='table table-responsive table-borderless'><tr><th class='text-center' style='color:green'>GİRİŞ 1</th><th class='text-center' style='color:green'>GİRİŞ 2</th><th class='text-center' style='color:green'>GİRİŞ 3</th><th class='text-center' style='color:red'>ÇIKIŞ 1</th><th class='text-center' style='color:red'>ÇIKIŞ 2</th><th class='text-center' style='color:red'>ÇIKIŞ 3</th></tr><tr><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON3_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON1_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON2_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON3_CIKIS_BIRIM_MIKTAR ?? "-") + "</td></tr></table>";*/
-            return "<div class='row flex-nowrap'><div class='col-6 text-center' style='color:red;font-size:12px'>" + (stok[0].SON1_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON1_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON1_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON1_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON2_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON2_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON2_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON2_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON3_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON3_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:red;font-size:12px'>" + (stok[0].SON3_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON3_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "<span style='font-size:8px'>KG/MT</span>" : "-") + "</div></div>";
+            return "<div class='row flex-nowrap'><div class='col-6 text-center' style='color:red;font-size:10px'>" + (stok[0].SON1_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON1_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON1_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:red;font-size:10px'>" + (stok[0].SON1_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON1_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON1_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:red;font-size:10px'>" + (stok[0].SON2_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON2_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON2_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:red;font-size:10px'>" + (stok[0].SON2_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON2_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON2_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</div></div><div class='row flex-nowrap '><div class='col-6 text-center ' style='color:red;font-size:10px'>" + (stok[0].SON3_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON3_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON3_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</div><div class='col-6 text-center ' style='color:red;font-size:10px'>" + (stok[0].SON3_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON3_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:8px'>" + parseFloat(stok[0].SON3_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</div></div>";
         } else {
             return "<div class='text-center'>-</div>";
         }
@@ -532,7 +549,7 @@
             } else {
                 sayi = 3;
             }
-            return "<div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].TOPTAN_FIYAT ? parseFloat(stok2[0].TOPTAN_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }) + "<span style='font-size:8px'> " + stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "</div></div><div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].PERAKENDE_FIYAT ? parseFloat(stok2[0].PERAKENDE_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }) + "<span style='font-size:8px'> " + stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "</div></div>";
+            return "<div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].TOPTAN_FIYAT ? parseFloat(stok2[0].TOPTAN_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[0] + "<span style='font-size:8px'>," + parseFloat(stok2[0].TOPTAN_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[1]+" "+ stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "</div></div><div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].PERAKENDE_FIYAT ? parseFloat(stok2[0].PERAKENDE_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[0] + "<span style='font-size:8px'>," + parseFloat(stok2[0].PERAKENDE_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[1]+" "+ stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "</div></div>";
            
         } else {
             return "<div class='text-center'>-</div>";
@@ -541,7 +558,7 @@
     function iskontoFormatter(value, row, index) {
         var stok2 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
         if (stok2.length > 0) {
-            return "<div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].TOPTAN_ISK ? parseFloat(stok2[0].TOPTAN_ISK).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "-") + "</div></div><div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].PERAKENDE_ISK ? parseFloat(stok2[0].PERAKENDE_ISK).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "-") + "</div></div>";
+            return "<div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].TOPTAN_ISK ? parseFloat(stok2[0].TOPTAN_ISK).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok2[0].TOPTAN_ISK).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).split(',')[1] + "</span>" : "-") + "</div></div><div class='row'><div class='col text-center flex-nowrap' style='font-size:12px'>" + (stok2[0].PERAKENDE_ISK ? parseFloat(stok2[0].PERAKENDE_ISK).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok2[0].PERAKENDE_ISK).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).split(',')[1] + "</span>" : "-") + "</div></div>";
 
         } else {
             return "<div class='text-center'>-</div>";
