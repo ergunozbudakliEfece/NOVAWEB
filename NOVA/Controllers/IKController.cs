@@ -78,6 +78,24 @@ namespace NOVA.Controllers
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
             if (yonetimstok != true)
             {
                 ViewBag.Stok = "none";
@@ -389,6 +407,24 @@ namespace NOVA.Controllers
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
             if (yonetimstok != true)
             {
                 ViewBag.Stok = "none";
@@ -687,6 +723,24 @@ namespace NOVA.Controllers
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
             if (yonetimstok != true)
             {
                 ViewBag.Stok = "none";

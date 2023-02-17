@@ -1,0 +1,1160 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_Fiyat_yonetim.cshtml";
+}
+
+
+
+<link href="~/Content/table/bootstrap-table.min.css" rel="stylesheet" />
+<link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
+<link href="~/Content/table/bootstrap-table-reorder-rows.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    #table i {
+        color: #00AAFF;
+        font-weight: 300;
+    }
+
+        #table i:hover {
+            opacity: 0.4;
+        }
+
+    .vertical-center {
+        min-height: 95%;
+        min-height: 95vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .search {
+        width: 75%;
+        float: right !important;
+    }
+
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    .swal2-icon {
+        font-size: 15px;
+    }
+
+    .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+        background: rgba(0,0,0,.4) !important;
+    }
+
+    .card-view-title {
+        max-width: 32% !important;
+    }
+
+    .card-view:nth-child(5) .card-view-value {
+        margin-left: 32.5% !important;
+        margin-top: 7px;
+    }
+
+    @@media screen and (max-width: 600px) {
+        #table {
+            font-size: 12px;
+        }
+
+        input {
+            font-size: 12px !important;
+        }
+    }
+
+    @@media screen and (min-width: 601px) {
+
+        .swal2-modal {
+            width: 35vw !important;
+        }
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+</style>
+
+<div class="jumbotron vertical-center" onclick="hideAllPop()">
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                    @{
+                        string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                    }
+                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                    </object>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-online">
+                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                        </object>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    @if (@Request.Cookies["Name"] != null)
+                                    {
+                                        <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                        <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-semibold d-block">Test</span>
+                                        <small class="text-muted">Yetki: Test</small>
+                                    }
+
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                           data-bs-target="#cikis">
+                            <i class="bx bx-power-off me-2"></i>
+                            <span class="align-middle">Oturumu Kapat</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        @*<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="btnradio" onclick="changefiyat(1)" id="btnradio1" checked="" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="btnradio1">PERAKENDE</label>
+                <input type="radio" class="btn-check" name="btnradio" onclick="changefiyat(2)" id="btnradio2" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="btnradio2">VADELİ</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="btnradio3">ÖZEL</label>
+            </div>*@
+        <div id="employeeTableWrapper" class="tableWrapper">
+            <div id="toolbar">
+                <div class="row">
+                    <div class="col">
+                        <div class="class=form-check form-switch text-center">
+                            <input class="form-check-input" type="checkbox" onchange="switchchange()" id="flexSwitchCheckChecked" unchecked="">
+                        </div>
+                        <div class="row">
+                            <label style="font-size: 10px; letter-spacing:1px">PRK-TPT</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="class=form-check form-switch text-center">
+                            <input class="form-check-input" type="checkbox" onchange="sirala()" id="flexSwitchCheckChecked1" unchecked="">
+                        </div>
+                        <div class="row">
+                            <label style="font-size: 10px; letter-spacing:1px">SIRALAMA</label>
+                        </div>
+                    </div>
+                    @*<div class="col">
+                            <button class="btn btn-secondary" onclick="location.href='@Url.Action("MailFiyatlist", "Satis")'" type="button"><i class='bx bx-mail-send'></i></button>
+                        </div>*@
+                </div>
+
+            </div>
+
+            <table id="table"
+                   class="table table-striped"
+                   data-show-fullscreen="true"
+                   data-toggle="table"
+                   data-show-export="true"
+                   data-toolbar="#toolbar"
+                   data-export-data-type="all"
+                   data-export-types="['xlsx', 'pdf']"
+                   data-pagination="false"
+                   data-search="true"
+                   data-show-columns="false"
+                   data-show-columns-toggle-all="false"
+                   data-locale="tr-TR"
+                   data-height="700"
+                   data-filter-control="true"
+                   data-filter-control-multiple-search="true"
+                   data-loading-template="loadingTemplate"
+                   data-mobile-responsive="true"
+                   data-reorderable-rows="false">
+                <thead>
+                    <tr id="trid">
+                        <th data-field="FIYATKODU" data-halign="center" data-width="150" data-width-unit="px" data-align="center" data-formatter="formatterAciklama">FIYAT KODU</th>
+                        <th data-field="FK_ACIKLAMA" data-halign="center" data-align="center">ACIKLAMA</th>
+                        <th data-field="FIYATDOVIZTIPI" data-halign="center" data-align="center" data-width-unit="px">DOVIZ TIPI</th>
+                        <th data-field="FIYAT2" data-formatter="fiyat2Formatter" data-halign="center" data-align="center">TOPTAN FIYAT</th>
+                        <th data-field="FIYAT3" data-formatter="fiyat3Formatter" data-halign="center" data-force-export="false" data-align="center">PERAKENDE FIYAT</th>
+                        <th data-field="" data-formatter="fiyat4Formatter" data-visible="false" data-halign="center" data-force-export="true" data-align="center">PERAKENDE FIYAT</th>
+                        <th data-halign="center" data-align="center" data-formatter="pertopFormatter">PERAKENDE-TOPTAN</th>
+                    </tr>
+                </thead>
+            </table>
+
+
+
+        </div>
+        <div id="employeeTableWrapper2" class="tableWrapper">
+            <div id="toolbar2">
+                <div class="class=form-check form-switch text-center">
+                    <input class="form-check-input" type="checkbox" onchange="switchchange()" id="flexSwitchCheckChecked" unchecked="">
+                </div>
+                <div class="row">
+                    <label style="font-size: 10px; letter-spacing:1px">PRK-TPT</label>
+                </div>
+
+            </div>
+            <table id="table2"
+                   class="table table-striped"
+                   data-show-fullscreen="true"
+                   data-toggle="table"
+                   data-show-export="true"
+                   data-toolbar="#toolbar2"
+                   data-page-size="50"
+                   data-export-data-type="all"
+                   data-export-types="['xlsx', 'pdf']"
+                   data-pagination="true"
+                   data-search="true"
+                   data-show-columns="false"
+                   data-show-columns-toggle-all="false"
+                   data-locale="tr-TR"
+                   data-height="700"
+                   data-filter-control="true"
+                   data-filter-control-multiple-search="true"
+                   data-loading-template="loadingTemplate"
+                   data-url="http://192.168.2.13:83/api/fiyat/exec/000000000000002"
+                   data-mobile-responsive="true"
+                   data-reorderable-rows="true">
+                <thead>
+                    <tr id="trid">
+                        <th data-field="FIYATKODU" data-halign="center" data-width="150" data-width-unit="px" data-align="center">FIYAT KODU</th>
+                        <th data-field="FK_ACIKLAMA" data-halign="center" data-align="center" data-width-unit="px">ACIKLAMA</th>
+                        <th data-field="FIYATDOVIZTIPI" data-halign="center" data-align="center" data-width-unit="px">DOVIZ TIPI</th>
+                        <th data-field="FIYAT2" data-formatter="fiyat2Formatter2" data-halign="center" data-align="center">TOPTAN FIYAT</th>
+                        <th data-field="FIYAT3" data-formatter="fiyat3Formatter" data-halign="center" data-export="false" data-align="center">PERAKENDE FIYAT</th>
+                        <th data-halign="center" data-align="center" data-formatter="pertopFormatter2">PERAKENDE-TOPTAN</th>
+                    </tr>
+                </thead>
+            </table>
+
+
+
+        </div>
+    </div>
+    <script>
+
+        var type = 'fa'
+
+        function loadingTemplate(message) {
+            if (type === 'fa') {
+                return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
+            }
+            if (type === 'pl') {
+                return '<div class="ph-item"><div class="ph-picture"></div></div>'
+            }
+        }
+        $(document).ready(function () {
+            $("#table").bootstrapTable({
+                url: "http://192.168.2.13:83/api/fiyat/exec/000000000000001",
+                onDragStop: function (table, row) {
+                    var list = [];
+                    var tr = document.getElementById("table").getElementsByTagName("tr");
+                    for (let i = 1; i < tr.length; i++) {
+                        list.push({ SIRA_NO: i, FIYATKODU: tr[i].getElementsByTagName("td")[0].innerHTML.substring(0, 8) })
+                    }
+                    var things = [
+                        { SIRA_NO: 1, FIYATKODU: 'yellow' },
+                        { SIRA_NO: 2, FIYATKODU: 'blue' },
+                        { SIRA_NO: 3, FIYATKODU: 'red' }
+                    ];
+                    things = JSON.stringify(list);
+                    $.ajax({
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        type: 'POST',
+                        url: "@Url.Action("Sirala", "Satis")",
+                        data: things,
+                        success: function (result) {
+                            console.log(result);
+                        }
+                    });
+                },
+                exportOptions: {
+                    fileName: function () {
+                        var dat = new Date();
+                        return "Güncel_Fiyat_Listesi_" + dat.toLocaleDateString() + "_" + dat.getHours() + "." + dat.getMinutes();
+                    },
+                    jspdf: {
+                        orientation: 'l',
+                        format: 'a4',
+                        autotable: {
+                            tableWidth: 'auto'
+                        }
+                    },
+                    ignoreColumn: ['FIYAT3'],
+
+                    onSearch: function (text) { $("#table").on("ReorderRow", function () { }) }
+                }
+            })
+            document.getElementById("satis").className = "menu-item open active";
+            document.getElementById("fiyatyonetimi").className = "menu-item active";
+            getRoleAsync().then(function (data) {
+                roles = data;
+            })
+            getFiyatlarAsync().then(function (data) {
+                fiyatlar = data;
+            })
+            getUserAsync().then(function (data) {
+                users = data;
+            }).then(function () {
+                var filter = JSON.parse(users);
+                for (let i = 0; i < filter.length; i++) {
+                    var option = document.createElement('option');
+                    option.innerHTML = filter[i].USER_FIRSTNAME + " " + filter[i].USER_LASTNAME;
+                    option.value = filter[i].USER_ID;
+                    $('#filter').append(option);
+                }
+            })
+
+            $('#filter').hide();
+
+
+        }).ajaxComplete(function () {
+
+            $('.select2clss').select2({width:"100%"}).on('change', function () {
+                changesel(this.parentNode.parentNode.rowIndex);
+            });
+
+            $('#employeeTableWrapper2').hide();
+            $('#employeeTableWrapper').show();
+
+            $(".bx-info-circle").popover({
+                container: 'body',
+                title: 'Ek Bilgiler',
+                html: true,
+                placement: 'bottom',
+                sanitize: false,
+                content: function () { return '<div id="PopoverContent"><div class="input-group"><textarea name="' + $(this).attr('data-fiyat') + '" type="text" class="form-control">' + ($(this).attr('data') == "null" ? "" : $(this).attr('data').replace("::","\n")) + '</textarea></div></div><button type="button" onclick="btnclick()" class="btn btn-secondary btn-sm mb-1 mt-1 float-sm-end">Kaydet</button></div>'; }
+
+            });
+
+        })
+
+        function btnclick() {
+            var value = event.currentTarget.parentNode.getElementsByTagName("textarea")[0].value.replace("\n","::");
+
+            var name = event.currentTarget.parentNode.getElementsByTagName("textarea")[0].name;
+                if (value == "" || value ==null) {
+                    value = null;
+                }
+                var url = "http://192.168.2.13:83/api/fiyat/aciklama/" + name + "/" + value;
+
+
+                $.ajax($.getJSON(url, function () { })).done(function () {
+                    $(".popover").hide();
+                    $('#table').bootstrapTable('refresh');
+
+                })
+
+        }
+        function changetable(value) {
+            if (value == 1) {
+                $('#filter').select2('destroy');
+                $('#filter').hide();
+                $('#table').bootstrapTable('destroy');
+                $('#table').bootstrapTable({
+                    url: 'http://192.168.2.13:83/api/user',
+                    columns: [{
+                        field: 'USER_NAME',
+                        title: 'USERNAME'
+                    },
+                    {
+                        field: 'USER_PASSWORD',
+                        title: 'PASSWORD',
+                        formatter: 'Formatter',
+                        halign: 'center'
+                    },
+                    {
+                        field: 'USER_ROLE',
+                        title: 'ROLE',
+                        formatter: 'RoleFormatter',
+                        halign: 'center'
+                    },
+                    {
+                        field: 'USER_FIRSTNAME',
+                        title: 'FIRST NAME',
+                        formatter: 'Formatter',
+                        halign: 'center'
+
+                    },
+                    {
+                        field: 'USER_LASTNAME',
+                        title: 'LAST NAME',
+                        formatter: 'Formatter',
+                        halign: 'center'
+                    },
+                    {
+                        field: 'USER_MAIL',
+                        title: 'MAIL',
+                        formatter: 'Formatter',
+                        halign: 'center'
+                    },
+                    {
+                        field: 'ACTIVE',
+                        title: 'ACTIVE',
+                        formatter: 'ActiveFormatter',
+                        halign: 'center'
+                    }
+                    ]
+
+                })
+            }
+            else if (value == 2) {
+
+                $('#filter').select2({ placeholder: 'Grup Filtresi', width: '90%', float: 'end' });
+                $('#filter').show();
+                $('#table').bootstrapTable('destroy');
+                $('#table').bootstrapTable({
+                    url: 'http://192.168.2.13:83/api/user/auth',
+                    columns: [{
+                        field: 'USER_ID',
+                        title: 'NAME',
+                        formatter: 'formatterAuth1'
+                    },
+                    {
+                        field: 'MODULE_INCKEY',
+                        title: 'MODULE',
+                        formatter: 'formatterAuth2',
+                        sortable: true
+                    },
+                    {
+                        field: 'ROLE_ID',
+                        title: 'ROLE',
+                        formatter: 'formatterRoleAuth2'
+                    },
+                    {
+                        field: 'USER_AUTH',
+                        title: 'AUTH',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'SELECT_AUTH',
+                        title: 'SELECT',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'INSERT_AUTH',
+                        title: 'INSERT',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'UPDATE_AUTH',
+                        title: 'UPDATE',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'DELETE_AUTH',
+                        title: 'DELETE',
+                        formatter: 'formatterAuth',
+                        align: 'center'
+                    }
+                    ]
+
+                })
+                $('#filter').change(function (e) {
+                    var filterAlgorithm = $('#filter').val()
+
+                    if (filterAlgorithm.length > 0) {
+                        $('#table').bootstrapTable('filterBy', {
+                            USER_ID: filterAlgorithm
+                        }, {
+                            'filterAlgorithm': (row, filters) => {
+
+                                return row.USER_ID == filters.USER_ID;
+                            }
+                        })
+                    } else {
+                        $('#table').bootstrapTable('filterBy', {});
+
+                    }
+
+                })
+            }
+            else {
+                $('#filter').select2();
+                $('#filter').select2('destroy');
+                $('#filter').hide();
+
+                $('#table').bootstrapTable('destroy');
+                document.getElementById("trid").replaceChildren();
+                $('#table').bootstrapTable({
+                    url: 'http://192.168.2.13:83/api/modules',
+                    columns: [
+                    {
+                        field: 'INCKEY',
+                        title: 'INCKEY',
+                        }, {
+                            field: 'MODULE_NAME',
+                            title: 'NAME'
+                        },
+                        {
+                            field: 'ACTIVE',
+                            title: 'ACTIVE',
+                            formatter:'FormatterModule'
+                        }
+                    ]
+
+                })
+            }
+        }
+        function formatterAuth(value, index, row) {
+            if (value) {
+                return '<input class="form-check-input" type="checkbox" value="" onchange="changeAuth(' + index.USER_ID + ')" checked="">';
+            } else {
+                return '<input class="form-heck-input"  type="checkbox" onchange="changeAuth(' + index.USER_ID +')" value="" id="defaultCheck3">';
+            }
+        }
+
+        function changeAuth(value) {
+
+                    var row = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.rowIndex -1];
+                    var userid = value;
+            var ua = row.getElementsByTagName("input")[0].checked;
+            var sa = row.getElementsByTagName("input")[1].checked;
+            var ia = row.getElementsByTagName("input")[2].checked;
+            var uaa = row.getElementsByTagName("input")[3].checked;
+            var da = row.getElementsByTagName("input")[4].checked;
+            var mi = row.getElementsByTagName("td")[1].innerHTML;
+            var json = { USER_ID: userid, MODULE_INCKEY: mi, USER_AUTH: ua, SELECT_AUTH: sa, INSERT_AUTH: ia, UPDATE_AUTH: uaa, DELETE_AUTH:da };
+                    $.ajax({
+                        url: '@Url.Action("YetkiUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
+
+                        },
+                        async: true,
+                        processData: false
+                    });
+
+        }
+
+        function formatterAuth1(value, index, row) {
+            var user = JSON.parse(users).filter(x => x.USER_ID == value);
+            return user[0].USER_FIRSTNAME + " " + user[0].USER_LASTNAME;
+
+        }
+        function formatterAuth2(value, index, row) {
+            return value;
+        }
+        function RoleFormatter(value, index, row) {
+            var q = "";
+            for (let i = 0; i < roles.length; i++) {
+                if (value == roles[i].ROLE_ID) {
+                    q = q + "<option selected value='" + roles[i].ROLE_ID + "'>" + roles[i].ROLE_NAME + "</option>"
+                } else {
+                    q = q + "<option value='" + roles[i].ROLE_ID + "'>" + roles[i].ROLE_NAME + "</option>"
+                }
+
+            }
+            return "<select class='select2clss'>"+q+"</select>";
+        }
+        function changesel(value) {
+            var row = document.getElementById("table").getElementsByTagName("tr")[value];
+
+                    var username = row.getElementsByTagName("td")[0].innerHTML;
+                    var pw = row.getElementsByTagName("input")[0].value;
+                    var fn = row.getElementsByTagName("input")[1].value;
+                    var ln = row.getElementsByTagName("input")[2].value;
+                    var mail = row.getElementsByTagName("input")[3].value;
+                    var active = row.getElementsByTagName("input")[4].checked;
+                    var role = row.getElementsByTagName("select")[0].value;
+                    var json = { USER_NAME: username, USER_PASSWORD: pw, USER_FIRSTNAME: fn, USER_LASTNAME: ln, USER_MAIL: mail, ACTIVE: active, USER_ROLE: role };
+
+                    $.ajax({
+                        url: '@Url.Action("KullaniciUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
+
+                        },
+                        async: true,
+                        processData: false
+                    });
+
+        }
+        function formatterAciklama(value, index, row) {
+
+            return value + " <i style='cursor: copy' data-fiyat='"+index.FIYATKODU+"' data='"+index.OZELKOSULLAR+"' class='bx bx-info-circle'></i>";
+        }
+
+        function formatterRoleAuth2(value, index, row) {
+            return roles.filter(x => x.ROLE_ID==value)[0].ROLE_NAME;
+        }
+        function fiyat2Formatter(value, index, row) {
+
+            return "<span class='d-none'>" + value +"</span>"+"<input class='form-control text-center' name='fiyat2' type='text' style='background:transparent' onkeyup='keyup()' value='" + value.toLocaleString({ max: 2 }) + "' />";
+
+        }
+        function fiyat2Formatter2(value, index, row) {
+
+            return "<span class='d-none'>" + value + "</span>" + "<input class='form-control text-center' name='fiyat2' type='text' style='background:transparent' onkeyup='keyup2()' value='" + value.toLocaleString({ max: 2 }) + "' />";
+
+        }
+        function fiyat3Formatter(value, index, row) {
+
+            return value.toLocaleString({ max: 2 });
+        }
+        function fiyat4Formatter(value, index, row) {
+
+            return (index.FIYAT3.toLocaleString({ max: 2 })).replace(',','.');
+        }
+        function pertopFormatter(value, index, row) {
+
+            return "<span class='d-none'>" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "</span><input class='form-control text-center' name='pertop' readonly type='text' style='background:transparent' onkeyup='keyuppertop()' value='" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "'/>";
+
+        }
+        function pertopFormatter2(value, index, row) {
+
+            return "<span class='d-none'>" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "</span><input class='form-control text-center' name='pertop' readonly type='text' style='background:transparent' onkeyup='keyuppertop2()' value='" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "'/>";
+
+        }
+        var msg = "";
+        function keyup() {
+            if (event.key == "Enter") {
+
+                $.ajax(ch()).done(function () {
+                    Swal.fire(
+                        'GÜNCELLENENLER!',
+                        "<div class='container-fluid'><table class='table table-borderless'><tr style='font-size:8px;word-break: normal;'><th>FK</th><th>ÖNCEKİ TF</th><th>GÜNCELLENEN TF</th><th>ÖNCEKİ PF</th><th>GÜNCELLENEN PF</th></tr>"+msg+"</table></div>",
+                        'success'
+                    )
+                }).then(function () {
+                    msg = "";
+                    getFiyatlarAsync().then(function (data) {
+                        fiyatlar = data;
+                    }).then(function () {
+                        $('#table').bootstrapTable('refresh')
+                    })
+                });
+                }
+            }
+        function keyup2() {
+            if (event.key == "Enter") {
+
+                $.ajax(ch2()).done(function () {
+                    Swal.fire(
+                        'GÜNCELLENENLER!',
+                        "<div class='container-fluid'><table class='table table-borderless'><tr style='font-size:8px;word-break: normal;'><th>FK</th><th>ÖNCEKİ TF</th><th>GÜNCELLENEN TF</th><th>ÖNCEKİ PF</th><th>GÜNCELLENEN PF</th></tr>" + msg + "</table></div>",
+                        'success'
+                    )
+                }).then(function () {
+                    msg = "";
+                    getFiyatlarAsync().then(function (data) {
+                        fiyatlar = data;
+                    }).then(function () {
+                        $('#table2').bootstrapTable('refresh')
+                    })
+                });
+            }
+        }
+        function keyuppertop() {
+            if (event.key == "Enter") {
+                $.ajax(ch1()).done(function () {
+                    Swal.fire(
+                        'GÜNCELLENENLER!',
+                        "<table class='table table-borderless'><tr><th>FIYAT KODU</th><th>ÖNCEKİ PERAKENDE FIYAT</th><th>GÜNCELLENEN PERAKENDE FIYAT</th></tr>" + msg + "</table>",
+                        'success'
+                    )
+                }).then(function () {
+                    msg = "";
+                    getFiyatlarAsync().then(function (data) {
+                        fiyatlar = data;
+                        })
+                });
+            }
+        }
+
+        function keyuppertop2() {
+            if (event.key == "Enter") {
+                $.ajax(ch3()).done(function () {
+                    Swal.fire(
+                        'GÜNCELLENENLER!',
+                        "<table class='table table-borderless'><tr><th>FIYAT KODU</th><th>ÖNCEKİ PERAKENDE FIYAT</th><th>GÜNCELLENEN PERAKENDE FIYAT</th></tr>" + msg + "</table>",
+                        'success'
+                    )
+                }).then(function () {
+                    msg = "";
+                    getFiyatlarAsync().then(function (data) {
+                        fiyatlar = data;
+                    })
+                });
+            }
+        }
+        function hideAllPop() {
+            $(".popover").hide();
+        }
+        function ch() {
+            var tr = document.getElementById("table").getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                if (tr[i].getElementsByTagName("td")[4]) {
+                    var perakende = tr[i].getElementsByTagName("td")[4];
+                    var fiyatkodu = tr[i].getElementsByTagName("td")[0].innerHTML.substring(0, 8);
+                    var span1 = tr[i].getElementsByTagName("span")[0];
+                    var span2 = tr[i].getElementsByTagName("span")[1];
+                } else {
+                    var perakende = tr[i].getElementsByTagName("span")[10];
+                    var fiyatkodu = tr[i].getElementsByTagName("span")[1].innerHTML.substring(0, 8);
+                    var span1 = tr[i].getElementsByTagName("span")[8];
+                    var span2 = tr[i].getElementsByTagName("span")[13];
+                }
+                var toptan = tr[i].getElementsByTagName("input")[0];
+
+                span1.innerHTML = toptan.value;
+                span1.style.display = "none";
+                var f = fiyatlar.filter(x => x.FIYATKODU == fiyatkodu);
+
+                if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
+
+        if ((tr[i].getElementsByTagName("input")[1].value).length > 0 && tr[i].getElementsByTagName("input")[1].value != '-') {
+
+                        if (tr[i].getElementsByTagName("input")[1].value.includes('.')) {
+                            if (tr[i].getElementsByTagName("input")[1].value.split('.')[1].length > 0) {
+                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+
+                            }
+                        } else if (tr[i].getElementsByTagName("input")[1].value.includes(',')) {
+
+                            if (tr[i].getElementsByTagName("input")[1].value.split(',')[1].length > 0) {
+                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+
+
+                            }
+
+                        } else {
+
+                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+
+            }
+            msg = msg + "<tr style='font-size:12px'><td style='white-space: nowrap'>" + fiyatkodu.substring(0,8) + "</td><td  style='white-space: nowrap'>" + f[0].FIYAT2.toLocaleString() + "</td><td  style='white-space: nowrap'>" + toptan.value + "</td><td>" + f[0].FIYAT3.toLocaleString() + "</td><td>" + perakende.innerHTML + "</td></tr> ";
+                        span2.innerHTML = perakende.innerHTML;
+            span2.style.display = "none";
+
+                var url = "http://192.168.2.13:83/api/fiyat/" + fiyatkodu + "/" + toptan.value.replace(',', '.') + "/" + perakende.innerHTML.replace(',', '.') + "/000000000000001"
+
+
+                        $.getJSON(url, function () { });
+
+        }
+                }
+
+                if (i == tr.length - 1) {
+                    getFiyatlarAsync().then(function (data) {
+                        fiyatlar = data;
+                    })
+                }
+
+            }
+
+        }
+        function ch1() {
+            var tr = document.getElementById("table").getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                var toptan = tr[i].getElementsByTagName("input")[0];
+
+                if (tr[i].getElementsByTagName("td")[4]) {
+                    var perakende = tr[i].getElementsByTagName("td")[4];
+                    var fiyatkodu = tr[i].getElementsByTagName("td")[0].innerHTML.substring(0, 8);
+                    var span1 = tr[i].getElementsByTagName("span")[0];
+                    var span2 = tr[i].getElementsByTagName("span")[1];
+                } else {
+                    var perakende = tr[i].getElementsByTagName("span")[10];
+                    var fiyatkodu = tr[i].getElementsByTagName("span")[1].innerHTML.substring(0,8);
+                    var span1 = tr[i].getElementsByTagName("span")[8];
+                    var span2 = tr[i].getElementsByTagName("span")[13];
+                }
+
+
+                span1.innerHTML = toptan.value;
+                span1.style.display = "none";
+                var f = fiyatlar.filter(x => x.FIYATKODU == fiyatkodu);
+
+                if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
+
+                    if ((tr[i].getElementsByTagName("input")[1].value).length > 0 && tr[i].getElementsByTagName("input")[1].value != '-') {
+
+                        if (tr[i].getElementsByTagName("input")[1].value.includes('.')) {
+                            if (tr[i].getElementsByTagName("input")[1].value.split('.')[1].length > 0) {
+                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+
+                            }
+                        } else if (tr[i].getElementsByTagName("input")[1].value.includes(',')) {
+
+                            if (tr[i].getElementsByTagName("input")[1].value.split(',')[1].length > 0) {
+                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+
+
+                            }
+
+                        } else {
+                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+                        }
+                        span2.innerHTML = perakende.innerHTML;
+                        span2.style.display = "none";
+                        if (tablosabit = 0) {
+                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000001").then(function (data) {
+
+                            })
+                        } else if (tablosabit = 1) {
+                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000002").then(function (data) {
+
+                            })
+                        }
+
+
+                    }
+                } else {
+                    if (tr[i].getElementsByTagName("input")[1].value.includes('.')) {
+                        if (tr[i].getElementsByTagName("input")[1].value.split('.')[1].length > 0) {
+                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+
+                        }
+                    } else if (tr[i].getElementsByTagName("input")[1].value.includes(',')) {
+
+                        if (tr[i].getElementsByTagName("input")[1].value.split(',')[1].length > 0) {
+                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+
+
+                        }
+
+                    } else {
+                        perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+                    }
+                    if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
+                        msg = msg + "<tr style='font-size:12px'><td>" + fiyatkodu + "</td><td>" + f[0].FIYAT3.toLocaleString() + "</td><td>" + perakende.innerHTML + "</td></tr>";
+
+                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML,"000000000000001").then(function (data) {
+
+                            })
+
+
+                    }
+                }
+
+                if (i == tr.length - 1) {
+                    getFiyatlarAsync().then(function (data) {
+                        fiyatlar = data;
+                    })
+                }
+
+            }
+
+        }
+        function ch2() {
+            var tr = document.getElementById("table").getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                if (tr[i].getElementsByTagName("td")[4]) {
+                    var perakende = tr[i].getElementsByTagName("td")[4];
+                    var fiyatkodu = tr[i].getElementsByTagName("td")[0].innerHTML.substring(0, 8);
+                    var span1 = tr[i].getElementsByTagName("span")[0];
+                    var span2 = tr[i].getElementsByTagName("span")[1];
+                } else {
+                    var perakende = tr[i].getElementsByTagName("span")[10];
+                    var fiyatkodu = tr[i].getElementsByTagName("span")[1].innerHTML.substring(0, 8);
+                    var span1 = tr[i].getElementsByTagName("span")[8];
+                    var span2 = tr[i].getElementsByTagName("span")[13];
+                }
+                var toptan = tr[i].getElementsByTagName("input")[0];
+
+                span1.innerHTML = toptan.value;
+                span1.style.display = "none";
+                var f = fiyatlar.filter(x => x.FIYATKODU == fiyatkodu);
+
+                if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
+
+                    if ((tr[i].getElementsByTagName("input")[1].value).length > 0 && tr[i].getElementsByTagName("input")[1].value != '-') {
+
+                        if (tr[i].getElementsByTagName("input")[1].value.includes('.')) {
+                            if (tr[i].getElementsByTagName("input")[1].value.split('.')[1].length > 0) {
+                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+
+                            }
+                        } else if (tr[i].getElementsByTagName("input")[1].value.includes(',')) {
+
+                            if (tr[i].getElementsByTagName("input")[1].value.split(',')[1].length > 0) {
+                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+
+
+                            }
+
+                        } else {
+
+                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+
+                        }
+                        msg = msg + "<tr style='font-size:12px'><td style='white-space: nowrap'>" + fiyatkodu + "</td><td  style='white-space: nowrap'>" + f[0].FIYAT2.toLocaleString() + "</td><td  style='white-space: nowrap'>" + toptan.value + "</td><td>" + f[0].FIYAT3.toLocaleString() + "</td><td>" + perakende.innerHTML + "</td></tr> ";
+                        span2.innerHTML = perakende.innerHTML;
+                        span2.style.display = "none";
+
+                        var url = "http://192.168.2.13:83/api/fiyat/" + fiyatkodu + "/" + toptan.value.replace(',', '.') + "/" + perakende.innerHTML.replace(',', '.') + "/000000000000002"
+
+
+                        $.getJSON(url, function () { });
+
+                    }
+                }
+
+                if (i == tr.length - 1) {
+                    getFiyatlarAsync().then(function (data) {
+                        fiyatlar = data;
+                    })
+                }
+
+            }
+
+        }
+        function ch3() {
+            var tr = document.getElementById("table").getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                var toptan = tr[i].getElementsByTagName("input")[0];
+
+                if (tr[i].getElementsByTagName("td")[4]) {
+                    var perakende = tr[i].getElementsByTagName("td")[4];
+                    var fiyatkodu = tr[i].getElementsByTagName("td")[0].innerHTML.substring(0, 8);
+                    var span1 = tr[i].getElementsByTagName("span")[0];
+                    var span2 = tr[i].getElementsByTagName("span")[1];
+                } else {
+                    var perakende = tr[i].getElementsByTagName("span")[10];
+                    var fiyatkodu = tr[i].getElementsByTagName("span")[1].innerHTML.substring(0, 8);
+                    var span1 = tr[i].getElementsByTagName("span")[8];
+                    var span2 = tr[i].getElementsByTagName("span")[13];
+                }
+
+
+
+                span1.innerHTML = toptan.value;
+                span1.style.display = "none";
+                var f = fiyatlar.filter(x => x.FIYATKODU == fiyatkodu);
+
+                if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
+
+                    if ((tr[i].getElementsByTagName("input")[1].value).length > 0 && tr[i].getElementsByTagName("input")[1].value != '-') {
+
+                        if (tr[i].getElementsByTagName("input")[1].value.includes('.')) {
+                            if (tr[i].getElementsByTagName("input")[1].value.split('.')[1].length > 0) {
+                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+
+                            }
+                        } else if (tr[i].getElementsByTagName("input")[1].value.includes(',')) {
+
+                            if (tr[i].getElementsByTagName("input")[1].value.split(',')[1].length > 0) {
+                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+
+
+                            }
+
+                        } else {
+                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+                        }
+                        span2.innerHTML = perakende.innerHTML;
+                        span2.style.display = "none";
+                        if (tablosabit = 0) {
+                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000001").then(function (data) {
+
+                            })
+                        } else if (tablosabit = 1) {
+                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000002").then(function (data) {
+
+                            })
+                        }
+
+
+                    }
+                } else {
+                    if (tr[i].getElementsByTagName("input")[1].value.includes('.')) {
+                        if (tr[i].getElementsByTagName("input")[1].value.split('.')[1].length > 0) {
+                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+
+                        }
+                    } else if (tr[i].getElementsByTagName("input")[1].value.includes(',')) {
+
+                        if (tr[i].getElementsByTagName("input")[1].value.split(',')[1].length > 0) {
+                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+
+
+                        }
+
+                    } else {
+                        perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+
+                    }
+                    if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
+                        msg = msg + "<tr style='font-size:12px'><td>" + fiyatkodu + "</td><td>" + f[0].FIYAT3.toLocaleString() + "</td><td>" + perakende.innerHTML + "</td></tr>";
+
+                        getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000002").then(function (data) {
+
+                        })
+
+
+                    }
+                }
+
+                if (i == tr.length - 1) {
+                    getFiyatlarAsync().then(function (data) {
+                        fiyatlar = data;
+                    })
+                }
+
+            }
+
+        }
+        function switchchange() {
+            if ((event.currentTarget.checked)) {
+                var pertop = document.getElementsByName("pertop");
+                var fiyat2 = document.getElementsByName("fiyat2");
+                getFiyatlarAsync().then(function (data) {
+                    fiyatlar = data;
+
+                })
+
+                $.ajax(
+                    $('#table').bootstrapTable('refresh')
+                ).done(function () {
+                    for (let i = 0; i < pertop.length; i++) {
+
+                        pertop[i].removeAttribute("readOnly");
+                        fiyat2[i].setAttribute("readOnly", "");
+
+                    }
+                })
+
+            }
+            else {
+
+                var pertop = document.getElementsByName("pertop");
+                var fiyat2 = document.getElementsByName("fiyat2");
+                getFiyatlarAsync().then(function (data) {
+                    fiyatlar = data;
+
+                })
+                $.ajax(
+                    $('#table').bootstrapTable('refresh')
+                ).done(function () {
+                    for (let i = 0; i < pertop.length; i++) {
+
+                        fiyat2[i].removeAttribute("readOnly");
+                        pertop[i].setAttribute("readOnly", "");
+
+                    }
+                })
+
+
+
+            }
+
+        }
+        function changefiyat(value) {
+            if (value == 1) {
+                $('#employeeTableWrapper2').hide();
+                $('#employeeTableWrapper').show();
+            } else if (value == 2) {
+                $('#employeeTableWrapper').hide();
+                $('#employeeTableWrapper2').show();
+
+
+            }
+        }
+        function sirala() {
+            if (event.currentTarget.checked) {
+                document.getElementsByClassName("search-input")[0].remove();
+                $('#table').bootstrapTable('refreshOptions', {
+                    search: false,
+                    reorderableRows: true
+                })
+            }
+            else {
+                $('#table').bootstrapTable("destroy");
+               $("#table").bootstrapTable({
+                url: "http://192.168.2.13:83/api/fiyat/exec/000000000000001",
+                onDragStop: function (table, row) {
+                    var list = [];
+                    var tr = document.getElementById("table").getElementsByTagName("tr");
+                    for (let i = 1; i < tr.length; i++) {
+                        list.push({ SIRA_NO: i, FIYATKODU: tr[i].getElementsByTagName("td")[0].innerHTML.substring(0,8) })
+                    }
+                    var things = [
+                        { SIRA_NO: 1, FIYATKODU: 'yellow' },
+                        { SIRA_NO: 2, FIYATKODU: 'blue' },
+                        { SIRA_NO: 3, FIYATKODU: 'red' }
+                    ];
+                    things = JSON.stringify(list);
+                    $.ajax({
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        type: 'POST',
+                        url: "@Url.Action("Sirala", "Satis")",
+                        data: things,
+                        success: function (result) {
+                            console.log(result);
+                        }
+                    });
+                },
+                exportOptions: {
+                    fileName: function () {
+                        var dat = new Date();
+                        return "Güncel_Fiyat_Listesi_" + dat.toLocaleDateString() + "_" + dat.getHours() + "." + dat.getMinutes();
+                    },
+                    jspdf: {
+                        orientation: 'l',
+                        format: 'a4',
+                        autotable: {
+                            tableWidth: 'auto'
+                        }
+                    },
+                    ignoreColumn: ['FIYAT3']
+                },
+                onSearch: function (text) { $("#table").on("ReorderRow", function () {}) }
+            })
+            }
+
+        }
+    </script>
+</div>
+
+
+
+
+
+
+

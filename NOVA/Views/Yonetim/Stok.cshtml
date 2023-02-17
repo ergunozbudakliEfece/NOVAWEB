@@ -14,7 +14,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
+<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 <style>
 
     .card-view {
@@ -82,18 +82,11 @@
             display: none;
         }*/
     }
+  
+      
+
 </style>
 <style>
-    .centercontent {
-        position: absolute;
-        max-width: 100%;
-        height: auto;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 5;
-    }
-
     .heart {
         animation: heartbeat 1s infinite alternate;
     }
@@ -109,14 +102,31 @@
             transform: scale(0.40);
         }
     }
+
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+
+   
+        .icon-info-sign:hover {
+            opacity: .8;
+            cursor:pointer;
+        }
 </style>
+
 <div class="container-fluid d-flex h-100">
-
+    
+    <div class="centercontent" id="content">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+    </div>
     <div class="card mx-auto" style="font-size:12px">
-
         <div class="card-header pb-0">
-
-
             <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
                 @{
                     string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
@@ -162,6 +172,12 @@
                 </li>
             </ul>
         </div>
+      
+            
+             
+
+           
+       
         <div class="card-body">
             <div class="btn-group menu1">
                 <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
@@ -181,7 +197,14 @@
                         <hr class="dropdown-divider">
                     </li>
                     <li><a class="dropdown-item" onclick="change(4)">EFECE 3</a></li>
-
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" onclick="change(5)">EFECE 4</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" onclick="change(6)">TRANSFER</a></li>
                 </ul>
             </div>
             <div class="btn-group menu2" role="group" aria-label="Basic radio toggle button group">
@@ -193,8 +216,13 @@
                 <label class="btn btn-outline-secondary" for="btnradio3">EFECE 2</label>
                 <input type="radio" class="btn-check" onclick="change(4)" name="btnradio" id="btnradio4" autocomplete="off">
                 <label class="btn btn-outline-secondary" for="btnradio4">EFECE 3</label>
+                <input type="radio" class="btn-check" onclick="change(5)" name="btnradio" id="btnradio5" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="btnradio5">EFECE 4</label>
+                <input type="radio" class="btn-check" onclick="change(6)" name="btnradio" id="btnradio6" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="btnradio6">TRANSFER</label>
 
             </div>
+
             <div class="row mt-3">
                 <div class="col-sm-2">
                     <label><b>Ʃ Toptan Değer TRY:</b></label>
@@ -261,9 +289,9 @@
                        data-fixed-columns="true"
                        data-fixed-number="0">
                     <thead>
-                        <tr>
+                        <tr id="tst">
 
-                            <th data-field="FK_ACIKLAMA" data-sortable="true" data-footer-formatter="TotalFooter" data-halign="center">FİYAT GRUBU</th>
+                            <th data-field="FK_ACIKLAMA" data-sortable="true" data-formatter="grupFormatter" data-footer-formatter="TotalFooter" data-halign="center">FİYAT GRUBU</th>
                             <th data-field="FIYATDOVIZTIPI" data-sortable="true" data-halign="center" data-align="center">DOVİZ TİPİ</th>
                             <th data-field="OLCUBR" data-sortable="true" data-halign="center" data-align="center">ÖLÇÜ BİRİMİ</th>
                             <th data-field="BAKIYE" data-sortable="true" data-footer-formatter="TotalFormatterBak" data-formatter="toplamForm" data-halign="center" data-align="right">TOPLAM BAKİYE</th>
@@ -271,6 +299,7 @@
                             <th data-field="PERAKENDE_DEGER" data-sortable="true" data-halign="center" data-align="right">PERAKENDE DEĞER</th>
                             <th data-field="TOPTAN_DEGER_TL" data-sortable="true" data-footer-formatter="TotalFormatterTop" data-halign="center" data-align="right">TOPTAN DEĞER(TL)</th>
                             <th data-field="PERAKENDE_DEGER_TL" data-sortable="true" data-footer-formatter="TotalFormatter" data-halign="center" data-align="right">PERAKENDE DEĞER(TL)</th>
+                            <th data-field="TOPLAM_MALIYET" data-sortable="true" data-halign="center" data-align="right" data-footer-formatter="TotalFormatterMaliyet">TOPLAM MALİYET</th>
                         </tr>
                     </thead>
                 </table>
@@ -290,65 +319,168 @@
         var list = [];
         if (value == 1) {
             $('#table').bootstrapTable('removeAll');
-            $.getJSON("http://192.168.2.13:83/api/stok/fiat", function (data) {
-                tumliste = data;
-
+            $.getJSON("http://192.168.2.13:83/api/stok/fiat2", function (data) {
+                tumliste2 = data;
                 for (let i = 0; i < data.length; i++) {
-                    if (data[i].FK_ACIKLAMA != null) {
-                        if (!listfk.includes(data[i].FK_ACIKLAMA)) {
-                            listfk.push(data[i].FK_ACIKLAMA);
+
+                    if (!listEfece4.includes(data[i].ACIKLAMA)) {
+                        if (data[i].ACIKLAMA == null) {
+                            if (!listEfece4.includes("FIYAT GRUBU TANIMLANMAYANLAR")) {
+                                listEfece4.push("FIYAT GRUBU TANIMLANMAYANLAR");
+                            }
+                        } else {
+                            listEfece4.push(data[i].ACIKLAMA);
                         }
+
+
                     }
-
                 }
+                document.getElementById("filter").replaceChildren();
+                for (let i = 0; i < listEfece4.length; i++) {
 
-                for (let i = 0; i < listfk.length; i++) {
+                    var opt = document.createElement("option");
+                    opt.innerHTML = listEfece4[i];
+                    opt.value = listEfece4[i];
+                    document.getElementById("filter").appendChild(opt);
 
-                    var sumbakiye = 0;
-                    var deger = 0;
-                    var pardeger = 0;
-                    var degertl = 0;
-                    var pardegertl = 0;
+                    if (listEfece4[i] == "FIYAT GRUBU TANIMLANMAYANLAR") {
+                        var f = data.filter(x => x.ACIKLAMA == null);
+                    } else {
+                        var f = data.filter(x => x.ACIKLAMA == listEfece4[i]);
+                    }
                     var fiyatkodu = "";
                     var doviz = "";
-                    var f = data.filter(x => x.FK_ACIKLAMA == listfk[i]);
+                    var sum = 0;
+                    var sumbakiye = 0;
 
                     for (let a = 0; a < f.length; a++) {
-                        if (f[a].BAKIYE != null) {
-                            sumbakiye = sumbakiye + parseFloat(f[a].BAKIYE);
-                        }
+
 
                         fiyatkodu = f[a].FIYATKODU;
                         if (fiyatkodu == null) {
                             fiyatkodu = "";
                         }
-                        if (f[a].TOPTAN_DEGER != null) {
-                            deger = deger + parseFloat(f[a].TOPTAN_DEGER);
-                        }
-                        if (f[a].PERAKENDE_DEGER != null) {
-                            pardeger = pardeger + parseFloat(f[a].PERAKENDE_DEGER);
-                        }
-                        if (f[a].TOPTAN_DEGER_TL != null) {
-                            degertl = degertl + parseFloat(f[a].TOPTAN_DEGER_TL);
-                        }
-                        if (f[a].PERAKENDE_DEGER_TL != null) {
-                            pardegertl = pardegertl + parseFloat(f[a].PERAKENDE_DEGER_TL);
-                        }
-                        if (f[a].FIYATDOVIZTIPI != null) {
-                            doviz = f[a].FIYATDOVIZTIPI;
+
+                        if (f[a].DOV_TIP != null) {
+                            doviz = f[a].DOV_TIP;
                         } else {
                             doviz = "TRY";
                         }
 
                     }
 
-                    list.push({ FK_ACIKLAMA: listfk[i], BAKIYE: (sumbakiye).toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCUBR, TOPTAN_DEGER: parseInt(deger).toLocaleString(), PERAKENDE_DEGER: parseInt(pardeger).toLocaleString(), TOPTAN_DEGER_TL: parseInt(degertl).toLocaleString(), PERAKENDE_DEGER_TL: parseInt(pardegertl).toLocaleString(), FIYATKODU: fiyatkodu })
+                    if (listEfece4[i] == "FIYAT GRUBU TANIMLANMAYANLAR") {
+
+
+                        var t = excellist.filter(x => (x.RULOKODU.substring(0, 4)).includes(parseInt((f[i].SERI_NO).split('.')[0].substring(0, 6))));
+
+                        if (t.length > 0) {
+                            list.push({ FK_ACIKLAMA: listEfece4[i], BAKIYE: "", FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCU_BR1, TOPTAN_DEGER: "", PERAKENDE_DEGER: "", TOPTAN_DEGER_TL: "", PERAKENDE_DEGER_TL: "", FIYATKODU: fiyatkodu })
+                        }
+
+
+                    } else {
+                        for (let i = 0; i < f.length; i++) {
+
+                            var t = excellist.filter(x => (x.RULOKODU.substring(0, 4)).includes(parseInt((f[i].SERI_NO).split('.')[0].substring(0, 6))));
+
+                            if (t.length > 0) {
+
+                                sum = parseFloat(sum) + (parseFloat(t[0].TUTAR) * parseFloat(t[0].TONAJ.replace(',', '.')));
+
+                                for (let a = 0; a < t.length; a++) {
+
+                                    sumbakiye = sumbakiye + parseFloat(t[a].TONAJ.replace(',', '.'));
+
+                                }
+                            }
+                        }
+
+                        list.push({
+                            FK_ACIKLAMA: listEfece4[i], BAKIYE: sumbakiye.toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCU_BR1, TOPTAN_DEGER: "", PERAKENDE_DEGER: "", TOPTAN_DEGER_TL: "", PERAKENDE_DEGER_TL: "", FIYATKODU: fiyatkodu, DIF: 'true', TOPLAM_MALIYET: sum.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            })
+                        })
+                    }
+
 
                 }
 
-                $('#table').bootstrapTable('load', list);
+                $('#table').bootstrapTable('refreshOptions', {
+                    detailFormatter: "detailFormatter2",
+                    data: list
+                });
 
 
+
+
+            }).then(function () {
+                $.getJSON("http://192.168.2.13:83/api/stok/fiat", function (data) {
+                    tumliste = data;
+                    document.getElementById("dol").innerHTML = " " + data.find(x => x.FIYATDOVIZTIPI == "USD").KUR;
+                    document.getElementById("er").innerHTML = " " + data.find(x => x.FIYATDOVIZTIPI == "EUR").KUR;
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].FK_ACIKLAMA != null) {
+                            if (!listfk.includes(data[i].FK_ACIKLAMA)) {
+                                listfk.push(data[i].FK_ACIKLAMA);
+                            }
+                        }
+
+                    }
+                    for (let i = 0; i < listfk.length; i++) {
+                        var opt = document.createElement("option");
+                        opt.innerHTML = listfk[i];
+                        opt.value = listfk[i];
+                        document.getElementById("filter").appendChild(opt);
+                    }
+                    for (let i = 0; i < listfk.length; i++) {
+
+                        var sumbakiye = 0;
+                        var deger = 0;
+                        var pardeger = 0;
+                        var degertl = 0;
+                        var pardegertl = 0;
+                        var fiyatkodu = "";
+                        var doviz = "";
+                        var f = data.filter(x => x.FK_ACIKLAMA == listfk[i]);
+
+                        for (let a = 0; a < f.length; a++) {
+                            if (f[a].BAKIYE != null) {
+                                sumbakiye = sumbakiye + parseFloat(f[a].BAKIYE);
+                            }
+
+                            fiyatkodu = f[a].FIYATKODU;
+                            if (fiyatkodu == null) {
+                                fiyatkodu = "";
+                            }
+                            if (f[a].TOPTAN_DEGER != null) {
+                                deger = deger + parseFloat(f[a].TOPTAN_DEGER);
+                            }
+                            if (f[a].PERAKENDE_DEGER != null) {
+                                pardeger = pardeger + parseFloat(f[a].PERAKENDE_DEGER);
+                            }
+                            if (f[a].TOPTAN_DEGER_TL != null) {
+                                degertl = degertl + parseFloat(f[a].TOPTAN_DEGER_TL);
+                            }
+                            if (f[a].PERAKENDE_DEGER_TL != null) {
+                                pardegertl = pardegertl + parseFloat(f[a].PERAKENDE_DEGER_TL);
+                            }
+                            if (f[a].FIYATDOVIZTIPI != null) {
+                                doviz = f[a].FIYATDOVIZTIPI;
+                            } else {
+                                doviz = "TRY";
+                            }
+
+                        }
+
+                        list.push({ FK_ACIKLAMA: listfk[i], BAKIYE: (sumbakiye).toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCUBR, TOPTAN_DEGER: parseInt(deger).toLocaleString(), PERAKENDE_DEGER: parseInt(pardeger).toLocaleString(), TOPTAN_DEGER_TL: parseInt(degertl).toLocaleString(), PERAKENDE_DEGER_TL: parseInt(pardegertl).toLocaleString(), FIYATKODU: fiyatkodu })
+
+                    }
+                    $('#table').bootstrapTable('load', list);
+                    $('#filter').select2({  placeholder: 'Grup Filtresi' });
+                    $("#content").hide();
+                })
             })
 
         } else if (value == 2) {
@@ -376,8 +508,12 @@
                     var fiyatkodu = "";
                     var doviz = "";
                     var f = data.filter(x => x.FK_ACIKLAMA == listfk[i]);
-
+                    document.getElementById("filter").replaceChildren();
                     for (let a = 0; a < f.length; a++) {
+                        var opt = document.createElement("option");
+                        opt.innerHTML = listfk[i];
+                        opt.value = listfk[i];
+                        document.getElementById("filter").appendChild(opt);
                         if (f[a].BAKIYE != null) {
                             sumbakiye = sumbakiye + parseFloat(f[a].BAKIYE);
                         }
@@ -387,7 +523,7 @@
                             fiyatkodu = "";
                         }
                         if (f[a].TOPTAN_DEGER != null) {
-                            deger = deger + parseFloat(f[a].TOPTAN_DEGER);
+                            deger = parseFloat(deger) + parseFloat(f[a].TOPTAN_DEGER);
                         }
                         if (f[a].PERAKENDE_DEGER != null) {
                             pardeger = pardeger + parseFloat(f[a].PERAKENDE_DEGER);
@@ -411,8 +547,20 @@
                 }
 
 
-                $('#table').bootstrapTable('load', list);
-
+                if (sabit == 1) {
+                    $('#table').bootstrapTable('destroy');
+                    document.getElementById("tst").getElementsByTagName('th')[document.getElementById("tst").getElementsByTagName('th').length - 1].remove();
+                    $('#table').bootstrapTable({
+                        detailFormatter: "detailFormatter",
+                        data: list
+                    });
+                    sabit = 0;
+                } else {
+                    $('#table').bootstrapTable('refreshOptions', {
+                        detailFormatter: "detailFormatter",
+                        data: list
+                    });
+                }
 
             })
         } else if (value == 3) {
@@ -429,9 +577,12 @@
                     }
 
                 }
-
+                document.getElementById("filter").replaceChildren();
                 for (let i = 0; i < listfk.length; i++) {
-
+                    var opt = document.createElement("option");
+                    opt.innerHTML = listfk[i];
+                    opt.value = listfk[i];
+                    document.getElementById("filter").appendChild(opt);
                     var sumbakiye = 0;
                     var deger = 0;
                     var pardeger = 0;
@@ -475,8 +626,20 @@
                 }
 
 
-                $('#table').bootstrapTable('load', list);
-
+                if (sabit == 1) {
+                    $('#table').bootstrapTable('destroy');
+                    document.getElementById("tst").getElementsByTagName('th')[document.getElementById("tst").getElementsByTagName('th').length - 1].remove();
+                    $('#table').bootstrapTable({
+                        detailFormatter: "detailFormatter",
+                        data: list
+                    });
+                    sabit = 0;
+                } else {
+                    $('#table').bootstrapTable('refreshOptions', {
+                        detailFormatter: "detailFormatter",
+                        data: list
+                    });
+                }
 
             })
         } else if (value == 4) {
@@ -493,9 +656,12 @@
                     }
 
                 }
-
+                document.getElementById("filter").replaceChildren();
                 for (let i = 0; i < listfk.length; i++) {
-
+                    var opt = document.createElement("option");
+                    opt.innerHTML = listfk[i];
+                    opt.value = listfk[i];
+                    document.getElementById("filter").appendChild(opt);
                     var sumbakiye = 0;
                     var deger = 0;
                     var pardeger = 0;
@@ -539,79 +705,446 @@
                 }
 
 
-                $('#table').bootstrapTable('load', list);
+                if (sabit == 1) {
 
+                    $('#table').bootstrapTable('destroy');
+                    document.getElementById("tst").getElementsByTagName('th')[document.getElementById("tst").getElementsByTagName('th').length - 1].remove();
+                    $('#table').bootstrapTable({
+                        detailFormatter: "detailFormatter",
+                        data: list
+                    });
+                    sabit = 0;
+                } else {
+
+                    $('#table').bootstrapTable('refreshOptions', {
+                        detailFormatter: "detailFormatter",
+                        data: list
+                    });
+                }
+
+            })
+        } else if (value == 5) {
+            $('#table').bootstrapTable("removeAll");
+            $.getJSON("http://192.168.2.13:83/api/stok/fiat2", function (data) {
+                tumliste2 = data;
+                for (let i = 0; i < data.length; i++) {
+
+                    if (!listEfece4.includes(data[i].ACIKLAMA)) {
+                        if (data[i].ACIKLAMA == null) {
+                            if (!listEfece4.includes("FIYAT GRUBU TANIMLANMAYANLAR")) {
+                                listEfece4.push("FIYAT GRUBU TANIMLANMAYANLAR");
+                            }
+                        } else {
+                            listEfece4.push(data[i].ACIKLAMA);
+                        }
+
+
+                    }
+                }
+                document.getElementById("filter").replaceChildren();
+                for (let i = 0; i < listEfece4.length; i++) {
+
+                    var opt = document.createElement("option");
+                    opt.innerHTML = listEfece4[i];
+                    opt.value = listEfece4[i];
+                    document.getElementById("filter").appendChild(opt);
+
+                    if (listEfece4[i] == "FIYAT GRUBU TANIMLANMAYANLAR") {
+                        var f = data.filter(x => x.ACIKLAMA == null);
+                    } else {
+                        var f = data.filter(x => x.ACIKLAMA == listEfece4[i]);
+                    }
+                    var fiyatkodu = "";
+                    var doviz = "";
+                    var sum = 0;
+                    var sumbakiye = 0;
+
+                    for (let a = 0; a < f.length; a++) {
+
+
+                        fiyatkodu = f[a].FIYATKODU;
+                        if (fiyatkodu == null) {
+                            fiyatkodu = "";
+                        }
+
+                        if (f[a].DOV_TIP != null) {
+                            doviz = f[a].DOV_TIP;
+                        } else {
+                            doviz = "TRY";
+                        }
+
+                    }
+                    if (listEfece4[i] == "FIYAT GRUBU TANIMLANMAYANLAR") {
+
+
+                        var t = excellist.filter(x => (x.RULOKODU.substring(0, 4)).includes(parseInt((f[i].SERI_NO).split('.')[0].substring(0, 6))));
+
+                        if (t.length > 0) {
+                            list.push({ FK_ACIKLAMA: listEfece4[i], BAKIYE: "", FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCU_BR1, TOPTAN_DEGER: "", PERAKENDE_DEGER: "", TOPTAN_DEGER_TL: "", PERAKENDE_DEGER_TL: "", FIYATKODU: fiyatkodu })
+                        }
+
+
+                    } else {
+                        for (let i = 0; i < f.length; i++) {
+
+                            var t = excellist.filter(x => (x.RULOKODU.substring(0, 4)).includes(parseInt((f[i].SERI_NO).split('.')[0].substring(0, 6))));
+
+                            if (t.length > 0) {
+
+                                sum = parseFloat(sum) + (parseFloat(t[0].TUTAR) * parseFloat(t[0].TONAJ.replace(',', '.')));
+                                for (let a = 0; a < t.length; a++) {
+                                    sumbakiye = sumbakiye + parseFloat(t[a].TONAJ.replace(',', '.'));
+                                }
+                            }
+                        }
+
+                        list.push({
+                            FK_ACIKLAMA: listEfece4[i], BAKIYE: sumbakiye.toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCU_BR1, TOPTAN_DEGER: "", PERAKENDE_DEGER: "", TOPTAN_DEGER_TL: "", PERAKENDE_DEGER_TL: "", FIYATKODU: fiyatkodu, DIF: 'true', TOPLAM_MALIYET: sum.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            })
+                        })
+                    }
+
+
+                }
+
+                $('#table').bootstrapTable('refreshOptions', {
+                    detailFormatter: "detailFormatter2",
+                    data: list
+                });
+
+
+
+
+            }).then(function () {
+                $.getJSON("http://192.168.2.13:83/api/stok/fiat/EFECE4", function (data) {
+
+                    tumliste = data;
+
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].FK_ACIKLAMA != null) {
+                            if (!listfk.includes(data[i].FK_ACIKLAMA)) {
+                                listfk.push(data[i].FK_ACIKLAMA);
+                            }
+                        }
+
+                    }
+                    document.getElementById("filter").replaceChildren();
+                    for (let i = 0; i < listfk.length; i++) {
+                        var opt = document.createElement("option");
+                        opt.innerHTML = listfk[i];
+                        opt.value = listfk[i];
+                        document.getElementById("filter").appendChild(opt);
+                        var sumbakiye = 0;
+                        var deger = 0;
+                        var pardeger = 0;
+                        var degertl = 0;
+                        var pardegertl = 0;
+                        var fiyatkodu = "";
+                        var doviz = "";
+                        var f = data.filter(x => x.FK_ACIKLAMA == listfk[i]);
+
+                        for (let a = 0; a < f.length; a++) {
+                            if (f[a].BAKIYE != null) {
+                                sumbakiye = sumbakiye + parseFloat(f[a].BAKIYE);
+                            }
+
+                            fiyatkodu = f[a].FIYATKODU;
+                            if (fiyatkodu == null) {
+                                fiyatkodu = "";
+                            }
+                            if (f[a].TOPTAN_DEGER != null) {
+                                deger = deger + parseFloat(f[a].TOPTAN_DEGER);
+                            }
+                            if (f[a].PERAKENDE_DEGER != null) {
+                                pardeger = pardeger + parseFloat(f[a].PERAKENDE_DEGER);
+                            }
+                            if (f[a].TOPTAN_DEGER_TL != null) {
+                                degertl = degertl + parseFloat(f[a].TOPTAN_DEGER_TL);
+                            }
+                            if (f[a].PERAKENDE_DEGER_TL != null) {
+                                pardegertl = pardegertl + parseFloat(f[a].PERAKENDE_DEGER_TL);
+                            }
+                            if (f[a].FIYATDOVIZTIPI != null) {
+                                doviz = f[a].FIYATDOVIZTIPI;
+                            } else {
+                                doviz = "TRY";
+                            }
+
+                        }
+
+                        list.push({ FK_ACIKLAMA: listfk[i], BAKIYE: (sumbakiye).toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCUBR, TOPTAN_DEGER: parseInt(deger).toLocaleString(), PERAKENDE_DEGER: parseInt(pardeger).toLocaleString(), TOPTAN_DEGER_TL: parseInt(degertl).toLocaleString(), PERAKENDE_DEGER_TL: parseInt(pardegertl).toLocaleString(), FIYATKODU: fiyatkodu, DIF: 'false' })
+
+                    }
+
+
+
+
+                    $('#table').bootstrapTable('refreshOptions', {
+                        data: list
+                    });
+
+
+                })
+            })
+
+        } else {
+            $('#table').bootstrapTable("removeAll");
+            $.getJSON("http://192.168.2.13:83/api/stok/fiat/TRANSFER", function (data) {
+
+                tumliste = data;
+
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].FK_ACIKLAMA != null) {
+                        if (!listfk.includes(data[i].FK_ACIKLAMA)) {
+                            listfk.push(data[i].FK_ACIKLAMA);
+                        }
+                    }
+
+                }
+                document.getElementById("filter").replaceChildren();
+                for (let i = 0; i < listfk.length; i++) {
+                    var opt = document.createElement("option");
+                    opt.innerHTML = listfk[i];
+                    opt.value = listfk[i];
+                    document.getElementById("filter").appendChild(opt);
+                    var sumbakiye = 0;
+                    var deger = 0;
+                    var pardeger = 0;
+                    var degertl = 0;
+                    var pardegertl = 0;
+                    var fiyatkodu = "";
+                    var doviz = "";
+                    var f = data.filter(x => x.FK_ACIKLAMA == listfk[i]);
+
+                    for (let a = 0; a < f.length; a++) {
+                        if (f[a].BAKIYE != null) {
+                            sumbakiye = sumbakiye + parseFloat(f[a].BAKIYE);
+                        }
+
+                        fiyatkodu = f[a].FIYATKODU;
+                        if (fiyatkodu == null) {
+                            fiyatkodu = "";
+                        }
+                        if (f[a].TOPTAN_DEGER != null) {
+                            deger = deger + parseFloat(f[a].TOPTAN_DEGER);
+                        }
+                        if (f[a].PERAKENDE_DEGER != null) {
+                            pardeger = pardeger + parseFloat(f[a].PERAKENDE_DEGER);
+                        }
+                        if (f[a].TOPTAN_DEGER_TL != null) {
+                            degertl = degertl + parseFloat(f[a].TOPTAN_DEGER_TL);
+                        }
+                        if (f[a].PERAKENDE_DEGER_TL != null) {
+                            pardegertl = pardegertl + parseFloat(f[a].PERAKENDE_DEGER_TL);
+                        }
+                        if (f[a].FIYATDOVIZTIPI != null) {
+                            doviz = f[a].FIYATDOVIZTIPI;
+                        } else {
+                            doviz = "TRY";
+                        }
+
+                    }
+
+                    list.push({ FK_ACIKLAMA: listfk[i], BAKIYE: (sumbakiye).toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCUBR, TOPTAN_DEGER: parseInt(deger).toLocaleString(), PERAKENDE_DEGER: parseInt(pardeger).toLocaleString(), TOPTAN_DEGER_TL: parseInt(degertl).toLocaleString(), PERAKENDE_DEGER_TL: parseInt(pardegertl).toLocaleString(), FIYATKODU: fiyatkodu })
+
+                }
+
+
+                if (sabit == 1) {
+
+                    $('#table').bootstrapTable('destroy');
+                    document.getElementById("tst").getElementsByTagName('th')[document.getElementById("tst").getElementsByTagName('th').length - 1].remove();
+                    $('#table').bootstrapTable({
+                        detailFormatter: "detailFormatter",
+                        data: list
+                    });
+                    sabit = 0;
+                } else {
+
+                    $('#table').bootstrapTable('refreshOptions', {
+                        detailFormatter: "detailFormatter",
+                        data: list
+                    });
+                }
 
             })
         }
     }
+    var tumliste2 = null;
     var tumliste = null;
     $(document).ready(function () {
+        getExcelAsync().then(function (data) {
+            excellist = data;
+        }).then(function () {
+            $.getJSON("http://192.168.2.13:83/api/stok/fiat2", function (data) {
+                tumliste2 = data;
+                for (let i = 0; i < data.length; i++) {
 
-        $.getJSON("http://192.168.2.13:83/api/stok/fiat", function (data) {
-            tumliste = data;
-            document.getElementById("dol").innerHTML = " " + data.find(x => x.FIYATDOVIZTIPI == "USD").KUR;
-            document.getElementById("er").innerHTML = " " + data.find(x => x.FIYATDOVIZTIPI == "EUR").KUR;
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].FK_ACIKLAMA != null) {
-                    if (!listfk.includes(data[i].FK_ACIKLAMA)) {
-                        listfk.push(data[i].FK_ACIKLAMA);
+                    if (!listEfece4.includes(data[i].ACIKLAMA)) {
+                        if (data[i].ACIKLAMA == null) {
+                            if (!listEfece4.includes("FIYAT GRUBU TANIMLANMAYANLAR")) {
+                                listEfece4.push("FIYAT GRUBU TANIMLANMAYANLAR");
+                            }
+                        } else {
+                            listEfece4.push(data[i].ACIKLAMA);
+                        }
+
+
                     }
                 }
+                document.getElementById("filter").replaceChildren();
+                for (let i = 0; i < listEfece4.length; i++) {
 
-            }
-            for (let i = 0; i < listfk.length; i++) {
-                var opt = document.createElement("option");
-                opt.innerHTML = listfk[i];
-                opt.value = listfk[i];
-                document.getElementById("filter").appendChild(opt);
-            }
-            for (let i = 0; i < listfk.length; i++) {
+                    var opt = document.createElement("option");
+                    opt.innerHTML = listEfece4[i];
+                    opt.value = listEfece4[i];
+                    document.getElementById("filter").appendChild(opt);
 
-                var sumbakiye = 0;
-                var deger = 0;
-                var pardeger = 0;
-                var degertl = 0;
-                var pardegertl = 0;
-                var fiyatkodu = "";
-                var doviz = "";
-                var f = data.filter(x => x.FK_ACIKLAMA == listfk[i]);
-
-                for (let a = 0; a < f.length; a++) {
-                    if (f[a].BAKIYE != null) {
-                        sumbakiye = sumbakiye + parseFloat(f[a].BAKIYE);
-                    }
-
-                    fiyatkodu = f[a].FIYATKODU;
-                    if (fiyatkodu == null) {
-                        fiyatkodu = "";
-                    }
-                    if (f[a].TOPTAN_DEGER != null) {
-                        deger = deger + parseFloat(f[a].TOPTAN_DEGER);
-                    }
-                    if (f[a].PERAKENDE_DEGER != null) {
-                        pardeger = pardeger + parseFloat(f[a].PERAKENDE_DEGER);
-                    }
-                    if (f[a].TOPTAN_DEGER_TL != null) {
-                        degertl = degertl + parseFloat(f[a].TOPTAN_DEGER_TL);
-                    }
-                    if (f[a].PERAKENDE_DEGER_TL != null) {
-                        pardegertl = pardegertl + parseFloat(f[a].PERAKENDE_DEGER_TL);
-                    }
-                    if (f[a].FIYATDOVIZTIPI != null) {
-                        doviz = f[a].FIYATDOVIZTIPI;
+                    if (listEfece4[i] == "FIYAT GRUBU TANIMLANMAYANLAR") {
+                        var f = data.filter(x => x.ACIKLAMA == null);
                     } else {
-                        doviz = "TRY";
+                        var f = data.filter(x => x.ACIKLAMA == listEfece4[i]);
                     }
+                    var fiyatkodu = "";
+                    var doviz = "";
+                    var sum = 0;
+                    var sumbakiye = 0;
+
+                    for (let a = 0; a < f.length; a++) {
+
+
+                        fiyatkodu = f[a].FIYATKODU;
+                        if (fiyatkodu == null) {
+                            fiyatkodu = "";
+                        }
+
+                        if (f[a].DOV_TIP != null) {
+                            doviz = f[a].DOV_TIP;
+                        } else {
+                            doviz = "TRY";
+                        }
+
+                    }
+                   
+                    if (listEfece4[i] == "FIYAT GRUBU TANIMLANMAYANLAR") {
+
+
+                        var t = excellist.filter(x => (x.RULOKODU.substring(0, 4)).includes(parseInt((f[i].SERI_NO).split('.')[0].substring(0, 6))));
+
+                        if (t.length > 0) {
+                            list.push({ FK_ACIKLAMA: listEfece4[i], BAKIYE: "", FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCU_BR1, TOPTAN_DEGER: "", PERAKENDE_DEGER: "", TOPTAN_DEGER_TL: "", PERAKENDE_DEGER_TL: "", FIYATKODU: fiyatkodu })
+                        }
+
+
+                    } else {
+                        for (let i = 0; i < f.length; i++) {
+
+                            var t = excellist.filter(x => (x.RULOKODU.substring(0, 4)).includes(parseInt((f[i].SERI_NO).split('.')[0].substring(0, 6))));
+
+                            if (t.length > 0) {
+
+                                sum = parseFloat(sum) + (parseFloat(t[0].TUTAR) * parseFloat(t[0].TONAJ.replace(',', '.')));
+                          
+                                for (let a = 0; a < t.length; a++) {
+
+                                    sumbakiye = sumbakiye + parseFloat(t[a].TONAJ.replace(',', '.'));
+                                    
+                                }
+                            }
+                        }
+                        
+                        list.push({
+                            FK_ACIKLAMA: listEfece4[i], BAKIYE: sumbakiye.toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCU_BR1, TOPTAN_DEGER: "", PERAKENDE_DEGER: "", TOPTAN_DEGER_TL: "", PERAKENDE_DEGER_TL: "", FIYATKODU: fiyatkodu, DIF: 'true', TOPLAM_MALIYET: sum.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            })
+                        })
+                    }
+
 
                 }
 
-                list.push({ FK_ACIKLAMA: listfk[i], BAKIYE: (sumbakiye).toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCUBR, TOPTAN_DEGER: parseInt(deger).toLocaleString(), PERAKENDE_DEGER: parseInt(pardeger).toLocaleString(), TOPTAN_DEGER_TL: parseInt(degertl).toLocaleString(), PERAKENDE_DEGER_TL: parseInt(pardegertl).toLocaleString(), FIYATKODU: fiyatkodu })
+                $('#table').bootstrapTable('refreshOptions', {
+                    detailFormatter: "detailFormatter2",
+                    data: list
+                });
 
-            }
-            $('#table').bootstrapTable('load', list);
-            $('#filter').select2({ width: '50vw', placeholder: 'Grup Filtresi' });
+
+
+
+            }).then(function () {
+                $.getJSON("http://192.168.2.13:83/api/stok/fiat", function (data) {
+                    tumliste = data;
+                    document.getElementById("dol").innerHTML = " " + data.find(x => x.FIYATDOVIZTIPI == "USD").KUR;
+                    document.getElementById("er").innerHTML = " " + data.find(x => x.FIYATDOVIZTIPI == "EUR").KUR;
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].FK_ACIKLAMA != null) {
+                            if (!listfk.includes(data[i].FK_ACIKLAMA)) {
+                                listfk.push(data[i].FK_ACIKLAMA);
+                            }
+                        }
+
+                    }
+                    for (let i = 0; i < listfk.length; i++) {
+                        var opt = document.createElement("option");
+                        opt.innerHTML = listfk[i];
+                        opt.value = listfk[i];
+                        document.getElementById("filter").appendChild(opt);
+                    }
+                    for (let i = 0; i < listfk.length; i++) {
+
+                        var sumbakiye = 0;
+                        var deger = 0;
+                        var pardeger = 0;
+                        var degertl = 0;
+                        var pardegertl = 0;
+                        var fiyatkodu = "";
+                        var doviz = "";
+                        var f = data.filter(x => x.FK_ACIKLAMA == listfk[i]);
+
+                        for (let a = 0; a < f.length; a++) {
+                            if (f[a].BAKIYE != null) {
+                                sumbakiye = sumbakiye + parseFloat(f[a].BAKIYE);
+                            }
+
+                            fiyatkodu = f[a].FIYATKODU;
+                            if (fiyatkodu == null) {
+                                fiyatkodu = "";
+                            }
+                            if (f[a].TOPTAN_DEGER != null) {
+                                deger = deger + parseFloat(f[a].TOPTAN_DEGER);
+                            }
+                            if (f[a].PERAKENDE_DEGER != null) {
+                                pardeger = pardeger + parseFloat(f[a].PERAKENDE_DEGER);
+                            }
+                            if (f[a].TOPTAN_DEGER_TL != null) {
+                                degertl = degertl + parseFloat(f[a].TOPTAN_DEGER_TL);
+                            }
+                            if (f[a].PERAKENDE_DEGER_TL != null) {
+                                pardegertl = pardegertl + parseFloat(f[a].PERAKENDE_DEGER_TL);
+                            }
+                            if (f[a].FIYATDOVIZTIPI != null) {
+                                doviz = f[a].FIYATDOVIZTIPI;
+                            } else {
+                                doviz = "TRY";
+                            }
+
+                        }
+
+                        list.push({ FK_ACIKLAMA: listfk[i], BAKIYE: (sumbakiye).toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCUBR, TOPTAN_DEGER: parseInt(deger).toLocaleString(), PERAKENDE_DEGER: parseInt(pardeger).toLocaleString(), TOPTAN_DEGER_TL: parseInt(degertl).toLocaleString(), PERAKENDE_DEGER_TL: parseInt(pardegertl).toLocaleString(), FIYATKODU: fiyatkodu })
+
+                    }
+                    $('#table').bootstrapTable('load', list);
+                    $('#filter').select2({ width: '50vw', placeholder: 'Grup Filtresi' });
+                    $("#content").hide();
+                })
+            })
         })
+        sabit = 0;
+        
+        
 
 
     })
@@ -625,7 +1158,7 @@
     }
 
     function detailFormatter(index, row) {
-
+      
         var st = "";
 
         var d = tumliste.filter(x => x.FK_ACIKLAMA == row.FK_ACIKLAMA);
@@ -638,37 +1171,37 @@
 
                 st = st + "<tr><td>" + d[i].STOK_ADI + "</td>" + "<td>" + d[i].LISTE_FIYATI + "</td>" + "<td>" + (d[i].TOPTAN_ISK == "null" ? d[i].TOPTAN_ISK : "-") + "</td>" + "<td>" + (d[i].PERAKENDE_ISK == "null" ? d[i].PERAKENDE_ISK : "-") + "</td>" + "<td>" + (d[i].TOPTAN_FIYAT == "null" ? parseFloat(d[i].TOPTAN_FIYAT).toLocaleString() : "-") + "</td><td>" + (d[i].PERAKENDE_FIYAT == "null" ? parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString() : "-") + "</td>" + "<td>" + (d[i].FIYATDOVIZTIPI == "null" ? d[i].FIYATDOVIZTIPI : "-") + "</td>" + "<td>" + (d[i].OLCUBR == "null" ? d[i].OLCUBR : "-") + "</td><td>" + (d[i].BAKIYE ? parseFloat(d[i].BAKIYE).toLocaleString() : "-") + "</td>" + "<td>" + (d[i].TOPTAN_DEGER == "null" ? d[i].TOPTAN_DEGER.toLocaleString() : "-") + "</td><td>" + (d[i].PERAKENDE_DEGER == "null" ? parseInt(d[i].PERAKENDE_DEGER).toLocaleString() : "-") + "</td><td>" + (d[i].TOPTAN_DEGER ? parseFloat(d[i].TOPTAN_DEGER_TL).toLocaleString() : "-") + "</td><td>" + (d[i].PERAKENDE_DEGER_TL ? parseFloat(d[i].PERAKENDE_DEGER_TL).toLocaleString() : "-") + "</td></tr>";
             } else {
-                var top = (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString());
+                var top = (parseFloat(d[i].TOPTAN_FIYAT || 0).toLocaleString());
                 if (top.includes(',')) {
-                    top = (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[1] + "</span>"
+                    top = (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[1] + "</span>"
                 }
-                var par = parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString();
+                var par = parseFloat(d[i].PERAKENDE_FIYAT || 0).toLocaleString();
                 if (par.includes(',')) {
-                    par = (parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString()).split(',')[1] + "</span>"
+                    par = (parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString()).split(',')[1] + "</span>"
                 }
-                var bak = parseFloat(d[i].BAKIYE).toLocaleString();
+                var bak = parseFloat(d[i].BAKIYE || 0).toLocaleString();
                 if (bak.includes(',')) {
-                    bak = (parseFloat(d[i].BAKIYE).toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (parseFloat(d[i].BAKIYE).toLocaleString()).split(',')[1] + "</span>"
+                    bak = (parseFloat(d[i].BAKIYE).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseFloat(d[i].BAKIYE).toLocaleString()).split(',')[1] + "</span>"
                 }
-                var topdeg = d[i].TOPTAN_DEGER.toLocaleString();
+                var topdeg = parseInt(d[i].TOPTAN_DEGER||0).toLocaleString();
                 if (topdeg.includes(',')) {
-                    topdeg = (d[i].TOPTAN_DEGER.toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (d[i].TOPTAN_DEGER.toLocaleString()).split(',')[1] + "</span>"
+                    topdeg = (d[i].TOPTAN_DEGER.toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (d[i].TOPTAN_DEGER.toLocaleString()).split(',')[1] + "</span>"
                 }
-                var pardeg = parseInt(d[i].PERAKENDE_DEGER).toLocaleString();
+                var pardeg = parseInt(d[i].PERAKENDE_DEGER || 0).toLocaleString();
                 if (pardeg.includes(',')) {
-                    pardeg = (parseInt(d[i].PERAKENDE_DEGER).toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (parseInt(d[i].PERAKENDE_DEGER).toLocaleString()).split(',')[1] + "</span>"
+                    pardeg = (parseInt(d[i].PERAKENDE_DEGER).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseInt(d[i].PERAKENDE_DEGER).toLocaleString()).split(',')[1] + "</span>"
                 }
-                var topdegtl = d[i].TOPTAN_DEGER_TL.toLocaleString();
+                var topdegtl = parseInt(d[i].TOPTAN_DEGER_TL || 0).toLocaleString();
                 if (topdegtl.includes(',')) {
-                    topdegtl = (d[i].TOPTAN_DEGER_TL.toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (d[i].TOPTAN_DEGER_TL.toLocaleString()).split(',')[1] + "</span>"
+                    topdegtl = (d[i].TOPTAN_DEGER_TL.toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (d[i].TOPTAN_DEGER_TL.toLocaleString()).split(',')[1] + "</span>"
                 }
-                var pardegtl = parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString();
+                var pardegtl = parseInt(d[i].PERAKENDE_DEGER_TL||0).toLocaleString();
                 if (pardegtl.includes(',')) {
-                    pardegtl = (parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString()).split(',')[0] + ",<span style='font-size:8px'>" + (parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString()).split(',')[1] + "</span>"
+                    pardegtl = (parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString()).split(',')[1] + "</span>"
                 }
+               
 
-
-                st = st + "<tr><td>" + d[i].STOK_ADI + "</td>" + "<td>" + d[i].LISTE_FIYATI + "</td>" + "<td>" + (d[i].TOPTAN_ISK == "null" ? d[i].TOPTAN_ISK : "-") + "</td>" + "<td>" + (d[i].PERAKENDE_ISK == "null" ? d[i].PERAKENDE_ISK : "-") + "</td>" + "<td>" + top + "</td><td>" + par + "</td>" + "<td>" + d[i].FIYATDOVIZTIPI + "</td>" + "<td>" + d[i].OLCUBR + "</td><td>" + bak + "</td>" + "<td>" + topdeg + "</td><td>" + pardeg + "</td><td>" + topdegtl + "</td><td>" + pardegtl + "</td></tr>";
+                st = st + "<tr><td>" + d[i].STOK_ADI + "</td>" + "<td>" + d[i].LISTE_FIYATI + "</td>" + "<td>" + (d[i].TOPTAN_ISK == "null" ? d[i].TOPTAN_ISK : "-") + "</td>" + "<td>" + (d[i].PERAKENDE_ISK == "null" ? d[i].PERAKENDE_ISK : "-") + "</td>" + "<td>" + top + "</td><td>" + par + "</td>" + "<td>" + (d[i].FIYATDOVIZTIPI  ??  "-") + "</td>" + "<td>" + (d[i].OLCUBR ?? "-") + "</td><td>" + bak + "</td>" + "<td>" + topdeg + "</td><td>" + pardeg + "</td><td>" + topdegtl + "</td><td>" + pardegtl + "</td></tr>";
             }
 
 
@@ -680,6 +1213,97 @@
 
 
     }
+    function detailFormatter2(index, row) {
+       
+        if (row.DIF == 'true') {
+            var d = tumliste2.filter(x => x.ACIKLAMA == row.FK_ACIKLAMA);
+            var tanimsizlar = tumliste2.filter(x => x.ACIKLAMA == null);
+            var st = "";
+            if (d.length == 0) {
+                for (let i = 0; i < tanimsizlar.length; i++) {
+                    var t = excellist.filter(x => x.RULOKODU.includes(parseInt((tanimsizlar[i].SERI_NO).split('.')[0])));
+                    if (t.length > 0) {
+                        for (let a = 0; a < t.length; a++) {
+                            st = st + "<tr><td class='text-center'>" + tanimsizlar[i].STOK_ADI + "</td><td class='text-center'>" + "0" + (t[a].RULOKODU).toString().substring(0, 4) + "." + (t[a].RULOKODU).toString().substring(4, 6) + "</td><td class='text-center'>" + (t[a].RENKKODU).toString() + "</td><td class='text-center'>" + (parseFloat(t[a].KALINLIK.replace(',', '.')).toFixed(2)).replace('.', ',') + "</td><td class='text-center'>" + (t[a].GENISLIK).toString() + "</td><td class='text-center'>" + (t[a].KALITE).toString() + "</td><td class='text-center'>" + (t[a].KAPLAMA).toString() + "</td><td class='text-center'>" + parseFloat(t[a].TONAJ).toLocaleString() + "</td><td class='text-center'>" + "<b>$ " + (parseFloat(t[a].TUTAR).toFixed(4).toLocaleString()).replace(',', '.') + "</b></td></tr>"
+                        }
+                    }
+
+                }
+
+            } else {
+                for (let i = 0; i < d.length; i++) {
+                    var t = excellist.filter(x => x.RULOKODU.includes(parseInt((d[i].SERI_NO).split('.')[0])));
+                    if (t.length > 0) {
+                        for (let a = 0; a < t.length; a++) {
+                            st = st + "<tr><td class='text-center'>" + d[i].STOK_ADI + "</td><td class='text-center'>" + "0" + (t[a].RULOKODU).toString().substring(0, 4) + "." + (t[a].RULOKODU).toString().substring(4, 6) + "</td><td class='text-center'>" + (t[a].RENKKODU).toString() + "</td><td class='text-center'>" + (parseFloat(t[a].KALINLIK.replace(',', '.')).toFixed(2)).replace('.', ',') + "</td><td class='text-center'>" + (t[a].GENISLIK).toString() + "</td><td class='text-center'>" + (t[a].KALITE).toString() + "</td><td class='text-center'>" + (t[a].KAPLAMA).toString() + "</td><td class='text-center'>" + parseFloat(t[a].TONAJ).toLocaleString() + "</td><td class='text-center'>" + "<b>$ " + (parseFloat(t[a].TUTAR).toFixed(4).toLocaleString()).replace(',', '.') + "</b></td></tr>"
+                        }
+                        
+                    }
+                }
+            }
+
+            return "<table class='table table-bordered no'><thead class='sticky-top'><tr class'text-nowrap'><th class='text-nowrap text-center'>STOK ADI</th><th class='text-nowrap text-center'>SERİ NO</th><th class='text-nowrap text-center'>RENK KODU</th><th class='text-nowrap text-center'>KALINLIK</th><th class='text-nowrap text-center'>GENİŞLİK</th><th class='text-nowrap text-center'>KALİTE</th><th class='text-nowrap text-center'>KAPLAMA</th><th class='text-nowrap text-center'>BAKİYE</th><th class='text-nowrap text-center'>FİYAT</th></thead><tbody>" + st + "</tbody></table>";
+        } else {
+            var st = "";
+          
+            var d = tumliste.filter(x => x.FK_ACIKLAMA == row.FK_ACIKLAMA);
+
+
+
+            for (let i = 0; i < d.length; i++) {
+              
+                if (row.FK_ACIKLAMA == 'FIYAT GRUBU TANIMLANMAYANLAR') {
+
+                    st = st + "<tr><td>" + d[i].STOK_ADI + "</td>" + "<td>" + d[i].LISTE_FIYATI + "</td>" + "<td>" + (d[i].TOPTAN_ISK == "null" ? d[i].TOPTAN_ISK : "-") + "</td>" + "<td>" + (d[i].PERAKENDE_ISK == "null" ? d[i].PERAKENDE_ISK : "-") + "</td>" + "<td>" + (d[i].TOPTAN_FIYAT == "null" ? parseFloat(d[i].TOPTAN_FIYAT).toLocaleString() : "-") + "</td><td>" + (d[i].PERAKENDE_FIYAT == "null" ? parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString() : "-") + "</td>" + "<td>" + (d[i].FIYATDOVIZTIPI == "null" ? d[i].FIYATDOVIZTIPI : "-") + "</td>" + "<td>" + (d[i].OLCUBR == "null" ? d[i].OLCUBR : "-") + "</td><td>" + (d[i].BAKIYE ? parseFloat(d[i].BAKIYE).toLocaleString() : "-") + "</td>" + "<td>" + (d[i].TOPTAN_DEGER == "null" ? d[i].TOPTAN_DEGER.toLocaleString() : "-") + "</td><td>" + (d[i].PERAKENDE_DEGER == "null" ? parseInt(d[i].PERAKENDE_DEGER).toLocaleString() : "-") + "</td><td>" + (d[i].TOPTAN_DEGER ? parseFloat(d[i].TOPTAN_DEGER_TL).toLocaleString() : "-") + "</td><td>" + (d[i].PERAKENDE_DEGER_TL ? parseFloat(d[i].PERAKENDE_DEGER_TL).toLocaleString() : "-") + "</td></tr>";
+                } else {
+                    var top = (parseFloat(d[i].TOPTAN_FIYAT||0).toLocaleString());
+                    if (top.includes(',')) {
+                        top = (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseFloat(d[i].TOPTAN_FIYAT).toLocaleString()).split(',')[1] + "</span>"
+                    }
+                    var par = parseFloat(d[i].PERAKENDE_FIYAT || 0).toLocaleString();
+                    if (par.includes(',')) {
+                        par = (parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseFloat(d[i].PERAKENDE_FIYAT).toLocaleString()).split(',')[1] + "</span>"
+                    }
+                    var bak = parseFloat(d[i].BAKIYE || 0).toLocaleString();
+                    if (bak.includes(',')) {
+                        bak = (parseFloat(d[i].BAKIYE).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseFloat(d[i].BAKIYE).toLocaleString()).split(',')[1] + "</span>"
+                    }
+                    var topdeg = parseFloat(d[i].TOPTAN_DEGER || 0).toLocaleString();
+                   
+                    if (topdeg.includes(',')) {
+                        topdeg = (d[i].TOPTAN_DEGER.toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (d[i].TOPTAN_DEGER.toLocaleString()).split(',')[1] + "</span>"
+                    }
+                    var pardeg = parseInt(d[i].PERAKENDE_DEGER).toLocaleString();
+                    if (pardeg.includes(',')) {
+                        pardeg = (parseInt(d[i].PERAKENDE_DEGER).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseInt(d[i].PERAKENDE_DEGER).toLocaleString()).split(',')[1] + "</span>"
+                    }
+                    var topdegtl = parseFloat(d[i].TOPTAN_DEGER_TL || 0).toLocaleString();
+                    if (topdegtl.includes(',')) {
+                        topdegtl = (d[i].TOPTAN_DEGER_TL.toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (d[i].TOPTAN_DEGER_TL.toLocaleString()).split(',')[1] + "</span>"
+                    }
+                    var pardegtl = parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString();
+                    if (pardegtl.includes(',')) {
+                        pardegtl = (parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString()).split(',')[0] + ",<span style='font-size:10px'>" + (parseInt(d[i].PERAKENDE_DEGER_TL).toLocaleString()).split(',')[1] + "</span>"
+                    }
+
+
+                    st = st + "<tr><td>" + d[i].STOK_ADI + "</td>" + "<td>" + d[i].LISTE_FIYATI + "</td>" + "<td>" + (d[i].TOPTAN_ISK == null ? "-" : d[i].TOPTAN_ISK) + "</td>" + "<td>" + (d[i].PERAKENDE_ISK == null ? "-" : d[i].PERAKENDE_ISK) + "</td>" + "<td>" + top + "</td><td>" + par + "</td>" + "<td>" + d[i].FIYATDOVIZTIPI + "</td>" + "<td>" + d[i].OLCUBR + "</td><td>" + bak + "</td>" + "<td>" + topdeg + "</td><td>" + pardeg + "</td><td>" + topdegtl + "</td><td>" + pardegtl + "</td></tr>";
+                }
+
+
+            }
+
+
+            return "<table class='table table-borderless no'><thead><tr class'text-nowrap'><th class='text-nowrap'>STOK ADI</th><th class='text-nowrap' style='padding-left: 10px'>LİSTE FİYATI</th><th class='text-nowrap' style='padding-left: 10px'>TOPTAN İSK.</th><th class='text-nowrap' style='padding-left: 10px'>PERAKENDE İSK.</th><th class='text-nowrap' style='padding-left: 10px'>TOPTAN FİYAT</th><th class='text-nowrap' style='padding-left: 10px'>PERAKENDE FİYAT</th><th class='text-nowrap' style='padding-left: 10px'>TİP</th><th class='text-nowrap' style='padding-left: 10px'>OLCU BIRIMI</th><th class='text-nowrap' style='padding-left: 10px'>TOPLAM BAKIYE</th><th class='text-nowrap' style='padding-left: 10px'>TOPTAN DEGER</th><th class='text-nowrap' style='padding-left: 10px'>PERAKENDE DEGER</th><th class='text-nowrap' style='padding-left: 10px'>TOPTAN DEGER(TL)</th><th class='text-nowrap' style='padding-left: 10px'>PERAKENDE DEGER(TL)</th></tr></thead><tbody>" + st + "</tbody></table>";
+           
+        }
+        
+       
+
+    } 
+    function grupFormatter(value,index,row) {
+        return value /*+' <i class="icon-info-sign"></i>'*/;
+    }
     function TotalFooter(items) {
         return 'Toplam';
     };
@@ -687,30 +1311,55 @@
         var totalPrice = 0;
         items.forEach(function (item) {
             if (item.PERAKENDE_DEGER_TL != null) {
-                totalPrice = parseFloat(totalPrice) + parseFloat(item.PERAKENDE_DEGER_TL.replace('.', '').replace('.', ''));
+                totalPrice = parseFloat(totalPrice || 0) + parseFloat(item.PERAKENDE_DEGER_TL.replace('.', '').replace('.', ''));
             }
 
         });
 
-        return '₺' + parseFloat(totalPrice).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+        return '₺' + parseFloat(totalPrice||0).toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+    };
+    function TotalFormatterMaliyet(items) {
+        var totalPrice = 0;
+        items.forEach(function (item) {
+            
+            if (item.TOPLAM_MALIYET != null && item.TOPLAM_MALIYET != "") {
+           
+                totalPrice = parseFloat(totalPrice || 0) + parseFloat(item.TOPLAM_MALIYET.replace('.', '').replace('.', '').replace(',','.'));
+            }
+
+        });
+
+        return '$' + parseFloat(totalPrice||0).toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
         });
     };
     function TotalFormatterTop(items) {
         var totalPrice1 = 0;
         items.forEach(function (item) {
 
-            if (item.TOPTAN_DEGER_TL != null) {
-                totalPrice1 = parseFloat(totalPrice1) + parseFloat(item.TOPTAN_DEGER_TL.replace('.', '').replace('.', ''));
+            if (item.TOPTAN_DEGER_TL != null && item.DIF != null) {
+                if (parseFloat(item.TOPTAN_DEGER_TL) > 0) {
+                    totalPrice1 = parseFloat(totalPrice1) + parseFloat(item.TOPTAN_DEGER_TL.replace('.', ''));
+                }
+
+            } else {
+                if (parseFloat(item.TOPTAN_DEGER_TL) > 0) {
+                    totalPrice1 = parseFloat(totalPrice1) + parseFloat(item.TOPTAN_DEGER_TL.replace('.', '').replace('.', ''));
+                }
             }
 
         });
-
-        return '₺' + parseFloat(totalPrice1).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
+   
+            return '₺' + parseFloat(totalPrice1).toLocaleString(undefined, {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+     
+       
     };
     function TotalFormatterBak(items) {
         var sumdeg = 0;
@@ -721,27 +1370,53 @@
         var totalPrice1 = 0;
         items.forEach(function (item) {
             if (item.BAKIYE != null) {
-                totalPrice1 = parseFloat(totalPrice1) + parseFloat(item.BAKIYE.replace('.', '').replace('.', ''));
+                totalPrice1 = parseFloat(totalPrice1) + parseFloat(item.BAKIYE);
             }
             if (item.FIYATDOVIZTIPI == "USD") {
-                sumdeg = parseFloat(sumdeg) + parseFloat(item.TOPTAN_DEGER.replace('.', '').replace('.', ''));
+                if (item.TOPTAN_DEGER != "" && item.TOPTAN_DEGER != null) {
+                    if (parseFloat(item.TOPTAN_DEGER) > 0) {
+                        
+                        sumdeg = parseFloat(sumdeg) + parseFloat(item.TOPTAN_DEGER.toString().replace('.', '').replace('.', ''));
+                    }
+                }
+                
+                    
+               
+              
 
 
             }
             if (item.FIYATDOVIZTIPI == "EUR") {
-                sumdegeu = parseFloat(sumdegeu) + parseFloat(item.TOPTAN_DEGER.replace('.', '').replace('.', ''));
+                if (item.TOPTAN_DEGER != "" && item.TOPTAN_DEGER != null) {
+
+                    sumdegeu = parseFloat(sumdegeu) + parseFloat(item.TOPTAN_DEGER.toString().replace('.', '').replace('.', ''));
+                }
+                
 
 
             }
             if (item.FIYATDOVIZTIPI == "TRY") {
-                sumdegtl = parseFloat(sumdegtl) + parseFloat(item.TOPTAN_DEGER.replace('.', '').replace('.', ''));
+                if (item.TOPTAN_DEGER != "" && item.TOPTAN_DEGER != null) {
+
+                    sumdegtl = parseFloat(sumdegtl) + parseFloat(item.TOPTAN_DEGER.toString().replace('.', '').replace('.', ''));
+                }
+               
 
             }
 
         });
-        document.getElementById("dolar").innerHTML = sumdeg.toLocaleString() + " $";
-        document.getElementById("euro").innerHTML = sumdegeu.toLocaleString() + " €";
-        document.getElementById("tl").innerHTML = sumdegtl.toLocaleString() + " ₺";
+        document.getElementById("dolar").innerHTML = sumdeg.toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }) + " $";
+        document.getElementById("euro").innerHTML = sumdegeu.toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }) + " €";
+        document.getElementById("tl").innerHTML = sumdegtl.toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }) + " ₺";
         return "";
     };
     function toplamForm(value, row, index) {

@@ -4895,11 +4895,13 @@
             document.getElementById('genislikfilter').replaceChildren();
             document.getElementById('menseifilter').replaceChildren();
             document.getElementById('tbody').replaceChildren();
+            
             var renkfilter = [];
             var kalinlikfilter = [];
             var genislikfilter = [];
             var menseifilter = [];
             var data = upt;
+           
             for (let i = 0; i < data.length; i++) {
 
                 var tr = document.createElement("tr");
@@ -5318,17 +5320,22 @@
 
                 document.getElementById("menseifilter").appendChild(option1);
             }
+            
+          
             var fiyatlar = [];
             var fiyatlarton = [];
             var rows = document.getElementById("tbody").getElementsByTagName("tr");
 
+
             for (let i = 1; i < rows.length; i++) {
-                fiyatlar.push(parseFloat((rows[i].getElementsByTagName("label")[12].innerHTML).split(' ')[1]) * parseFloat((rows[i].getElementsByTagName("label")[10].innerHTML.innerHTML.replace('.', ''))));
-                fiyatlarton.push(parseFloat((rows[i].getElementsByTagName("label")[10].innerHTML.replace('.',''))));
+                fiyatlar.push(parseFloat((rows[i].getElementsByTagName("label")[12].innerHTML).split(' ')[1]) * parseFloat((rows[i].getElementsByTagName("label")[10].innerHTML.replace('.', ''))));
+                fiyatlarton.push(parseFloat((rows[i].getElementsByTagName("label")[10].innerHTML.replace('.', ''))));
+
             }
 
             document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (fiyatlar.reduce((partialSum, a) => partialSum + a, 0) / (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0))).toFixed(4);
-            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> $ " + (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0));
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0)).toLocaleString('tr-TR');
+            
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var table = document.getElementById("tbody");
@@ -5346,6 +5353,7 @@
                 }
             }
             filtereddata = fitered;
+
         }
     </script>
     <script>

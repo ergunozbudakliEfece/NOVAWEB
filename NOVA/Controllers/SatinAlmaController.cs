@@ -226,6 +226,24 @@ namespace NOVA.Controllers
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
             if (yonetimstok != true)
             {
                 ViewBag.Stok = "none";
@@ -477,6 +495,23 @@ namespace NOVA.Controllers
             JavaScriptSerializer ser = new JavaScriptSerializer();
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             return jsonList;
+        }
+        public List<Modules> GetModules(int id)
+        {
+
+
+            var apiUrl = "http://192.168.2.13:83/api/modules";
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            string json = client.DownloadString(url);
+            JavaScriptSerializer ser = new JavaScriptSerializer();
+            List<Modules> jsonList = ser.Deserialize<List<Modules>>(json);
+
+            //END
+
+            return jsonList.Where(x => x.INCKEY == id).ToList();
         }
         public ActionResult Filter(FilterModel filter)
         {

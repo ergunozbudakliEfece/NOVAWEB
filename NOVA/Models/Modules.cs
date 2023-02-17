@@ -12,5 +12,6 @@ namespace NOVA.Models
         public string MODULE_NAME { get; set; }
         public int PROGRAM_ID { get; set; }
         public string PROGRAM_NAME { get; set; }
+        public string ACTIVE { get; set; }
     }
 }

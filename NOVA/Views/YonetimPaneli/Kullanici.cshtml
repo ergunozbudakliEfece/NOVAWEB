@@ -1,363 +1,681 @@
 ﻿@{
-    Layout = "/Views/Shared/_Layout_yonetim.cshtml";
+    Layout = "~/Views/Shared/_Layout_yonetim.cshtml";
 }
-<!DOCTYPE html>
-@model Tuple<NOVA.Models.User,NOVA.Models.Mail> 
 
+@model Tuple<NOVA.Models.User, NOVA.Models.Mail>
 
+<link href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<link href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" rel="stylesheet">
 
-<html lang="en"
-      class="light-style layout-menu-fixed"
-      dir="ltr"
-      data-theme="theme-default"
-      data-assets-path="../assets/"
-      data-template="vertical-menu-template-free">
-<head>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 
-    <style>
-        .results tr[visible='false'],
-        .no-result {
-            display: none;
-        }
+<style>
+    .vertical-center {
+        min-height: 95%; /* Fallback for browsers do NOT support vh unit */
+        min-height: 95vh; /* These two lines are counted as one :-)       */
 
-        .results tr[visible='true'] {
-            display: table-row;
-        }
-
-        .counter {
-            padding: 8px;
-            color: #ccc;
-        }
-
-        .full-width-div {
-            position: absolute;
-            width: 100%;
-            left: 0;
-        }
-
-        .sticky {
-            position: fixed;
-            top: 0;
-        }
-    </style>
-</head>
-
-<body onclose="close()">
-
-
-    <!-- Content wrapper -->
-    <div class="content-wrapper">
-        <!-- Content -->
-
-        <div class="container flex-grow-0">
-            @if (ViewBag.Durum != null)
-            {
-            if (ViewBag.Durum.ToString() == "Kullanıcı başarıyla eklendi!")
-            {
-            <div class="alert alert-success" role="alert">
-                <a class="closebtn" onclick="this.parentElement.style.display='none';">&times;</a>
-                @ViewBag.Durum.ToString()
-            </div>
-            }
-            else if (ViewBag.Durum.ToString() == "Kullanıcı eklenemedi!")
-            {
-            <div class="alert alert-danger" role="alert">
-                <a class="closebtn" onclick="this.parentElement.style.display='none';">&times;</a>
-                @ViewBag.Durum.ToString()
-            </div>
-            }
-            }
-            @{ 
-                string update = "disabled";
-                string delete = "disabled";
-                string insert = "disabled";
-                if (ViewBag.Update != null)
-                {
-                    update = "";
-                }
-                if (ViewBag.Delete != null)
-                {
-                    delete = "";
-                }
-                if (ViewBag.Insert != null)
-                {
-                    insert = "";
-                }
-            }
-            <div class="row"><h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Yönetim Paneli/</span>Kullanıcı Tablosu</h4></div>
-            <div class="row mb-3" style="display:none">
-
-                <span data-bs-toggle="modal" data-bs-target="#">
-                    <a data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-file' ></i> <span>Stok Listesini Excel Formatında Mail Olarak Al</span>" class="btn btn-success float-start bx bxl-gmail bx-tada">
-
-                    </a>
-                </span>
-            </div>
-            <div class="row mt-2">
-                <div class="col">
-                    <select data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Tablo içinde gösterilecek kişi sayısı</span>" class="form-select dropdown-toggle" id="maxRows">
-
-                        <option value="5000">Hepsini Göster</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
+        display: flex;
+        align-items: center;
+    }
+    .search {
+        width: 90%;
+        position: relative;
+        float:right;
+    }
+    .select2-container {
+        position: relative;
+        float: right;
+    }
+</style>
+<div class="jumbotron vertical-center">
+    <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCenterTitle">Yeni Kullanıcı Ekleme Formu</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                 </div>
-                <div class="col">
+                @{
 
+                    using (Html.BeginForm("AddUser", "YonetimPaneli", FormMethod.Post, new { @id = "myFormAdd" }))
+                    {
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>USER NAME:</label>
+                                @Html.TextBoxFor(Model => Model.Item1.USER_NAME, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>USER ROLE:</label>
 
-                </div>
-
-                <div class="col">
-                    <div class="row">
-                        <div class="col">
-                            <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Tüm Kullanıcılara Bilgi Gönderimi Yapar</span>" class="btn btn-success float-end bx bx-mail-send me-1" onclick="location.href='@Url.Action("MailFormuToplu","YonetimPaneli")'">
-
-                            </button>
-                        </div>
-                        <div class="col-2">
-                            <span data-bs-toggle="modal" data-bs-target="#modalCenter">
-                                <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Yeni Kullanıcı Ekleme Formunu Açar</span>" class="btn btn-success float-end bx bxs-user-plus" @insert>
-
-                                </button>
-                            </span>
-                        </div>
-                    </div>
-
-
-
-                </div>
-
-                <div class="modal fade" id="ModulEkle" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-m" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="modalCenterTitle">Modül Ekleme Formu</h5>
-                                <button type="button"
-                                        class="btn-close"
-                                        data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
+                                @Html.DropDownListFor(Model => Model.Item1.USER_ROLE, (SelectList)ViewBag.Roles, htmlAttributes: new { @class = "form-select dropdown-toggle" })
+                            </div>
+                            <div class="form-group">
+                                <label>USER FIRST NAME:</label>
+                                @Html.TextBoxFor(Model => Model.Item1.USER_FIRSTNAME, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>USER LAST NAME:</label>
+                                @Html.TextBoxFor(Model => Model.Item1.USER_LASTNAME, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>USER MAIL:</label>
+                                @Html.TextBoxFor(Model => Model.Item1.USER_MAIL, new { @class = "form-control" })
                             </div>
 
                         </div>
-                    </div>
-                </div>
-
-
-
-                <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="modalCenterTitle">Yeni Kullanıcı Ekleme Formu</h5>
-                                <button type="button"
-                                        class="btn-close"
-                                        data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            @{
-
-                                using (Html.BeginForm("AddUser", "YonetimPaneli", FormMethod.Post, new { @id = "myFormAdd" }))
-                                {
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <label>USER NAME:</label>
-                                            @Html.TextBoxFor(Model => Model.Item1.USER_NAME, new { @class = "form-control" })
-                                        </div>
-                                        <div class="form-group">
-                                            <label>USER ROLE:</label>
-
-                                            @Html.DropDownListFor(Model => Model.Item1.USER_ROLE, (SelectList)ViewBag.Roles, htmlAttributes: new { @class = "form-select dropdown-toggle" })
-                                        </div>
-                                        <div class="form-group">
-                                            <label>USER FIRST NAME:</label>
-                                            @Html.TextBoxFor(Model => Model.Item1.USER_FIRSTNAME, new { @class = "form-control" })
-                                        </div>
-                                        <div class="form-group">
-                                            <label>USER LAST NAME:</label>
-                                            @Html.TextBoxFor(Model => Model.Item1.USER_LASTNAME, new { @class = "form-control" })
-                                        </div>
-                                        <div class="form-group">
-                                            <label>USER MAIL:</label>
-                                            @Html.TextBoxFor(Model => Model.Item1.USER_MAIL, new { @class = "form-control" })
-                                        </div>
-
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="ekle btn btn-outline-info" onclick="myEkleFunction()" data-bs-dismiss="modal">EKLE</button>
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">KAPAT</button>
-                                    </div>
-                                }
-                            }
-
-
+                        <div class="modal-footer">
+                            <button type="button" class="ekle btn btn-outline-info" onclick="myEkleFunction()" data-bs-dismiss="modal">EKLE</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">KAPAT</button>
                         </div>
-                    </div>
-                </div>
+                    }
+                }
+
 
             </div>
-            <hr class="my-3" />
-            <!-- Striped Rows -->
-            <div class="card" style="max-height:600px">
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-striped table-hover results sorttable centered" id="sortTable">
-                        <thead class="centered">
-                            <tr>
-                                <th style="background-color:white">ID</th>
-                                <th style="background-color:white">User Name</th>
-                                <th style="background-color:white">Password</th>
-                                <th style="background-color:white">First Name</th>
-                                <th style="background-color:white">Last Name</th>
-                                <th style="text-align: center;background-color:white">Role</th>
-                                <th style="background-color:white">Mail</th>
-                                <th style="background-color:white">Active</th>
-                                <th style="background-color:white">Edit</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-border-bottom-0">
-                            @{
-                                int a = 0;
-
-                                foreach (var urn in ViewBag.Users)
-                                {
-                                    using (Html.BeginForm("KullaniciAyar", "YonetimPaneli", FormMethod.Post, new { @id = "myFormKaydet" }))
-                                    {
-
-
-                                        <tr>
-                                            <td scope="row">@Html.LabelFor(Model => Model.Item1.USER_ID, (String)urn.USER_ID) @Html.TextBoxFor(Model => Model.Item1.USER_ID, new { @Value = urn.USER_ID, Style = "display: none;" })</td>
-                                            <td>@Html.LabelFor(Model => Model.Item1.USER_NAME, (String)urn.USER_NAME) @Html.TextBoxFor(Model => Model.Item1.USER_NAME, new { @Value = urn.USER_NAME, Style = "display: none;" })</td>
-                                            <td>@Html.TextBoxFor(Model => Model.Item1.USER_PASSWORD, new { @Value = urn.USER_PASSWORD, Style = "background-color: transparent;border: none;width:90px;text-align:center" })</td>
-                                            <td>@Html.TextBoxFor(Model => Model.Item1.USER_FIRSTNAME, new { @Value = urn.USER_FIRSTNAME, Style = "background-color: transparent;width:80px;border: none;text-align:center" })</td>
-                                            <td>@Html.TextBoxFor(Model => Model.Item1.USER_LASTNAME, new { @Value = urn.USER_LASTNAME, Style = "background-color: transparent;border: none;" })</td>
-                                            <td>@Html.DropDownListFor(Model => Model.Item1.USER_ROLE, new SelectList(ViewBag.Roles1, "ROLE_ID", "ROLE_NAME", (String)urn.USER_ROLE), htmlAttributes: new { @class = "form-select dropdown-toggle", Style = "background-color: transparent;border: none;text-align:center;" })</td>
-                                            <td>@Html.TextBoxFor(Model => Model.Item1.USER_MAIL, new { @Value = urn.USER_MAIL, Style = "background-color: transparent;border: none;width:auto;text-align:center" })</td>
-                                            @if (urn.ACTIVE == true)
-                                            {
-                                                <td>@Html.CheckBoxFor(Model => Model.Item1.ACTIVE, new { @checked = true, @class = "form-check-input info", Style = "text-align:center," })</td>
-                                            }
-                                            else
-                                            {
-                                                <td>@Html.CheckBoxFor(Model => Model.Item1.ACTIVE, new { @unchecked = true, @class = "form-check-input info", Style = "text-align:center" })</td>
-                                            }
-                                            @{ var s = "submitbutton" + a; var s1 = "deletebutton" + a;}
-                                            <td>
-                                                <div class="dropdown">
-                                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu">
-
-                                                        <button type="button" class="dropdown-item" value="@a" onclick="myUpdateFunction(this.value)" @update><i class="bx bx-edit-alt me-1"></i>GÜNCELLE</button>
-                                                        <button type="submit" class="dropdown-item" style="display:none" id=@s name="submitbutton1"><i class="bx bx-edit-alt me-1"></i>GÜNCELLE</button>
-                                                        <button type="button" class="dropdown-item" value="@a" onclick="myDeleteFunction(this.value)" @delete><i class="bx bx-trash me-1"></i>SİL</button>
-                                                        <button type="submit" class="dropdown-item" style="display:none" id=@s1 name="submitbutton2"><i class="bx bx-trash me-1"></i>SİL</button>
-
-                                                    </div>
-                                                </div>
-                                            </td>
-
-
-                                        </tr>
-
-
-                                    }
-                                    a++;
-                                }
-
-
-                            }
-                        </tbody>
-                    </table>
-
-                </div>
-
-            </div>
-            <!--/ Striped Rows -->
-
-
         </div>
     </div>
-    <!-- / Content -->
-    <!-- Footer -->
-    <!-- / Footer -->
-    <!-- / Layout wrapper -->
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="text/javascript">
-        document.getElementById("yonetimpaneli").className = "menu-item open active";
-        document.getElementById("kullanici").className = "menu-item active";
-        function myUpdateFunction(clicked_value) {
-            var s = "submitbutton" + clicked_value;
-            Swal.fire({
-                title: 'Yaptığınız değişiklikten emin misiniz?',
-                icon: 'question',
-                showDenyButton: false,
-                showCancelButton: true,
-                confirmButtonText: 'Evet',
-                cancelButtonText: 'Hayır',
-                confirmButtonColor: '#03c3ec',
-                confirmButtonBorderColor: '#03c3ec',
-                cancelButtonColor: '#ff3e1d',
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    Swal.fire(
-                        'Başarılı!',
-                        'Değişiklik yapıldı',
-                        'success'
-                    )
-                    document.getElementById(s).click();
-                }
-            })
-        }
-        function myDeleteFunction(clicked_value) {
-            var s = "deletebutton" + clicked_value;
-            Swal.fire({
-                title: 'Kullanıcıyı silmek istediğinizden emin misiniz?',
-                icon: 'question',
-                showDenyButton: false,
-                showCancelButton: true,
-                confirmButtonText: 'Evet',
-                cancelButtonText: 'Hayır',
-                confirmButtonColor: '#03c3ec',
-                confirmButtonBorderColor: '#03c3ec',
-                cancelButtonColor:'#ff3e1d',
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    Swal.fire(
-                        'Başarılı!',
-                        'Değişiklik yapıldı',
-                        'success'
-                    )
-                    document.getElementById(s).click();
-                }
-            })
-        }
-        function myEkleFunction() {
-            Swal.fire({
-                title: 'Kullanıcıyı eklemek istediğinizden emin misiniz?',
-                icon: 'question',
-                showDenyButton: false,
-                showCancelButton: true,
-                confirmButtonText: 'Evet',
-                cancelButtonText: 'Hayır',
-                confirmButtonColor: '#03c3ec',
-                confirmButtonBorderColor: '#03c3ec',
-                cancelButtonColor: '#ff3e1d',
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                    @{
+                        string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                    }
+                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                    </object>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-online">
+                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                        </object>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    @if (@Request.Cookies["Name"] != null)
+                                    {
+                                        <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                        <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-semibold d-block">Test</span>
+                                        <small class="text-muted">Yetki: Test</small>
+                                    }
 
-                    document.getElementById("myFormAdd").submit();
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                           data-bs-target="#cikis">
+                            <i class="bx bx-power-off me-2"></i>
+                            <span class="align-middle">Oturumu Kapat</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" onclick="changetable(1)" name="btnradio" id="btnradio1" checked="" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio1">KULLANICI</label>
+            <input type="radio" class="btn-check" onclick="changetable(2)" name="btnradio" id="btnradio2" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio2">YETKİLER</label>
+            <input type="radio" class="btn-check" onclick="changetable(4)" name="btnradio" id="btnradio4" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio4">YETKİLER(ROL)</label>
+            <input type="radio" class="btn-check" onclick="changetable(3)" name="btnradio" id="btnradio3" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio3">MODÜLLER</label>
+
+        </div>
+        <div id="employeeTableWrapper" class="tableWrapper">
+
+            <div class="mt-2" id="toolbar" style="width:100%">
+
+
+                <button data-bs-toggle="tooltip" name="mail" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Tüm Kullanıcılara Bilgi Gönderimi Yapar</span>" class="btn btn-secondary bx bx-mail-send" onclick="location.href='@Url.Action("MailFormuToplu","YonetimPaneli")'">
+                </button>
+
+
+                <span data-bs-toggle="modal" data-bs-target="#modalCenter">
+                    <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<i class='bx bxs-info-circle bx-xs' ></i> <span>Yeni Kullanıcı Ekleme Formunu Açar</span>" class="btn btn-secondary bx bxs-user-plus">
+                    </button>
+                </span>
+                <select id="filter" multiple="multiple" name="filterAlgorithm">
+                </select>
+            </div>
+            <div class="buttons-toolbar mt-2 mb-2">
+            </div>
+
+
+            <table id="table"
+                   class="table table-striped"
+                   data-show-fullscreen="true"
+                   data-buttons-order="['mail','fullscreen','columns']"
+                   data-toggle="table"
+                   data-buttons-toolbar=".buttons-toolbar"
+                   data-show-export="false"
+                   data-export-data-type="all"
+                   data-export-types="['excel']"
+                   data-pagination="false"
+                   data-search="true"
+                   data-show-columns="true"
+                   data-show-columns-toggle-all="true"
+                   data-locale="tr-TR"
+                   data-height="700"
+                   data-filter-control="true"
+                   data-filter-control-multiple-search="true"
+                   data-loading-template="loadingTemplate"
+                   data-url="http://192.168.2.13:83/api/user"
+                   data-mobile-responsive="true">
+                <thead>
+                    <tr id="trid">
+                        <th data-field="USER_NAME" data-halign="center" data-width="150" data-width-unit="px" data-align="center">USERNAME</th>
+                        <th data-field="USER_PASSWORD" data-halign="center" data-align="center" data-formatter="Formatter" data-width="200" data-width-unit="px" >PASSWORD</th>
+                        <th data-field="USER_ROLE" data-halign="center" data-align="center" data-width="150" data-width-unit="px" data-formatter="RoleFormatter">ROLE</th>
+                        <th data-field="USER_FIRSTNAME" data-halign="center" data-align="center" data-width="150" data-width-unit="px" data-formatter="Formatter">FIRST NAME</th>
+                        <th data-field="USER_LASTNAME" data-halign="center" data-align="center" data-width="150" data-width-unit="px" data-formatter="Formatter">LAST NAME</th>
+                        <th data-field="USER_MAIL" data-halign="center" data-align="center" data-formatter="Formatter">MAIL</th>
+                        <th data-field="ACTIVE" data-halign="center" data-align="center" data-formatter="ActiveFormatter">ACTIVE</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <script>
+                function Formatter(value, index, row) {
+                    return "<input class='form-control text-center' type='text' style='background:transparent' onkeyup='keyup(value)' value='" + value + "'></input>"
+                }
+                function FormatterModule(value, index, row) {
+                    return "<input class='form-control text-center' type='text' style='background:transparent' onkeyup='keyupmodule(value)' value='" + value + "'></input>"
+                }
+                function ActiveFormatter(value, index, row) {
+                    if (value) {
+                        return '<input class="form-check-input" type="checkbox" value="" onchange="change(this)" checked="">';
+                    } else {
+                        return '<input class="form-check-input" type="checkbox" onchange="change(this)" value=""';
+                    }
+
+                }
+                function keyupmodule(value) {
+                    var row = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.rowIndex -1];
+                    var active = row.getElementsByTagName("input")[0].value;
+                    var inc = row.getElementsByTagName("td")[0].innerHTML;
+                    var json = { INCKEY: inc, ACTIVE: active };
+                    $.ajax({
+                        url: '@Url.Action("ModuleActiveUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
+
+                        },
+                        async: true,
+                        processData: false
+                    });
+                }
+                function keyup(value) {
+                    var row = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.rowIndex -1];
+                    var username = row.getElementsByTagName("td")[0].innerHTML;
+                    var pw = row.getElementsByTagName("input")[0].value;
+                    var fn = row.getElementsByTagName("input")[2].value;
+                    var ln = row.getElementsByTagName("input")[3].value;
+                    var mail = row.getElementsByTagName("input")[4].value;
+                    var active = row.getElementsByTagName("input")[5].checked;
+                    var role = row.getElementsByTagName("input")[1].value;
+                    var json = { USER_NAME: username, USER_PASSWORD: pw, USER_FIRSTNAME:fn , USER_LASTNAME:ln, USER_MAIL:mail ,ACTIVE:active ,USER_ROLE:role };
+                    $.ajax({
+                        url: '@Url.Action("KullaniciUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
+
+                        },
+                        async: true,
+                        processData: false
+                    });
+                }
+                function change(value) {
+                    
+                    var row = document.getElementById("table").getElementsByTagName("tr")[value.parentNode.parentNode.rowIndex];
+                    if (row == null) {
+                        row = document.getElementById("table").getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex];
+                        var username = row.getElementsByTagName("span")[1].innerHTML;
+
+                        var pw = row.getElementsByTagName("input")[0].value;
+
+                        var fn = row.getElementsByTagName("input")[1].value;
+                        var ln = row.getElementsByTagName("input")[2].value;
+                        var mail = row.getElementsByTagName("input")[3].value;
+                        var active = row.getElementsByTagName("input")[4].checked;
+
+                        var role = row.getElementsByTagName("select")[0].value;
+                    } else {
+                        var username = row.getElementsByTagName("td")[0].innerHTML;
+                       
+                        var pw = row.getElementsByTagName("input")[0].value;
+
+                        var fn = row.getElementsByTagName("input")[1].value;
+                        var ln = row.getElementsByTagName("input")[2].value;
+                        var mail = row.getElementsByTagName("input")[3].value;
+                        var active = row.getElementsByTagName("input")[4].checked;
+
+                        var role = row.getElementsByTagName("select")[0].value;
+                    }
+                   
+
+                    var json = { USER_NAME: username, USER_PASSWORD: pw, USER_FIRSTNAME:fn , USER_LASTNAME:ln, USER_MAIL:mail ,ACTIVE:active ,USER_ROLE:role };
+                    $.ajax({
+                        url: '@Url.Action("KullaniciUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
+
+                        },
+                        async: true,
+                        processData: false
+                    });
+                }
+
+
+
+
+            </script>
+
+        </div>
+
+    </div>
+    <script>
+        var type = 'fa'
+
+        function loadingTemplate(message) {
+            if (type === 'fa') {
+                return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
+            }
+            if (type === 'pl') {
+                return '<div class="ph-item"><div class="ph-picture"></div></div>'
+            }
+        }
+        $(document).ready(function () {
+            getModulesAsync().then(function (data) {
+                modules = data;
+            })
+            getRoleAsync().then(function (data) {
+                roles = data;
+            })
+            getUserAsync().then(function (data) {
+                users = data;
+            }).then(function () {
+                var filter = JSON.parse(users);
+                for (let i = 0; i < filter.length; i++) {
+                    var option = document.createElement('option');
+                    option.innerHTML = filter[i].USER_FIRSTNAME + " " + filter[i].USER_LASTNAME;
+                    option.value = filter[i].USER_ID;
+                    $('#filter').append(option);
                 }
             })
+
+            $('#filter').hide();
+
+        }).ajaxComplete(function () {
+            $('.select2clss').select2({width:"100%"}).on('change', function () {
+                changesel(this.parentNode.parentNode.rowIndex);
+            });
+        })
+        function changetable(value) {
+
+            if (value == 1) {
+                $('#filter').select2('destroy');
+                $('#filter').hide();
+                $('#table').bootstrapTable('destroy');
+                $('#table').bootstrapTable({
+                    url: 'http://192.168.2.13:83/api/user',
+                    columns: [{
+                        field: 'USER_NAME',
+                        title: 'USERNAME'
+                    },
+                    {
+                        field: 'USER_PASSWORD',
+                        title: 'PASSWORD',
+                        formatter: 'Formatter',
+                        halign: 'center'
+                    },
+                    {
+                        field: 'USER_ROLE',
+                        title: 'ROLE',
+                        formatter: 'RoleFormatter',
+                        halign: 'center'
+                    },
+                    {
+                        field: 'USER_FIRSTNAME',
+                        title: 'FIRST NAME',
+                        formatter: 'Formatter',
+                        halign: 'center'
+
+                    },
+                    {
+                        field: 'USER_LASTNAME',
+                        title: 'LAST NAME',
+                        formatter: 'Formatter',
+                        halign: 'center'
+                    },
+                    {
+                        field: 'USER_MAIL',
+                        title: 'MAIL',
+                        formatter: 'Formatter',
+                        halign: 'center'
+                    },
+                    {
+                        field: 'ACTIVE',
+                        title: 'ACTIVE',
+                        formatter: 'ActiveFormatter',
+                        halign: 'center'
+                    }
+                    ]
+
+                })
+            }
+            else if (value == 2) {
+                
+                $('#filter').select2({ placeholder: 'Grup Filtresi', width: '90%', float: 'end' });
+                $('#filter').show();
+                $('#table').bootstrapTable('destroy');
+                $('#table').bootstrapTable({
+                    url: 'http://192.168.2.13:83/api/user/auth',
+                    columns: [{
+                        field: 'USER_ID',
+                        title: 'NAME',
+                        formatter: 'formatterAuth1'
+                    },
+                    {
+                        field: 'MODULE_INCKEY',
+                        title: 'MODULE',
+                        formatter: 'formatterAuth2',
+                        sortable: true
+                    },
+                    {
+                        field: 'ROLE_ID',
+                        title: 'ROLE',
+                        formatter: 'formatterRoleAuth2'
+                    },
+                    {
+                        field: 'USER_AUTH',
+                        title: 'AUTH',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'SELECT_AUTH',
+                        title: 'SELECT',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'INSERT_AUTH',
+                        title: 'INSERT',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'UPDATE_AUTH',
+                        title: 'UPDATE',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'DELETE_AUTH',
+                        title: 'DELETE',
+                        formatter: 'formatterAuth',
+                        align: 'center'
+                    }
+                    ]
+
+                })
+                $('#filter').change(function (e) {
+                    var filterAlgorithm = $('#filter').val()
+
+                    if (filterAlgorithm.length > 0) {
+                        $('#table').bootstrapTable('filterBy', {
+                            USER_ID: filterAlgorithm
+                        }, {
+                            'filterAlgorithm': (row, filters) => {
+
+                                return row.USER_ID == filters.USER_ID;
+                            }
+                        })
+                    } else {
+                        $('#table').bootstrapTable('filterBy', {});
+
+                    }
+
+                })
+            }
+            else if (value == 4) {
+                $('#filter').select2({ placeholder: 'Grup Filtresi', width: '90%', float: 'end' });
+                $('#filter').show();
+                $('#table').bootstrapTable('destroy');
+                $('#table').bootstrapTable({
+                    url: 'http://192.168.2.13:83/api/rolesauth',
+                    columns: [{
+                        field: 'ROLE_ID',
+                        title: 'ROLE NAME',
+                        formatter: 'formatterRoleFormatter'
+                    },
+                    {
+                        field: 'MODULE_INCKEY',
+                        title: 'MODULE',
+                        formatter: 'formatterAuth2',
+                        sortable: true
+                    },
+                    {
+                        field: 'USER_AUTH',
+                        title: 'AUTH',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'SELECT_AUTH',
+                        title: 'SELECT',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'INSERT_AUTH',
+                        title: 'INSERT',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'UPDATE_AUTH',
+                        title: 'UPDATE',
+                        formatter: 'formatterAuth'
+                    },
+                    {
+                        field: 'DELETE_AUTH',
+                        title: 'DELETE',
+                        formatter: 'formatterAuth',
+                        align: 'center'
+                    }
+                    ]
+
+                })
+                $('#filter').change(function (e) {
+                    var filterAlgorithm = $('#filter').val()
+
+                    if (filterAlgorithm.length > 0) {
+                        $('#table').bootstrapTable('filterBy', {
+                            ROLE_ID: filterAlgorithm
+                        }, {
+                            'filterAlgorithm': (row, filters) => {
+
+                                return row.ROLE_ID == filters.ROLE_ID;
+                            }
+                        })
+                    } else {
+                        $('#table').bootstrapTable('filterBy', {});
+
+                    }
+
+                })
+            }
+            else {
+                $('#filter').select2();
+                $('#filter').select2('destroy');
+                $('#filter').hide();
+                
+                $('#table').bootstrapTable('destroy');
+                document.getElementById("trid").replaceChildren();
+                $('#table').bootstrapTable({
+                    url: 'http://192.168.2.13:83/api/modules',
+                    columns: [
+                    {
+                        field: 'INCKEY',
+                        title: 'INCKEY',
+                        }, {
+                            field: 'INCKEY',
+                            title: 'NAME',
+                            formatter: 'formatterModuleName'
+                        },
+                        {
+                            field: 'ACTIVE',
+                            title: 'ACTIVE',
+                            formatter:'FormatterModule'
+                        }
+                    ]
+
+                })
+            }
         }
-          function close() {
-            @{Session["Durum"] = null;
+        function formatterAuth(value, index, row) {
+            if (value) {
+                return '<input class="form-check-input" type="checkbox" value="" onchange="changeAuth(' + index.USER_ID + ',' + index.MODULE_INCKEY +')" checked="">';
+            } else {
+                return '<input class="form-check-input" type="checkbox" onchange="changeAuth(' + index.USER_ID + ',' + index.MODULE_INCKEY+')" value="" id="defaultCheck3">';
             }
         }
 
+        function changeAuth(value, value2) {
+            
+            var row = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.rowIndex-1];
+            if (row == null) {
+                row = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex-1]
+            } 
+            
+            var userid = value;
+            var ua = row.getElementsByTagName("input")[0].checked;
+            var sa = row.getElementsByTagName("input")[1].checked;
+            var ia = row.getElementsByTagName("input")[2].checked;
+            var uaa = row.getElementsByTagName("input")[3].checked;
+            var da = row.getElementsByTagName("input")[4].checked;
+            var mi = value2;
+            var json = { USER_ID: userid, MODULE_INCKEY: mi, USER_AUTH: ua, SELECT_AUTH: sa, INSERT_AUTH: ia, UPDATE_AUTH: uaa, DELETE_AUTH:da };
+                    $.ajax({
+                        url: '@Url.Action("YetkiUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
+
+                        },
+                        async: true,
+                        processData: false
+                    });
+
+        }
+
+        function formatterAuth1(value, index, row) {
+            var user = JSON.parse(users).filter(x => x.USER_ID == value);
+            return user[0].USER_FIRSTNAME + " " + user[0].USER_LASTNAME;
+
+        }
+        function formatterAuth2(value, index, row) {
+            var m = modules.filter(x => x.INCKEY == value);
+            return "<div class='row'><div class='col'>"+m[0].MODULE_NAME + "</div><div class='col'>" + m[0].PROGRAM_NAME+"</div></div>";
+        }
+        function RoleFormatter(value, index, row) {
+            var q = "";
+            for (let i = 0; i < roles.length; i++) {
+                if (value == roles[i].ROLE_ID) {
+                    q = q + "<option selected value='" + roles[i].ROLE_ID + "'>" + roles[i].ROLE_NAME + "</option>"
+                } else {
+                    q = q + "<option value='" + roles[i].ROLE_ID + "'>" + roles[i].ROLE_NAME + "</option>"
+                }
+
+            }
+            return "<select class='select2clss'>"+q+"</select>";
+        }
+        function changesel(value) {
+            var row = document.getElementById("table").getElementsByTagName("tr")[value];
+
+                    var username = row.getElementsByTagName("td")[0].innerHTML;
+                    var pw = row.getElementsByTagName("input")[0].value;
+                    var fn = row.getElementsByTagName("input")[1].value;
+                    var ln = row.getElementsByTagName("input")[2].value;
+                    var mail = row.getElementsByTagName("input")[3].value;
+                    var active = row.getElementsByTagName("input")[4].checked;
+                    var role = row.getElementsByTagName("select")[0].value;
+                    var json = { USER_NAME: username, USER_PASSWORD: pw, USER_FIRSTNAME: fn, USER_LASTNAME: ln, USER_MAIL: mail, ACTIVE: active, USER_ROLE: role };
+
+                    $.ajax({
+                        url: '@Url.Action("KullaniciUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
+
+                        },
+                        async: true,
+                        processData: false
+                    });
+
+        }
+        function formatterRoleAuth2(value, index, row) {
+            return roles.filter(x => x.ROLE_ID==value)[0].ROLE_NAME;
+        }
+        function formatterRoleFormatter(value, index, row) {
+            
+            return ROLENAMES.filter(x => x.ROLE_ID == value)[0].ROLE_NAME;
+        }
+        function formatterModuleName(value, index, row) {
+            var m = modules.filter(x => x.INCKEY == value);
+            return "<div class='row'><div class='col'>" + m[0].MODULE_NAME + "</div><div class='col'>" + m[0].PROGRAM_NAME + "</div></div>";
+        }
+        function myEkleFunction() {
+            document.getElementById("myFormAdd").submit();
+        }
     </script>
-</body>
-</html>
+</div>
+
+
+
+
+
+
 

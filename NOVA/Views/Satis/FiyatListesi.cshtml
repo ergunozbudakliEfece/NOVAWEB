@@ -1,0 +1,295 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_Fiyat_yonetim.cshtml";
+}
+
+
+<link href="~/Content/table/bootstrap-table.min.css" rel="stylesheet" />
+<link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    #table i {
+        color: #00AAFF;
+        font-weight: 300;
+    }
+
+        #table i:hover {
+            opacity: 0.4;
+        }
+
+    .vertical-center {
+        min-height: 95%;
+        min-height: 95vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .search {
+        width: 80%;
+        float: left !important;
+    }
+
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    .swal2-icon {
+        font-size: 15px;
+    }
+
+    .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+        background: rgba(0,0,0,.4) !important;
+    }
+
+    .card-view-title {
+        max-width: 32% !important;
+    }
+
+    .card-view:nth-child(5) .card-view-value {
+        margin-left: 32.5% !important;
+        margin-top: 7px;
+    }
+
+    @@media screen and (max-width: 600px) {
+        #table {
+            font-size: 12px;
+        }
+
+        input {
+            font-size: 12px !important;
+        }
+    }
+
+    @@media screen and (min-width: 601px) {
+
+        .swal2-modal {
+            width: 35vw !important;
+        }
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+</style>
+
+<div class="jumbotron vertical-center" onclick="hideAllPop()">
+    @{ DateTime dateTime = DateTime.Now;
+        var time = dateTime.ToShortTimeString();
+        var tarih = dateTime.ToShortDateString();
+        ;}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                    @{
+                        string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                    }
+                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                    </object>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-online">
+                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                        </object>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    @if (@Request.Cookies["Name"] != null)
+                                    {
+                                        <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                        <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-semibold d-block">Test</span>
+                                        <small class="text-muted">Yetki: Test</small>
+                                    }
+
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                           data-bs-target="#cikis">
+                            <i class="bx bx-power-off me-2"></i>
+                            <span class="align-middle">Oturumu Kapat</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div id="employeeTableWrapper" class="tableWrapper">
+
+            <table id="table"
+                   class="table table-striped"
+                   data-show-fullscreen="true"
+                   data-toggle="table"
+                   data-show-export="true"
+                   data-export-data-type="all"
+                   data-export-types="['xlsx','pdf']"
+                   data-pagination="false"
+                   data-search="true"
+                   data-show-columns="false"
+                   data-show-columns-toggle-all="false"
+                   data-locale="tr-TR"
+                   data-height="700"
+                   data-filter-control="true"
+                   data-filter-control-multiple-search="true"
+                   data-loading-template="loadingTemplate"
+                   data-mobile-responsive="true"
+                   data-reorderable-rows="false">
+                <thead>
+                    <tr id="trid">
+
+                        <th data-field="FK_ACIKLAMA" data-halign="center" data-align="center" data-formatter="formatterAciklama">ACIKLAMA</th>
+                        <th data-field="FIYATDOVIZTIPI" data-halign="center" data-align="center" data-formatter="formatter">DOVIZ TIPI</th>
+                        <th data-field="FIYAT2" data-halign="center" data-align="center" data-formatter="formatterAll">TOPTAN FIYAT</th>
+                        <th data-field="FIYAT3" data-halign="center" data-align="center" data-formatter="formatterAll">PERAKENDE FIYAT</th>
+                        <th data-field="YOK" data-halign="center" data-align="center" data-visible="false" data-force-export="true" data-formatter="formattergizli1">TOPTAN FIYAT</th>
+                        <th data-field="YOK1" data-halign="center" data-align="center" data-visible="false" data-force-export="true" data-formatter="formattergizli2">PERAKENDE FIYAT</th>
+                        <th data-field="OZELKOSULLAR" data-force-export="true" data-visible="false" data-halign="center" data-align="center" data-formatter="formatterKosul">OZEL KOSULLAR</th>
+                    </tr>
+                </thead>
+            </table>
+
+
+
+        </div>
+    </div>
+    <script>
+        function pertopFormatter(value, index, row) {
+
+            return (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 });
+
+        }
+        $(document).ready(function () {
+
+            $("#table").bootstrapTable({
+                url: "http://192.168.2.13:83/api/fiyat/exec/000000000000001",
+                exportOptions: {
+                    fileName: function () {
+                        var dat = new Date();
+                        return "Güncel_Fiyat_Listesi_" + dat.toLocaleDateString() + "_" + dat.getHours() + "." + dat.getMinutes();
+                    },
+                    jspdf: {
+                        orientation: 'l',
+                        format: 'a4',
+                        autotable: {
+                            tableWidth: 'auto',
+                        }
+
+                    },
+                    ignoreColumn: ['FIYAT3', 'FIYAT2']
+
+                }
+            })
+            document.getElementById("satis").className = "menu-item open active";
+            document.getElementById("fiyatlistesi").className = "menu-item active";
+            document.getElementsByClassName("search-input")[0].onkeyup = function () {
+                document.getElementsByClassName("search-input")[0].value = document.getElementsByClassName("search-input")[0].value.toUpperCase();
+                document.getElementsByClassName("search-input")[0].value = document.getElementsByClassName("search-input")[0].value.replace("İ", "I").replace("Ö", "O").replace("Ü", "U").replace("Ş", "S").replace("Ç", "C").replace("Ğ", "G");
+
+            }
+
+        }).ajaxComplete(function () {
+
+            $(".bx-info-circle").popover();
+
+        })
+
+        function formatter(value, index, row) {
+            if (index.FIYATKODU.substring(0, 3) == "ISK") {
+                return value + "&nbsp;<span style='font-size:10px'>(" + index.FIYATKODU.substring(0, 3) + ")</span>";
+            } else {
+                return value;
+            }
+
+
+        }
+        function formatterAll(value, index, row) {
+            if (index.FIYATDOVIZTIPI != "TRY") {
+                if (value > 2) {
+                    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+                } else {
+                    return value.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+                }
+
+            } else {
+
+                return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+
+        }
+        function formattergizli1(value, index, row) {
+            if (index.FIYATDOVIZTIPI != "TRY") {
+                if (value > 2) {
+                    return (index.FIYAT2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })).replace(",", ".");
+                } else {
+                    return (index.FIYAT2.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })).replace(",", ".");
+                }
+
+            } else {
+
+                return (index.FIYAT2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })).replace(",", ".");
+            }
+        }
+        function formattergizli2(value, index, row) {
+            if (index.FIYATDOVIZTIPI != "TRY") {
+                if (value > 2) {
+                    return (index.FIYAT3.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })).replace(",", ".");
+                } else {
+                    return (index.FIYAT3.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })).replace(",", ".");
+                }
+
+            } else {
+
+                return (index.FIYAT3.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })).replace(",", ".");
+            }
+        }
+
+        function formatterAciklama(value, index, row) {
+            if (index.OZELKOSULLAR != "null" && index.OZELKOSULLAR != null) {
+                return value + " <i style='cursor:help' class='bx bx-info-circle mt-2' data-bs-toggle='popover' data-bs-offset='0,14' data-bs-placement='right' data-bs-html='true' data-bs-content='<p>" + (index.OZELKOSULLAR == "null" ? "Özel koşul bulunmamakta." : index.OZELKOSULLAR.replace("::", "<br/>")) + "</p>' title='Ek Bilgiler'></i>";
+            } else {
+                return value;
+            }
+
+        }
+        function formatterKosul(value, index, row) {
+            return (value == "null" ? "-" : value)
+        }
+        function hideAllPop() {
+            $(".popover").hide();
+        }
+    </script>
+</div>
+
+
+
+
+
+
+

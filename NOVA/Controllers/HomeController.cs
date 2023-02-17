@@ -21,6 +21,10 @@ namespace NOVA.Controllers
     public class HomeController : Controller
     {
         [HandleError]
+        public ActionResult Maintenance()
+        {
+            return View();
+        }
         // GET: SecondPage
         public ActionResult mutluyillar()
         {
@@ -37,8 +41,7 @@ namespace NOVA.Controllers
            
             if (Request.Cookies["Id"].Value.ToInt() != 10050)
             {
-                if (Request.Cookies["checked"].Value == "")
-                {
+                
                     HttpCookie cookiech = new HttpCookie("checked", "checked");
                     Response.Cookies.Add(cookiech);
                     SignInTBL lognew = new SignInTBL();
@@ -81,22 +84,11 @@ namespace NOVA.Controllers
                             var log = GetSession(Request.Cookies["Id"].Value.ToInt())[0].ACTIVITY_TYPE;
                             if (((xm != xn) && log == "login") || log == "logout")
                             {
-                            if (TempData["LOG"] != null)
-                            {
-                                if (TempData["LOG"].ToString() != "ok" || log == "logout")
-                                {
+                           
                                     FormsAuthentication.SignOut();
                                     return RedirectToAction("Login", "Login");
-                                }
-                            }
-                            else
-                            {
-                                if (log == "logout")
-                                {
-                                    FormsAuthentication.SignOut();
-                                    return RedirectToAction("Login", "Login");
-                                }
-                            }
+                               
+                           
                             
                            
 
@@ -106,7 +98,7 @@ namespace NOVA.Controllers
                     
                 }
                 
-            }
+            
 
 
           
@@ -159,6 +151,24 @@ namespace NOVA.Controllers
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
             if (yonetimstok != true)
             {
                 ViewBag.Stok = "none";

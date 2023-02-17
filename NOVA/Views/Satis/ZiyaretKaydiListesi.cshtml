@@ -81,7 +81,9 @@
         #ilkziyaret:hover {
             color: cornflowerblue;
         }
-
+        .select2-container{
+            float:right;
+        }
         .centercontent {
             position: absolute;
             max-width: 100%;
@@ -275,6 +277,7 @@
        
         
         var constant = 0;
+        var constant1 = 0;
 
         var mahalleler = null;
         var urungruplari = null;
@@ -299,7 +302,7 @@
         <form id="myForm" method="post" autocomplete="off">
 
 
-            
+
             <div class="btn-group menu1 mt-1 mb-1 h-25">
                 <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bx bx-dots-vertical-rounded"></i>
@@ -319,282 +322,300 @@
                 <label class="btn btn-outline-primary" for="btnradio1">Yeni Müşteri</label>
                 <input type="radio" class="btn-check" onclick="change(2)" name="btnradio" id="btnradio2" autocomplete="off">
                 <label class="btn btn-outline-primary" for="btnradio2">Kayıtlı Müşteri</label>
-
             </div>
+           
 
 
+            @{
+if (ViewBag.OzelYetki)
+            {
+
+                        <div class="row mb-2" id="degistir" style="display: none;">
+                                        <div class="col-sm-6">
+                                                        <div class="form-check form-switch mb-2" style="padding-left:0 !important">
+
+                                                            <label style="float:left !important" class="form-check-label" for="flexSwitchCheckChecked"><img data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Müşterinin Plasiyerini Değiştir</span>" style="cursor: pointer;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAASRJREFUSEu1leFVAkEMhL+rQDpQKxA7sAQ7QCsAKsAStAK1A0ugA7UD7UAqwDe8XV7eshc3i9wfflxuZjKThIETP8OJ8fEIboEVMA2K+AKWwJu+8whUeB4Ez+UfwPVfBNsR8O+k7ge4c0TsxHsd1AgEflEQj3XaRfAELAqCh5RV2XAXwWuyxYI9AvOKnQcE2ZJsW80i+X4J6FfPBHiv2La332bQQpCFvgDyXiGXmeSarg4iU9tFoJClXnOuR0uo0GfHZrABbgxwiSeiNXBmXoQ6uE/KPYuUx3MvQetRtJMX6iASbvMUHXPsPvMV9vZA51pn4CooX/dKk3VwrstFC+LWy70O/p1A98XOcSuBO2H2pRZJWxr9F2smaFUcqmtdoBCoLf4FuuU7GTcbBFoAAAAASUVORK5CYII=" /></label>
+                                                            <input class="form-check-input ms-2" type="checkbox" id="flexSwitchCheckChecked" onchange="plasiyerdegistir()" unchecked="">
+                                                        </div>
+                                            
+                                        </div>
+
+                            @*<div class="col-sm" id="plasiyerdeg" style="display:none">
+                                <select class="form-control" id="plasiyer1" onchange="plasiyerdegistir(this.value)" name="PLASIYERD" style="width: 100%">
+                                </select>
+                            </div>*@
+                        </div>
+            }
+            }
+            
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="row">
+                            <div class="col-sm d-flex mb-2">
 
 
+                                <input class="form-control" type="text" value="" placeholder="Müşteri İsmi" id="ISIM" name="MUSTERI_ADI">
+                                <select id="musteriselect" onchange="musterichange(this.value)" style="display:none;width:100%" name="MUSTERI_ID">
+                                </select>
+                                <img id="sil" onclick="deletemusteri()" style="cursor:pointer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAKlJREFUSEvtlcERQDAQRZ9KlIBOlEIFlKQUOqASJjM4hJ0fIje5ZTbZ9//uJJuReGWJ86MANdABpSFkBlpgsIQqgEuQC5cjUL0FrPtFS4iKyxKpBCp+ARwXYnt/OvatJwccyqV1z6J5/nXzvgb4CtX+5Ic6UAmjS/QDLu/qaUn+HsivKbpEivAYEDJofOh0N/msl+xGZQ8USvoeX4DmbnSqkRmY3z6WHLABUDk4GfuOp84AAAAASUVORK5CYII=" />
 
-            <div class="row">
-                <div class="col-sm">
-                    <div class="row">
-                        <div class="col-sm d-flex mb-2">
+
+                            </div>
+                            <div class="col-sm mb-2">
+
+                                <select class="form-control" id="plasiyer" onchange="plasiyerchange(this.value)" name="PLASIYER" style="width: 100%">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm mb-2">
 
 
-                            <input class="form-control" type="text" value="" placeholder="Müşteri İsmi" id="ISIM" name="MUSTERI_ADI">
-                            <select id="musteriselect" onchange="musterichange(this.value)" style="display:none;width:100%" name="MUSTERI_ID">
-                            </select>
-                            <img id="sil" onclick="deletemusteri()" style="cursor:pointer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAKlJREFUSEvtlcERQDAQRZ9KlIBOlEIFlKQUOqASJjM4hJ0fIje5ZTbZ9//uJJuReGWJ86MANdABpSFkBlpgsIQqgEuQC5cjUL0FrPtFS4iKyxKpBCp+ARwXYnt/OvatJwccyqV1z6J5/nXzvgb4CtX+5Ic6UAmjS/QDLu/qaUn+HsivKbpEivAYEDJofOh0N/msl+xGZQ8USvoeX4DmbnSqkRmY3z6WHLABUDk4GfuOp84AAAAASUVORK5CYII=" />
+                                <select class="form-select" id="ilselect" name="MUSTERI_IL" onchange="citychange(this.value)" style="width: 100%">
+                                </select>
 
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm mb-2">
+
+
+                                <select class="form-select" id="ilceselect" name="MUSTERI_ILCE" onchange="ilcechange(this.value)" style="width: 100%">
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm mb-2">
+
+
+                                <select class="form-select" id="mahalleselect" name="MUSTERI_MAHALLE" style="width: 100%">
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm mb-2">
+
+
+                                <textarea class="form-control" id="adres" name="MUSTERI_ADRES" rows="2" placeholder="Açık Adres"></textarea>
+
+                            </div>
+                            <div class="col-sm mb-2">
+
+
+                                <input class="form-control" type="text" value="" placeholder="Firma Yetkilisi" id="yetkili" name="FIRMA_YETKILISI">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 mb-2">
+
+
+                                <input class="form-control" type="text" value="" placeholder="Tel 1" id="tel1" name="MUSTERI_TEL1">
+
+                            </div>
+                            <div class="col-sm-6 mb-2">
+
+
+                                <input class="form-control" type="text" value="" placeholder="Tel 2" id="tel2" name="MUSTERI_TEL2">
+
+                            </div>
 
                         </div>
-                        <div class="col-sm mb-2">
+                        <div class="row">
+                            <div class="col-sm d-flex mb-2">
 
-                            <select class="form-control" id="plasiyer" onchange="plasiyerchange(this.value)" name="PLASIYER" style="width: 100%">
-                            </select>
 
+                                <input class="form-control" type="email" value="" placeholder="example@example.com" id="mail" name="MUSTERI_MAIL">
+
+                            </div>
                         </div>
-                    </div>
-                    <div class="row ">
-                        <div class="col-sm mb-2">
+                        <div class="row">
+                            <div class="col-sm d-flex mb-2">
+                                <select class="form-select" onchange="sektorchange(this.value)" id="sektor" name="MUSTERI_SEKTOR" style="width: 100%">
 
-
-                            <select class="form-select" id="ilselect" name="MUSTERI_IL" onchange="citychange(this.value)" style="width: 100%">
-                            </select>
-
-                        </div>
-                    </div>
-                    <div class="row ">
-                        <div class="col-sm mb-2">
-
-
-                            <select class="form-select" id="ilceselect" name="MUSTERI_ILCE" onchange="ilcechange(this.value)" style="width: 100%">
-                            </select>
-
-                        </div>
-                    </div>
-                    <div class="row ">
-                        <div class="col-sm mb-2">
-
-
-                            <select class="form-select" id="mahalleselect" name="MUSTERI_MAHALLE" style="width: 100%">
-                            </select>
-
-                        </div>
-                    </div>
-                    <div class="row ">
-                        <div class="col-sm mb-2">
-
-
-                            <textarea class="form-control" id="adres" name="MUSTERI_ADRES" rows="2" placeholder="Açık Adres"></textarea>
-
-                        </div>
-                        <div class="col-sm mb-2">
-
-
-                            <input class="form-control" type="text" value="" placeholder="Firma Yetkilisi" id="yetkili" name="FIRMA_YETKILISI">
-
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6 mb-2">
-
-
-                            <input class="form-control" type="text" value="" placeholder="Tel 1" id="tel1" name="MUSTERI_TEL1">
-
-                        </div>
-                        <div class="col-sm-6 mb-2">
-
-
-                            <input class="form-control" type="text" value="" placeholder="Tel 2" id="tel2" name="MUSTERI_TEL2">
-
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-sm d-flex mb-2">
-
-
-                            <input class="form-control" type="email" value="" placeholder="example@example.com" id="mail" name="MUSTERI_MAIL">
-
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm d-flex mb-2">
-                            <select class="form-select" onchange="sektorchange(this.value)" id="sektor" name="MUSTERI_SEKTOR" style="width: 100%">
-
-                                <option value="Metal">
-                                    Metal
-                                </option>
-                                <option value="Mobilya">
-                                    Mobilya
-                                </option>
-                                <option value="Ticaret">Ticaret</option>
-                                <option value="Tarım">
-                                    Tarım
-                                </option>
-                                <option value="Çit">
-                                    Çit
-                                </option>
-                                <option value="Pvc Doğrama">
-                                    Pvc Doğrama
-                                </option>
-                                <option value="Enerji">
-                                    Enerji
-                                </option>
-                                <option value="Otomotiv">Otomotiv</option>
-                                <option value="Beyaz Eşya">
-                                    Beyaz Eşya
-                                </option>
-                                <option value="Prefabrik">
-                                    Prefabrik
-                                </option>
-                                <option value="Orman Ürünleri">
-                                    Orman Ürünleri
-                                </option>
-                                <option value="İnşaat">
-                                    İnşaat
-                                </option>
-                                <option value="Makine Endüstrisi">
-                                    Makine Endüstrisi
-                                </option>
-                                <option value="Turizm">
-                                    Turizm
-                                </option>
-                                <option value="Ulaştırma">Ulaştırma</option>
-                                <option value="Diger">
-                                    Diğer
-                                </option>
-
-                            </select>
-
-                        </div>
-                        <div class="col-sm d-flex mb-2">
-
-
-                            <input class="form-control" style="display:none" type="text" name="MUSTERI_SEKTOR_DIGER" id="diger" value="" placeholder="Sektör Girin" />
-
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-sm mb-2">
-
-
-                            <select class="form-select" id="nitelik" name="MUSTERI_NITELIK" style="width: 100%">
-
-                                <optgroup label="Nitelik">
-                                    <option value="Üretici">
-                                        Üretici
+                                    <option value="Metal">
+                                        Metal
                                     </option>
-                                    <option value="Toptancı">
-                                        Toptancı
+                                    <option value="Mobilya">
+                                        Mobilya
                                     </option>
-                                    <option value="Perakendeci">
-                                        Perakendeci
+                                    <option value="Ticaret">Ticaret</option>
+                                    <option value="Tarım">
+                                        Tarım
                                     </option>
-                                    <option value="Uygulayıcı">
-                                        Uygulayıcı
+                                    <option value="Çit">
+                                        Çit
                                     </option>
-                                    <option value="Tüketici">
-                                        Tüketici
+                                    <option value="Pvc Doğrama">
+                                        Pvc Doğrama
                                     </option>
-                                </optgroup>
+                                    <option value="Enerji">
+                                        Enerji
+                                    </option>
+                                    <option value="Otomotiv">Otomotiv</option>
+                                    <option value="Beyaz Eşya">
+                                        Beyaz Eşya
+                                    </option>
+                                    <option value="Prefabrik">
+                                        Prefabrik
+                                    </option>
+                                    <option value="Orman Ürünleri">
+                                        Orman Ürünleri
+                                    </option>
+                                    <option value="İnşaat">
+                                        İnşaat
+                                    </option>
+                                    <option value="Makine Endüstrisi">
+                                        Makine Endüstrisi
+                                    </option>
+                                    <option value="Turizm">
+                                        Turizm
+                                    </option>
+                                    <option value="Ulaştırma">Ulaştırma</option>
+                                    <option value="Diger">
+                                        Diğer
+                                    </option>
 
-                            </select>
+                                </select>
+
+                            </div>
+                            <div class="col-sm d-flex mb-2">
+
+
+                                <input class="form-control" style="display:none" type="text" name="MUSTERI_SEKTOR_DIGER" id="diger" value="" placeholder="Sektör Girin" />
+
+                            </div>
 
                         </div>
+                        <div class="row">
+                            <div class="col-sm mb-2">
+
+
+                                <select class="form-select" id="nitelik" name="MUSTERI_NITELIK" style="width: 100%">
+
+                                    <optgroup label="Nitelik">
+                                        <option value="Üretici">
+                                            Üretici
+                                        </option>
+                                        <option value="Toptancı">
+                                            Toptancı
+                                        </option>
+                                        <option value="Perakendeci">
+                                            Perakendeci
+                                        </option>
+                                        <option value="Uygulayıcı">
+                                            Uygulayıcı
+                                        </option>
+                                        <option value="Tüketici">
+                                            Tüketici
+                                        </option>
+                                    </optgroup>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm">
+
+
+                                <textarea class="form-control" id="not" name="MUSTERI_NOTU" placeholder="Not" rows="2" cols="50"></textarea>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-info me-3" id="save" type="submit" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px">KAYDET</button>
 
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm">
+
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-info" type="button" id="update" onclick="updatemusteri()" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px">GÜNCELLE</button>
 
 
-                            <textarea class="form-control" id="not" name="MUSTERI_NOTU" placeholder="Not" rows="2" cols="50"></textarea>
 
-                        </div>
+                        <button type="button" class="btn btn-info " id="urunekle" onclick="openModal(1)" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px">
+                            ÜRÜN EKLE
+                        </button>
+
+
+                        <button type="button" id="ziyaretplani" class="btn btn-info" onclick="openModal(2)" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px">
+                            ZİYARET PLANLARIM
+                        </button>
 
                     </div>
                 </div>
-            </div>
 
+                <script>
+                    function openModal(value) {
+                        if (value == 1) {
+                            var m = document.getElementById("musteriselect");
+                            if (m.value != "") {
+                                $('#basicModal').modal({ backdrop: 'static', keyboard: false })
+                                $('#basicModal').modal('show');
+                                $('#closebtn').modal('hide');
+                            } else {
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: 'center',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: (toast) => {
+                                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                    }
+                                })
 
-
-
-            <div class="row">
-                <div class="col">
-                    <button class="btn btn-info me-3" id="save" type="submit" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px">KAYDET</button>
-
-                </div>
-
-            </div>
-            <div class="row">
-                <div class="col">
-                    <button class="btn btn-info" type="button" id="update" onclick="updatemusteri()" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px">GÜNCELLE</button>
-
-
-
-                    <button type="button" class="btn btn-info " id="urunekle" onclick="openModal(1)" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px">
-                        ÜRÜN EKLE
-                    </button>
-
-
-                    <button type="button" id="ziyaretplani" class="btn btn-info" onclick="openModal(2)" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px">
-                        ZİYARET PLANLARIM
-                    </button>
-
-                </div>
-            </div>
-
-            <script>
-                function openModal(value) {
-                    if (value == 1) {
-                        var m = document.getElementById("musteriselect");
-                        if (m.value != "") {
-                            $('#basicModal').modal({ backdrop: 'static', keyboard: false })  
-                            $('#basicModal').modal('show');
-                            $('#closebtn').modal('hide');
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'Müşteri seçilmedi!'
+                                });
+                            }
                         } else {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: 'center',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                }
-                            })
+                            var m = document.getElementById("musteriselect");
+                            if (m.value != "") {
+                                $('#datepickermodal').modal({ backdrop: 'static', keyboard: false });
+                                $('#datepickermodal').modal('show');
+                            } else {
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: 'center',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: (toast) => {
+                                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                    }
+                                })
 
-                            Toast.fire({
-                                icon: 'error',
-                                title: 'Müşteri seçilmedi!'
-                            });
-                        }
-                    } else {
-                        var m = document.getElementById("musteriselect");
-                        if (m.value != "") {
-                            $('#datepickermodal').modal({ backdrop: 'static', keyboard: false });  
-                            $('#datepickermodal').modal('show');
-                        } else {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: 'center',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                }
-                            })
-
-                            Toast.fire({
-                                icon: 'error',
-                                title: 'Müşteri seçilmedi!'
-                            });
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'Müşteri seçilmedi!'
+                                });
+                            }
                         }
                     }
-                }
-            </script>
+                </script>
 
 
 
 
 
-        </form>
+</form>
         <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true" style="display: none;">
 
             <div class="modal-dialog  modal-fullscreen" role="document">
@@ -1091,6 +1112,7 @@
 
             }
             $(document).ready(function () {
+               
                 $("#sil").hide();
                 $("#save").show();
                 $("#update").hide();
@@ -1120,19 +1142,24 @@
                 let response = await fetch(`@Url.Action("GetActiveUsers", "Satis")`);
                     let data = await response.json()
                     return JSON.parse(data);
-            }
+                }
                 var plasiyer = document.getElementById("plasiyer");
+               /* var plasiyer1 = document.getElementById("plasiyer1");*/
                 var cc = @Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
                 getPlasiyer().then(function (data) {
                     for (let i = 0; i < data.length; i++) {
                         if (data[i].USER_NAME != "admin" && data[i].USER_NAME != "test") {
                             var option = document.createElement("option");
+                            /*var option1 = document.createElement("option");*/
                             option.innerHTML = data[i].USER_NAME;
                             option.value = data[i].USER_NAME;
+                            //option1.innerHTML = data[i].USER_NAME;
+                            //option1.value = data[i].USER_NAME;
                             if (data[i].USER_NAME == cc) {
                                 option.selected = "true";
                             }
                             plasiyer.appendChild(option);
+                            //plasiyer1.appendChild(option1);
                         }
 
                     }
@@ -1318,7 +1345,7 @@
                 $("#update").hide();
                 $("#urunekle").hide();
                 $("#ziyaretplani").hide();
-
+                $("#degistir").hide();
 
                 $("#ISIM").show();
                 $("#musteriselect").val(null);
@@ -1345,8 +1372,10 @@
                 }
 
             } else {
+                constant1 = 2;
                 constant = 1;
                 $("#sil").show();
+                $("#degistir").show();
                 $("#save").hide();
                 $("#urunekle").show();
                 $("#ziyaretplani").show();
@@ -1439,7 +1468,11 @@
 
                     c = value;
                     getMusteriler();
+                    //$("#plasiyer1").select2();
+                    //$("#plasiyer1").val(value).trigger("change");
+                    /*$("#plasiyerdeg").hide();*/
                 }
+                
                 $("#ilselect").val(null).trigger("change");
                 $("#ilceselect").val(null).trigger("change");
                 $("#ISIM").val(null);
@@ -1447,10 +1480,11 @@
                 $("#tel2").val(null);
                 $("#mail").val(null);
                 $("#not").val(null);
+                
                 $("#yetkili").val(null);
                 $("#sektor").val(null).trigger("change");
                 $("#nitelik").val(null).trigger("change");
-
+                
             }
             function musterichange(value) {
                 $.ajax({
@@ -2701,8 +2735,17 @@
             $('#basicModal').on('hidden.bs.modal', function () {
                 $('#closebtn').show()
             })
-            
+            function plasiyerdegistir() {
+
+                if (event.currentTarget.checked) {
+                    document.getElementById("plasiyer").removeAttribute("onchange");
+                } else {
+                    document.getElementById("plasiyer").setAttribute("onchange","plasiyerchange(this.value)");
+                }
+
+            }
         </script>
+
     </div>
 </body>
 </html>

@@ -5,6 +5,7 @@ using ServiceStack;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,6 +16,8 @@ using System.Threading.Tasks;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using System.Web.Security;
+using static ServiceStack.LicenseUtils;
 
 
 namespace NOVA.Controllers
@@ -112,6 +115,15 @@ namespace NOVA.Controllers
             var yetkifiyatlistok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 18);
             var yetkifiyatsizstok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 29);
             var ziyaretkaydi = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 30);
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
 
             if (ziyaretkaydi.USER_AUTH != true)
             {
@@ -343,10 +355,14 @@ namespace NOVA.Controllers
             {
                 ViewBag.Durum = null;
             }
-            Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
+            if (Request.Cookies["Id"] == null)
+            {
+                FormsAuthentication.SignOut();
+                TempData["LOG"] = "ok";
+                return RedirectToAction("Login", "Login");
+            }
             var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
-            // Stop Caching in Firefox
-            Response.Cache.SetNoStore();
+       
             var yetkiKontrol = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 10); 
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -371,12 +387,7 @@ namespace NOVA.Controllers
 
 
 
-            ViewBag.Users = GetKullaniciApiData().OrderBy(t => t.USER_ID);
-
-
-            var s = new SelectList(GetRoleApiData().Select(u => new { Fullname = u.ROLE_ID + "-" + u.ROLE_NAME, USER_ROLE = u.ROLE_ID, SELECTED = u.ROLE_ID }), "USER_ROLE", "Fullname");
-            ViewBag.Roles = s;
-            ViewBag.Roles1 = GetRoleApiData();
+          
 
 
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
@@ -400,6 +411,24 @@ namespace NOVA.Controllers
             var yetkifiyatlistok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 18);
             var yetkifiyatsizstok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 29);
             var ziyaretkaydi = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 30);
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
 
             if (ziyaretkaydi.USER_AUTH != true)
             {
@@ -578,7 +607,9 @@ namespace NOVA.Controllers
             }
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
 
-
+            ViewBag.Users = GetUsersApiData();
+            var s = new SelectList(GetRoleApiData(), "ROLE_ID", "ROLE_NAME");
+            ViewBag.Roles = s;
 
             return View("Kullanici");
         }
@@ -894,8 +925,9 @@ namespace NOVA.Controllers
 
                         string body = "Merhaba Çalışma Arkadaşım,</br></br>Nova, Efece Galvaniz çalışanların çalışmalarını kolaylaştırmak üzere tasarlanmış mobil ve web uygulamalardır.</br></br>Mobil uygulama yüklemek için “İş ve Süreç Geliştirme” departmanı ile iletişime geçebilirsiniz.</br></br>Web uygulamaya;</br></br>Bilgisayar üzerinde → <strong><a href='http://nova.efece.com'>NOVA</a></strong> </br></br>Mobil için → <strong><a href='http://192.168.2.13'>NOVA</a></strong> </br></br>Linklerine tıklayarak ulaşabilirsiniz.</br></br>Efece Galvaniz çatısı altında yapacağın çalışmalarında sana kolaylık sağlayabilmem için uygulamaya giriş yapabileceğin kullanıcı adın ve şifren aşağıdaki gibidir;</br></br><strong>Kullanıcı Adı: " + GetUserByMail(model.MailAdresi[i]).USER_NAME + "</strong></br></br><strong>Şifre: " + GetUserByMail(model.MailAdresi[i]).USER_PASSWORD + "</strong></br></br>Kullanıcı bilgileriniz yapacağınız işlemlerde kayıt tutulmasında kullanılacağı için şifrenizi uygulamaya giriş yaptıktan sonra kişisel olmayan bir şifrenizle değiştirip <strong><u>kimseyle</u></strong> paylaşmamanızı öneririz.";
 
-                        WebMail.Send(model.MailAdresi[i].ToString(), subject, body, "sistem@efecegalvaniz.com", null, null,true, null, null, null, null, null, null);
-                      
+                        WebMail.Send(model.MailAdresi[i].ToString(), subject, body, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                        //WebMail.Send("ergunozbudakli@efecegalvaniz.com,ergunozbudakli@gmail.com,ugurkonakci@gmail.com,ugurkonakci@efecegalvaniz.com", subject, body, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+
                     }
                 }
                 else
@@ -997,6 +1029,109 @@ namespace NOVA.Controllers
 
         }
 
+        public async Task<ActionResult> KullaniciUpdate(UserModel user)
+        {
+            string apiUrl;
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+            apiUrl = "http://192.168.2.13:83/api/user/" + user.USER_NAME;
+            user.USER_ID = "0";
+
+
+            request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(user), Encoding.UTF8, "application/json")
+            };
+
+            response = await httpClient.SendAsync(request);
+
+            return Json(response, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<ActionResult> YetkiUpdate(YetkiModel user)
+        {
+            string apiUrl;
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+            apiUrl = "http://192.168.2.13:83/api/user/auth/"+user.USER_ID+"/"+user.MODULE_INCKEY;
+
+
+            request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(user), Encoding.UTF8, "application/json")
+            };
+
+            response = await httpClient.SendAsync(request);
+
+            return Json(response, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<ActionResult> ModuleActiveUpdate(ModuleActive mod)
+        {
+            string apiUrl;
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+            apiUrl = "http://192.168.2.13:83/api/modules/active";
+
+
+            request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(mod), Encoding.UTF8, "application/json")
+            };
+
+            response = await httpClient.SendAsync(request);
+
+            return Json(response, JsonRequestBehavior.AllowGet);
+        }
+        public class ModuleActive
+        {
+            public int INCKEY { set; get; }
+            public string ACTIVE { set; get; }
+        }
+        public class UserModel
+        {
+            public string USER_ID { get; set; }
+
+
+            public string USER_NAME { get; set; }
+
+            public string USER_PASSWORD { get; set; }
+
+            public string USER_FIRSTNAME { get; set; }
+
+
+            public string USER_LASTNAME { get; set; }
+
+
+            public string USER_ROLE { get; set; }
+            public bool ACTIVE { get; set; }
+            public string USER_MAIL { get; set; }
+        }
+        public class YetkiModel
+        {
+            public string USER_ID { get; set; }
+
+
+            public string MODULE_INCKEY { get; set; }
+
+            public bool SELECT_AUTH { get; set; }
+
+            public bool USER_AUTH { get; set; }
+
+
+            public bool UPDATE_AUTH { get; set; }
+
+
+            public bool INSERT_AUTH { get; set; }
+            public bool DELETE_AUTH { get; set; }
+        }
         public ActionResult MailForm(string password)
         {
 

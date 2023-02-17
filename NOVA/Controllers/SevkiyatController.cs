@@ -21,6 +21,11 @@ namespace NOVA.Controllers
         // GET: Sevkiyat
         public ActionResult SiparisRaporu()
         {
+            var m = GetModules(18);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
             var ses = GetSession(Request.Cookies["Id"].Value.ToInt())[0];
             if (Session["Filter"] != null)
             {
@@ -83,6 +88,24 @@ namespace NOVA.Controllers
             var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
             if (ziyaretplani != true)
             {
                 ViewBag.DisplayZiyaretPlani = "none";
@@ -300,12 +323,34 @@ namespace NOVA.Controllers
             ViewBag.Id= Request.Cookies["Id"].Value.ToInt();
             return View();
         }
+        public List<Modules> GetModules(int id)
+        {
+
+
+            var apiUrl = "http://192.168.2.13:83/api/modules";
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            string json = client.DownloadString(url);
+            JavaScriptSerializer ser = new JavaScriptSerializer();
+            List<Modules> jsonList = ser.Deserialize<List<Modules>>(json);
+
+            //END
+
+            return jsonList.Where(x => x.INCKEY == id).ToList();
+        }
         public ActionResult Test()
         {
             return View();
         }
         public ActionResult SaticiSiparisRaporu()
         {
+            var m = GetModules(20);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
             if (Session["Filter"] != null || Session["Filter1"] != null || Session["AltKalem"] != null)
             {
                 if (Session["Filter1"] == null)
@@ -504,6 +549,24 @@ namespace NOVA.Controllers
             var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
             if (ziyaretplani != true)
             {
                 ViewBag.DisplayZiyaretPlani = "none";

@@ -10,11 +10,37 @@
 
 
     @@media screen and (max-width: 600px) {
-        .modal-body {
+        body{
+            font-size:10px !important;
+        }
+        :root {
+            --fc-daygrid-event-dot-width: 3px !important;
+        }
+            .modal-body {
             height: 100vh !important;
         }
 
-
+        .container-fluid{
+            font-size:10px !important;
+        }
+        .modal-body {
+            font-size: 10px !important;
+        }
+        .fc-event-time{
+            display:none;
+        }
+        .fc-daygrid-event {
+            white-space: normal !important;
+            align-items: normal !important;
+        }
+        .fc-event-title {
+            flex-grow: 1;
+            flex-shrink: 1;
+            font-weight: 400 !important;
+            font-size: 8px !important;
+            color:black !important;
+        }
+        
     }
 
     #calendar{max-height:750px}
@@ -27,15 +53,32 @@
         transform: translate(-50%, -50%);
         z-index: 5;
     }
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
   
 </style>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 <body>
-
+    <div class="centercontent" id="content" style="display:unset">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+    </div>
     <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true" style="display: none;">
 
         <div class="modal-dialog modal-dialog-scrollable" role="document" style="max-width: 85vw !important;">
-            
+
             <div class="modal-content h-100">
                 <div class="modal-header">
                     <button id="closebtn" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -57,7 +100,7 @@
                 <div class="modal-header">
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
+
                 <div class="modal-body p-1" style=" max-width: 100vw !important; height: 75vh; background-color: white ">
                     @{
                         if (ViewBag.OzelYetki == true)
@@ -110,14 +153,13 @@
                         document.getElementById("satis").className = "menu-item open active";
                         document.getElementById("ziyaretplanlari").className = "menu-item active";
                         function musteritakip() {
-                            $('#basicModal').modal({ backdrop: 'static', keyboard: false })  
+                            $('#basicModal').modal({ backdrop: 'static', keyboard: false })
                             $('#basicModal').modal('show');
-                            document.getElementById("basicModal").getElementsByClassName("centercontent")[0].style.display = "unset";
                             document.getElementById("musif").contentWindow.location.reload();
                         }
                         function musterirapor() {
+                            $('#musteriraporu').modal({ backdrop: 'static', keyboard: false })
                             $('#musteriraporu').modal('show');
-                            $('#musteriraporu').modal({ backdrop: 'static', keyboard: false })  
                             document.getElementById("musrap").contentWindow.location.reload();
                         }
                     </script>
@@ -132,7 +174,7 @@
 
 
                         function plasiyerchange(value) {
-
+                           
 
                             getMusterilerAsync().then(function (data) {
                                 $("#musterison20").empty();
@@ -181,12 +223,12 @@
                                                         randevunotu = "Not girilmemiş."
                                                     }
                                                     if (musid[a].GERCEKLESEN_TARIH != null) {
-                                                       
+
                                                         color = "#CC0000";
                                                         calendar.addEvent({
                                                             id: musid[a].MUSTERI_ID,
                                                             title: musadi[0].MUSTERI_ADI,
-                                                            start: new Date(musid[0].GERCEKLESEN_TARIH),
+                                                            start: new Date(musid[a].GERCEKLESEN_TARIH),
                                                             description: randevunotu,
                                                             inckey: musid[a].INCKEY,
                                                             backgroundColor: color
@@ -230,7 +272,8 @@
                                             calendar.setOption('eventReceive', function (info) {
                                                 info.revert();
                                             });
-                                        } else {
+                                        }
+                                        else {
                                             calendar.setOption('droppable', true);
                                             calendar.setOption('editable', true);
                                             calendar.setOption('eventClick', function (info) {
@@ -244,7 +287,7 @@
                                                     $('#planlanan').val(d[0].PLANLANAN_TARIH);
                                                     $('#planlanan').prop("readonly", true);
                                                     $('#planlanan').prop("disabled", true);
-                                                    $('#gerceklesen').prop("disabled", false);
+                                                    $('#gerceklesen').prop("disabled", true);
                                                     $('#gerceklesen').prop("readonly", true);
                                                     $('#inckey').val(d[0].INCKEY);
                                                     $('#musid').val(d[0].MUSTERI_ID);
@@ -260,12 +303,12 @@
                                                         $('#gercekth').show();
                                                         $('#complatebutton').hide();
                                                         $('#gerceklesen').val(d[0].GERCEKLESEN_TARIH);
-                                                        
+
                                                     } else {
                                                         $('#gercekkolon').hide();
                                                         $('#gercekth').hide();
                                                         $('#complatebutton').show();
-                                                       
+
                                                     }
                                                 })
 
@@ -554,14 +597,14 @@
                         }
                     </script>
                     <div class="accordion mt-2">
-                        <div class="accordion-item" style="background-color:transparent">
+                        <div class="accordion-item active" style="background-color:transparent">
                             <h2 class="accordion-header" id="headingOne1">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne1" aria-expanded="true" aria-controls="flush-collapseOne1">
                                     En Son Eklenen Müşteriler
                                 </button>
                             </h2>
-                            <div id="flush-collapseOne1" class="accordion-collapse show" aria-labelledby="headingOne1" data-bs-parent="#external-events1">
-                                <div id="musterison200" style="max-height:700px;overflow-y:auto">
+                            <div id="flush-collapseOne1" class="accordion-collapse collapse show" aria-labelledby="headingOne1" data-bs-parent="#external-events1">
+                                <div id="musterison200" style="max-height:250px;overflow-y:auto">
 
                                 </div>
                             </div>
@@ -573,7 +616,7 @@
                                 </button>
                             </h2>
                             <div id="flush-collapseTwo1" class="accordion-collapse collapse" aria-labelledby="headingtwo1" data-bs-parent="#external-events1">
-                                <div id="musteri2" style="max-height:700px;overflow-y:auto">
+                                <div id="musteri2" style="max-height:250px;overflow-y:auto">
                                     <input class="form-control position-sticky sticky-top" type="text" id="Search1" onkeyup="myFunction1()" placeholder="Müşteri Ara..">
                                 </div>
                             </div>
@@ -861,11 +904,12 @@
 
                         }
 
-                        
+
 
 
 
                     }).then(function () {
+                        
                         $('#editbutton').show();
                         $('#deletebutton').show();
                         $('#guncellebutton').hide();
@@ -873,14 +917,14 @@
                         $('#not').prop("disabled", true);
                         $('#planlanan').prop("disabled", true);
                         $('#gerceklesen').prop("disabled", true);
-                        
-                        
+
+
                         calendar.render();
-                        
+
                     })
             })
 
-
+           
 
         }
         var username= null;
@@ -892,7 +936,7 @@
             var musteriler = null;
             var musteriler20 = null;
         $(document).ready(function () {
-
+           
             $('#copycol').hide();
             var plasiyerlist = [];
             var username =@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
@@ -942,10 +986,11 @@
 
 
                     }
-
+                    $("#content").hide();
                 }
+
             })
-           
+
 
 
             $("#datepickermodal").on('hide.bs.modal', function () {
@@ -1072,25 +1117,25 @@
 
             var p = document.getElementById('musif').parentNode.parentElement;
             p.getElementsByClassName("centercontent")[0].style.display = "none";
-         
+
         };
         document.getElementById('musrap').onload = function () {
 
             var p = document.getElementById('musrap').parentNode;
             p.getElementsByClassName("centercontent")[0].style.display = "none";
-            
+
 
         };
         $('#musteriraporu').on('hidden.bs.modal', function () {
-            
+
             var p = document.getElementById('musrap').parentNode;
             p.getElementsByClassName("centercontent")[0].style.display = "unset";
         })
         $('#basicModal').on('hidden.bs.modal', function () {
-            refreshtable()
+            refreshtable();
             $('#plasiyer').trigger("change");
         })
-        
+
     </script>
 </body>
 
