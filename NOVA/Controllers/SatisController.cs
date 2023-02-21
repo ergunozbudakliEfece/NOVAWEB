@@ -29,7 +29,7 @@ using System.Web.Script.Serialization;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using NetOpenX50;
+//using NetOpenX50;
 using System.Runtime.Serialization;
 using System.Drawing.Printing;
 using System.Reflection.Metadata;
@@ -2844,16 +2844,13 @@ namespace NOVA.Controllers
                 return RedirectToAction("Maintenance", "Home");
             }
             var yetki = GetYetki();
-            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28);
+            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
                 Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
                 return RedirectToAction("Index", "Home");
             }
-            if (yetkiKontrol.UPDATE_AUTH == true)
-            {
-                ViewBag.Update = "Yetkili";
-            }
+           
             var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
             var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
             var yetkiKontrolUretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 3).USER_AUTH;
@@ -2876,6 +2873,7 @@ namespace NOVA.Controllers
             var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+           
             if (fiyatyonetim != true)
             {
                 ViewBag.FiyatYonetim = "none";
@@ -2910,10 +2908,12 @@ namespace NOVA.Controllers
             }
             if (yetkifiyatlistok != true)
             {
+               
                 ViewBag.DisplayFiyatliStok = "none";
             }
             else
             {
+                ViewBag.OzelYetki = "Yetkili";
                 ViewBag.DisplayFiyatliStok = "unset";
             }
             if (yetkisaticisiparisi != true)

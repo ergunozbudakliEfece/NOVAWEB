@@ -10,8 +10,17 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
+    #table i {
+        color: #00AAFF;
+        font-weight: 300;
+    }
+
+        #table i:hover {
+            opacity: 0.4;
+        }
     .heart {
         animation: heartbeat 1s infinite alternate;
     }
@@ -19,7 +28,10 @@
     .swal2-icon {
         font-size: 35px;
     }
+   
 
+    
+    
     .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
         background: rgba(0,0,0,.4) !important;
     }
@@ -73,197 +85,199 @@
     }
 </style>
 
-<div class="container-fluid h-100">
+<div class="jumbotron vertical-center" onclick="hideAllPop()">
+    <div class="container-fluid h-100">
 
-    <div class="card" style="font-size:14px;letter-spacing:1px">
+        <div class="card" style="font-size:14px;letter-spacing:1px">
 
-        <div class="card-header pb-0">
-            <div class="btn-group menu1">
-                <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bx bx-dots-vertical-rounded"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" style="">
-                    <li><a class="dropdown-item" onclick="change(1)">Standart</a></li>
+            <div class="card-header pb-0">
+                <div class="btn-group menu1">
+                    <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bx bx-dots-vertical-rounded"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="">
+                        <li><a class="dropdown-item" onclick="change(1)">Standart</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" onclick="change(2)">Detaylı</a></li>
+
+
+                    </ul>
+                </div>
+
+                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check" onclick="change(1)" name="btnradio" id="btnradio1" checked="" autocomplete="off">
+                    <label class="btn btn-outline-secondary" for="btnradio1">Standart</label>
+                    <input type="radio" class="btn-check" onclick="change(2)" name="btnradio" id="btnradio2" autocomplete="off">
+                    <label class="btn btn-outline-secondary" for="btnradio2">Detaylı</label>
+
+                </div>
+                <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                    @{
+                        string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                    }
+                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                    </object>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item" onclick="change(2)">Detaylı</a></li>
+                        <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-online">
+                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                        </object>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    @if (@Request.Cookies["Name"] != null)
+                                    {
+                                        <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                        <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-semibold d-block">Test</span>
+                                        <small class="text-muted">Yetki: Test</small>
+                                    }
 
-
-                </ul>
-            </div>
-
-            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                <input type="radio" class="btn-check" onclick="change(1)" name="btnradio" id="btnradio1" checked="" autocomplete="off">
-                <label class="btn btn-outline-secondary" for="btnradio1">Standart</label>
-                <input type="radio" class="btn-check" onclick="change(2)" name="btnradio" id="btnradio2" autocomplete="off">
-                <label class="btn btn-outline-secondary" for="btnradio2">Detaylı</label>
-
-            </div>
-            <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
-                @{
-                    string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
-                }
-                <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
-                    <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
-                </object>
-            </div>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
-                        <div class="d-flex">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="avatar avatar-online">
-                                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
-                                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
-                                    </object>
                                 </div>
                             </div>
-                            <div class="flex-grow-1">
-                                @if (@Request.Cookies["Name"] != null)
-                                {
-                                    <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
-                                    <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                           data-bs-target="#cikis">
+                            <i class="bx bx-power-off me-2"></i>
+                            <span class="align-middle">Oturumu Kapat</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+
+
+
+                <div id="employeeTableWrapper" class="tableWrapper">
+                    <div id="toolbar" class="mt-2 w-100">
+
+                        <select id="filter" multiple="multiple" name="filterAlgorithm">
+                        </select>
+
+                    </div>
+
+
+                    <table id="table"
+                           class="table table-striped"
+                           data-show-fullscreen="true"
+                           data-buttons-order="['filterTable','columns']"
+                           data-toggle="table"
+                           data-show-export="false"
+                           data-export-data-type="all"
+                           data-export-types="['excel']"
+                           data-pagination="true"
+                           data-page-size="100"
+                           data-toolbar="#toolbar"
+                           data-search="true"
+                           data-show-columns="true"
+                           data-show-columns-toggle-all="true"
+                           data-locale="tr-TR"
+                           data-filter-control="true"
+                           data-filter-control-multiple-search="true"
+                           data-loading-template="loadingTemplate"
+                           data-height="800"
+                           data-mobile-responsive="true"
+                           data-show-footer="false"
+                           data-detail-view="false"
+                           data-detail-formatter="detailFormatter"
+                           data-check-on-init="true"
+                           data-trim-on-search="false">
+                        <thead>
+                            <tr>
+                                <th data-field="STOK_ADI" data-halign="center" data-sortable="true" data-width="50" data-width-unit="px" data-formatter="formatterAd">Stok Adı</th>
+                                <th data-field="OZELKOSULLAR" data-visible="false" data-export-force="true" data-halign="center" data-sortable="true" data-width="200" data-formatter="ozelkosulFormatter" data-width-unit="px">Özel Koşullar</th>
+                                <th data-field="SATISA_HAZIR" data-halign="center" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
+                                <th data-field="BEKLEYEN_SIPARIS" data-halign="center" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
+                                <th data-field="BAKIYE" data-halign="center" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
+                                <th data-field="BEKL_IE_MIKTAR" data-halign="center" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
+                                <th data-field="FAB_STOK_MIK" data-halign="center" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
+                                <th data-field="GRUP_ISIM" data-halign="center" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
+                                <th data-formatter="girisFormatter" data-halign="center" data-searchable="false">Son Girişler</th>
+                                <th data-formatter="cikisFormatter" data-halign="center" data-searchable="false">Son Çıkışlar</th>
+                                @{
+                                    if (ViewBag.OzelYetki)
+                                    {
+                                        <th data-formatter="listefiyatiFormatter" data-visible="false" data-halign="center" data-searchable="false">Liste Fiyatı</th>
+                                        <th data-formatter="iskontoFormatter" data-halign="center" data-searchable="false">İskonto</th>
+                                        <th data-formatter="fiyatlarFormatter" data-halign="center" data-searchable="false">Toptan/Perakende<br /> <span style="color:red">KDV HARİÇ</span></th>
+                                    }
                                 }
-                                else
-                                {
-                                    <span class="fw-semibold d-block">Test</span>
-                                    <small class="text-muted">Yetki: Test</small>
-                                }
+                                <th data-sortable="true" data-visible="false" data-halign="center" data-formatter="terminFormatter">Termin Tarihi</th>
 
-                            </div>
-                        </div>
-                    </a>
-                </li>
+                            </tr>
+                        </thead>
+                    </table>
 
-                <li>
-                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                       data-bs-target="#cikis">
-                        <i class="bx bx-power-off me-2"></i>
-                        <span class="align-middle">Oturumu Kapat</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="card-body">
-
-
-
-            <div id="employeeTableWrapper" class="tableWrapper">
-                <div id="toolbar" class="mt-2 w-100">
-
-                    <select id="filter" multiple="multiple" name="filterAlgorithm">
-                    </select>
 
                 </div>
+                <div id="employeeTableWrapper2" class="tableWrapper">
+                    <div id="toolbar2">
 
+                        <select id="filter2" multiple="multiple" name="filterAlgorithm2">
+                        </select>
 
-                <table id="table"
-                       class="table table-striped"
-                       data-show-fullscreen="true"
-                       data-buttons-order="['filterTable','columns']"
-                       data-toggle="table"
-                       data-show-export="false"
-                       data-export-data-type="all"
-                       data-export-types="['excel']"
-                       data-pagination="true"
-                       data-toolbar="#toolbar"
-                       data-search="true"
-                       data-show-columns="true"
-                       data-show-columns-toggle-all="true"
-                       data-locale="tr-TR"
-                       data-page-size="50"
-                       data-filter-control="true"
-                       data-filter-control-multiple-search="true"
-                       data-url="http://192.168.2.13:83/api/stok"
-                       data-loading-template="loadingTemplate"
-                       data-height="800"
-                       data-mobile-responsive="true"
-                       data-show-footer="false"
-                       data-detail-view="false"
-                       data-detail-formatter="detailFormatter"
-                       data-check-on-init="true"
-                       data-trim-on-search="false">
-                    <thead>
-                        <tr>
-                            <th data-field="STOK_ADI" data-halign="center" data-sortable="true" data-width="200" data-width-unit="px">Stok Adı</th>
-                            <th data-field="SATISA_HAZIR" data-halign="center" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
-                            <th data-field="BEKLEYEN_SIPARIS" data-halign="center" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
-                            <th data-field="BAKIYE" data-halign="center" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
-                            <th data-field="BEKL_IE_MIKTAR" data-halign="center" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
-                            <th data-field="FAB_STOK_MIK" data-halign="center" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
-                            <th data-field="GRUP_ISIM" data-halign="center" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
-                            <th data-formatter="girisFormatter" data-halign="center" data-searchable="false">Son Girişler</th>
-                            <th data-formatter="cikisFormatter" data-halign="center" data-searchable="false">Son Çıkışlar</th>
-                            @{
-                                if (ViewBag.OzelYetki)
-                                {
-                                    <th data-formatter="listefiyatiFormatter" data-visible="false" data-halign="center" data-searchable="false">Liste Fiyatı</th>
-                                    <th data-formatter="iskontoFormatter" data-halign="center" data-searchable="false">İskonto</th>
-                                    <th data-formatter="fiyatlarFormatter" data-halign="center" data-searchable="false">Toptan/Perakende<br /> <span style="color:red">KDV HARİÇ</span></th>
-                                }
-                            }
-                            <th data-sortable="true" data-visible="false" data-halign="center" data-formatter="terminFormatter">Termin Tarihi</th>
-
-                        </tr>
-                    </thead>
-                </table>
-
-
-            </div>
-            <div id="employeeTableWrapper2" class="tableWrapper">
-                <div id="toolbar2">
-
-                    <select id="filter2" multiple="multiple" name="filterAlgorithm2">
-                    </select>
+                    </div>
+                    <table id="table2"
+                           class="table table-striped"
+                           data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                           data-page-list="[5,10, 25, 50, 100, 200, All]"
+                           data-page-size="5"
+                           data-toggle="table"
+                           data-show-export="true"
+                           data-export-data-type="all"
+                           data-export-types="['excel']"
+                           data-pagination="true"
+                           data-search="true"
+                           data-toolbar="#toolbar2"
+                           data-show-columns="true"
+                           data-show-columns-toggle-all="true"
+                           data-locale="tr-TR"
+                           data-filter-control="true"
+                           data-filter-control-multiple-search="true"
+                           data-url="http://192.168.2.13:83/api/stok"
+                           data-loading-template="loadingTemplate"
+                           data-mobile-responsive="true">
+                        <thead>
+                            <tr>
+                                <th data-field="STOK_ADI" data-sortable="true" data-formatter="adFormatter">Stok Adı</th>
+                                <th data-field="SATISA_HAZIR" data-sortable="true" data-formatter="fabadFormatter">Satışa Hazır Miktar</th>
+                                <th data-field="SAT_HZR_ADET" data-sortable="true" data-formatter="fabadFormatter">Satışa Hazır Adet</th>
+                                <th data-field="BEKLEYEN_SIPARIS" ddata-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Miktar</th>
+                                <th data-field="BEK_SIP_ADET" ddata-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Adet</th>
+                                <th data-field="BAKIYE" data-sortable="true" data-formatter="fabadFormatter">Bakiye Miktar</th>
+                                <th data-field="AD_BAKIYE" data-sortable="true" data-formatter="fabadFormatter">Bakiye Adet</th>
+                                <th data-field="BEKL_IE_MIKTAR" data-sortable="true" data-formatter="fabadFormatter">Bekleyen İş Emri Miktar</th>
+                                <th data-field="BEKL_IE_AD" data-sortable="true" data-formatter="fabadFormatter">Bekleyen İş Emri Adet</th>
+                                <th data-field="FAB_STOK_MIK" data-sortable="true" data-formatter="fabadFormatter">Fabrika Stok Miktar</th>
+                                <th data-field="FAB_STOK_AD" data-sortable="true" data-formatter="fabadFormatter">Fabrika Stok Adet</th>
+                                <th data-field="ALISFIYAT1" data-sortable="true" data-formatter="fabadFormatter">Alış Fiyatı</th>
+                                <th data-field="ALISFIYAT2" data-sortable="true" data-formatter="fabadFormatter">Alış Fiyatı 2</th>
+                                <th data-field="SATISFIYAT1" data-sortable="true" data-formatter="fabadFormatter">Satış Fiyatı</th>
+                                <th data-field="SATISFIYAT2" data-sortable="true" data-formatter="fabadFormatter">Satış Fiyatı 2</th>
+                                <th data-field="GRUP_ISIM" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
+                                <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
+                            </tr>
+                        </thead>
+                    </table>
 
                 </div>
-                <table id="table2"
-                       class="table table-striped"
-                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
-                       data-page-list="[5,10, 25, 50, 100, 200, All]"
-                       data-page-size="5"
-                       data-toggle="table"
-                       data-show-export="true"
-                       data-export-data-type="all"
-                       data-export-types="['excel']"
-                       data-pagination="true"
-                       data-search="true"
-                       data-toolbar="#toolbar2"
-                       data-show-columns="true"
-                       data-show-columns-toggle-all="true"
-                       data-locale="tr-TR"
-                       data-filter-control="true"
-                       data-filter-control-multiple-search="true"
-                       data-url="http://192.168.2.13:83/api/stok"
-                       data-loading-template="loadingTemplate"
-                       data-mobile-responsive="true">
-                    <thead>
-                        <tr>
-                            <th data-field="STOK_ADI" data-sortable="true" data-formatter="adFormatter">Stok Adı</th>
-                            <th data-field="SATISA_HAZIR" data-sortable="true" data-formatter="fabadFormatter">Satışa Hazır Miktar</th>
-                            <th data-field="SAT_HZR_ADET" data-sortable="true" data-formatter="fabadFormatter">Satışa Hazır Adet</th>
-                            <th data-field="BEKLEYEN_SIPARIS" ddata-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Miktar</th>
-                            <th data-field="BEK_SIP_ADET" ddata-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Adet</th>
-                            <th data-field="BAKIYE" data-sortable="true" data-formatter="fabadFormatter">Bakiye Miktar</th>
-                            <th data-field="AD_BAKIYE" data-sortable="true" data-formatter="fabadFormatter">Bakiye Adet</th>
-                            <th data-field="BEKL_IE_MIKTAR" data-sortable="true" data-formatter="fabadFormatter">Bekleyen İş Emri Miktar</th>
-                            <th data-field="BEKL_IE_AD" data-sortable="true" data-formatter="fabadFormatter">Bekleyen İş Emri Adet</th>
-                            <th data-field="FAB_STOK_MIK" data-sortable="true" data-formatter="fabadFormatter">Fabrika Stok Miktar</th>
-                            <th data-field="FAB_STOK_AD" data-sortable="true" data-formatter="fabadFormatter">Fabrika Stok Adet</th>
-                            <th data-field="ALISFIYAT1" data-sortable="true" data-formatter="fabadFormatter">Alış Fiyatı</th>
-                            <th data-field="ALISFIYAT2" data-sortable="true" data-formatter="fabadFormatter">Alış Fiyatı 2</th>
-                            <th data-field="SATISFIYAT1" data-sortable="true" data-formatter="fabadFormatter">Satış Fiyatı</th>
-                            <th data-field="SATISFIYAT2" data-sortable="true" data-formatter="fabadFormatter">Satış Fiyatı 2</th>
-                            <th data-field="GRUP_ISIM" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
-                            <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
-                        </tr>
-                    </thead>
-                </table>
-
             </div>
-        </div>
 
+        </div>
     </div>
 </div>
 <script>
@@ -304,6 +318,12 @@
     })
     $('#filter').select2({ placeholder: 'Grup Filtresi', width: '300px' });
     $('#filter2').select2({ width: '25vw', placeholder: 'Grup Filtresi' });
+    function ozelkosulFormatter(value, row, index) {
+        if (value != null) {
+            return value.replaceAll("::", "<br/>");
+        }
+
+    }
     function terminFormatter(value, row, index) {
         var val = termin.find(x => x.STOK_KODU == row.STOK_KODU);
         var str = "";
@@ -438,13 +458,7 @@
         return "<span style='color:" + val + "'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + "</span>" + "<span class='text-nowrap' style='font-size: 10px;color:" + val + "'>," + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + " " + row.OLCU_BIRIMI + "</span></br><span style='color:" + val2 + "'>" + row.BEK_SIP_ADET.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + row.BEK_SIP_ADET.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "</span></span>";
 
     }
-    function infoFormatter(value, row, index) {
-
-        var b = "<a data-bs-toggle='tooltip' data-popup='tooltip-custom' data-bs-placement='top' data-bs-html='true' data-bs-original-title='<span>Raporlar</span>' style='cursor:pointer'>ℹ</a>"
-        $('[data-bs-toggle="tooltip"]').tooltip();
-        return b;
-
-    }
+   
 
 
 </script>
@@ -496,8 +510,13 @@
         getstokfiatAsync().then(function (data) {
             stokfiatlar = data;
         })
-
-
+        $("#table").bootstrapTable({
+            url: "http://192.168.2.13:83/api/stok",
+            onPostBody: function () {
+                $("[data-bs-toggle='popover']").popover();
+            }
+        })
+            
 
     })
     function girisFormatter(index, row) {
@@ -580,7 +599,19 @@
             return "<div class='text-center'>-</div>";
         }
     }
+    function formatterAd(value, row, index) {
+       
+        if (row.OZELKOSULLAR != "null" && row.OZELKOSULLAR != null) {
+            return value + " <i style='cursor:help' class='bx bx-info-circle mt-2' data-bs-toggle='popover' data-bs-offset='0,14' data-bs-placement='right' data-bs-html='true' data-bs-content='<p>" + (row.OZELKOSULLAR == "null" ? "Özel koşul bulunmamakta." : row.OZELKOSULLAR.replaceAll("::", "<br/>")) + "</p>' title='Ek Bilgiler'></i>";
+        } else {
+            return value;
+        }
+       
+    }
 
+    function hideAllPop() {
+        $(".popover").hide();
+    }
 </script>
 
 

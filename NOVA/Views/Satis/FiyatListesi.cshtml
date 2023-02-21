@@ -199,7 +199,7 @@
                         autotable: {
                             tableWidth: 'auto',
                         }
-
+                       
                     },
                     ignoreColumn: ['FIYAT3', 'FIYAT2']
 
@@ -272,14 +272,14 @@
 
         function formatterAciklama(value, index, row) {
             if (index.OZELKOSULLAR != "null" && index.OZELKOSULLAR != null) {
-                return value + " <i style='cursor:help' class='bx bx-info-circle mt-2' data-bs-toggle='popover' data-bs-offset='0,14' data-bs-placement='right' data-bs-html='true' data-bs-content='<p>" + (index.OZELKOSULLAR == "null" ? "Özel koşul bulunmamakta." : index.OZELKOSULLAR.replace("::", "<br/>")) + "</p>' title='Ek Bilgiler'></i>";
+                return value + " <i style='cursor:help' class='bx bx-info-circle mt-2' data-bs-toggle='popover' data-bs-offset='0,14' data-bs-placement='right' data-bs-html='true' data-bs-content='<p>" + (index.OZELKOSULLAR == "null" ? "Özel koşul bulunmamakta." : index.OZELKOSULLAR.replaceAll("::", "<br/>")) + "</p>' title='Ek Bilgiler'></i>";
             } else {
                 return value;
             }
 
         }
         function formatterKosul(value, index, row) {
-            return (value == "null" ? "-" : value)
+            return (value == null ? "-" : value.replaceAll("::", "<br/>").replaceAll("İ", "I").replaceAll("Ö", "O").replaceAll("ö", "o").replaceAll("Ü", "U").replaceAll("ü", "u").replaceAll("Ş", "S").replaceAll("ş", "s").replaceAll("Ç", "C").replaceAll("ç", "c").replaceAll("Ğ", "G").replaceAll("ğ", "g"));
         }
         function hideAllPop() {
             $(".popover").hide();

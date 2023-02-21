@@ -32,6 +32,7 @@ namespace NOVA.Controllers
                 }
             public ActionResult Index()
         {
+           
             if (Request.Cookies["Id"] == null){
                 FormsAuthentication.SignOut();
                 TempData["LOG"] = "ok";

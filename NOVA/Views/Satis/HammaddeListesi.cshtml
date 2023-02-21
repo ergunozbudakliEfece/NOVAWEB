@@ -138,12 +138,19 @@
     <script src="~/assets/vendor/css/scripts.js"></script>
 </head>
 <body onload="move()" onclose="close()" style="background-color: #f5f5f9 !important;font-size:12px !important;overflow:hidden">
-   
+    <script>
+        var ozelyetki = 0;
+        var yetki =@Html.Raw(Json.Encode(ViewBag.OzelYetki));
+        if (yetki == "Yetkili") {
+           
+                ozelyetki = 1;
+        }
+    </script>
 
     <div class="container-fluid mt-1">
         <div class="centercontent" style="margin-left: 5%">
             <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
-            </div>
+        </div>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm">
@@ -161,6 +168,12 @@
                 <div class="col-sm">
                     <label style="font-weight:bold">Kalınlık</label>
                     <select class="form-select" id="kalinlikfilter" name="states[]" multiple="multiple" onchange="changekal()">
+                    </select>
+
+                </div>
+                <div class="col-sm">
+                    <label style="font-weight:bold">Kaplama</label>
+                    <select id="kaplamafilter" class="form-select" name="states[]" multiple="multiple" onchange="changekap()">
                     </select>
 
                 </div>
@@ -210,15 +223,23 @@
 
             </div>
         </div>
-        <div class="row mt-1 mb-1 d-flex">
-            <div class="col">
-                <label id="topton" class="float-start"><b>∑ Seçilen Stok Miktarı:</b> </label>
-            </div>
+        @if (ViewBag.OzelYetki == "Yetkili")
+        {
+            <div class="row mt-1 mb-1 d-flex">
+                <div class="col">
+                    <label id="topton" class="float-start"><b>∑ Seçilen Stok Miktarı:</b> </label>
+                </div>
 
-        </div>
+            </div>
+        }
+
         <div class="row mb-1 d-flex">
             <div class="col">
-                <label id="ortfiyat" class="float-start"><b>Ağ. Ort. Fiyat:</b> </label>
+                @if (ViewBag.OzelYetki == "Yetkili")
+                {
+                    <label id="ortfiyat" class="float-start"><b>Ağ. Ort. Fiyat:</b> </label>
+                }
+
                 <label class="float-end"><b>Son Güncelleme Tarihi: </b> @ViewBag.LastModified </label>
             </div>
 
@@ -247,7 +268,11 @@
                                     <th style="text-align: center; ">REZERVE ACIKLAMA</th>
                                     <th style="text-align: center; ">TONAJ</th>
                                     <th style="text-align: center; ">ADET</th>
-                                    <th style="text-align: center;">FIYAT</th>
+                                    @if (ViewBag.OzelYetki != null)
+                                    {
+                                        <th style="text-align: center;">FIYAT</th>
+                                    }
+
                                     <th style="text-align: center; display: none">STOK SAHASI</th>
                                     <th style="text-align: center; display: none">STOĞA GİRİŞ TARİHİ</th>
                                     <th style="text-align: center; display: none">İŞ EMRİ TARİHİ</th>
@@ -328,7 +353,7 @@
                 var kalinlikfilter = [];
                 var genislikfilter = [];
                 var menseifilter = [];
-              
+                var kaplamafilter = [];
                 for (let i = 0; i < data.length; i++) {
                    
                     var tr = document.createElement("tr");
@@ -345,6 +370,9 @@
                     }
                     if (!menseifilter.includes(data[i].MENSEI.trim())) {
                         menseifilter.push(data[i].MENSEI.trim());
+                    }
+                    if (!kaplamafilter.includes(data[i].KAPLAMA.trim())) {
+                        kaplamafilter.push(data[i].KAPLAMA.trim());
                     }
                     var color = "";
                     if (data[i].KURAL == 1) {
@@ -542,21 +570,27 @@
                     lab12.innerHTML = data[i].ADET;
 
                     tr.appendChild(td12);
-                    var td13 = document.createElement("td");
-                    var lab13 = document.createElement("label");
+                    if (ozelyetki == 1) {
+                        var td13 = document.createElement("td");
+                        var lab13 = document.createElement("label");
 
-                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                        lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                    td13.appendChild(lab13);
-                    td13.className = "border-bottom-1 border-gray";
-                    td13.style = "height:50px;text-align: center;font-weight:bold";
-                    if (data[i].TUTAR != "") {
-                        lab13.innerHTML = "$ " + parseFloat(data[i].TUTAR).toFixed(4);
-                    } else {
-                        lab13.innerHTML = data[i].TUTAR;
+                        td13.appendChild(lab13);
+                        td13.className = "border-bottom-1 border-gray";
+                        td13.style = "height:50px;text-align: center;font-weight:bold";
+                        if (data[i].TUTAR != "") {
+                            lab13.innerHTML = "$ " + parseFloat(data[i].TUTAR).toFixed(4);
+                        }
+                        else {
+                            lab13.innerHTML = data[i].TUTAR;
+                        }
+
+                        tr.appendChild(td13);
                     }
-
-                    tr.appendChild(td13);
+                       
+                    
+                   
                     var td14 = document.createElement("td");
                     var lab14 = document.createElement("label");
 
@@ -749,6 +783,14 @@
 
                     document.getElementById("menseifilter").appendChild(option1);
                 }
+                kaplamafilter.sort();
+                for (let i = 0; i < kaplamafilter.length; i++) {
+                    var option1 = document.createElement("option");
+                    option1.innerHTML = kaplamafilter[i];
+                    option1.value = kaplamafilter[i];
+
+                    document.getElementById("kaplamafilter").appendChild(option1);
+                }
                 filtereddata = data;
             }).done(function () {
                 $('#rulokodufilter').select2();
@@ -756,6 +798,7 @@
                 $('#kalinlikfilter').select2();
                 $('#genislikfilter').select2();
                 $('#menseifilter').select2();
+                $('#kaplamafilter').select2();
             });
 
 
@@ -800,19 +843,36 @@
                 var tb = document.getElementById("sorttable");
                 var th = tb.getElementsByTagName("th");
                 var tr = tb.getElementsByTagName("tr");
-                for (let i = 13; i < th.length; i++) {
+                if (ozelyetki != 1) {
+                    for (let i = 12; i < th.length; i++) {
 
-                    th[i].style.display = "none";
-
-                }
-                for (let i = 1; i < tr.length; i++) {
-                    var td = tr[i].getElementsByTagName("td");
-                    for (let a = 13; a < th.length; a++) {
-
-                        td[a].style.display = "none";
+                        th[i].style.display = "none";
 
                     }
+                    for (let i = 1; i < tr.length; i++) {
+                        var td = tr[i].getElementsByTagName("td");
+                        for (let a = 12; a < th.length; a++) {
+
+                            td[a].style.display = "none";
+
+                        }
+                    }
+                } else {
+                    for (let i = 13; i < th.length; i++) {
+
+                        th[i].style.display = "none";
+
+                    }
+                    for (let i = 1; i < tr.length; i++) {
+                        var td = tr[i].getElementsByTagName("td");
+                        for (let a = 13; a < th.length; a++) {
+
+                            td[a].style.display = "none";
+
+                        }
+                    }
                 }
+               
             }
 
             if (g == 0) {
@@ -847,7 +907,28 @@
             } else {
                 var fitered = upt;
             }
-            
+            var kap = $("#kaplamafilter").val();
+            if (kap != "") {
+                fitered = fitered.filter(x => kap.includes(x.KAPLAMA));
+            } else {
+
+                var kapf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kapf.includes(fitered[i].KAPLAMA)) {
+                        kapf.push(fitered[i].KAPLAMA);
+                    }
+                }
+                document.getElementById("kaplamafilter").replaceChildren();
+                kapf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kapf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = kapf[i];
+                    option.innerHTML = kapf[i];
+                    document.getElementById("kaplamafilter").appendChild(option);
+                }
+               
+            }
             if (renk != "") {
 
                 fitered = fitered.filter(x => renk.includes(x.RENKKODU));
@@ -1133,21 +1214,24 @@
                 lab12.innerHTML = fitered[i].ADET;
 
                 tr.appendChild(td12);
-                var td13 = document.createElement("td");
-                var lab13 = document.createElement("label");
+                if (ozelyetki == 1) {
+                    var td13 = document.createElement("td");
+                    var lab13 = document.createElement("label");
 
-                lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                td13.appendChild(lab13);
-                td13.className = "border-bottom-1 border-gray";
-                td13.style = "height:50px;text-align: center;font-weight:bold";
-                if (fitered[i].TUTAR != "") {
-                    lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
-                } else {
-                    lab13.innerHTML = fitered[i].TUTAR;
+                    td13.appendChild(lab13);
+                    td13.className = "border-bottom-1 border-gray";
+                    td13.style = "height:50px;text-align: center;font-weight:bold";
+                    if (fitered[i].TUTAR != "") {
+                        lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
+                    } else {
+                        lab13.innerHTML = fitered[i].TUTAR;
+                    }
+
+                    tr.appendChild(td13);
                 }
-
-                tr.appendChild(td13);
+                
                 var td14 = document.createElement("td");
                 var lab14 = document.createElement("label");
 
@@ -1303,9 +1387,11 @@
             for (let i = 0; i < fiyatlarton.length; i++) {
                 sumton = sumton + fiyatlarton[i];
             }
-
-            document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr-TR');
+            if (ozelyetki == 1) {
+                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
+                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr-TR');
+            }
+            
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -1348,7 +1434,28 @@
                 } else {
                     var fitered = upt;
                 }
+                var kap = $("#kaplamafilter").val();
+                if (kap != "") {
+                    fitered = fitered.filter(x => kap.includes(x.KAPLAMA));
+                } else {
 
+                    var kapf = [];
+                    for (let i = 0; i < fitered.length; i++) {
+                        if (!kapf.includes(fitered[i].KAPLAMA)) {
+                            kapf.push(fitered[i].KAPLAMA);
+                        }
+                    }
+                    document.getElementById("kaplamafilter").replaceChildren();
+                    kapf.sort(function (a, b) { return a - b });
+                    for (let i = 0; i < kapf.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = kapf[i];
+                        option.innerHTML = kapf[i];
+                        document.getElementById("kaplamafilter").appendChild(option);
+                    }
+
+                }
                 if (values != "") {
 
                     fitered = fitered.filter(x => values.includes(x.RULOKODU));
@@ -1641,21 +1748,24 @@
                         lab12.innerHTML = fitered[i].ADET;
 
                         tr.appendChild(td12);
-                        var td13 = document.createElement("td");
-                        var lab13 = document.createElement("label");
+                        if (ozelyetki == 1) {
+                            var td13 = document.createElement("td");
+                            var lab13 = document.createElement("label");
 
-                        lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                            lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                        td13.appendChild(lab13);
-                        td13.className = "border-bottom-1 border-gray";
-                        td13.style = "height:50px;text-align: center;font-weight:bold";
-                        if (fitered[i].TUTAR != "") {
-                            lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
-                        } else {
-                            lab13.innerHTML = fitered[i].TUTAR;
+                            td13.appendChild(lab13);
+                            td13.className = "border-bottom-1 border-gray";
+                            td13.style = "height:50px;text-align: center;font-weight:bold";
+                            if (fitered[i].TUTAR != "") {
+                                lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
+                            } else {
+                                lab13.innerHTML = fitered[i].TUTAR;
+                            }
+
+                            tr.appendChild(td13);
                         }
-
-                        tr.appendChild(td13);
+                       
                         var td14 = document.createElement("td");
                         var lab14 = document.createElement("label");
 
@@ -1811,9 +1921,11 @@
                 for (let i = 0; i < fiyatlarton.length; i++) {
                     sumton = sumton + fiyatlarton[i];
                 }
-
-                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr','TR');
+                if (ozelyetki == 1) {
+                    document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
+                    document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+                }
+               
                 
                 var table = document.getElementById("tbody");
                 var tr = table.getElementsByTagName("tr");
@@ -1869,7 +1981,28 @@
                 var fitered = upt;
                
             }
+            var kap = $("#kaplamafilter").val();
+            if (kap != "") {
+                fitered = fitered.filter(x => kap.includes(x.KAPLAMA));
+            } else {
 
+                var kapf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kapf.includes(fitered[i].KAPLAMA)) {
+                        kapf.push(fitered[i].KAPLAMA);
+                    }
+                }
+                document.getElementById("kaplamafilter").replaceChildren();
+                kapf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kapf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = kapf[i];
+                    option.innerHTML = kapf[i];
+                    document.getElementById("kaplamafilter").appendChild(option);
+                }
+
+            }
             
             if (values != "") {
 
@@ -2157,21 +2290,24 @@
                 lab12.innerHTML = fitered[i].ADET;
 
                 tr.appendChild(td12);
-                var td13 = document.createElement("td");
-                var lab13 = document.createElement("label");
+                if (ozelyetki == 1) {
+                    var td13 = document.createElement("td");
+                    var lab13 = document.createElement("label");
 
-                lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                td13.appendChild(lab13);
-                td13.className = "border-bottom-1 border-gray";
-                td13.style = "height:50px;text-align: center;font-weight:bold";
-                if (fitered[i].TUTAR != "") {
-                    lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
-                } else {
-                    lab13.innerHTML = fitered[i].TUTAR;
+                    td13.appendChild(lab13);
+                    td13.className = "border-bottom-1 border-gray";
+                    td13.style = "height:50px;text-align: center;font-weight:bold";
+                    if (fitered[i].TUTAR != "") {
+                        lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
+                    } else {
+                        lab13.innerHTML = fitered[i].TUTAR;
+                    }
+
+                    tr.appendChild(td13);
                 }
-
-                tr.appendChild(td13);
+                
                 var td14 = document.createElement("td");
                 var lab14 = document.createElement("label");
 
@@ -2327,9 +2463,11 @@
             for (let i = 0; i < fiyatlarton.length; i++) {
                 sumton = sumton + fiyatlarton[i];
             }
-
-            document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            if (ozelyetki == 1) {
+                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
+                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            }
+            
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -2393,6 +2531,30 @@
                     document.getElementById("rulokodufilter").appendChild(option);
                 }
             }
+
+            var kap = $("#kaplamafilter").val();
+            if (kap != "") {
+                fitered = fitered.filter(x => kap.includes(x.KAPLAMA));
+            } else {
+
+                var kapf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kapf.includes(fitered[i].KAPLAMA)) {
+                        kapf.push(fitered[i].KAPLAMA);
+                    }
+                }
+                document.getElementById("kaplamafilter").replaceChildren();
+                kapf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kapf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = kapf[i];
+                    option.innerHTML = kapf[i];
+                    document.getElementById("kaplamafilter").appendChild(option);
+                }
+
+            }
+
             if (renk != "") {
 
                 fitered = fitered.filter(x => renk.includes(x.RENKKODU));
@@ -2656,21 +2818,24 @@
                 lab12.innerHTML = fitered[i].ADET;
 
                 tr.appendChild(td12);
-                var td13 = document.createElement("td");
-                var lab13 = document.createElement("label");
+                if (ozelyetki == 1) {
+                    var td13 = document.createElement("td");
+                    var lab13 = document.createElement("label");
 
-                lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                td13.appendChild(lab13);
-                td13.className = "border-bottom-1 border-gray";
-                td13.style = "height:50px;text-align: center;font-weight:bold";
-                if (fitered[i].TUTAR != "") {
-                    lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
-                } else {
-                    lab13.innerHTML = fitered[i].TUTAR;
+                    td13.appendChild(lab13);
+                    td13.className = "border-bottom-1 border-gray";
+                    td13.style = "height:50px;text-align: center;font-weight:bold";
+                    if (fitered[i].TUTAR != "") {
+                        lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
+                    } else {
+                        lab13.innerHTML = fitered[i].TUTAR;
+                    }
+
+                    tr.appendChild(td13);
                 }
-
-                tr.appendChild(td13);
+               
                 var td14 = document.createElement("td");
                 var lab14 = document.createElement("label");
 
@@ -2826,9 +2991,11 @@
             for (let i = 0; i < fiyatlarton.length; i++) {
                 sumton = sumton + fiyatlarton[i];
             }
-
-            document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            if (ozelyetki == 1) {
+                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
+                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            }
+           
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -2892,6 +3059,30 @@
                     document.getElementById("rulokodufilter").appendChild(option);
                 }
             }
+
+            var kap = $("#kaplamafilter").val();
+            if (kap != "") {
+                fitered = fitered.filter(x => kap.includes(x.KAPLAMA));
+            } else {
+
+                var kapf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kapf.includes(fitered[i].KAPLAMA)) {
+                        kapf.push(fitered[i].KAPLAMA);
+                    }
+                }
+                document.getElementById("kaplamafilter").replaceChildren();
+                kapf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kapf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = kapf[i];
+                    option.innerHTML = kapf[i];
+                    document.getElementById("kaplamafilter").appendChild(option);
+                }
+
+            }
+
             if (renk != "") {
 
                 fitered = fitered.filter(x => renk.includes(x.RENKKODU));
@@ -3155,21 +3346,24 @@
                 lab12.innerHTML = fitered[i].ADET;
 
                 tr.appendChild(td12);
-                var td13 = document.createElement("td");
-                var lab13 = document.createElement("label");
+                if (ozelyetki == 1) {
+                    var td13 = document.createElement("td");
+                    var lab13 = document.createElement("label");
 
-                lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                td13.appendChild(lab13);
-                td13.className = "border-bottom-1 border-gray";
-                td13.style = "height:50px;text-align: center;font-weight:bold";
-                if (fitered[i].TUTAR != "") {
-                    lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
-                } else {
-                    lab13.innerHTML = fitered[i].TUTAR;
+                    td13.appendChild(lab13);
+                    td13.className = "border-bottom-1 border-gray";
+                    td13.style = "height:50px;text-align: center;font-weight:bold";
+                    if (fitered[i].TUTAR != "") {
+                        lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
+                    } else {
+                        lab13.innerHTML = fitered[i].TUTAR;
+                    }
+
+                    tr.appendChild(td13);
                 }
-
-                tr.appendChild(td13);
+                
                 var td14 = document.createElement("td");
                 var lab14 = document.createElement("label");
 
@@ -3325,9 +3519,541 @@
             for (let i = 0; i < fiyatlarton.length; i++) {
                 sumton = sumton + fiyatlarton[i];
             }
+            if (ozelyetki == 1) {
+                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
+                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            }
+            
+            var table = document.getElementById("tbody");
+            var tr = table.getElementsByTagName("tr");
+            var th = document.getElementById("sorttable").getElementsByTagName("th");
+            if (g == 1) {
+                for (let i = 0; i < tr.length; i++) {
+                    var td = tr[i].getElementsByTagName("td");
+                    for (let a = 12; a < th.length; a++) {
 
-            document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+                        td[a].style.display = "table-cell";
+
+
+                    }
+                }
+            }
+            filtereddata = fitered;
+        }
+        function changekap() {
+            var fiyatlar = [];
+            var fiyatlarton = [];
+            var values = $("#rulokodufilter").val();
+            var renk = $("#renkkodufilter").val();
+            var kal = $("#kalinlikfilter").val();
+            var gen = $("#genislikfilter").val();
+            var men = $("#menseifilter").val();
+            var kap = $("#kaplamafilter").val();
+            document.getElementById("tbody").replaceChildren();
+
+            if (kap != "") {
+                var fitered = upt.filter(x => kap.includes(x.KAPLAMA));
+                if (w == true) {
+                    fitered = upt.filter(x => x.KURAL == 0);
+                }
+                if (k1 == true) {
+                    fitered = upt.filter(x => x.KURAL == 1);
+                }
+                if (k3 == true) {
+                    fitered = upt.filter(x => x.KURAL == 3);
+                }
+            } else {
+                var fitered = upt;
+            }
+
+            if (values != "") {
+
+                fitered = fitered.filter(x => values.includes(x.RULOKODU));
+            } else {
+                var valf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!valf.includes(fitered[i].RULOKODU)) {
+                        valf.push(fitered[i].RULOKODU);
+                    }
+                }
+                document.getElementById("rulokodufilter").replaceChildren();
+                for (let i = 0; i < valf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = valf[i];
+                    if (valf[i].length == 6) {
+                        option.innerHTML = "0" + valf[i].substring(0, 4) + "." + valf[i].substring(valf[i].length - 2);
+                    } else {
+                        option.innerHTML = valf[i].substring(0, 5) + "." + valf[i].substring(valf[i].length - 2);
+                    }
+                    document.getElementById("rulokodufilter").appendChild(option);
+                }
+            }
+
+            
+            if (men != "") {
+
+                fitered = fitered.filter(x => men.includes(x.MENSEI));
+            } else {
+
+                var menf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!menf.includes(parseFloat(fitered[i].KAPLAMA.replace(",", ".")))) {
+                        menf.push(parseFloat(fitered[i].KAPLAMA.replace(",", ".")));
+                    }
+                }
+                document.getElementById("menseifilter").replaceChildren();
+                menf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < menf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = (menf[i]).toString().replace('.', ',');
+                    option.innerHTML = (parseFloat((menf[i].toString()).replace(",", ".")).toFixed(2)).replace(".", ",");
+                    document.getElementById("menseifilter").appendChild(option);
+                }
+            }
+
+            if (renk != "") {
+
+                fitered = fitered.filter(x => renk.includes(x.RENKKODU));
+            } else {
+                var renkf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!renkf.includes(fitered[i].RENKKODU)) {
+                        renkf.push(fitered[i].RENKKODU);
+                    }
+                }
+                document.getElementById("renkkodufilter").replaceChildren();
+                for (let i = 0; i < renkf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = renkf[i];
+                    option.innerHTML = renkf[i];
+                    document.getElementById("renkkodufilter").appendChild(option);
+                }
+            }
+            if (kal != "") {
+
+                fitered = fitered.filter(x => kal.includes(x.KALINLIK));
+            } else {
+                var kalf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kalf.includes(parseFloat(fitered[i].KALINLIK.replace(",", ".")))) {
+                        kalf.push(parseFloat(fitered[i].KALINLIK.replace(",", ".")));
+                    }
+                }
+                document.getElementById("kalinlikfilter").replaceChildren();
+                kalf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kalf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = (kalf[i]).toString().replace('.', ',');
+                    option.innerHTML = kalf[i].toFixed(2).toString().replace(",", ".");
+                    document.getElementById("kalinlikfilter").appendChild(option);
+                }
+            }
+            if (gen != "") {
+
+                fitered = fitered.filter(x => gen.includes(x.GENISLIK));
+            } else {
+                var genf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!genf.includes(parseFloat(fitered[i].GENISLIK.replace(',', '.')))) {
+                        genf.push(parseFloat(fitered[i].GENISLIK.replace(',', '.')));
+                    }
+                }
+                genf.sort(function (a, b) { return a - b });
+                document.getElementById("genislikfilter").replaceChildren();
+                for (let i = 0; i < genf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = genf[i];
+                    option.innerHTML = genf[i].toString().replace('.', ',');
+                    document.getElementById("genislikfilter").appendChild(option);
+                }
+            }
+
+
+            for (let i = 0; i < fitered.length; i++) {
+
+                var tr = document.createElement("tr");
+                var td = document.createElement("td");
+                var lab = document.createElement("label");
+
+                var color = "";
+                if (fitered[i].KURAL == 1) {
+                    color = "#EAFFF1";
+                } else if (fitered[i].KURAL == 0) {
+                    color = "white";
+                }
+                else {
+                    color = "#EAF1FF";
+                }
+                if (fitered[i].RESERVETARIH != "") {
+                    color = "#F1EAFF";
+                }
+                tr.style = "background-color:" + color;
+                td.appendChild(lab);
+                td.className = "border-bottom-1 border-gray";
+                td.style = "background-color:" + color + ";position:sticky;left:0;text-align: center";
+
+                if (fitered[i].RULOKODU.length == 6) {
+                    lab.innerHTML = "0" + fitered[i].RULOKODU.substring(0, 4) + "." + fitered[i].RULOKODU.substring(fitered[i].RULOKODU.length - 2);
+                } else {
+                    lab.innerHTML = fitered[i].RULOKODU.substring(0, 5) + "." + fitered[i].RULOKODU.substring(fitered[i].RULOKODU.length - 2);
+                }
+
+                lab.style = "font-size:12px;font-weight:bold";
+                tr.appendChild(td);
+                //var td1 = document.createElement("td");
+                //var lab1 = document.createElement("label");
+
+                //lab1.style = "background-color: transparent;border: none; text-align: center";
+
+                //td1.appendChild(lab1);
+                //td1.className = "border-bottom-1 border-gray";
+                //td1.style = "height:50px;";
+                //lab1.innerHTML = data[i].BOBINNO;
+                //tr.appendChild(td1);
+                var td2 = document.createElement("td");
+                var lab2 = document.createElement("label");
+
+                lab2.style = "background-color: transparent;border: none; text-align: center";
+
+                td2.appendChild(lab2);
+                td2.className = "border-bottom-1 border-gray";
+                td2.style = "height:50px;text-align: center";
+                if (fitered[i].KONUM != "") {
+                    lab2.innerHTML = fitered[i].KONUM;
+                } else {
+                    lab2.innerHTML = "-";
+                }
+
+                tr.appendChild(td2);
+                var td3 = document.createElement("td");
+                var lab3 = document.createElement("label");
+
+                lab3.style = "background-color: transparent;border: none; text-align: center";
+
+                td3.appendChild(lab3);
+                td3.className = "border-bottom-1 border-gray";
+                td3.style = "height:50px;text-align: center";
+                if (fitered[i].RENKKODU != "") {
+                    lab3.innerHTML = fitered[i].RENKKODU;
+                } else {
+                    lab3.innerHTML = "-";
+                }
+
+                tr.appendChild(td3);
+                var td4 = document.createElement("td");
+                var lab4 = document.createElement("label");
+
+                lab4.style = "background-color: transparent;border: none ;text-align: center";
+
+                td4.appendChild(lab4);
+                td4.className = "border-bottom-1 border-gray";
+                td4.style = "height:50px;text-align: center";
+                if (fitered[i].KALINLIK != "") {
+                    lab4.innerHTML = (parseFloat((fitered[i].KALINLIK).replace(",", ".")).toFixed(2)).replace(".", ",");
+                } else {
+                    lab4.innerHTML = "-";
+                }
+
+                tr.appendChild(td4);
+                var td5 = document.createElement("td");
+                var lab5 = document.createElement("label");
+
+                lab5.style = "background-color: transparent;border: none; text-align: center";
+
+                td5.appendChild(lab5);
+                td5.className = "border-bottom-1 border-gray";
+                td5.style = "height:50px;text-align: center";
+                if (fitered[i].GENISLIK != "") {
+                    lab5.innerHTML = fitered[i].GENISLIK;
+                } else {
+                    lab5.innerHTML = "-";
+                }
+
+
+                tr.appendChild(td5);
+                var td6 = document.createElement("td");
+                var lab6 = document.createElement("label");
+
+                lab6.style = "background-color: transparent;border: none ;text-align: center";
+
+                td6.appendChild(lab6);
+                td6.className = "border-bottom-1 border-gray";
+                td6.style = "height:50px;text-align: center";
+                if (fitered[i].KALITE != "") {
+                    lab6.innerHTML = fitered[i].KALITE;
+                } else {
+                    lab6.innerHTML = "-";
+                }
+
+                tr.appendChild(td6);
+                var td7 = document.createElement("td");
+                var lab7 = document.createElement("label");
+
+                lab7.style = "background-color: transparent;border: none ;text-align: center";
+
+                td7.appendChild(lab7);
+                td7.className = "border-bottom-1 border-gray";
+                td7.style = "height:50px;text-align: center";
+                if (fitered[i].KAPLAMA != "") {
+                    lab7.innerHTML = fitered[i].KAPLAMA;
+                } else {
+                    lab7.innerHTML = "-";
+                }
+
+                tr.appendChild(td7);
+
+
+
+
+                var td8 = document.createElement("td");
+                var lab8 = document.createElement("label");
+
+                lab8.style = "background-color: transparent;border: none; text-align: center";
+
+                td8.appendChild(lab8);
+                td8.className = "border-bottom-1 border-gray";
+                td8.style = "height:50px;text-align: center ";
+                if (fitered[i].MENSEI != "") {
+                    lab8.innerHTML = fitered[i].MENSEI;
+                } else {
+                    lab8.innerHTML = "-";
+                }
+
+                tr.appendChild(td8);
+                var td9 = document.createElement("td");
+                var lab9 = document.createElement("label");
+
+                lab9.style = "background-color: transparent;border: none; text-align: center";
+
+                td9.appendChild(lab9);
+                td9.className = "border-bottom-1 border-gray";
+                td9.style = "height:50px;text-align: center ";
+                if (fitered[i].RESERVETARIH != "") {
+                    lab9.innerHTML = fitered[i].RESERVETARIH.split(' ')[0];
+                } else {
+                    lab9.innerHTML = "-";
+                }
+
+                tr.appendChild(td9);
+                var td10 = document.createElement("td");
+                var lab10 = document.createElement("label");
+
+                lab10.style = "background-color: transparent;border: none ;text-align: center";
+
+                td10.appendChild(lab10);
+                td10.className = "border-bottom-1 border-gray";
+                td10.style = "height:50px;text-align: center";
+                if (fitered[i].RESERVEACIKLAMA != "") {
+                    lab10.innerHTML = fitered[i].RESERVEACIKLAMA;
+                } else {
+                    lab10.innerHTML = "-";
+                }
+
+                tr.appendChild(td10);
+                var td11 = document.createElement("td");
+                var lab11 = document.createElement("label");
+
+                lab11.style = "background-color: transparent;border: none ;text-align: center";
+
+                td11.appendChild(lab11);
+                td11.className = "border-bottom-1 border-gray";
+                td11.style = "height:50px;text-align: center;";
+                lab11.innerHTML = (parseFloat(fitered[i].TONAJ)).toLocaleString('tr-TR');
+                tr.appendChild(td11);
+                var td12 = document.createElement("td");
+                var lab12 = document.createElement("label");
+
+                lab12.style = "background-color: transparent;border: none ;text-align: center";
+
+                td12.appendChild(lab12);
+                td12.className = "border-bottom-1 border-gray";
+                td12.style = "height:50px;text-align: center;";
+                lab12.innerHTML = fitered[i].ADET;
+
+                tr.appendChild(td12);
+                if (ozelyetki == 1) {
+                    var td13 = document.createElement("td");
+                    var lab13 = document.createElement("label");
+
+                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                    td13.appendChild(lab13);
+                    td13.className = "border-bottom-1 border-gray";
+                    td13.style = "height:50px;text-align: center;font-weight:bold";
+                    if (fitered[i].TUTAR != "") {
+                        lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
+                    } else {
+                        lab13.innerHTML = fitered[i].TUTAR;
+                    }
+
+                    tr.appendChild(td13);
+                }
+
+                var td14 = document.createElement("td");
+                var lab14 = document.createElement("label");
+
+                lab14.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                td14.appendChild(lab14);
+                td14.className = "border-bottom-1 border-gray";
+                td14.style = "height:50px;text-align: center;display:none";
+                tr.appendChild(td14);
+                if (fitered[i].STOKSAHASI != "") {
+                    lab14.innerHTML = fitered[i].STOKSAHASI;
+                } else {
+                    lab14.innerHTML = "-";
+                }
+
+                var td15 = document.createElement("td");
+                var lab15 = document.createElement("label");
+
+                lab15.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                td15.appendChild(lab15);
+                td15.className = "border-bottom-1 border-gray";
+                td15.style = "height:50px;text-align: center;display:none";
+                if (fitered[i].RULOBANTGIRISTARIH != "") {
+                    lab15.innerHTML = fitered[i].RULOBANTGIRISTARIH;
+                } else {
+                    lab15.innerHTML = "-";
+                }
+
+                tr.appendChild(td15);
+                var td16 = document.createElement("td");
+                var lab16 = document.createElement("label");
+                lab16.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                td16.appendChild(lab16);
+                td16.className = "border-bottom-1 border-gray";
+                td16.style = "height:50px;text-align: center;display:none";
+                if (fitered[i].ISEMRITARIHI != "") {
+                    lab16.innerHTML = fitered[i].ISEMRITARIHI;
+                } else {
+                    lab16.innerHTML = "-";
+                }
+
+                tr.appendChild(td16);
+                //var td17 = document.createElement("td");
+                //var lab17 = document.createElement("label");
+                //lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                //td17.appendChild(lab17);
+                //td17.className = "border-bottom-1 border-gray";
+                //td17.style = "height:50px";
+                //lab17.innerHTML = data[i].URETILMETARIHI;
+                //tr.appendChild(td17);
+                var td17 = document.createElement("td");
+                var lab17 = document.createElement("label");
+
+                lab17.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                td17.appendChild(lab17);
+                td17.className = "border-bottom-1 border-gray";
+                td17.style = "height:50px;text-align: center;display:none";
+                if (fitered[i].IRSALIYENO != "") {
+                    lab17.innerHTML = fitered[i].IRSALIYENO;
+                } else {
+                    lab17.innerHTML = "-";
+                }
+
+                tr.appendChild(td17);
+                var td18 = document.createElement("td");
+                var lab18 = document.createElement("label");
+
+                lab18.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                if (fitered[i].ISEMRINO != "") {
+                    lab18.innerHTML = fitered[i].ISEMRINO;
+                } else {
+                    lab18.innerHTML = "-";
+                }
+
+                td18.appendChild(lab18);
+                td18.className = "border-bottom-1 border-gray";
+                td18.style = "height:50px;text-align: center;display:none";
+                tr.appendChild(td18);
+                var td19 = document.createElement("td");
+                var lab19 = document.createElement("label");
+
+                lab19.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                td19.appendChild(lab19);
+                td19.className = "border-bottom-1 border-gray";
+                td19.style = "height:50px;text-align: center;display:none";
+                if (fitered[i].URETILECEKMALZEMEADI != "") {
+                    lab19.innerHTML = fitered[i].URETILECEKMALZEMEADI;
+                } else {
+                    lab19.innerHTML = "-";
+                }
+
+                tr.appendChild(td19);
+                //var td20 = document.createElement("td");
+                //var lab20 = document.createElement("label");
+
+                //lab20.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                //td20.appendChild(lab20);
+                //td20.className = "border-bottom-1 border-gray";
+                //td20.style = "height:50px";
+                //lab20.innerHTML = data[i].MALZEMEKALINLIK;
+                //tr.appendChild(td20);
+                //var td21 = document.createElement("td");
+                //var lab21 = document.createElement("label");
+
+                //lab21.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                //td21.appendChild(lab21);
+                //td21.className = "border-bottom-1 border-gray";
+                //td21.style = "height:50px";
+                //lab21.innerHTML = data[i].MALZEMEBOYUZUNLUK;
+                //tr.appendChild(td21);
+                //var td22 = document.createElement("td");
+                //var lab22 = document.createElement("label");
+
+                //lab22.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                //td22.appendChild(lab22);
+                //td22.className = "border-bottom-1 border-gray";
+                //td22.style = "height:50px";
+                //lab22.innerHTML = data[i].KURAL;
+                //tr.appendChild(td22);
+                var td23 = document.createElement("td");
+                var lab23 = document.createElement("label");
+
+                lab23.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+
+                td23.appendChild(lab23);
+                td23.className = "border-bottom-1 border-gray";
+                td23.style = "height:50px;text-align: center;display:none";
+                if (fitered[i].ISEMRIKOD != "") {
+                    lab23.innerHTML = fitered[i].ISEMRIKOD;
+                } else {
+                    lab23.innerHTML = "-";
+                }
+
+                tr.appendChild(td23);
+                document.getElementById("tbody").appendChild(tr);
+                fiyatlar.push(parseFloat(fitered[i].TUTAR) * parseFloat(fitered[i].TONAJ));
+                fiyatlarton.push(parseFloat(fitered[i].TONAJ));
+            }
+            var sum = 0;
+            var sumton = 0;
+            for (let i = 0; i < fiyatlar.length; i++) {
+                sum = sum + fiyatlar[i];
+
+            }
+            for (let i = 0; i < fiyatlarton.length; i++) {
+                sumton = sumton + fiyatlarton[i];
+            }
+            if (ozelyetki == 1) {
+                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
+                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            }
+
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -3380,6 +4106,29 @@
                     }
                     document.getElementById("rulokodufilter").appendChild(option);
                 }
+            }
+
+            var kap = $("#kaplamafilter").val();
+            if (kap != "") {
+                fitered = fitered.filter(x => kap.includes(x.KAPLAMA));
+            } else {
+
+                var kapf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kapf.includes(fitered[i].KAPLAMA)) {
+                        kapf.push(fitered[i].KAPLAMA);
+                    }
+                }
+                document.getElementById("kaplamafilter").replaceChildren();
+                kapf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kapf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = kapf[i];
+                    option.innerHTML = kapf[i];
+                    document.getElementById("kaplamafilter").appendChild(option);
+                }
+
             }
 
             if (renk != "") {
@@ -3665,21 +4414,24 @@
                 lab12.innerHTML = fitered[i].ADET;
 
                 tr.appendChild(td12);
-                var td13 = document.createElement("td");
-                var lab13 = document.createElement("label");
+                if (ozelyetki == 1) {
+                    var td13 = document.createElement("td");
+                    var lab13 = document.createElement("label");
 
-                lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                td13.appendChild(lab13);
-                td13.className = "border-bottom-1 border-gray";
-                td13.style = "height:50px;text-align: center;font-weight:bold";
-                if (fitered[i].TUTAR != "") {
-                    lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
-                } else {
-                    lab13.innerHTML = fitered[i].TUTAR;
+                    td13.appendChild(lab13);
+                    td13.className = "border-bottom-1 border-gray";
+                    td13.style = "height:50px;text-align: center;font-weight:bold";
+                    if (fitered[i].TUTAR != "") {
+                        lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
+                    } else {
+                        lab13.innerHTML = fitered[i].TUTAR;
+                    }
+
+                    tr.appendChild(td13);
                 }
-
-                tr.appendChild(td13);
+                
                 var td14 = document.createElement("td");
                 var lab14 = document.createElement("label");
 
@@ -3835,9 +4587,11 @@
             for (let i = 0; i < fiyatlarton.length; i++) {
                 sumton = sumton + fiyatlarton[i];
             }
-
-            document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            if (ozelyetki == 1) {
+                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
+                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            }
+           
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -3891,6 +4645,29 @@
                     }
                     document.getElementById("rulokodufilter").appendChild(option);
                 }
+            }
+
+            var kap = $("#kaplamafilter").val();
+            if (kap != "") {
+                fitered = fitered.filter(x => kap.includes(x.KAPLAMA));
+            } else {
+
+                var kapf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kapf.includes(fitered[i].KAPLAMA)) {
+                        kapf.push(fitered[i].KAPLAMA);
+                    }
+                }
+                document.getElementById("kaplamafilter").replaceChildren();
+                kapf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kapf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = kapf[i];
+                    option.innerHTML = kapf[i];
+                    document.getElementById("kaplamafilter").appendChild(option);
+                }
+
             }
 
             if (renk != "") {
@@ -4177,21 +4954,24 @@
                 lab12.innerHTML = fitered[i].ADET;
 
                 tr.appendChild(td12);
-                var td13 = document.createElement("td");
-                var lab13 = document.createElement("label");
+                if (ozelyetki == 1) {
+                    var td13 = document.createElement("td");
+                    var lab13 = document.createElement("label");
 
-                lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                td13.appendChild(lab13);
-                td13.className = "border-bottom-1 border-gray";
-                td13.style = "height:50px;text-align: center;font-weight:bold";
-                if (fitered[i].TUTAR != "") {
-                    lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
-                } else {
-                    lab13.innerHTML = fitered[i].TUTAR;
+                    td13.appendChild(lab13);
+                    td13.className = "border-bottom-1 border-gray";
+                    td13.style = "height:50px;text-align: center;font-weight:bold";
+                    if (fitered[i].TUTAR != "") {
+                        lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
+                    } else {
+                        lab13.innerHTML = fitered[i].TUTAR;
+                    }
+
+                    tr.appendChild(td13);
                 }
-
-                tr.appendChild(td13);
+                
                 var td14 = document.createElement("td");
                 var lab14 = document.createElement("label");
 
@@ -4348,9 +5128,11 @@
             for (let i = 0; i < fiyatlarton.length; i++) {
                 sumton = sumton + fiyatlarton[i];
             }
-
-            document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            if (ozelyetki == 1) {
+                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
+                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            }
+           
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -4407,7 +5189,30 @@
                         }
                         document.getElementById("rulokodufilter").appendChild(option);
                     }
+            }
+
+            var kap = $("#kaplamafilter").val();
+            if (kap != "") {
+                fitered = fitered.filter(x => kap.includes(x.KAPLAMA));
+            } else {
+
+                var kapf = [];
+                for (let i = 0; i < fitered.length; i++) {
+                    if (!kapf.includes(fitered[i].KAPLAMA)) {
+                        kapf.push(fitered[i].KAPLAMA);
+                    }
                 }
+                document.getElementById("kaplamafilter").replaceChildren();
+                kapf.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kapf.length; i++) {
+
+                    var option = document.createElement("option");
+                    option.value = kapf[i];
+                    option.innerHTML = kapf[i];
+                    document.getElementById("kaplamafilter").appendChild(option);
+                }
+
+            }
 
                 if (renk != "") {
 
@@ -4693,21 +5498,24 @@
                     lab12.innerHTML = fitered[i].ADET;
 
                     tr.appendChild(td12);
-                    var td13 = document.createElement("td");
-                    var lab13 = document.createElement("label");
+                    if (ozelyetki == 1) {
+                        var td13 = document.createElement("td");
+                        var lab13 = document.createElement("label");
 
-                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                        lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                    td13.appendChild(lab13);
-                    td13.className = "border-bottom-1 border-gray";
-                    td13.style = "height:50px;text-align: center;font-weight:bold";
-                    if (fitered[i].TUTAR != "") {
-                        lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
-                    } else {
-                        lab13.innerHTML = fitered[i].TUTAR;
+                        td13.appendChild(lab13);
+                        td13.className = "border-bottom-1 border-gray";
+                        td13.style = "height:50px;text-align: center;font-weight:bold";
+                        if (fitered[i].TUTAR != "") {
+                            lab13.innerHTML = "$ " + parseFloat(fitered[i].TUTAR).toFixed(4);
+                        } else {
+                            lab13.innerHTML = fitered[i].TUTAR;
+                        }
+
+                        tr.appendChild(td13);
                     }
-
-                    tr.appendChild(td13);
+                   
                     var td14 = document.createElement("td");
                     var lab14 = document.createElement("label");
 
@@ -4863,9 +5671,11 @@
                 for (let i = 0; i < fiyatlarton.length; i++) {
                     sumton = sumton + fiyatlarton[i];
                 }
+            if (ozelyetki == 1) {
 
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
                 document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+            }
                 var table = document.getElementById("tbody");
                 var tr = table.getElementsByTagName("tr");
                 var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -4894,12 +5704,14 @@
             document.getElementById('kalinlikfilter').replaceChildren();
             document.getElementById('genislikfilter').replaceChildren();
             document.getElementById('menseifilter').replaceChildren();
+            document.getElementById('kaplamafilter').replaceChildren();
             document.getElementById('tbody').replaceChildren();
             
             var renkfilter = [];
             var kalinlikfilter = [];
             var genislikfilter = [];
             var menseifilter = [];
+            var kaplamafilter = [];
             var data = upt;
            
             for (let i = 0; i < data.length; i++) {
@@ -4912,6 +5724,9 @@
                 }
                 if (!kalinlikfilter.includes(parseFloat(data[i].KALINLIK.replace(",", ".")))) {
                     kalinlikfilter.push(parseFloat(data[i].KALINLIK.replace(",", ".")));
+                }
+                if (!kaplamafilter.includes(data[i].KAPLAMA.trim())) {
+                    kaplamafilter.push(data[i].KAPLAMA.trim());
                 }
                 if (!genislikfilter.includes(parseFloat(data[i].GENISLIK.replace(',', '.')))) {
                     genislikfilter.push(parseFloat(data[i].GENISLIK.replace(',', '.')));
@@ -5115,21 +5930,24 @@
                 lab12.innerHTML = data[i].ADET;
 
                 tr.appendChild(td12);
-                var td13 = document.createElement("td");
-                var lab13 = document.createElement("label");
+                if (ozelyetki == 1) {
+                    var td13 = document.createElement("td");
+                    var lab13 = document.createElement("label");
 
-                lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
+                    lab13.style = "background-color: transparent;border: none;white-space: nowrap ;text-align: center;";
 
-                td13.appendChild(lab13);
-                td13.className = "border-bottom-1 border-gray";
-                td13.style = "height:50px;text-align: center;font-weight:bold";
-                if (data[i].TUTAR != "") {
-                    lab13.innerHTML = "$ " + parseFloat(data[i].TUTAR).toFixed(4);
-                } else {
-                    lab13.innerHTML = data[i].TUTAR;
+                    td13.appendChild(lab13);
+                    td13.className = "border-bottom-1 border-gray";
+                    td13.style = "height:50px;text-align: center;font-weight:bold";
+                    if (data[i].TUTAR != "") {
+                        lab13.innerHTML = "$ " + parseFloat(data[i].TUTAR).toFixed(4);
+                    } else {
+                        lab13.innerHTML = data[i].TUTAR;
+                    }
+
+                    tr.appendChild(td13);
                 }
-
-                tr.appendChild(td13);
+                
                 var td14 = document.createElement("td");
                 var lab14 = document.createElement("label");
 
@@ -5298,6 +6116,13 @@
 
                 document.getElementById("renkkodufilter").appendChild(option1);
             }
+            for (let i = 0; i < kaplamafilter.length; i++) {
+                var option1 = document.createElement("option");
+                option1.innerHTML = kaplamafilter[i];
+                option1.value = kaplamafilter[i];
+
+                document.getElementById("kaplamafilter").appendChild(option1);
+            }
             kalinlikfilter.sort(function (a, b) { return a - b });
             for (let i = 0; i < kalinlikfilter.length; i++) {
                 var option2 = document.createElement("option");
@@ -5332,9 +6157,11 @@
                 fiyatlarton.push(parseFloat((rows[i].getElementsByTagName("label")[10].innerHTML.replace('.', ''))));
 
             }
-
-            document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (fiyatlar.reduce((partialSum, a) => partialSum + a, 0) / (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0))).toFixed(4);
-            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0)).toLocaleString('tr-TR');
+            if (ozelyetki == 1) {
+                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (fiyatlar.reduce((partialSum, a) => partialSum + a, 0) / (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0))).toFixed(4);
+                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0)).toLocaleString('tr-TR');
+            }
+       
             
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");

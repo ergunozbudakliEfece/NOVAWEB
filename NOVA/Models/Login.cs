@@ -12,7 +12,7 @@ namespace NOVA.Models
         [Display(Name = "User Name")]
         public string USER_NAME { get; set; }
 
-        
+        public string defurl { get; set; }
         [DataType(DataType.Password)]
         [Display(Name = "Şifre")]
         public string USER_PASSWORD { get; set; }

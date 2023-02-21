@@ -17,6 +17,7 @@ using System.Web.Script.Serialization;
 using System.Web.Security;
 using System.Management;
 using System.Net.Mail;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace NOVA.Controllers
 {
@@ -50,7 +51,8 @@ namespace NOVA.Controllers
                 ViewBag.Info = Session["Info"];
                 return View();
             }
-
+            
+            
             return Redirect("~/Home/Index");
 
         }
@@ -229,9 +231,22 @@ namespace NOVA.Controllers
 
                         HttpCookie cookiech = new HttpCookie("checked", "");
                         Response.Cookies.Add(cookiech);
-                        
 
 
+                       if(!model.defurl.Contains("undefined"))
+                        {
+                           
+                                var x = GetRoleName();
+                                if (x != null)
+                                {
+                                    HttpCookie cookierolename = new HttpCookie("RoleName", x.ROLE_NAME);
+                                    Response.Cookies.Add(cookierolename);
+                                }
+
+                                return Redirect(model.defurl);
+                            
+                           
+                        }
                         return RedirectToAction("Index", "Home");
                     }
                     else
@@ -257,6 +272,37 @@ namespace NOVA.Controllers
             }
             ViewBag.username = Request.Cookies["UserName"].Value;
             return View(model);
+        }
+        public Models.Roles GetRoleName()
+        {
+            if (Request.Cookies["Role"] != null)
+            {
+                var apiUrl = "http://192.168.2.13:83/api/roles/" + Request.Cookies["Role"].Value.ToInt();
+                Uri url = new Uri(apiUrl);
+                WebClient client = new WebClient();
+                client.Encoding = System.Text.Encoding.UTF8;
+
+                string json1 = client.DownloadString(url);
+                //END
+
+                //JSON Parse START
+                JavaScriptSerializer ser = new JavaScriptSerializer();
+                var json = ser.Deserialize<Models.Roles>(json1);
+
+                //END
+
+                return json;
+            }
+            else
+            {
+                return null;
+            }
+
+
+
+            //Connect API
+
+
         }
         [AllowAnonymous]
         public ActionResult LogOffAllDevice()
