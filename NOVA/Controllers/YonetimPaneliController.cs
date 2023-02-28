@@ -116,6 +116,15 @@ namespace NOVA.Controllers
             var yetkifiyatsizstok = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 29);
             var ziyaretkaydi = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 30);
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            if (kuryetki != true)
+            {
+                ViewBag.DisplayKur = "none";
+            }
+            else
+            {
+                ViewBag.DisplayKur = "unset";
+            }
             if (fiyatlistesi != true)
             {
                 ViewBag.DisplayFiyatListesi = "none";
@@ -413,6 +422,15 @@ namespace NOVA.Controllers
             var ziyaretkaydi = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 30);
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            if (kuryetki != true)
+            {
+                ViewBag.DisplayKur = "none";
+            }
+            else
+            {
+                ViewBag.DisplayKur = "unset";
+            }
             if (fiyatlistesi != true)
             {
                 ViewBag.DisplayFiyatListesi = "none";
@@ -1037,7 +1055,7 @@ namespace NOVA.Controllers
             HttpResponseMessage response;
 
 
-            apiUrl = "http://192.168.2.13:83/api/user/" + user.USER_NAME;
+            apiUrl = "http://192.168.2.13:83/api/user/update/" + user.USER_NAME;
             user.USER_ID = "0";
 
 

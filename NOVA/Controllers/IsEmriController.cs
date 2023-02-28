@@ -118,12 +118,9 @@ namespace NOVA.Controllers
         public ActionResult Post(List<IsEmriModel> isemri)
         {
 
-
-
-
-
-            var stokadlari = GetStokAdlari();
-
+            var isemridis = isemri.GroupBy(x => x.GIRDI2).Select(y => y.First()).ToList();
+            
+            
             //try
             //{
             //    var isemridis = isemri.GroupBy(x => x.GIRDI2).Select(y => y.First()).ToList();

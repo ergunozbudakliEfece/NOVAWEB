@@ -1,0 +1,311 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout_Kur.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Kur</title>
+    <link href="~/Content/table/bootstrap-table.min.css" rel="stylesheet" />
+    <link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+
+        #table .form-control {
+            background-color: transparent;
+            border: none;
+        }
+        #table .form-control:hover {
+            background-color: transparent;
+            border: none;
+            outline: 0 none !important;
+        }
+
+        #table input:focus {
+            background-color: transparent !important;
+            outline: 0 none !important;
+        }
+        #table img {
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+            #table img:hover {
+                opacity: 0.4;
+            }
+
+        .vertical-center {
+            min-height: 95%;
+            min-height: 95vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .search {
+            width: 80%;
+            float: left !important;
+        }
+
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
+
+        .swal2-icon {
+            font-size: 15px;
+        }
+
+        .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+            background: rgba(0,0,0,.4) !important;
+        }
+
+        .card-view-title {
+            max-width: 32% !important;
+        }
+
+        .card-view:nth-child(5) .card-view-value {
+            margin-left: 32.5% !important;
+            margin-top: 7px;
+        }
+
+        @@media screen and (max-width: 600px) {
+            #table {
+                font-size: 12px;
+            }
+
+            input {
+                font-size: 12px !important;
+            }
+        }
+
+        @@media screen and (min-width: 601px) {
+
+            .swal2-modal {
+                width: 35vw !important;
+            }
+        }
+
+        @@keyframes heartbeat {
+            from {
+                opacity: 0.3;
+                transform: scale(0.32);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(0.40);
+            }
+        }
+        #employeeTableWrapper{
+            max-height:800px !important;
+            overflow-y:auto;
+        }
+        #table input {
+            max-width:100px;
+            border:none;
+            background-color:transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="jumbotron vertical-center">
+        <div class="container-fluid" style="overflow:hidden">
+            <div class="card" style="font-size:14px;letter-spacing:1px">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col">
+                            <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                                @{
+                                    string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                                }
+                                <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                    <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                </object>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
+                                        <div class="d-flex">
+                                            <div class="flex-shrink-0 me-3">
+                                                <div class="avatar avatar-online">
+                                                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                                    </object>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                @if (@Request.Cookies["Name"] != null)
+                                                {
+                                                    <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                                    <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                                }
+                                                else
+                                                {
+                                                    <span class="fw-semibold d-block">Test</span>
+                                                    <small class="text-muted">Yetki: Test</small>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                       data-bs-target="#cikis">
+                                        <i class="bx bx-power-off me-2"></i>
+                                        <span class="align-middle">Oturumu Kapat</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="employeeTableWrapper" class="tableWrapper">
+                        <table id="table"
+                               class="table table-striped"
+                               data-show-fullscreen="true"
+                               data-buttons-order="['filterTable','columns']"
+                               data-toggle="table"
+                               data-show-export="false"
+                               data-export-data-type="all"
+                               data-export-types="['excel']"
+                               data-pagination="true"
+                               data-page-size="100"
+                               data-search="true"
+                               data-show-columns="false"
+                               data-show-columns-toggle-all="true"
+                               data-locale="tr-TR"
+                               data-filter-control="true"
+                               data-filter-control-multiple-search="true"
+                               data-loading-template="loadingTemplate"
+                               data-show-footer="true"
+                               data-detail-view="false"
+                               data-detail-formatter="detailFormatter"
+                               data-url="http://192.168.2.13:83/api/fiyat/kur"
+                               data-trim-on-search="false">
+                            <thead>
+                                <tr>
+                                    <th data-field="ID" data-halign="center" data-align="center" data-sortable="true" data-ng-class="tr0">Sıra</th>
+                                    <th data-field="ALT_LIMIT" data-halign="center" data-align="center" data-sortable="true" data-formatter="dataFormatter">Alt Limit</th>
+                                    <th data-field="UST_LIMIT" data-halign="center" data-align="center" data-sortable="true" data-formatter="dataFormatter">Üst Limit</th>
+                                    <th data-field="BAZ_PARA_BR" data-halign="center" data-align="center" data-sortable="true" data-formatter="dataFormatter">Baz Para Birimi</th>
+                                    <th data-field="KARSIT_PARA_BR" data-halign="center" data-align="center" data-sortable="true" data-formatter="dataFormatter">Karşıt Para Birimi</th>
+                                    <th data-field="KUR" data-halign="center" data-align="center" data-sortable="true" data-formatter="dataFormatter">Kur</th>
+                                    <th data-field="VADE" data-halign="center" data-align="center" data-sortable="true" data-formatter="dataFormatter">Vade</th>
+                                    <th data-field="VADE_BR" data-halign="center"  data-align="center" data-sortable="true">Vade Birimi</th>
+                                    <th data-field="KAYIT_TARIHI" data-halign="center" data-align="center" data-sortable="true" data-formatter="tarihFormatter">Kayıt Tarihi</th>
+                                    <th data-field="DEGISIKLIK_TARIHI" data-halign="center" data-align="center" data-sortable="true" data-formatter="tarihFormatter">Değiştirme Tarih</th>
+                                    <th data-field="KAYIT_YAPAN_ID" data-visible="false" data-halign="center" data-align="center" data-sortable="true">Kayıt ID</th>
+                                    <th data-field="DEGISIKLIK_YAPAN_ID" data-visible="false" data-halign="center" data-align="center" data-sortable="true">Değişiklik ID</th>
+                                    <th data-halign="center" data-align="center" data-footer-formatter="EkleFormatter" data-formatter="editFormatter"></th>
+
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+
+                       
+
+
+
+
+                    </div>
+                </div>
+                </div>
+               
+               
+            </div>
+
+   
+       
+
+
+    <script>
+
+            $(document).ready(function () {
+                document.getElementById("finans").className = "menu-item open active";
+                document.getElementById("kur").className = "menu-item active";
+            }).ajaxComplete(function () {
+                
+                $('#table tbody tr').addClass("tr0");
+            })
+            function tarihFormatter(value, index, row) {
+
+                return new Date(value).toLocaleString();
+            }
+            function EkleFormatter(value, index, row) {
+
+
+                return '<img id="newRow" onclick="addNewRow()" src="/assets/img/icons/unicons/row.png"/>';
+            }
+            function addNewRow() {
+
+                var tr = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+                $('#table').bootstrapTable('insertRow', { index: tr.length, row: { "ALT_LIMIT": 0.00000000, "UST_LIMIT": 0.00000000, "BAZ_PARA_BR": 0, "KARSIT_PARA_BR": 0, "KUR": 0.00000000, "VADE": 0.00000000, "VADE_BR": "GUN", "TARIH": Date.now() } });
+                $('#newRow').attr("onclick", "");
+            }
+            function editFormatter(value, index, row) {
+                if (index.KUR==0) {
+                    return "<img onclick='insert()' src='/assets/img/icons/unicons/floppy-disk.png'/>"
+                } else {
+                    return "<table class='table table-borderless table-sm'><tr><td><img onclick='guncelle(this)' src='/assets/img/icons/unicons/refresh.png'/></td><td><img onclick='sil()' src='/assets/img/icons/unicons/delete.png'/></td></tr></table>"
+                }
+
+            }
+            function dataFormatter(value, index, row) {
+               return "<input class='text-center' type='text' value='"+value+"'/>"
+
+            }
+        function insert() {
+           
+            var alt = document.querySelectorAll('[data-index]')[event.currentTarget.parentNode.parentNode.rowIndex-1].getElementsByTagName("input")[0].value;
+            var ust = document.querySelectorAll('[data-index]')[event.currentTarget.parentNode.parentNode.rowIndex-1].getElementsByTagName("input")[1].value;
+            var baz = document.querySelectorAll('[data-index]')[event.currentTarget.parentNode.parentNode.rowIndex-1].getElementsByTagName("input")[2].value;
+            var karsit =document.querySelectorAll('[data-index]')[event.currentTarget.parentNode.parentNode.rowIndex-1].getElementsByTagName("input")[3].value;
+            var kur =document.querySelectorAll('[data-index]')[event.currentTarget.parentNode.parentNode.rowIndex-1].getElementsByTagName("input")[4].value;
+            var vade =document.querySelectorAll('[data-index]')[event.currentTarget.parentNode.parentNode.rowIndex-1].getElementsByTagName("input")[5].value;
+           
+                var url = "http://192.168.2.13:83/api/fiyat/kur/ekle/" + alt + "/" + ust + "/" + baz + "/" + karsit + "/" + kur + "/" + vade+"/"+@Html.Raw(Json.Encode(Request.Cookies["UserId"].Value));
+                $.ajax($.getJSON(url, function () { })).done(function () {
+                    $('#table').bootstrapTable('refresh');
+                })
+            }
+        function guncelle(e) {
+            var id = @Html.Raw(Json.Encode(Request.Cookies["UserId"].Value));
+           
+            var sira = document.getElementById("table").document.querySelectorAll('[data-index]')[e.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex].getElementsByTagName("td")[0].innerHTML;
+            
+            var alt = document.getElementById("table").document.querySelectorAll('[data-index]')[e.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex].getElementsByTagName("input")[0].value;
+            var ust = document.getElementById("table").document.querySelectorAll('[data-index]')[e.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex].getElementsByTagName("input")[1].value;
+            var baz = document.getElementById("table").document.querySelectorAll('[data-index]')[e.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex].getElementsByTagName("input")[2].value;
+            var karsit = document.getElementById("table").document.querySelectorAll('[data-index]')[e.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex].getElementsByTagName("input")[3].value;
+            var kur = document.getElementById("table").document.querySelectorAll('[data-index]')[e.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex].getElementsByTagName("input")[4].value;
+            var vade = document.getElementById("table").document.querySelectorAll('[data-index]')[e.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex].getElementsByTagName("input")[5].value;
+           
+                var url = "http://192.168.2.13:83/api/fiyat/kur/guncelle/" +sira+"/"+ alt + "/" + ust + "/" + baz + "/" + karsit + "/" + kur + "/" + vade+"/"+id;
+                $.ajax($.getJSON(url, function () { })).done(function () {
+                    $('#table').bootstrapTable('refresh');
+                })
+        }
+         function sil() {
+          
+             var sira = document.querySelectorAll('[data-index]')[event.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex - 1].getElementsByTagName("td")[0].innerHTML;
+          
+                var url = "http://192.168.2.13:83/api/fiyat/kur/sil/"+sira+"/"+@Html.Raw(Json.Encode(Request.Cookies["UserId"].Value));
+                $.ajax($.getJSON(url, function () { })).done(function () {
+                    $('#table').bootstrapTable('refresh');
+                })
+            }
+    </script>
+</body>
+</html>

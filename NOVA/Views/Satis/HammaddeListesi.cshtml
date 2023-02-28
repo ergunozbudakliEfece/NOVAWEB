@@ -223,15 +223,14 @@
 
             </div>
         </div>
-        @if (ViewBag.OzelYetki == "Yetkili")
-        {
+        
             <div class="row mt-1 mb-1 d-flex">
                 <div class="col">
                     <label id="topton" class="float-start"><b>∑ Seçilen Stok Miktarı:</b> </label>
                 </div>
 
             </div>
-        }
+        
 
         <div class="row mb-1 d-flex">
             <div class="col">
@@ -363,7 +362,7 @@
                         renkfilter.push(data[i].RENKKODU);
                     }
                     if (!kalinlikfilter.includes(parseFloat(data[i].KALINLIK.replace(',', '.')))) {
-                kalinlikfilter.push(parseFloat(data[i].KALINLIK.replace(',', '.')));
+                         kalinlikfilter.push(parseFloat(data[i].KALINLIK.replace(',', '.')));
                     }
                     if (!genislikfilter.includes(parseFloat(data[i].GENISLIK.replace(',','.')))) {
                         genislikfilter.push(parseFloat(data[i].GENISLIK.replace(',', '.')));
@@ -810,12 +809,20 @@
             
             
             for (let i = 1; i < rows.length; i++) {
-                fiyatlar.push(parseFloat((rows[i].getElementsByTagName("label")[12].innerHTML).split(' ')[1]) * parseFloat((rows[i].getElementsByTagName("label")[10].innerHTML.replace('.', ''))));
-                fiyatlarton.push(parseFloat((rows[i].getElementsByTagName("label")[10].innerHTML.replace('.',''))));
+                if (ozelyetki == 1) {
+                    fiyatlar.push(parseFloat((rows[i].getElementsByTagName("label")[12].innerHTML).split(' ')[1]) * parseFloat((rows[i].getElementsByTagName("label")[10].innerHTML.replace('.', ''))));
+                }
+                
+               
+                fiyatlarton.push(parseFloat((rows[i].getElementsByTagName("label")[10].innerHTML.replace('.', ''))));
+                
+                
                
             }
+            if (ozelyetki == 1) {
+                document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (fiyatlar.reduce((partialSum, a) => partialSum + a, 0) / (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0))).toFixed(4);
+            }
            
-            document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (fiyatlar.reduce((partialSum, a) => partialSum + a, 0) / (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0))).toFixed(4);
             document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0)).toLocaleString('tr-TR');
         });
         
@@ -1389,9 +1396,9 @@
             }
             if (ozelyetki == 1) {
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr-TR');
+               
             }
-            
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr-TR');
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -1923,9 +1930,9 @@
                 }
                 if (ozelyetki == 1) {
                     document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                    document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+                   
                 }
-               
+                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
                 
                 var table = document.getElementById("tbody");
                 var tr = table.getElementsByTagName("tr");
@@ -2465,9 +2472,9 @@
             }
             if (ozelyetki == 1) {
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+               
             }
-            
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -2993,9 +3000,9 @@
             }
             if (ozelyetki == 1) {
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+               
             }
-           
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -3521,9 +3528,9 @@
             }
             if (ozelyetki == 1) {
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+               
             }
-            
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -4051,9 +4058,9 @@
             }
             if (ozelyetki == 1) {
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+                
             }
-
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -4589,9 +4596,9 @@
             }
             if (ozelyetki == 1) {
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+               
             }
-           
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -5130,9 +5137,9 @@
             }
             if (ozelyetki == 1) {
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+               
             }
-           
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");
             var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -5674,8 +5681,9 @@
             if (ozelyetki == 1) {
 
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (sum / sumton).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
+               
             }
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + sumton.toLocaleString('tr', 'TR');
                 var table = document.getElementById("tbody");
                 var tr = table.getElementsByTagName("tr");
                 var th = document.getElementById("sorttable").getElementsByTagName("th");
@@ -6159,9 +6167,9 @@
             }
             if (ozelyetki == 1) {
                 document.getElementById("ortfiyat").innerHTML = "<b>Ağ. Ort. Fiyat:</b> $ " + (fiyatlar.reduce((partialSum, a) => partialSum + a, 0) / (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0))).toFixed(4);
-                document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0)).toLocaleString('tr-TR');
+               
             }
-       
+            document.getElementById("topton").innerHTML = "<b>∑ Seçilen Stok Miktarı:</b> " + (fiyatlarton.reduce((partialSum, a) => partialSum + a, 0)).toLocaleString('tr-TR');
             
             var table = document.getElementById("tbody");
             var tr = table.getElementsByTagName("tr");

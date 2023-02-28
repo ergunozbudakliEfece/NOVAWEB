@@ -27,22 +27,7 @@ namespace NOVA.Controllers
                 return RedirectToAction("Maintenance", "Home");
             }
             var ses = GetSession(Request.Cookies["Id"].Value.ToInt())[0];
-            if (Session["Filter"] != null)
-            {
-
-                ViewBag.UstKalem = Session["Filter"];
-                ViewBag.FilterPlasiyer = Session["FilterPlasiyer"];
-                ViewBag.FilterTeslim = Session["FilterTeslim"];
-                ViewBag.FilterDoviz = Session["FilterDoviz"];
-                ViewBag.FilterUretilecekmi = Session["FilterUretilecekmi"];
-                ViewBag.AltKalem = GetSiparisApiData();
-                return View();
-            }
-            else
-            {
-                ViewBag.UstKalem = GetSiparisUstKAlem();
-                ViewBag.AltKalem = GetSiparisApiData();
-            }
+           
             if (ses.LOG_DATETIME != null)
             {
                 var xm = DateTime.Parse(ses.LOG_DATETIME);
@@ -90,6 +75,15 @@ namespace NOVA.Controllers
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            if (kuryetki != true)
+            {
+                ViewBag.DisplayKur = "none";
+            }
+            else
+            {
+                ViewBag.DisplayKur = "unset";
+            }
             if (fiyatlistesi != true)
             {
                 ViewBag.DisplayFiyatListesi = "none";
@@ -551,6 +545,15 @@ namespace NOVA.Controllers
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            if (kuryetki != true)
+            {
+                ViewBag.DisplayKur = "none";
+            }
+            else
+            {
+                ViewBag.DisplayKur = "unset";
+            }
             if (fiyatlistesi != true)
             {
                 ViewBag.DisplayFiyatListesi = "none";

@@ -196,10 +196,10 @@
 
             <script>
                 function Formatter(value, index, row) {
-                    return "<input class='form-control text-center' type='text' style='background:transparent' onkeyup='keyup(value)' value='" + value + "'></input>"
+                    return "<input class='form-control text-center' type='text' style='background:transparent' onkeyup='changeinp(this)' value='" + value + "'></input>"
                 }
                 function FormatterModule(value, index, row) {
-                    return "<input class='form-control text-center' type='text' style='background:transparent' onkeyup='keyupmodule(value)' value='" + value + "'></input>"
+                    return "<input class='form-control text-center' type='text' style='background:transparent' onkeyup='changeinp(this)' value='" + value + "'></input>"
                 }
                 function ActiveFormatter(value, index, row) {
                     if (value) {
@@ -256,11 +256,11 @@
                         processData: false
                     });
                 }
-                function change(value) {
-                    
-                    var row = document.getElementById("table").getElementsByTagName("tr")[value.parentNode.parentNode.rowIndex];
+                function change(v) {
+
+                    var row = document.getElementById("table").getElementsByTagName("tr")[v.parentNode.parentNode.rowIndex];
                     if (row == null) {
-                        row = document.getElementById("table").getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex];
+                        row = document.getElementById("table").getElementsByTagName("tr")[v.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex];
                         var username = row.getElementsByTagName("span")[1].innerHTML;
 
                         var pw = row.getElementsByTagName("input")[0].value;
@@ -273,7 +273,7 @@
                         var role = row.getElementsByTagName("select")[0].value;
                     } else {
                         var username = row.getElementsByTagName("td")[0].innerHTML;
-                       
+
                         var pw = row.getElementsByTagName("input")[0].value;
 
                         var fn = row.getElementsByTagName("input")[1].value;
@@ -283,7 +283,7 @@
 
                         var role = row.getElementsByTagName("select")[0].value;
                     }
-                   
+
 
                     var json = { USER_NAME: username, USER_PASSWORD: pw, USER_FIRSTNAME:fn , USER_LASTNAME:ln, USER_MAIL:mail ,ACTIVE:active ,USER_ROLE:role };
                     $.ajax({
@@ -302,7 +302,57 @@
                         processData: false
                     });
                 }
+                 function changeinp(v) {
+                     if (event.key == "Enter") {
+                          var row = document.getElementById("table").getElementsByTagName("tr")[v.parentNode.parentNode.rowIndex];
+                    if (row == null) {
+                        row = document.getElementById("table").getElementsByTagName("tr")[v.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex];
+                        var username = row.getElementsByTagName("span")[1].innerHTML;
 
+                        var pw = row.getElementsByTagName("input")[0].value;
+
+                        var fn = row.getElementsByTagName("input")[1].value;
+                        var ln = row.getElementsByTagName("input")[2].value;
+                        var mail = row.getElementsByTagName("input")[3].value;
+                        var active = row.getElementsByTagName("input")[4].checked;
+
+                        var role = row.getElementsByTagName("select")[0].value;
+                    } else {
+                        var username = row.getElementsByTagName("td")[0].innerHTML;
+
+                        var pw = row.getElementsByTagName("input")[0].value;
+
+                        var fn = row.getElementsByTagName("input")[1].value;
+                        var ln = row.getElementsByTagName("input")[2].value;
+                        var mail = row.getElementsByTagName("input")[3].value;
+                        var active = row.getElementsByTagName("input")[4].checked;
+
+                        var role = row.getElementsByTagName("select")[0].value;
+                    }
+
+
+                    var json = { USER_NAME: username, USER_PASSWORD: pw, USER_FIRSTNAME:fn , USER_LASTNAME:ln, USER_MAIL:mail ,ACTIVE:active ,USER_ROLE:role };
+                    $.ajax({
+                        url: '@Url.Action("KullaniciUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
+                            Swal.fire(
+                                'BAŞARILI',
+                                'Kullanıcı bilgileri başarıyla güncellendi'
+                            )
+                        },
+                        async: true,
+                        processData: false
+                    });
+                     }
+
+                }
 
 
 
@@ -625,7 +675,7 @@
                 }
 
             }
-            return "<select class='select2clss'>"+q+"</select>";
+            return "<select onchange='change(this)' class='select2clss'>"+q+"</select>";
         }
         function changesel(value) {
             var row = document.getElementById("table").getElementsByTagName("tr")[value];

@@ -198,8 +198,16 @@
                         format: 'a4',
                         autotable: {
                             tableWidth: 'auto',
-                        }
+                            columnStyles: {
+                                4: {
+                                    columnMargin: 0
+                                }
+                            },
+                           
+                        },
+                        
                        
+
                     },
                     ignoreColumn: ['FIYAT3', 'FIYAT2']
 
@@ -272,7 +280,7 @@
 
         function formatterAciklama(value, index, row) {
             if (index.OZELKOSULLAR != "null" && index.OZELKOSULLAR != null) {
-                return value + " <i style='cursor:help' class='bx bx-info-circle mt-2' data-bs-toggle='popover' data-bs-offset='0,14' data-bs-placement='right' data-bs-html='true' data-bs-content='<p>" + (index.OZELKOSULLAR == "null" ? "Özel koşul bulunmamakta." : index.OZELKOSULLAR.replaceAll("::", "<br/>")) + "</p>' title='Ek Bilgiler'></i>";
+                return value + " <i style='cursor:help' class='bx bx-info-circle mt-2' data-bs-toggle='popover' data-bs-offset='0,14' data-bs-placement='right' data-bs-html='true' data-bs-content='<p>" + (index.OZELKOSULLAR == "null" ? "Özel koşul bulunmamakta." : index.OZELKOSULLAR.replaceAll("::", "<br/>").replaceAll("&.&", "+").replaceAll("&yuzde&", "%").replaceAll("&tire&", "/").replaceAll("&eksi&", "-").replaceAll("&gulucuk&", "😀").replaceAll("&gulucuk&", "😀")) + "</p>' title='Ek Bilgiler'></i>";
             } else {
                 return value;
             }

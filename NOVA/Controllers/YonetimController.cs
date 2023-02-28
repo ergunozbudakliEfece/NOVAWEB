@@ -311,6 +311,15 @@ namespace NOVA.Controllers
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            if (kuryetki != true)
+            {
+                ViewBag.DisplayKur = "none";
+            }
+            else
+            {
+                ViewBag.DisplayKur = "unset";
+            }
             if (fiyatlistesi != true)
             {
                 ViewBag.DisplayFiyatListesi = "none";

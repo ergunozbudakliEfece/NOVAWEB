@@ -154,6 +154,15 @@ namespace NOVA.Controllers
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            if (kuryetki != true)
+            {
+                ViewBag.DisplayKur = "none";
+            }
+            else
+            {
+                ViewBag.DisplayKur = "unset";
+            }
             if (fiyatlistesi != true)
             {
                 ViewBag.DisplayFiyatListesi = "none";
@@ -706,44 +715,48 @@ namespace NOVA.Controllers
         {
             string pass = GetKullaniciApiData().USER_PASSWORD;
             User user = new User();
-            if (pw.PasswordChange.OLD_PASSWORD.ToString().Equals(pass))
+            if(pw.PasswordChange.NEW_PASSWORD!=null&& pw.PasswordChange.NEW_PASSWORD_REPEAT != null)
             {
-                if (pw.PasswordChange.NEW_PASSWORD.ToString() == pw.PasswordChange.NEW_PASSWORD_REPEAT.ToString())
+                if (pw.PasswordChange.OLD_PASSWORD.ToString().Equals(pass))
                 {
-                    user.USER_ID = Request.Cookies["Id"].Value;
-                    user.USER_NAME = Request.Cookies["UserName"].Value.ToString();
-                    user.USER_PASSWORD = pw.PasswordChange.NEW_PASSWORD;
-                    user.USER_FIRSTNAME = Request.Cookies["FirstName"].Value.ToString();
-                    user.USER_LASTNAME = Request.Cookies["LastName"].Value.ToString();
-                    user.USER_MAIL = Request.Cookies["Mail"].Value.ToString();
-                    user.USER_ROLE = Request.Cookies["Role"].Value.ToString();
-                    user.ACTIVE = true;
-                    var apiUrl = "http://192.168.2.13:83/api/user/" + Request.Cookies["Id"].Value.ToInt();
-
-
-                    var httpClient = new HttpClient();
-                    var request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+                    if (pw.PasswordChange.NEW_PASSWORD.ToString() == pw.PasswordChange.NEW_PASSWORD_REPEAT.ToString())
                     {
-                        Content = new StringContent(new JavaScriptSerializer().Serialize(user), Encoding.UTF8, "application/json")
+                        user.USER_ID = Request.Cookies["Id"].Value;
+                        user.USER_NAME = Request.Cookies["UserName"].Value.ToString();
+                        user.USER_PASSWORD = pw.PasswordChange.NEW_PASSWORD;
+                        user.USER_FIRSTNAME = Request.Cookies["FirstName"].Value.ToString();
+                        user.USER_LASTNAME = Request.Cookies["LastName"].Value.ToString();
+                        user.USER_MAIL = Request.Cookies["Mail"].Value.ToString();
+                        user.USER_ROLE = Request.Cookies["Role"].Value.ToString();
+                        user.ACTIVE = true;
+                        var apiUrl = "http://192.168.2.13:83/api/user/" + Request.Cookies["Id"].Value.ToInt();
 
-                    };
 
-                    var response = await httpClient.SendAsync(request);
+                        var httpClient = new HttpClient();
+                        var request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+                        {
+                            Content = new StringContent(new JavaScriptSerializer().Serialize(user), Encoding.UTF8, "application/json")
 
-                    string apiResponse = await response.Content.ReadAsStringAsync();
+                        };
+
+                        var response = await httpClient.SendAsync(request);
+
+                        string apiResponse = await response.Content.ReadAsStringAsync();
 
 
-                    Session["Alert"] = "Şifre değişikliği başarılı!";
-                }
-                else
-                {
-                    Session["Alert"] = "Girmiş olduğunuz şifreler aynı değil!";
-                    return RedirectToAction("Index", "Profil");
+                        Session["Alert"] = "Şifre değişikliği başarılı!";
+                    }
+                    else
+                    {
+                        Session["Alert"] = "Girmiş olduğunuz şifreler aynı değil!";
+                        return RedirectToAction("Index", "Profil");
+                    }
                 }
             }
+           
             else
             {
-                Session["Alert"] = "Eski Şifreniz Yanlış";
+                Session["Alert"] = "Lütfen gerekli alanları doldurduğunuzdan emin olun!";
                 return RedirectToAction("Index", "Profil");
             }
 

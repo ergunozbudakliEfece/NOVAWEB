@@ -52,10 +52,12 @@
     }
 
     .card-view:nth-child(5) .card-view-value {
-        margin-left: 32.5% !important;
+        margin-left: 21% !important;
         margin-top: 7px;
     }
-
+    .mobil-btn {
+        display: none;
+    }
     @@media screen and (max-width: 600px) {
         #table {
             font-size: 12px;
@@ -63,6 +65,9 @@
 
         input {
             font-size: 12px !important;
+        }
+        .mobil-btn {
+            display: block;
         }
     }
 
@@ -266,6 +271,7 @@
             }
         }
         $(document).ready(function () {
+
             $("#table").bootstrapTable({
                 url: "http://192.168.2.13:83/api/fiyat/exec/000000000000001",
                 onDragStop: function (table, row) {
@@ -346,19 +352,21 @@
                 html: true,
                 placement: 'bottom',
                 sanitize: false,
-                content: function () { return '<div id="PopoverContent"><div class="input-group"><textarea name="' + $(this).attr('data-fiyat') + '" type="text" class="form-control">' + ($(this).attr('data') == "null" ? "" : $(this).attr('data').replaceAll("::","\n")) + '</textarea></div></div><button type="button" onclick="btnclick()" class="btn btn-secondary btn-sm mb-1 mt-1 float-sm-end">Kaydet</button></div>'; }
+                content: function () { return '<div id="PopoverContent"><div class="input-group"><textarea onkeyup="keychange(this)" rows="15" name="' + $(this).attr('data-fiyat') + '" type="text" class="form-control">' + ($(this).attr('data') == "null" ? "" : $(this).attr('data').replaceAll("::", "\n").replaceAll("&.&", "+").replaceAll("&yuzde&", "%").replaceAll("&tire&", "/").replaceAll("&eksi&", "-").replaceAll("&gulucuk&", "😀")) + '</textarea></div></div><button type="button" onclick="btnclick()" class="btn btn-secondary btn-sm mb-1 mt-1 float-sm-end">Kaydet</button></div>'; }
 
             });
 
         })
 
         function btnclick() {
-            var value = event.currentTarget.parentNode.getElementsByTagName("textarea")[0].value.replaceAll("\n","::");
+            var value = event.currentTarget.parentNode.getElementsByTagName("textarea")[0].value.replaceAll("\n", "::").replaceAll("+", '&.&').replaceAll("-", "&eksi&").replaceAll("%", "&yuzde&").replaceAll("/", "&tire&").replaceAll("😀", "&gulucuk&").replaceAll(":D", "&gulucuk&");
 
             var name = event.currentTarget.parentNode.getElementsByTagName("textarea")[0].name;
+
                 if (value == "" || value ==null) {
                     value = null;
-                }
+            }
+
                 var url = "http://192.168.2.13:83/api/fiyat/aciklama/" + name + "/" + value;
 
 
@@ -368,6 +376,43 @@
 
                 })
 
+        }
+        function btnclick2() {
+            $.ajax(ch()).done(function () {
+                Swal.fire(
+                    'GÜNCELLENENLER!',
+                    "<div class='container-fluid'><table class='table table-borderless'><tr style='font-size:8px;word-break: normal;'><th>FK</th><th>ÖNCEKİ TF</th><th>GÜNCELLENEN TF</th><th>ÖNCEKİ PF</th><th>GÜNCELLENEN PF</th></tr>" + msg + "</table></div>",
+                    'success'
+                )
+            }).then(function () {
+                msg = "";
+                getFiyatlarAsync().then(function (data) {
+                    fiyatlar = data;
+                }).then(function () {
+                    $('#table').bootstrapTable('refresh')
+                })
+            });
+        
+
+        }
+        function btnclick3() {
+            $.ajax(ch1()).done(function () {
+                Swal.fire(
+                    'GÜNCELLENENLER!',
+                    "<table class='table table-borderless'><tr><th>FIYAT KODU</th><th>ÖNCEKİ PERAKENDE FIYAT</th><th>GÜNCELLENEN PERAKENDE FIYAT</th></tr>" + msg + "</table>",
+                    'success'
+                )
+            }).then(function () {
+                msg = "";
+                getFiyatlarAsync().then(function (data) {
+                    fiyatlar = data;
+                })
+            });
+        }
+        function keychange(e) {
+            if (e.value.includes(":D")) {
+                e.value = e.value.replaceAll(":D", "😀");
+            }
         }
         function changetable(value) {
             if (value == 1) {
@@ -615,12 +660,12 @@
         }
         function fiyat2Formatter(value, index, row) {
 
-            return "<span class='d-none'>" + value +"</span>"+"<input class='form-control text-center' name='fiyat2' type='text' style='background:transparent' onkeyup='keyup()' value='" + value.toLocaleString({ max: 2 }) + "' />";
+            return "<span class='d-none'>" + value + "</span>" + "<div class='input-group'><input class='form-control text-center' name='fiyat2' type='text' style='background:transparent' onkeyup='keyup()' value='" + value.toLocaleString({ max: 2 }) + "'/><button class='btn btn-outline-secondary btn-sm mobil-btn'  onclick='btnclick2()' type='button'>Kaydet</button></div>";
 
         }
         function fiyat2Formatter2(value, index, row) {
 
-            return "<span class='d-none'>" + value + "</span>" + "<input class='form-control text-center' name='fiyat2' type='text' style='background:transparent' onkeyup='keyup2()' value='" + value.toLocaleString({ max: 2 }) + "' />";
+            return "<span class='d-none'>" + value + "</span>" + "<div class='input-group'><input class='form-control text-center' name='fiyat2' type='text' style='background:transparent' onkeyup='keyup2()' value='" + value.toLocaleString({ max: 2 }) + "' /><button class='btn btn-outline-secondary btn-sm mobil-btn' onclick='btnclick2()' type='button'>Kaydet</button></div>";
 
         }
         function fiyat3Formatter(value, index, row) {
@@ -633,12 +678,12 @@
         }
         function pertopFormatter(value, index, row) {
 
-            return "<span class='d-none'>" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "</span><input class='form-control text-center' name='pertop' readonly type='text' style='background:transparent' onkeyup='keyuppertop()' value='" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "'/>";
+            return "<span class='d-none'>" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "</span><div class='input-group'><input class='form-control text-center' name='pertop' readonly type='text' style='background:transparent' onkeyup='keyuppertop()' value='" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "' /><button  onclick='btnclick3()' class='btn btn-outline-secondary btn-sm mobil-btn' type='button'>Kaydet</button></div>";
 
         }
         function pertopFormatter2(value, index, row) {
 
-            return "<span class='d-none'>" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "</span><input class='form-control text-center' name='pertop' readonly type='text' style='background:transparent' onkeyup='keyuppertop2()' value='" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "'/>";
+            return "<span class='d-none'>" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "</span><div class='input-group'><input class='form-control text-center' name='pertop' readonly type='text' style='background:transparent' onkeyup='keyuppertop2()' value='" + (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 }) + "' /><button class='btn btn-outline-secondary btn-sm mobil-btn' onclick='btnclick3()' type='button'>Kaydet</button></div>";
 
         }
         var msg = "";
@@ -736,34 +781,34 @@
                 span1.style.display = "none";
                 var f = fiyatlar.filter(x => x.FIYATKODU == fiyatkodu);
 
-                if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
+                if (f[0].FIYAT2 != toptan.value.replaceAll('.', '').replaceAll(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replaceAll('.', '').replace(',', '.')) {
 
         if ((tr[i].getElementsByTagName("input")[1].value).length > 0 && tr[i].getElementsByTagName("input")[1].value != '-') {
 
                         if (tr[i].getElementsByTagName("input")[1].value.includes('.')) {
                             if (tr[i].getElementsByTagName("input")[1].value.split('.')[1].length > 0) {
-                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+                                perakende.innerHTML = (parseFloat(toptan.value.replaceAll('.', '').replaceAll(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replaceAll('.', '').replaceAll(',', '.'))).toLocaleString();
 
 
                             }
                         } else if (tr[i].getElementsByTagName("input")[1].value.includes(',')) {
 
                             if (tr[i].getElementsByTagName("input")[1].value.split(',')[1].length > 0) {
-                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+                                perakende.innerHTML = (parseFloat(toptan.value.replaceAll('.', '').replaceAll(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replaceAll('.', '').replaceAll(',', '.'))).toLocaleString();
 
 
                             }
 
                         } else {
 
-                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+                            perakende.innerHTML = (parseFloat(toptan.value.replaceAll('.', '').replaceAll(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replaceAll('.', '').replaceAll(',', '.'))).toLocaleString();
 
             }
             msg = msg + "<tr style='font-size:12px'><td style='white-space: nowrap'>" + fiyatkodu.substring(0,8) + "</td><td  style='white-space: nowrap'>" + f[0].FIYAT2.toLocaleString() + "</td><td  style='white-space: nowrap'>" + toptan.value + "</td><td>" + f[0].FIYAT3.toLocaleString() + "</td><td>" + perakende.innerHTML + "</td></tr> ";
                         span2.innerHTML = perakende.innerHTML;
             span2.style.display = "none";
 
-                var url = "http://192.168.2.13:83/api/fiyat/" + fiyatkodu + "/" + toptan.value.replace(',', '.') + "/" + perakende.innerHTML.replace(',', '.') + "/000000000000001"
+            var url = "http://192.168.2.13:83/api/fiyat/" + fiyatkodu + "/" + toptan.value.replaceAll('.', '').replaceAll(',', '.') + "/" + perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.') + "/000000000000001/"+@Html.Raw(Json.Encode(Request.Cookies["UserId"].Value))
 
 
                         $.getJSON(url, function () { });
@@ -802,36 +847,36 @@
                 span1.style.display = "none";
                 var f = fiyatlar.filter(x => x.FIYATKODU == fiyatkodu);
 
-                if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
+                if (f[0].FIYAT2 != toptan.value.replaceAll('.', '').replaceAll(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.')) {
 
                     if ((tr[i].getElementsByTagName("input")[1].value).length > 0 && tr[i].getElementsByTagName("input")[1].value != '-') {
 
                         if (tr[i].getElementsByTagName("input")[1].value.includes('.')) {
                             if (tr[i].getElementsByTagName("input")[1].value.split('.')[1].length > 0) {
-                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+                                perakende.innerHTML = (parseFloat(toptan.value.replaceAll('.', '').replaceAll(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replaceAll('.', '').replaceAll(',', '.'))).toLocaleString();
 
 
                             }
                         } else if (tr[i].getElementsByTagName("input")[1].value.includes(',')) {
 
                             if (tr[i].getElementsByTagName("input")[1].value.split(',')[1].length > 0) {
-                                perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+                                perakende.innerHTML = (parseFloat(toptan.value.replaceAll('.', '').replaceAll(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replaceAll('.', '').replaceAll(',', '.'))).toLocaleString();
 
 
                             }
 
                         } else {
-                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+                            perakende.innerHTML = (parseFloat(toptan.value.value.replaceAll('.', '').replaceAll(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replaceAll('.', '').replaceAll(',', '.'))).toLocaleString();
 
                         }
                         span2.innerHTML = perakende.innerHTML;
                         span2.style.display = "none";
                         if (tablosabit = 0) {
-                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000001").then(function (data) {
+                            getFiyatAsync(fiyatkodu, toptan.value.replaceAll('.', '').replaceAll(',', '.'), perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.'), "000000000000001",@Html.Raw(Json.Encode(Request.Cookies["UserId"].Value))).then(function (data) {
 
                             })
                         } else if (tablosabit = 1) {
-                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000002").then(function (data) {
+                            getFiyatAsync(fiyatkodu, toptan.value.replaceAll('.', '').replaceAll(',', '.'), perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.'), "000000000000002",@Html.Raw(Json.Encode(Request.Cookies["UserId"].Value))).then(function (data) {
 
                             })
                         }
@@ -841,26 +886,26 @@
                 } else {
                     if (tr[i].getElementsByTagName("input")[1].value.includes('.')) {
                         if (tr[i].getElementsByTagName("input")[1].value.split('.')[1].length > 0) {
-                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+                            perakende.innerHTML = (parseFloat(toptan.value.replaceAll('.', '').replaceAll(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replaceAll('.', '').replaceAll(',', '.'))).toLocaleString();
 
 
                         }
                     } else if (tr[i].getElementsByTagName("input")[1].value.includes(',')) {
 
                         if (tr[i].getElementsByTagName("input")[1].value.split(',')[1].length > 0) {
-                            perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replace(',', '.'))).toLocaleString();
+                            perakende.innerHTML = (parseFloat(toptan.value.replaceAll('.', '').replaceAll(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replaceAll('.', '').replaceAll(',', '.'))).toLocaleString();
 
 
                         }
 
                     } else {
-                        perakende.innerHTML = (parseFloat(toptan.value.replace(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value)).toLocaleString();
+                        perakende.innerHTML = (parseFloat(toptan.value.replaceAll('.', '').replaceAll(',', '.')) + parseFloat(tr[i].getElementsByTagName("input")[1].value.replaceAll('.', '').replaceAll(',', '.'))).toLocaleString();
 
                     }
-                    if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
+                    if (f[0].FIYAT2 != toptan.value.replaceAll('.', '').replaceAll(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.')) {
                         msg = msg + "<tr style='font-size:12px'><td>" + fiyatkodu + "</td><td>" + f[0].FIYAT3.toLocaleString() + "</td><td>" + perakende.innerHTML + "</td></tr>";
 
-                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML,"000000000000001").then(function (data) {
+                        getFiyatAsync(fiyatkodu, toptan.value.replaceAll('.', '').replaceAll(',', '.'), perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.'),"000000000000001",@Html.Raw(Json.Encode(Request.Cookies["UserId"].Value))).then(function (data) {
 
                             })
 
@@ -924,7 +969,7 @@
                         span2.innerHTML = perakende.innerHTML;
                         span2.style.display = "none";
 
-                        var url = "http://192.168.2.13:83/api/fiyat/" + fiyatkodu + "/" + toptan.value.replace(',', '.') + "/" + perakende.innerHTML.replace(',', '.') + "/000000000000002"
+                        var url = "http://192.168.2.13:83/api/fiyat/" + fiyatkodu + "/" + toptan.value.replaceAll('.', '').replaceAll(',', '.') + "/" + perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.') + "/000000000000002/"+@Html.Raw(Json.Encode(Request.Cookies["UserId"].Value))
 
 
                         $.getJSON(url, function () { });
@@ -989,11 +1034,11 @@
                         span2.innerHTML = perakende.innerHTML;
                         span2.style.display = "none";
                         if (tablosabit = 0) {
-                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000001").then(function (data) {
+                            getFiyatAsync(fiyatkodu, toptan.value.replaceAll('.', '').replaceAll(',', '.'), perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.'), "000000000000001").then(function (data) {
 
                             })
                         } else if (tablosabit = 1) {
-                            getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000002").then(function (data) {
+                            getFiyatAsync(fiyatkodu, toptan.value.replaceAll('.', '').replaceAll(',', '.'), perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.'), "000000000000002").then(function (data) {
 
                             })
                         }
@@ -1022,7 +1067,7 @@
                     if (f[0].FIYAT2 != toptan.value.replace(',', '.') || f[0].FIYAT3 != perakende.innerHTML.replace(',', '.')) {
                         msg = msg + "<tr style='font-size:12px'><td>" + fiyatkodu + "</td><td>" + f[0].FIYAT3.toLocaleString() + "</td><td>" + perakende.innerHTML + "</td></tr>";
 
-                        getFiyatAsync(fiyatkodu, toptan.value, perakende.innerHTML, "000000000000002").then(function (data) {
+                        getFiyatAsync(fiyatkodu, toptan.value.replaceAll('.', '').replaceAll(',', '.'), perakende.innerHTML.replaceAll('.', '').replaceAll(',', '.'), "000000000000002").then(function (data) {
 
                         })
 
@@ -1041,23 +1086,23 @@
         }
         function switchchange() {
             if ((event.currentTarget.checked)) {
-                var pertop = document.getElementsByName("pertop");
-                var fiyat2 = document.getElementsByName("fiyat2");
+
                 getFiyatlarAsync().then(function (data) {
                     fiyatlar = data;
 
                 })
 
-                $.ajax(
-                    $('#table').bootstrapTable('refresh')
-                ).done(function () {
+
+                    var pertop = document.getElementsByName("pertop");
+                    var fiyat2 = document.getElementsByName("fiyat2");
+
                     for (let i = 0; i < pertop.length; i++) {
 
                         pertop[i].removeAttribute("readOnly");
                         fiyat2[i].setAttribute("readOnly", "");
 
                     }
-                })
+
 
             }
             else {
