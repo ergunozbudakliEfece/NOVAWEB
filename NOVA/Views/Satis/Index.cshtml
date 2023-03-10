@@ -500,7 +500,7 @@
             $('#employeeTableWrapper').hide();
         }
     }
-
+    var sondurum = null;
     $(document).ready(function () {
 
         $('#employeeTableWrapper2').hide();
@@ -516,7 +516,9 @@
                 $("[data-bs-toggle='popover']").popover();
             }
         })
-            
+        $.getJSON("http://192.168.2.13:83/api/fiyat/exec/fiyatdurum", function (data) {
+            sondurum = data;
+        })  
 
     })
     function girisFormatter(index, row) {
@@ -567,19 +569,50 @@
     function fiyatlarFormatter(value, row, index) {
         var stok2 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
         var sayi = 0;
-
-
-        if (stok2.length > 0) {
-            if (stok2[0].FIYATDOVIZTIPI == "TRY") {
-                sayi = 2;
-            } else {
-                sayi = 3;
+        var f2 = " ";
+        var f3 = " ";
+        
+       
+            
+        
+        
+        if (row.FIYATKODU != null) {
+            var d = sondurum.filter(x => x.FIYATKODU == row.FIYATKODU);
+            if (d.length > 0) {
+                if (d[0].FIYAT3 == "YÜKSELDİ") {
+                    f3 = " <i class='bx bxs-up-arrow' style='color:#00ee00'></i>";
+                } else if (d[0].FIYAT3 == "DÜŞTÜ") {
+                    f3 = " <i class='bx bxs-down-arrow' style='color:#ff0200'></i>";
+                }
+                else {
+                    f3 = " <i class='bx bx-minus' style='color:rgba(0,0,0,0)'></i>"
+                }
+                if (d[0].FIYAT2 == "YÜKSELDİ") {
+                    f2 = " <i class='bx bxs-up-arrow' style='color:#00ee00'></i>"
+                } else if (d.FIYAT2 == "DÜŞTÜ") {
+                    f2 = " <i class='bx bxs-down-arrow' style='color:#ff0200'></i>"
+                } else {
+                    f2 = " <i class='bx bx-minus' style='color:rgba(0,0,0,0)'></i>"
+                }
             }
-            return "<div class='row'><div class='col text-center flex-nowrap' style='font-size:16px'>" + (stok2[0].TOPTAN_FIYAT ? parseFloat(stok2[0].TOPTAN_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[0] + "<span style='font-size:12px'>," + parseFloat(stok2[0].TOPTAN_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[1] + " " + stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "</div></div><div class='row'><div class='col text-center flex-nowrap' style='font-size:16px'>" + (stok2[0].PERAKENDE_FIYAT ? parseFloat(stok2[0].PERAKENDE_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[0] + "<span style='font-size:12px'>," + parseFloat(stok2[0].PERAKENDE_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[1] + " " + stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "</div></div>";
-
-        } else {
-            return "<div class='text-center'>-</div>";
+           
         }
+            
+            if (stok2.length > 0) {
+                if (stok2[0].FIYATDOVIZTIPI == "TRY") {
+                    sayi = 2;
+                }
+                else {
+                    sayi = 3;
+                }
+                
+                return "<div class='row'><div class='col text-center flex-nowrap' style='font-size:16px'>" + (stok2[0].TOPTAN_FIYAT ? parseFloat(stok2[0].TOPTAN_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[0] + "<span style='font-size:12px'>," + parseFloat(stok2[0].TOPTAN_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[1] + " " + stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "<span>"+f2+"</span>" + "</div></div><div class='row'><div class='col text-center flex-nowrap' style='font-size:16px'>" + (stok2[0].PERAKENDE_FIYAT ? parseFloat(stok2[0].PERAKENDE_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[0] + "<span style='font-size:12px'>," + parseFloat(stok2[0].PERAKENDE_FIYAT).toLocaleString(undefined, { minimumFractionDigits: sayi, maximumFractionDigits: sayi }).split(',')[1] + " " + stok2[0].FIYATDOVIZTIPI + "</span>" : "-") + "<span>"+f3+"</span>" + "</div></div>";
+
+            } else {
+                return "<div class='text-center'>-</div>";
+            }
+        
+        
     }
     function iskontoFormatter(value, row, index) {
         var stok2 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);

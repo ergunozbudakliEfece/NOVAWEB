@@ -197,6 +197,14 @@
                                 <select id="dovtip" multiple="multiple" name="dovAlgorithm" style="width: 15vw">
                                 </select>
                             </div>
+                            <div class="col">
+                                <div class="class=form-check form-switch text-center">
+                                    <input class="form-check-input" type="checkbox" onchange="switchchange()" id="flexSwitchCheckChecked" unchecked="">
+                                </div>
+                                <div class="row">
+                                    <label style="font-size: 10px; letter-spacing:1px">ÜRETİM</label>
+                                </div>
+                            </div>
                         </div>
                     </form>
                    
@@ -224,9 +232,10 @@
                     </div>
                     <div class="col">
                         <button onclick="clearfilter()" class="btn btn-secondary btn-sm mt-3"><i class="bx bxs-trash"></i></button>
+                        
                     </div>
                     <div class="col">
-
+                        
                     </div>
                     <div class="col">
 
@@ -256,11 +265,11 @@
                        data-detail-formatter="detailFormatter"
                        data-detail-view="true"
                        data-fixed-columns="true"
-                       data-fixed-number="0">
+                       data-fixed-number="0"
+                       data-trim-on-search="false">
                     <thead>
                         <tr id="tst">
                             <th data-field="SIPARIS_NO" data-sortable="true" data-halign="center" data-formatter="sipnoFormatter">Sipariş No</th>
-
                             <th data-field="TARIH" data-sortable="true" data-halign="center" data-formatter="tarihFormatter">Tarih</th>
                             <th data-field="CARI_ISIM" data-sortable="true" data-halign="center" data-align="center">Cari İsim</th>
                             <th data-field="DOV_TIP" data-sortable="true" data-halign="center" data-align="center">Hesap Türü</th>
@@ -358,8 +367,13 @@
             $('#filter').select2({ placeholder: "Teslim Yeri" });
             $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
             $('#dovtip').select2({ placeholder: "Döviz Tipi" });
+        }).then(function () {
+            document.querySelectorAll('input[type="search"]')[0].onkeyup = function () {
+                document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.toUpperCase().replaceAll("I", "İ");
+            };
         })
 
+        
 
     })
     var type = 'fa'
@@ -432,7 +446,7 @@
 
             }
             
-            t = t + "<tr><th>" + r + "</th><td class'text-center'>" + detail[i].STOK_ADI + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR1 + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR1 + "</td><td class='text-center'>" + brut_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + detail[i].SATIS_ISKONTOSU.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%" + "</td><td class='text-center'>" + net_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + net_tutar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].TESLIM_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].BAKIYE_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-nowrap text-center' style='background-color:#f2faf5'>" + "<p class='meter' id='meter-msip' style='height:18.36px;'><span style='width:" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].TESLIM_MIKTARI_SSIP == "null" ? detail[i].TESLIM_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].BAKIYE_MIKTARI_SSIP == "null" ? detail[i].BAKIYE_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + "<p class='meter' id='meter-ssip' style='height:18.36px;'><span style='width:" + ssiporangorsel + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + ssiporangorsel + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILEN_MIKTAR1 == "null" ? detail[i].URETILEN_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILECEK_MIKTAR1 == "null" ? detail[i].URETILECEK_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + "<p class='meter' id='meter' style='height:18.36px;'><span style='width:" + uretimorangorsel +"%'><span class='progress' id='progress-uretim'><span style='margin-bottom:10px;text-align:end;color:white'>"+uretimorangorsel+ "%" + "</td></tr>"
+            t = t + "<tr><th>" + r + "</th><td class'text-center'>" + detail[i].STOK_ADI + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR1 + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR2 + "</td><td class='text-center'>" + brut_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + detail[i].SATIS_ISKONTOSU.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%" + "</td><td class='text-center'>" + net_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + net_tutar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].TESLIM_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].BAKIYE_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-nowrap text-center' style='background-color:#f2faf5'>" + "<p class='meter' id='meter-msip' style='height:18.36px;'><span style='width:" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].TESLIM_MIKTARI_SSIP == "null" ? detail[i].TESLIM_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].BAKIYE_MIKTARI_SSIP == "null" ? detail[i].BAKIYE_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + "<p class='meter' id='meter-ssip' style='height:18.36px;'><span style='width:" + ssiporangorsel + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + ssiporangorsel + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILEN_MIKTAR1 == "null" ? detail[i].URETILEN_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILECEK_MIKTAR1 == "null" ? detail[i].URETILECEK_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + "<p class='meter' id='meter' style='height:18.36px;'><span style='width:" + uretimorangorsel +"%'><span class='progress' id='progress-uretim'><span style='margin-bottom:10px;text-align:end;color:white'>"+uretimorangorsel+ "%" + "</td></tr>"
             msipbekleyen=msipbekleyen+detail[i].BAKIYE_MIKTARI;
             msipteslim=msipteslim+detail[i].TESLIM_MIKTARI;
             teslimoran = teslimoran + parseFloat
@@ -509,6 +523,21 @@
         $("#dovtip").val('').trigger('change');
         $("#baslangictarihi").val('').trigger('change');
         $("#bitistarihi").val('').trigger('change');
+    }
+    function switchchange() {
+        if ((event.currentTarget.checked)) {
+
+            $('#table').bootstrapTable('destroy');
+            $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
+                var b = data.filter(x => x.URETILECEKMI == "E");
+                $('#table').bootstrapTable({ data: b });
+            })
+        } else {
+            $('#table').bootstrapTable('destroy');
+            $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
+                $('#table').bootstrapTable({ data: data });
+            })
+        }
     }
 </script>
 

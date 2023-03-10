@@ -1,0 +1,129 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_yonetim.cshtml";
+}
+
+
+
+<link href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<link href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" rel="stylesheet">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+<style>
+    .vertical-center {
+        min-height: 95%; /* Fallback for browsers do NOT support vh unit */
+        min-height: 95vh; /* These two lines are counted as one :-)       */
+
+        display: flex;
+        align-items: center;
+    }
+
+    .search {
+        width: 90%;
+        position: relative;
+        float: right;
+    }
+
+    .select2-container {
+        position: relative;
+        float: right;
+    }
+
+    .table td {
+        text-align: center;
+    }
+
+    .table th {
+        text-align: center;
+    }
+
+    #table img:hover {
+        opacity: 0.4;
+    }
+</style>
+<div class="jumbotron vertical-center">
+    <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCenterTitle">Yeni Kullanıcı Ekleme Formu</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+               
+
+
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                    @{
+                        string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                    }
+                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                    </object>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-online">
+                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                        </object>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    @if (@Request.Cookies["Name"] != null)
+                                    {
+                                        <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                        <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-semibold d-block">Test</span>
+                                        <small class="text-muted">Yetki: Test</small>
+                                    }
+
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                           data-bs-target="#cikis">
+                            <i class="bx bx-power-off me-2"></i>
+                            <span class="align-middle">Oturumu Kapat</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+
+
+
+        </div>
+    </div>
+   
+</div>
+
+
+
+
+
+
+
+

@@ -13,11 +13,7 @@
       data-assets-path="../assets/"
       data-template="vertical-menu-template-free">
 <head>
-
-
-
-
-   
+    <link href="~/assets/css/border.css" rel="stylesheet" />
     <style>
         .centercontent {
             position: absolute;
@@ -28,6 +24,7 @@
             transform: translate(-50%, -50%);
             z-index: 5;
         }
+
         .heart {
             animation: heartbeat 1s infinite alternate;
         }
@@ -44,13 +41,14 @@
             }
         }
     </style>
-    
-    
-  
+    <style>
+ 
+    </style>
+    <script src="~/Scripts/jquery-3.6.1.min.js"></script>
 </head>
 
 <body onload="script();" onclose="close()">
-    
+   
     <div class="centercontent" id="content" style="display:unset">
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
     </div>
@@ -118,8 +116,8 @@
             <div class="row">
                 <div class="col-lg-12 mb-4 order-0">
                     @*<div class="col">
-                            <iframe src="~/assets/happy-new-year2022/dist/index.html" height="350" width="100%"></iframe>
-                        </div>*@
+            <iframe src="~/assets/happy-new-year2022/dist/index.html" height="350" width="100%"></iframe>
+        </div>*@
 
                     <div class="card">
                         <div class="d-flex align-items-end row">
@@ -149,50 +147,45 @@
                             </div>
                         </div>
                     </div>
-
+                    <script>
+                        const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+                            "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+                        ];
+                    </script>
                     @{ var onlineusers = ViewBag.OnlineUsers; int a = 0;}
                     <div class="card col" style="display:unset">
                         <div class="table-responsive text-nowrap mt-3">
                             <table class="table table-hover results sorttable centered" id="sortTable">
                                 <thead class="centered">
                                     <tr>
-                                        <th>Çevrimiçi Kullanıcılar(@ViewBag.OnlineUsers.Count)</th>
+
+                                        <th>
+                                        <script>document.write(monthNames[new Date().getMonth()]);</script> Ayı Kullanım Sıralaması</th>
                                     </tr>
                                 </thead>
                                 <tbody class="table-border-bottom-0">
                                     <tr>
                                         <td>
-                                            <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                                @while (a < onlineusers.Count)
-                                                {
-                                                    var resim = onlineusers[a].USER_ID + ".png?" + DateTime.Now.Ticks.ToString();
-                                                    var isim = onlineusers[a].USER_NAME;
-                                                    var status = "";
-                                                    if (onlineusers[a].ACTIVITY_TYPE == "login")
-                                                    {
-                                                        status = "online";
-                                                    }
-                                                    else if (onlineusers[a].ACTIVITY_TYPE == "Busy")
-                                                    {
-                                                        status = "away";
-                                                    }
+                                            <ul id="ranks" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                            </ul>
+                                        </td>
+                                    </tr>
 
-                                                    if (onlineusers[a].PLATFORM == "Android App")
-                                                    {
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" class=" avatar avatar-mobile avatar-md pull-up durum" title="" data-bs-original-title="<span><i class='bx bx-mobile'></i> @onlineusers[a].USER_NAME</span>">
-                                                            <img src="/assets/img/avatars/@resim" alt="Avatar" class="rounded-circle">
-                                                        </li>
-                                                    }
-                                                    else
-                                                    {
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" class=" avatar avatar-@status  avatar-online avatar-md pull-up durum" title="" data-bs-original-title="<span> @onlineusers[a].USER_NAME</span>">
-                                                            <img src="/assets/img/avatars/@resim" alt="Avatar" class="rounded-circle">
-                                                        </li>
-                                                    }
-                                                    a++;
+                                </tbody>
+                            </table>
 
-                                                }
-
+                        </div>
+                        <div class="table-responsive text-nowrap mt-3">
+                            <table class="table table-hover results sorttable centered" id="sortTable">
+                                <thead class="centered">
+                                    <tr>
+                                        <th>Çevrimiçi Kullanıcılar(<span id="cevrimicisayi"></span>)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0">
+                                    <tr>
+                                        <td>
+                                            <ul id="onlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
                                             </ul>
                                         </td>
                                     </tr>
@@ -205,80 +198,14 @@
                             <table class="table table-hover results sorttable centered" id="sortTable">
                                 <thead class="centered">
                                     <tr>
-                                        <th>Çevrimdışı Kullanıcılar(@ViewBag.OfflineUsers.Count)</th>
+                                        <th>Çevrimdışı Kullanıcılar(<span id="cevrimdisisayi"></span>)</th>
                                     </tr>
                                 </thead>
                                 <tbody class="table-border-bottom-0">
                                     @{ var offlineusers = ViewBag.OfflineUsers; int b = 0;}
                                     <tr>
                                         <td>
-                                            <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                                @while (b < offlineusers.Count)
-                                                {
-                                                    var offlineduratıon1 = " önce";
-                                                    var isim1 = offlineusers[b].USER_NAME + "</br>";
-                                                    var gun1 = "";
-                                                    var saat1 = "";
-                                                    var dakika1 = "";
-                                                    var resim1 = offlineusers[b].USER_ID + ".png?" + DateTime.Now.Ticks.ToString();
-                                                    if (ViewBag.OfflineDate[b] != " ")
-                                                    {
-
-
-                                                        if (ViewBag.OfflineDay[b] == "0")
-                                                        {
-
-                                                        }
-                                                        else
-                                                        {
-                                                            gun1 = ViewBag.OfflineDay[b] + " gün ";
-                                                        }
-                                                        if (ViewBag.OfflineHour[b] == "0")
-                                                        {
-
-                                                        }
-                                                        else
-                                                        {
-                                                            saat1 = ViewBag.OfflineHour[b] + " saat ";
-                                                        }
-                                                        if (ViewBag.OfflineMinute[b] == "0")
-                                                        {
-
-                                                        }
-                                                        else
-                                                        {
-                                                            dakika1 = ViewBag.OfflineMinute[b] + " dakika ";
-                                                        }
-                                                        if (ViewBag.OfflineDay[b] == "0" && ViewBag.OfflineHour[b] == "0" && ViewBag.OfflineMinute[b] == "0")
-                                                        {
-                                                            isim1 = isim1 + "az önce";
-                                                        }
-                                                        else
-                                                        {
-                                                            isim1 = isim1 + gun1 + saat1 + dakika1 + offlineduratıon1;
-                                                        }
-
-
-
-
-                                                    }
-                                                    else
-                                                    {
-                                                        //isim1 = ViewBag.OfflineUsers[i].USER_NAME;
-                                                    }
-
-
-
-                                                    <li data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="bottom" data-bs-html="true" title="" data-bs-original-title="<span>@isim1</span>" class="avatar avatar-busy avatar-sm pull-up durum">
-                                                        <img src="/assets/img/avatars/@resim1" alt="Avatar" class="rounded-circle">
-                                                    </li>
-
-
-
-                                                    b++;
-                                                }
-
-
+                                            <ul id="offlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
                                             </ul>
                                         </td>
 
@@ -323,120 +250,155 @@
 
 
     <script>
-      
+
 
             document.getElementById("anasayfa").className = "menu-item active";
 
         function script() {
-
-
-
             document.body.style.cursor = "default";
             document.getElementById("content").style.display = "none";
+            var online = null;
+            var offline = null;
+            $.getJSON('http://192.168.2.13:83/api/userlogin/exec/lastseen', function (data) {
+                online = data.filter(x => x.USER_STATUS == "Çevrimiçi");
+                online.sort((a, b) => Date.parse(b.LOGIN_DATE) - Date.parse(a.LOGIN_DATE));
+                document.getElementById("cevrimicisayi").innerHTML = online.length;
+                offline = data.filter(x => x.USER_STATUS == "Çevrimdışı");
+                offline.sort((a, b) => Date.parse(b.LOGOUT_DATE) - Date.parse(a.LOGOUT_DATE));
+                document.getElementById("cevrimdisisayi").innerHTML = offline.length;
+            }).done(function () {
+                for (let i = 0; i < online.length; i++) {
+                    var s = '<li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" class="avatar avatar-online  avatar-online avatar-md pull-up durum" title="" data-bs-original-title="<span></span>"><img src="/assets/img/avatars/' + online[i].USER_ID + '.png" alt="Avatar" class="rounded-circle"></li>'
+                    var span = document.createElement("span");
+                    var last = online[i].USER_NAME+"<br/>"+online[i].LAST_SEEN;
+                    span.innerHTML = s;
+                    var li = document.createElement("li");
+                    li.setAttribute("data-bs-toggle", "tooltip");
+                    li.setAttribute("data-bs-offset", "0,4");
+                    li.setAttribute("data-bs-placement", "bottom");
+                    li.setAttribute("data-bs-html", "true");
+                    li.setAttribute("data-bs-original-title", "<span>" + last + "</span>");
+
+                    if (online[i].USER_ID == 10002) {
+                        li.className = "avatar avatar-online  avatar-online avatar-md pull-up durum li";
+                        li.innerHTML = '<img  src="/assets/img/avatars/' + online[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle">';
+                    } else {
+                        li.innerHTML = '<img src="/assets/img/avatars/' + online[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle">';
+                        li.className = "avatar avatar-online  avatar-online avatar-md pull-up durum";
+                    }
+                    document.getElementById("onlines").appendChild(li);
+                }
+                for (let i = 0; i < offline.length; i++) {
+
+                    var li = document.createElement("li");
+                    var last = offline[i].USER_NAME + "<br/>" +offline[i].LAST_SEEN;
+                    li.setAttribute("data-bs-toggle", "tooltip");
+                    li.setAttribute("data-bs-offset", "0,4");
+                    li.setAttribute("data-bs-placement", "bottom");
+                    li.setAttribute("data-bs-html", "true");
+                    li.setAttribute("data-bs-original-title", "<span>" + last +"</span>");
+                    li.className = "avatar avatar-busy avatar-sm pull-up durum";
+                    li.innerHTML = '<img src="/assets/img/avatars/' + offline[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle">';
+
+                    document.getElementById("offlines").appendChild(li);
+                }
+            }).then(function () {
+                $('.durum').tooltip();
+            })
+            $.getJSON('http://192.168.2.13:83/api/userlogin/exec/rank', function (data) {
+                if (data.length >= 10) {
+                    for (let i = 0; i < 10; i++) {
+
+                        var li = document.createElement("li");
+                        var last = data[i].USER_NAME + "<br/>" + data[i].RATE;
+                        li.setAttribute("data-bs-toggle", "tooltip");
+                        li.setAttribute("data-bs-offset", "0,4");
+                        li.setAttribute("data-bs-placement", "bottom");
+                        li.setAttribute("data-bs-html", "true");
+                        li.setAttribute("data-bs-original-title", "<span>" + last + "</span>");
+
+                        if (i == 0) {
+                            li.className = "avatar avatar-lg pull-up durum";
+                            li.innerHTML = '<img style="border: 6px solid #D6BD33 !important;box-shadow: 0 0 16px #D6BD33 !important;z-index: -1 !important" src="/assets/img/avatars/' + data[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle"><h2 style="font-family:Monotype Corsiva, Times, Serif;font-weight:700;color:#444444;margin-top:-30px;z-index:5">1</h2>';
+                        } else if (i == 1) {
+                            li.className = "avatar avatar-md pull-up durum";
+                            li.innerHTML = '<img style="border: 5px solid #95A5A6  !important;box-shadow: 0 0 14px #95A5A6  !important" src="/assets/img/avatars/' + data[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle"><h3 style="font-family:Monotype Corsiva, Times, Serif;font-weight:700;color:#444444;margin-top:-20px;z-index:5">2</h3>';
+                        }
+                        else if (i == 2) {
+                            li.className = "avatar avatar-sm pull-up durum";
+                            li.innerHTML = '<img style="border: 4px solid #998033 !important;box-shadow: 0 0 12px #998033 !important" src="/assets/img/avatars/' + data[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle"><h4 style="font-family:Monotype Corsiva, Times, Serif;font-weight:700;color:#444444;margin-top:-15px;z-index:5">3</h4>';
+                        } else {
+                            li.className = "avatar avatar-xs pull-up durum";
+                            li.innerHTML = '<img  src="/assets/img/avatars/' + data[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle">';
+                        }
+
+
+                        document.getElementById("ranks").appendChild(li);
+                    }
+                } else if (data.length > 0 && data.length < 10) {
+                    for (let i = 0; i < data.length; i++) {
+
+                        var li = document.createElement("li");
+                        var last = data[i].USER_NAME + "<br/>" + data[i].RATE;
+                        li.setAttribute("data-bs-toggle", "tooltip");
+                        li.setAttribute("data-bs-offset", "0,4");
+                        li.setAttribute("data-bs-placement", "bottom");
+                        li.setAttribute("data-bs-html", "true");
+                        li.setAttribute("data-bs-original-title", "<span>" + last + "</span>");
+
+                        if (i == 0) {
+                            li.className = "avatar avatar-lg pull-up durum";
+                            li.innerHTML = '<img style="border: 6px solid #D6BD33 !important;box-shadow: 0 0 16px #D6BD33 !important;z-index: -1 !important" src="/assets/img/avatars/' + data[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle"><h2 style="font-family:Monotype Corsiva, Times, Serif;font-weight:700;color:#444444;margin-top:-30px;z-index:5">1</h2>';
+                        } else if (i == 1) {
+                            li.className = "avatar avatar-md pull-up durum";
+                            li.innerHTML = '<img style="border: 5px solid #95A5A6  !important;box-shadow: 0 0 14px #95A5A6  !important" src="/assets/img/avatars/' + data[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle"><h3 style="font-family:Monotype Corsiva, Times, Serif;font-weight:700;color:#444444;margin-top:-20px;z-index:5">2</h3>';
+                        }
+                        else if (i == 2) {
+                            li.className = "avatar avatar-sm pull-up durum";
+                            li.innerHTML = '<img style="border: 4px solid #998033 !important;box-shadow: 0 0 12px #998033 !important" src="/assets/img/avatars/' + data[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle"><h4 style="font-family:Monotype Corsiva, Times, Serif;font-weight:700;color:#444444;margin-top:-15px;z-index:5">3</h4>';
+                        } else {
+                            li.className = "avatar avatar-xs pull-up durum";
+                            li.innerHTML = '<img  src="/assets/img/avatars/' + data[i].USER_ID + '.png?@DateTime.Now.Ticks.ToString()" alt="Avatar" class="rounded-circle">';
+                        }
+
+
+                        document.getElementById("ranks").appendChild(li);
+                    }
+                } else {
+                    var li = document.createElement("li");
+                    li.innerHTML = 'Henüz görüntülenecek bir oturum bulunmamaktadır.';
+                    document.getElementById("ranks").appendChild(li);
+                }
+
+            }).then(function () {
+                $('.durum').tooltip();
+            })
+
         };
 
 
 
         function close() {
             @{Session["ModulYetkiMesajı"] = null;
-
-
 }
         }
+        function script1() {
 
-    </script>
-
-    <!-- / Content -->
-    <!-- Footer -->
-    <!-- / Footer -->
-    <!-- / Layout wrapper -->
-    <script>
-
-
-
-        function updateDiv() {
-
-            $.ajax({
-                type: "GET",
-                url: '/Home/Refresh',
-                contentType: "application/json; charset=utf-8"
-
-            });
-
-
-
+            document.getElementById("onlines").replaceChildren();
+            document.getElementById("offlines").replaceChildren();
+            document.getElementById("ranks").replaceChildren();
+            script();
+            $('.durum').tooltip('dispose');
         }
         setInterval(myTimer2, 60000);
-        function myTimer2() {
-
-            updateDiv();
+        function myTimer2()
+        {
             $('.durum').tooltip('dispose');
-            $("#online").load(" #online > *");
+            script1();
 
-            setTimeout(myTimer1, 2000)
 
         };
-
-        function myTimer1() {
-            $('body').tooltip({ selector: '[data-bs-toggle="tooltip"]' });
-        }
-
-
-
-
-
-
-        setTimeout(logOut, 7200000)
-        function logOut() {
-
-            $.ajax({
-                type: "GET",
-                url: '/Login/Logoff',
-                contentType: "application/json; charset=utf-8",
-                success: function (data) {
-
-
-                    return data;
-                },
-                complete: function () {
-
-                    window.location.href = '/Login/Login';
-
-                }
-            });
-
-
-
-        }
-
-
-
-
-
-
-
-
-
-
     </script>
-
-    <script>
-        var userData = [];
-
-
-        userData.push({ USERID: "@Request.Cookies["UserId"].Value", USERNAME: "@Request.Cookies["UserName"].Value", PLATFORM: "@Request.Cookies["Platform"].Value" , LASTACTIVETIME: "@DateTime.Now.ToString()" });
-
-       localStorage.userlist = JSON.stringify(userData[0]);
-
-
-
-
-    </script>
-
-
-
-
-
 
 </body>
 </html>

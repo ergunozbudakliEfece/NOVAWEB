@@ -18,6 +18,8 @@ using System.Web.Security;
 using System.Management;
 using System.Net.Mail;
 using DocumentFormat.OpenXml.EMMA;
+using Microsoft.Extensions.Logging;
+using static ServiceStack.Diagnostics.Events;
 
 namespace NOVA.Controllers
 {
@@ -56,9 +58,10 @@ namespace NOVA.Controllers
             return Redirect("~/Home/Index");
 
         }
+       
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult Login(Login model)
+        public async Task<ActionResult> Login(Login model)
         {
             string username = "";
             string password = "";
@@ -101,7 +104,7 @@ namespace NOVA.Controllers
                 }
 
                 //Aşağıdaki if komutu gönderilen mail ve şifre doğrultusunda kullanıcı kontrolu yapar. Eğer kullanıcı var ise login olur.
-                if (user.Count >0)
+                if (user.Count > 0)
                 {
                     if (user[0].ACTIVE == true)
                     {
@@ -146,109 +149,180 @@ namespace NOVA.Controllers
                         Session["UserIdInt"] = user[0].USER_ID.ToInt();
                         HttpCookie cookieuserid = new HttpCookie("UserId", Session["UserId"].ToString());
                         Response.Cookies.Add(cookieuserid);
-
-
-                        HttpCookie cookielogin = new HttpCookie("Login", DateTime.Now.ToString());
-                        Response.Cookies.Add(cookielogin);
-                        HttpCookie cookiesign = new HttpCookie("SignIn", DateTime.Now.AddHours(3).ToString());
-                        Response.Cookies.Add(cookiesign);
-
-                        String s = model.USER_NAME.Substring(0, 1);
-                        var userAgent = Request.UserAgent;
-                        string platform = "";
-                        if (userAgent.Contains("Edge"))
-                        {
-                            //Edge
-                            platform = "Edge";
-                        }
-                        else if (userAgent.Contains("Chrome"))
-                        {
-                            if (userAgent.Contains("OPR"))
+                       
+                            var userAgent = Request.UserAgent;
+                            string platform = "";
+                            if (userAgent.Contains("Edge"))
                             {
-                                platform = "Opera";
-                            }
-                            else if (userAgent.Contains("Edg"))
-                            {
-                                platform = "Microsoft Edge";
-                            }
-                            else
-                            {
-                                platform = "Google Chrome";
-                            }
-                            //Chrome
-
-                        }
-                        else if (userAgent.Contains("Safari"))
-                        {
-                            //Safari
-                            platform = "Safari";
-                        }
-                        else if (userAgent.Contains("Firefox"))
-                        {
-                            //Firefox
-                            platform = "Firefox";
-                        }
-                        else if (userAgent.Contains("rv"))
-                        {
-                            //IE11
-                            platform = "IE11";
-                        }
-                        else if (userAgent.Contains("MSIE"))
-                        {
-                            //IE6-10
-                            platform = "IE6-10";
-                        }
-                        else if (userAgent.Contains("Other"))
-                        {
-                            //Other
-                            platform = "Opera";
-                        }
-                        HttpCookie cookieplatform = new HttpCookie("Platform", platform);
-                        Response.Cookies.Add(cookieplatform);
-                        if (Request.Cookies["Id"].Value.ToInt() != 10050)
-                        {
-                            
-                            
-                            var session = GetSession(user[0].USER_ID.ToInt())[0];
-                            if (session.ACTIVITY_TYPE == "login")
-                            {
-                                ViewBag.Login = "Oturumunuz başka bir bilgisayarda açık. Oturum tüm diğer cihazlarda kapatılsın mı?";
-                                HttpCookie cookieoldplatform = new HttpCookie("OldPlatform", session.PLATFORM);
-                                Response.Cookies.Add(cookieoldplatform);
-                                return View();
-
-                            }
-                            
-
-
-
-                        }
-                        else
-                        {
-                            HttpCookie cookieuname = new HttpCookie("Ghost", "ghost");
-                            Response.Cookies.Add(cookieuname);
-                        }
-
-                        HttpCookie cookiech = new HttpCookie("checked", "");
-                        Response.Cookies.Add(cookiech);
-
-
-                       if(!model.defurl.Contains("undefined"))
-                        {
-                           
-                                var x = GetRoleName();
-                                if (x != null)
+                                if (userAgent.Contains("Mobile"))
                                 {
-                                    HttpCookie cookierolename = new HttpCookie("RoleName", x.ROLE_NAME);
-                                    Response.Cookies.Add(cookierolename);
+                                    platform = "Edge(Mobile)";
                                 }
+                                else
+                                {
+                                    platform = "Edge";
+                                }
+                                //Edge
+                               
+                            }
+                            else if (userAgent.Contains("Chrome"))
+                            {
+                                if (userAgent.Contains("OPR"))
+                                {
+                                    if (userAgent.Contains("Mobile"))
+                                    {
+                                        platform = "Opera(Mobile)";
+                                    }
+                                    else
+                                    {
+                                        platform = "Opera";
+                                    }
+                                    
+                                }
+                                else if (userAgent.Contains("Edg"))
+                                {
+                                    if (userAgent.Contains("Mobile"))
+                                    {
+                                        platform = "Microsoft Edge(Mobile)";
+                                    }
+                                    else
+                                    {
+                                        platform = "Microsoft Edge";
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    if (userAgent.Contains("Mobile"))
+                                    {
+                                        platform = "Google Chrome(Mobile)";
+                                    }
+                                    else
+                                    {
+                                        platform = "Google Chrome";
+                                    }
+                                   
+                                }
+                                //Chrome
 
-                                return Redirect(model.defurl);
-                            
-                           
+                            }
+                            else if (userAgent.Contains("Safari"))
+                            {
+                                if (userAgent.Contains("Mobile"))
+                                {
+                                    platform = "Safari(Mobile)";
+                                }
+                                else
+                                {
+                                    platform = "Safari";
+                                }
+                                //Safari
+                               
+                            }
+                            else if (userAgent.Contains("Firefox"))
+                            {
+                                if (userAgent.Contains("Mobile"))
+                                {
+                                    platform = "Firefox(Mobile)";
+                                }
+                                else
+                                {
+                                    platform = "Firefox";
+                                }
+                                //Firefox
+                                
+                            }
+                            else if (userAgent.Contains("rv"))
+                            {
+                                if (userAgent.Contains("Mobile"))
+                                {
+                                    platform = "IE11(Mobile)";
+                                }
+                                else
+                                {
+                                    platform = "IE11";
+                                }
+                                //IE11
+                               
+                            }
+                            else if (userAgent.Contains("MSIE"))
+                            {
+                                if (userAgent.Contains("Mobile"))
+                                {
+                                    platform = "IE6-10(Mobile)";
+                                }
+                                else
+                                {
+                                    platform = "IE6-10";
+                                }
+                                //IE6-10
+                                
+                            }
+                            else if (userAgent.Contains("Other"))
+                            {
+                                if (userAgent.Contains("Mobile"))
+                                {
+                                    platform = "Opera(Mobile)";
+                                }
+                                else
+                                {
+                                    platform = "Opera";
+                                }
+                                //Other
+                               
+                            }
+
+                            LoginModel login = new LoginModel();
+                                login.USER_ID = user[0].USER_ID.ToInt();
+                            login.PLATFORM = platform;
+                                var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                                var httpClientnew = new System.Net.Http.HttpClient();
+                                var requestnew = new HttpRequestMessage(HttpMethod.Post, apiUrlnew)
+                                {
+                                    Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                                };
+                                var response = await httpClientnew.SendAsync(requestnew);
+
+                            string json1 = null;
+                            LoginModel createdlog = null;
+                            var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + user[0].USER_ID.ToInt();
+                            Uri url1 = new Uri(apiUrl1);
+                            WebClient client1 = new WebClient();
+                            client1.Encoding = System.Text.Encoding.UTF8;
+
+                            json1 = client1.DownloadString(url1);
+                            JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                            createdlog = ser1.Deserialize<LoginModel>(json1);
+
+
+                            HttpCookie logid1 = new HttpCookie("LogId", createdlog.LOG_ID.ToString());
+                            Response.Cookies.Add(logid1);
+                        var x = GetRoleName();
+                        if (x != null)
+                        {
+                            HttpCookie cookierolename = new HttpCookie("RoleName", x.ROLE_NAME);
+                            Response.Cookies.Add(cookierolename);
                         }
-                        return RedirectToAction("Index", "Home");
+                        if (Session["Name"] != null)
+                        {
+                            HttpCookie cookiename1 = new HttpCookie("Name", Session["Name"].ToString());
+                            Response.Cookies.Add(cookiename1);
+                        }
+
+
+
+                        if (!model.defurl.IsEmpty()&&model.defurl!= "~/Login/LogOff"&& model.defurl != "~/undefined/undefined")
+                        {
+                            return Redirect(model.defurl);
+                        }
+
+                        return RedirectToAction("Login", "Login");
+
+
+
                     }
+
                     else
                     {
                         ViewBag.Mesaj = "Yetki";
@@ -271,8 +345,20 @@ namespace NOVA.Controllers
 
             }
             ViewBag.username = Request.Cookies["UserName"].Value;
+        
             return View(model);
         }
+        public class LoginModel
+        {
+            public int LOG_ID { set; get; }
+            public int USER_ID { set; get; }
+            public DateTime LOGIN_DATE { set; get; }
+            public DateTime LOGOUT_DATE { set; get; }
+            public DateTime LAST_ACTIVITY_DATE { set; get; }
+            public int LAST_ACTIVITY { set; get; }
+            public string PLATFORM { set; get; }
+        }
+
         public Models.Roles GetRoleName()
         {
             if (Request.Cookies["Role"] != null)
@@ -324,7 +410,7 @@ namespace NOVA.Controllers
 
             var apiUrlnew = "http://192.168.2.13:83/api/Log";
 
-            var httpClientnew = new HttpClient();
+            var httpClientnew = new System.Net.Http.HttpClient();
             var requestnew = new HttpRequestMessage(HttpMethod.Post, apiUrlnew)
             {
                 Content = new StringContent(new JavaScriptSerializer().Serialize(lognew), Encoding.UTF8, "application/json")
@@ -394,7 +480,7 @@ namespace NOVA.Controllers
             var apiUrl = "http://192.168.2.13:83/api/userlog";
 
 
-            var httpClient = new HttpClient();
+            var httpClient = new System.Net.Http.HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, apiUrl)
             {
                 Content = new StringContent(new JavaScriptSerializer().Serialize(log), Encoding.UTF8, "application/json")
@@ -453,7 +539,7 @@ namespace NOVA.Controllers
 
 
 
-            var httpClientnew = new HttpClient();
+            var httpClientnew = new System.Net.Http.HttpClient();
             var requestnew = new HttpRequestMessage(HttpMethod.Post, apiUrlnew)
             {
                 Content = new StringContent(new JavaScriptSerializer().Serialize(lognew), Encoding.UTF8, "application/json")
@@ -497,7 +583,7 @@ namespace NOVA.Controllers
 
 
 
-                var httpClientnew = new HttpClient();
+                var httpClientnew = new System.Net.Http.HttpClient();
                 var requestnew = new HttpRequestMessage(HttpMethod.Post, apiUrlnew)
                 {
                     Content = new StringContent(new JavaScriptSerializer().Serialize(lognew), Encoding.UTF8, "application/json")
@@ -581,7 +667,7 @@ namespace NOVA.Controllers
             var apiUrl = "http://192.168.2.13:83/api/user/" + GetUserByMail(Session["Mail"].ToString()).USER_ID.ToInt();
 
 
-            var httpClient = new HttpClient();
+            var httpClient = new System.Net.Http.HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
             {
                 Content = new StringContent(new JavaScriptSerializer().Serialize(user), Encoding.UTF8, "application/json")
@@ -631,31 +717,20 @@ namespace NOVA.Controllers
 
         }
 
-        public ActionResult LogOff()
+        public async Task<ActionResult> LogOff()
         {
-            _ = LogOutAsync();
-            Session["LoginControl"] = null;
-            HttpCookie nameCookie = Request.Cookies["Name"];
-            HttpCookie idCookie = Request.Cookies["Id"];
-            HttpCookie idCookierolename = Request.Cookies["RoleName"];
-            HttpCookie roleid = Request.Cookies["role"];
+            LoginModel login = new LoginModel();
+            login.LOG_ID = Request.Cookies["LogId"].Value.ToInt();
+            login.LAST_ACTIVITY = -2;
+            var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
 
+            var httpClientnew = new System.Net.Http.HttpClient();
+            var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+            };
 
-         
-
-            //Set the Expiry date to past date.
-            nameCookie.Expires = DateTime.Now.AddDays(-1);
-
-            idCookie.Expires = DateTime.Now.AddDays(-1);
-            idCookierolename.Expires = DateTime.Now.AddDays(-1);
-            roleid.Expires = DateTime.Now.AddDays(-1);
-
-            //Update the Cookie in Browser.
-            Response.Cookies.Add(nameCookie);
-            Response.Cookies.Add(idCookie);
-            Response.Cookies.Add(idCookierolename);
-            Response.Cookies.Add(roleid);
-            Session["Alert"] = null;
+            var responsenew = await httpClientnew.SendAsync(requestnew);
             FormsAuthentication.SignOut();
             return RedirectToAction("Login", "Login");
         }

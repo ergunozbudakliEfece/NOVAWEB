@@ -82,6 +82,51 @@
             transform: scale(0.40);
         }
     }
+
+
+    .animated {
+        -webkit-animation: bounce 1.5s infinite;
+        animation: bounce 1.5s both infinite;
+        animation-direction: reverse
+    }
+
+    @@-webkit-keyframes bounce {
+                0% {-webkit-transform: translateY(0); opacity: 1;}
+  60% { opacity: 0;}
+        100% {
+            -webkit-transform: translateY(-8px);
+            opacity: 1
+        }
+}
+
+@@-moz-keyframes bounce {
+                0% {-webkit-transform: translateY(0); opacity: 1;}
+  60% { opacity: 0;}
+    100% {
+        -webkit-transform: translateY(-8px);
+        opacity: 1
+    }
+}
+
+@@-o-keyframes bounce {
+                0% {-webkit-transform: translateY(0); opacity: 1;}
+  60% { opacity: 0;}
+    100% {
+        -webkit-transform: translateY(-8px);
+        opacity: 1
+    }
+}
+@@keyframes bounce {
+                0% {-webkit-transform: translateY(0); opacity: 1;}
+  60% { opacity: 0;}
+    100% {
+        -webkit-transform: translateY(-8px);
+        opacity: 1
+    }
+}
+
+
+
 </style>
 
 <div class="jumbotron vertical-center" onclick="hideAllPop()">
@@ -90,6 +135,7 @@
         var tarih = dateTime.ToShortDateString();
         ;}
     <div class="container-fluid">
+       
         <div class="row">
             <div class="col">
                 <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
@@ -162,14 +208,13 @@
                    data-reorderable-rows="false">
                 <thead>
                     <tr id="trid">
-
                         <th data-field="FK_ACIKLAMA" data-halign="center" data-align="center" data-formatter="formatterAciklama">ACIKLAMA</th>
                         <th data-field="FIYATDOVIZTIPI" data-halign="center" data-align="center" data-formatter="formatter">DOVIZ TIPI</th>
-                        <th data-field="FIYAT2" data-halign="center" data-align="center" data-formatter="formatterAll">TOPTAN FIYAT</th>
-                        <th data-field="FIYAT3" data-halign="center" data-align="center" data-formatter="formatterAll">PERAKENDE FIYAT</th>
+                        <th data-field="FIYAT2" data-halign="center" data-align="center" data-formatter="formatterToptan">TOPTAN FIYAT</th>
+                        <th data-field="FIYAT3" data-halign="center" data-align="center" data-formatter="perToptan">PERAKENDE FIYAT</th>
                         <th data-field="YOK" data-halign="center" data-align="center" data-visible="false" data-force-export="true" data-formatter="formattergizli1">TOPTAN FIYAT</th>
                         <th data-field="YOK1" data-halign="center" data-align="center" data-visible="false" data-force-export="true" data-formatter="formattergizli2">PERAKENDE FIYAT</th>
-                        <th data-field="OZELKOSULLAR" data-force-export="true" data-visible="false" data-halign="center" data-align="center" data-formatter="formatterKosul">OZEL KOSULLAR</th>
+                        <th data-field="OZELKOSULLAR" data-force-export="false" data-visible="false" data-halign="center" data-align="center" data-formatter="formatterKosul">OZEL KOSULLAR</th>
                     </tr>
                 </thead>
             </table>
@@ -184,8 +229,21 @@
             return (index.FIYAT3 - index.FIYAT2).toLocaleString({ max: 2 });
 
         }
-        $(document).ready(function () {
+        var type = 'fa'
 
+        function loadingTemplate(message) {
+            if (type === 'fa') {
+                return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
+            }
+            if (type === 'pl') {
+                return '<div class="ph-item"><div class="ph-picture"></div></div>'
+            }
+        }
+        var sondurum = null;
+        $(document).ready(function () {
+            $.getJSON("http://192.168.2.13:83/api/fiyat/exec/fiyatdurum", function (data) {
+                sondurum = data;
+            })
             $("#table").bootstrapTable({
                 url: "http://192.168.2.13:83/api/fiyat/exec/000000000000001",
                 exportOptions: {
@@ -203,10 +261,10 @@
                                     columnMargin: 0
                                 }
                             },
-                           
+
                         },
-                        
-                       
+
+
 
                     },
                     ignoreColumn: ['FIYAT3', 'FIYAT2']
@@ -224,9 +282,90 @@
         }).ajaxComplete(function () {
 
             $(".bx-info-circle").popover();
-
+           
+            
         })
+        function formatterToptan(value, index, row) {
+            var d = sondurum.filter(x => x.FIYATKODU == index.FIYATKODU);
+            if (d[0].FIYAT2 == "YÜKSELDİ") {
+                if (index.FIYATDOVIZTIPI != "TRY") {
+                    if (value > 2) {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + "</div><div class='col-6 text-start'><i class='bx bxs-up-arrow' style='color:#00ee00'></i></div></div>";
+                    } else {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) +"</div><div class='col-6 text-start'><i class='bx bxs-up-arrow' style='color:#00ee00'></i></div></div>";
+                    }
 
+                } else {
+
+                    return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</div><div class='col-6 text-start'><i class='bx bxs-up-arrow' style='color:#00ee00'></i></div></div>";
+                }
+            } else if (d[0].FIYAT2 == "DÜŞTÜ") {
+                if (index.FIYATDOVIZTIPI != "TRY") {
+                    if (value > 2) {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + "</div><div class='col-6 text-start'><i class='bx bxs-down-arrow' style='color:#ff0200'></i></div></div>";
+                    } else {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + "</div><div class='col-6 text-start'><i class='bx bxs-down-arrow' style='color:#ff0200'></i></div></div>";
+                    }
+
+                } else {
+
+                    return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</div><div class='col-6 text-start'><i class='bx bxs-down-arrow' style='color:#ff0200'></i></div></div>";
+                }
+            } else {
+                if (index.FIYATDOVIZTIPI != "TRY") {
+                    if (value > 2) {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 }) +"</div></div>" ;
+                    } else {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) +"</div></div>" ;
+                    }
+
+                } else {
+
+                    return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +"</div></div>" ;
+                }
+            }
+        }
+        function perToptan(value, index, row) {
+            var d = sondurum.filter(x => x.FIYATKODU == index.FIYATKODU);
+            if (d[0].FIYAT3 == "YÜKSELDİ") {
+                if (index.FIYATDOVIZTIPI != "TRY") {
+                    if (value > 2) {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + "</div><div class='col-6 text-start'><i class='bx bxs-up-arrow' style='color:#00ee00'></i></div></div>";
+                    } else {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + "</div><div class='col-6 text-start'><i class='bx bxs-up-arrow' style='color:#00ee00'></i></div></div>";
+                    }
+
+                } else {
+
+                    return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</div><div class='col-6 text-start'><i class='bx bxs-up-arrow' style='color:#00ee00'></i></div></div>";
+                }
+            } else if (d[0].FIYAT2 == "DÜŞTÜ") {
+                if (index.FIYATDOVIZTIPI != "TRY") {
+                    if (value > 2) {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + "</div><div class='col-6 text-start'><i class='bx bxs-down-arrow' style='color:#ff0200'></i></div></div>";
+                    } else {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + "</div><div class='col-6 text-start'><i class='bx bxs-down-arrow' style='color:#ff0200'></i></div></div>";
+                    }
+
+                } else {
+
+                    return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</div><div class='col-6 text-start'><i class='bx bxs-down-arrow' style='color:#ff0200'></i></div></div>";
+                }
+            } else {
+                if (index.FIYATDOVIZTIPI != "TRY") {
+                    if (value > 2) {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + "</div></div>";
+                    } else {
+                        return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + "</div></div>";
+                    }
+
+                } else {
+
+                    return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</div></div>";
+                }
+            }
+           
+        }
         function formatter(value, index, row) {
             if (index.FIYATKODU.substring(0, 3) == "ISK") {
                 return value + "&nbsp;<span style='font-size:10px'>(" + index.FIYATKODU.substring(0, 3) + ")</span>";
@@ -292,6 +431,7 @@
         function hideAllPop() {
             $(".popover").hide();
         }
+       
     </script>
 </div>
 

@@ -1,4 +1,4 @@
-﻿using NetOpenX50;
+﻿
 using NOVA.Models;
 using ServiceStack;
 using System;
@@ -18,27 +18,13 @@ namespace NOVA.Controllers
         // GET: Profil
         public ActionResult Index()
         {
-            if (GetSession(Request.Cookies["Id"].Value.ToInt())[0].LOG_DATETIME != null)
-            {
-                var xm = DateTime.Parse(GetSession(Request.Cookies["Id"].Value.ToInt())[0].LOG_DATETIME);
-                var xn = DateTime.Parse(Request.Cookies["SignIn"].Value).AddHours(-3);
-                if ((xm != xn) && GetSession(Request.Cookies["Id"].Value.ToInt())[0].ACTIVITY_TYPE == "login")
-                {
-                    FormsAuthentication.SignOut();
-                    return RedirectToAction("Login", "Login");
-                }
-            }
-            Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
-
-            // Stop Caching in Firefox
-            Response.Cache.SetNoStore();
+           
+           
             Session["Name"]=Request.Cookies["Name"].Value.ToString();
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
             ViewBag.Id=Request.Cookies["Id"].Value.ToString();
             var yetki = GetYetki();
-            
             var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
-
             var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
             var yetkiKontrolUretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 3).USER_AUTH;
             var yetkiKontrolSatinAlma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 4).USER_AUTH;

@@ -1,11 +1,16 @@
 ﻿using NOVA.Models;
+using ServiceStack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using static NOVA.Controllers.LoginController;
+using System.Web.Security;
+using System.Text;
 
 namespace NOVA.Controllers
 {
@@ -23,6 +28,61 @@ namespace NOVA.Controllers
                 Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
 
                 return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                if (Request.Cookies["Id"].Value.ToInt() != 10050 && Request.Cookies["Id"].Value.ToInt() != 10000)
+                { //Kullanıcının en son logid si bulunur
+                    string json1 = null;
+                    LoginModel createdlog = null;
+                    var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
+                    Uri url1 = new Uri(apiUrl1);
+                    WebClient client1 = new WebClient();
+                    client1.Encoding = System.Text.Encoding.UTF8;
+
+                    json1 = client1.DownloadString(url1);
+                    JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                    createdlog = ser1.Deserialize<LoginModel>(json1);
+
+
+                    HttpCookie logid = new HttpCookie("LogId", createdlog.LOG_ID.ToString());
+                    Response.Cookies.Add(logid);
+                    //Kullanıcının en son logid si bulunur
+
+                    string json2 = null;
+                    List<ExecModel> createdlog1 = null;
+                    var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + createdlog.LOG_ID;
+                    Uri url2 = new Uri(apiUrl2);
+                    WebClient client2 = new WebClient();
+                    client2.Encoding = System.Text.Encoding.UTF8;
+
+                    json2 = client2.DownloadString(url2);
+                    JavaScriptSerializer ser2 = new JavaScriptSerializer();
+                    createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+
+                    if (createdlog1[0].SITUATION != false)
+                    {
+                        LoginModel login = new LoginModel();
+                        login.LOG_ID = createdlog.LOG_ID;
+                        login.LAST_ACTIVITY = 8;
+                        var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                        var httpClientnew = new System.Net.Http.HttpClient();
+                        var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
+                        {
+                            Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                        };
+
+                        var responsenew = httpClientnew.SendAsync(requestnew);
+                    }
+                    else
+                    {
+                        FormsAuthentication.SignOut();
+                        return RedirectToAction("Login", "Login");
+                    }
+
+
+                }
             }
             if (yetkiKontrol.UPDATE_AUTH == true)
             {
@@ -283,7 +343,63 @@ namespace NOVA.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
-            
+            else
+            {
+                if (Request.Cookies["Id"].Value.ToInt() != 10050 && Request.Cookies["Id"].Value.ToInt() != 10000)
+                { //Kullanıcının en son logid si bulunur
+                    string json1 = null;
+                    LoginModel createdlog = null;
+                    var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
+                    Uri url1 = new Uri(apiUrl1);
+                    WebClient client1 = new WebClient();
+                    client1.Encoding = System.Text.Encoding.UTF8;
+
+                    json1 = client1.DownloadString(url1);
+                    JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                    createdlog = ser1.Deserialize<LoginModel>(json1);
+
+
+
+
+
+                    //Kullanıcının en son logid si bulunur
+
+                    string json2 = null;
+                    List<ExecModel> createdlog1 = null;
+                    var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
+                    Uri url2 = new Uri(apiUrl2);
+                    WebClient client2 = new WebClient();
+                    client2.Encoding = System.Text.Encoding.UTF8;
+
+                    json2 = client2.DownloadString(url2);
+                    JavaScriptSerializer ser2 = new JavaScriptSerializer();
+                    createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+
+                    if (createdlog1[0].SITUATION != false)
+                    {
+                        LoginModel login = new LoginModel();
+                        login.LOG_ID = createdlog.LOG_ID;
+                        login.LAST_ACTIVITY = 33;
+                        var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                        var httpClientnew = new System.Net.Http.HttpClient();
+                        var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
+                        {
+                            Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                        };
+
+                        var responsenew = httpClientnew.SendAsync(requestnew);
+                    }
+                    else
+                    {
+                        FormsAuthentication.SignOut();
+                        return RedirectToAction("Login", "Login");
+                    }
+
+
+                }
+            }
+
             var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
 
             var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
