@@ -19,6 +19,6 @@ namespace NOVA.Models
         public string DOV_TIP { get; set; }
         public string URETILECEKMI { get; set; }
         public string SSIP_CHECK { get; set; }
-
+        public DateTime? TESLIM_TARIHI { get; set; }
     }
 }

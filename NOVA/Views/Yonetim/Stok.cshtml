@@ -127,6 +127,11 @@
     </div>
     <div class="card mx-auto" style="font-size:12px">
         <div class="card-header pb-0">
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                    <i class="bx bx-menu bx-sm"></i>
+                </a>
+            </div>
             <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
                 @{
                     string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
@@ -380,13 +385,20 @@
 
 
                     } else {
+                        
                         for (let i = 0; i < f.length; i++) {
 
                             var t = excellist.filter(x => (x.RULOKODU.substring(0, 4)).includes(parseInt((f[i].SERI_NO).split('.')[0].substring(0, 6))));
-
+                           
                             if (t.length > 0) {
+                                for (let a = 0; a < t.length; a++) {
+                                    if (t[a].GIR_KUR_HES_USD_FIYAT != null) {
 
-                                sum = parseFloat(sum) + (parseFloat(t[0].TUTAR) * parseFloat(t[0].TONAJ.replace(',', '.')));
+                                        sum = parseFloat(sum) + (parseFloat(t[a].GIR_KUR_HES_USD_FIYAT) * t[a].TONAJ);
+                                        /* alert(parseFloat(t[0].GIR_KUR_HES_USD_FIYAT) * t[a].TONAJ);*/
+                                    }
+                                }
+                                
 
                                 for (let a = 0; a < t.length; a++) {
 
@@ -785,21 +797,36 @@
 
 
                     } else {
+                       
+                        
                         for (let i = 0; i < f.length; i++) {
-
-                            var t = excellist.filter(x => (x.RULOKODU.substring(0, 4)).includes(parseInt((f[i].SERI_NO).split('.')[0].substring(0, 6))));
-
+                            var t = null;
+                            
+                            if (f[i].SERI_NO != null) {
+                                t = excellist.filter(x => parseInt(x.RULOKODU.substring(0, x.RULOKODU.length - 2)) == parseInt((f[i].SERI_NO).split('.')[0]));
+                            }
+                        
+                            
+                            
+                          
                             if (t.length > 0) {
+                                for (let a = 0; a < t.length; a++) {
+                                    if (t[0].GIR_KUR_HES_USD_FIYAT != null) {
 
-                                sum = parseFloat(sum) + (parseFloat(t[0].TUTAR) * parseFloat(t[0].TONAJ.replace(',', '.')));
+                                        sum = parseFloat(sum) + (parseFloat(t[a].GIR_KUR_HES_USD_FIYAT) * t[a].TONAJ);
+                                       /* alert(parseFloat(t[0].GIR_KUR_HES_USD_FIYAT) * t[a].TONAJ);*/
+                                    }
+                                }
+                                
+                               
+                               
                                 for (let a = 0; a < t.length; a++) {
                                     sumbakiye = sumbakiye + parseFloat(t[a].TONAJ.replace(',', '.'));
                                 }
                             }
                         }
-
                         list.push({
-                            FK_ACIKLAMA: listEfece4[i], BAKIYE: sumbakiye.toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCU_BR1, TOPTAN_DEGER: "", PERAKENDE_DEGER: "", TOPTAN_DEGER_TL: "", PERAKENDE_DEGER_TL: "", FIYATKODU: fiyatkodu, DIF: 'true', TOPLAM_MALIYET: sum.toLocaleString(undefined, {
+                            FK_ACIKLAMA: listEfece4[i], BAKIYE: sumbakiye.toLocaleString(), FIYATDOVIZTIPI: doviz, OLCUBR: f[0].OLCU_BR1, TOPTAN_DEGER: "", PERAKENDE_DEGER: "", TOPTAN_DEGER_TL: "", PERAKENDE_DEGER_TL: "", FIYATKODU: fiyatkodu, DIF: 'true', TOPLAM_MALIYET: parseFloat(sum).toLocaleString(undefined, {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2
                             })
@@ -1040,16 +1067,26 @@
 
                     } else {
                         for (let i = 0; i < f.length; i++) {
-
+                      
                             var t = excellist.filter(x => (x.RULOKODU.substring(0, 4)).includes(parseInt((f[i].SERI_NO).split('.')[0].substring(0, 6))));
 
                             if (t.length > 0) {
+                                if (t[0].TUTAR != null) {
+                                    for (let a = 0; a < t.length; a++) {
+                                        if (t[a].GIR_KUR_HES_USD_FIYAT != null) {
 
-                                sum = parseFloat(sum) + (parseFloat(t[0].TUTAR) * parseFloat(t[0].TONAJ.replace(',', '.')));
+                                            sum = parseFloat(sum) + (parseFloat(t[a].GIR_KUR_HES_USD_FIYAT) * t[a].TONAJ);
+                                            /* alert(parseFloat(t[0].GIR_KUR_HES_USD_FIYAT) * t[a].TONAJ);*/
+                                        }
+                                    }
+                                }
+                                
+                                
+                                
                           
                                 for (let a = 0; a < t.length; a++) {
 
-                                    sumbakiye = sumbakiye + parseFloat(t[a].TONAJ.replace(',', '.'));
+                                    sumbakiye =  parseFloat(sumbakiye) + parseFloat(t[a].TONAJ);
                                     
                                 }
                             }
@@ -1217,6 +1254,7 @@
        
         if (row.DIF == 'true') {
             var d = tumliste2.filter(x => x.ACIKLAMA == row.FK_ACIKLAMA);
+            
             var tanimsizlar = tumliste2.filter(x => x.ACIKLAMA == null);
             var st = "";
             if (d.length == 0) {
@@ -1232,10 +1270,11 @@
 
             } else {
                 for (let i = 0; i < d.length; i++) {
-                    var t = excellist.filter(x => x.RULOKODU.includes(parseInt((d[i].SERI_NO).split('.')[0])));
+
+                    var t = excellist.filter(x => (x.RULOKODU.substring(0, x.RULOKODU.length-2)).includes(parseInt((d[i].SERI_NO).split('.')[0])));
                     if (t.length > 0) {
                         for (let a = 0; a < t.length; a++) {
-                            st = st + "<tr><td class='text-center'>" + d[i].STOK_ADI + "</td><td class='text-center'>" + "0" + (t[a].RULOKODU).toString().substring(0, 4) + "." + (t[a].RULOKODU).toString().substring(4, 6) + "</td><td class='text-center'>" + (t[a].RENKKODU).toString() + "</td><td class='text-center'>" + (parseFloat(t[a].KALINLIK.replace(',', '.')).toFixed(2)).replace('.', ',') + "</td><td class='text-center'>" + (t[a].GENISLIK).toString() + "</td><td class='text-center'>" + (t[a].KALITE).toString() + "</td><td class='text-center'>" + (t[a].KAPLAMA).toString() + "</td><td class='text-center'>" + parseFloat(t[a].TONAJ).toLocaleString() + "</td><td class='text-center'>" + "<b>$ " + (parseFloat(t[a].TUTAR).toFixed(4).toLocaleString()).replace(',', '.') + "</b></td></tr>"
+                            st = st + "<tr><td class='text-center'>" + d[i].STOK_ADI + "</td><td class='text-center'>" + "0" + (t[a].RULOKODU).toString().substring(0, 4) + "." + (t[a].RULOKODU).toString().substring(4, 6) + "</td><td class='text-center'>" + (t[a].RENKKODU).toString() + "</td><td class='text-center'>" + (parseFloat(t[a].KALINLIK.replace(',', '.')).toFixed(2)).replace('.', ',') + "</td><td class='text-center'>" + (t[a].GENISLIK).toString() + "</td><td class='text-center'>" + (t[a].KALITE).toString() + "</td><td class='text-center'>" + (t[a].KAPLAMA).toString() + "</td><td class='text-center'>" + parseFloat(t[a].TONAJ).toLocaleString() + "</td><td class='text-center'>" + "<b>$ " + (d[i].DOV_TIP == "TRY" ? (parseFloat(t[a].TUTAR).toFixed(4).toLocaleString()).replace(',', '.') : (parseFloat(t[a].GIR_KUR_HES_USD_FIYAT).toFixed(4).toLocaleString()).replace(',', '.')) + "</b></td></tr>"
                         }
                         
                     }

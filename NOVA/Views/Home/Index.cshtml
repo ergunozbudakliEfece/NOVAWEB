@@ -42,215 +42,430 @@
         }
     </style>
     <style>
- 
+   #scroll-container {
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+#scroll-text {
+  /* animation properties */
+  -moz-transform: translateX(100%);
+  -webkit-transform: translateX(100%);
+  transform: translateX(100%);
+
+  -moz-animation: my-animation 30s linear infinite;
+  -webkit-animation: my-animation 30s linear infinite;
+  animation: my-animation 30s linear infinite;
+}
+
+
+/* for Firefox */
+@@-moz-keyframes my-animation {
+  from { -moz-transform: translateX(100%); }
+  to { -moz-transform: translateX(-100%); }
+}
+
+/* for Chrome */
+@@-webkit-keyframes my-animation {
+  from { -webkit-transform: translateX(100%); }
+  to { -webkit-transform: translateX(-100%); }
+}
+
+        @@keyframes my-animation {
+            from {
+                -moz-transform: translateX(100%);
+                -webkit-transform: translateX(100%);
+                transform: translateX(100);
+            }
+
+            to {
+                -moz-transform: translateX(-100%);
+                -webkit-transform: translateX(-100%);
+                transform: translateX(-80%);
+            }
+        }
+
+        .marquee-w {
+            top:-5vh;
+            position: relative;
+            width: 100%;
+            height: 140px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+.marquee {
+  position: absolute;
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 100%;
+  height: 100%;
+}
+
+.marquee span {
+  display: inline-block;
+  padding-left: 100%;
+  text-align: center;
+  /*white-space: nowrap;*/
+  min-width: 100%;
+  height: 100%;
+  line-height: 140px;
+  animation: marquee 60s linear infinite;
+}
+
+.marquee2 span {
+  animation-delay: 30s;
+}
+
+@@keyframes marquee {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-100%, 0);
+  }
+}
+
+
+
+
+
     </style>
     <script src="~/Scripts/jquery-3.6.1.min.js"></script>
 </head>
 
-<body onload="script();" onclose="close()">
-   
-    <div class="centercontent" id="content" style="display:unset">
-        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
-    </div>
-    @if ((string)Session["Onay"] == "onay")
-    {
-        <script>
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'bottom-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            })
+<body onload="script();" onclose="close()" style="overflow-x:hidden">
+    
+    
+           
 
-            Toast.fire({
-                icon: 'info',
-                title: 'Diğer cihazdaki oturumunuz sonlandırıldı!'
-            });
-        </script>
-        Session["Onay"] = null;
-    }
-    <div id="page">
 
-        @{ if (Session["Alert"] != null)
+
+
+            <div class="centercontent" id="content" style="display:unset">
+                <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+            </div>
+            @if ((string)Session["Onay"] == "onay")
             {
-                if (Session["Alert"].ToString() == "Eski Şifreniz Yanlış")
-                {
-                    <div class="alert alert-danger" role="alert">
-                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                        @Session["Alert"].ToString()
-                    </div>
-                }
-                else if (Session["Alert"].ToString() == "Girmiş olduğunuz şifreler aynı değil!")
-                {
-                    <div class="alert alert-danger" role="alert">
-                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                        @Session["Alert"].ToString()
-                    </div>
-                }
-                else if (Session["Alert"].ToString() == "Şifre değişikliği başarılı!")
-                {
-                    <div class="alert alert-success" role="alert">
-                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                        @Session["Alert"].ToString()
-                    </div>
-                }
+                <script>
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'bottom-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Diğer cihazdaki oturumunuz sonlandırıldı!'
+                    });
+                </script>
+                Session["Onay"] = null;
             }
-            if (Session["ModulYetkiMesajı"] != null)
+<div id="page">
+
+    @{ if (Session["Alert"] != null)
+        {
+            if (Session["Alert"].ToString() == "Eski Şifreniz Yanlış")
             {
                 <div class="alert alert-danger" role="alert">
                     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                    @Session["ModulYetkiMesajı"].ToString()
+                    @Session["Alert"].ToString()
+                </div>
+            }
+            else if (Session["Alert"].ToString() == "Girmiş olduğunuz şifreler aynı değil!")
+            {
+                <div class="alert alert-danger" role="alert">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    @Session["Alert"].ToString()
+                </div>
+            }
+            else if (Session["Alert"].ToString() == "Şifre değişikliği başarılı!")
+            {
+                <div class="alert alert-success" role="alert">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    @Session["Alert"].ToString()
                 </div>
             }
         }
+        if (Session["ModulYetkiMesajı"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                @Session["ModulYetkiMesajı"].ToString()
+            </div>
+        }
 
-        <!-- / Navbar -->
-        <!-- Content wrapper -->
-        <div class="container-xxl flex-grow-1 container-p-y mt-3" id="online">
 
-            <div class="row">
-                <div class="col-lg-12 mb-4 order-0">
-                    @*<div class="col">
+}
+  
+    <!-- / Navbar -->
+    <!-- Content wrapper -->
+    <div class="container-xxl flex-grow-1 container-p-y" id="online">
+
+        <div class="row">
+            <div class="col-lg-12 mb-4 order-0">
+                @{
+                    if (Request.Cookies["UserId"].Value == "10002" /*|| Request.Cookies["UserId"].Value == "10001" || Request.Cookies["UserId"].Value == "10002" || Request.Cookies["UserId"].Value == "10003" || Request.Cookies["UserId"].Value == "10005" || Request.Cookies["UserId"].Value == "10004" || Request.Cookies["UserId"].Value == "10021" || Request.Cookies["UserId"].Value == "10020"*/)
+                    {
+                        <div class="marquee-w">
+                            <div class="marquee">
+                                <span>
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label><b>USD/TRY (Spot)</b><b><label class="ps-2 lab"></label></b>
+                                    </label>
+                                    <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label>USD/TRY (15)<label class="ps-2 lab2"></label>
+                                    </label>
+                                    <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label>USD/TRY (30)<label class="ps-2 lab3"></label>
+                                    </label>
+                                    <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label>USD/TRY (45)<label class="ps-2 lab4"></label>
+                                    </label>
+                                    <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label>USD/TRY (60)<label class="ps-2 lab5"></label>
+                                    </label>
+                                    <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                </span>
+
+                            </div>
+                            <div class="marquee marquee2">
+                                <span>
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label><b>USD/TRY (Spot)</b><b><label class="ps-2 lab"></label></b>
+                                    </label>
+                                    <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label>USD/TRY (15)<label class="ps-2 lab2"></label>
+                                    </label>
+                                    <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label>USD/TRY (30)<label class="ps-2 lab3"></label>
+                                    </label>
+                                    <img style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label>USD/TRY (45)<label class="ps-2 lab4"></label>
+                                    </label>
+                                    <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                    <label class="ps-4">
+                                        <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                            <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                        </label>USD/TRY (60)<label class="ps-2 lab5"></label>
+                                    </label>
+                                    <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                </span>
+
+                            </div>
+                        </div>
+                    }
+                }
+
+
+
+                @*<div class="col">
             <iframe src="~/assets/happy-new-year2022/dist/index.html" height="350" width="100%"></iframe>
         </div>*@
 
-                    <div class="card">
-                        <div class="d-flex align-items-end row">
-                            <div class="col-sm-7">
-                                <div class="card-body text-sm-left">
+                <div class="card">
+                    <label id="test"></label>
+                    <div class="d-flex align-items-end row">
+                        <div class="col-sm-7">
+                            <div class="card-body text-sm-left">
 
-                                    @{ string merhaba = "";
-                                        if (Session["Name"] == null)
-                                        {
-                                            merhaba = Request.Cookies["Name"].Value;
-                                        }
-                                        else
-                                        {
-                                            merhaba = Session["Name"].ToString();
-                                        }
+                                @{ string merhaba = "";
+                                    if (Session["Name"] == null)
+                                    {
+                                        merhaba = Request.Cookies["Name"].Value;
                                     }
-                                    <h4 class="card-title text-primary">Hoşgeldin @merhaba @ViewBag.IDJS! 🎉</h4>
+                                    else
+                                    {
+                                        merhaba = Session["Name"].ToString();
+                                    }
+                                }
+                                <h4 class="card-title text-primary">Hoşgeldin @merhaba @ViewBag.IDJS! 🎉</h4>
 
-                                    <p class="mb-4">EFECE Ailesi olarak iyi çalışmalar dileriz.</p>
-                                </div>
+                                <p class="mb-4">EFECE Ailesi olarak iyi çalışmalar dileriz.</p>
                             </div>
-                            <div class="col-sm-5 text-center text-sm-left">
+                        </div>
+                        <div class="col-sm-5 text-center text-sm-left">
 
-                                <div class="card-body pb-0 px-0 px-md-4">
-                                    <img src="/assets/img/illustrations/man-with-laptop-light.png" height="140" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
-                                </div>
+                            <div class="card-body pb-0 px-0 px-md-4">
+                                <img src="/assets/img/illustrations/man-with-laptop-light.png" height="140" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
                             </div>
                         </div>
                     </div>
-                    <script>
-                        const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-                            "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
-                        ];
-                    </script>
-                    @{ var onlineusers = ViewBag.OnlineUsers; int a = 0;}
-                    <div class="card col" style="display:unset">
-                        <div class="table-responsive text-nowrap mt-3">
-                            <table class="table table-hover results sorttable centered" id="sortTable">
-                                <thead class="centered">
-                                    <tr>
+                </div>
+                <script>
+                    const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+                        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+                    ];
+                </script>
+                @{ var onlineusers = ViewBag.OnlineUsers; int a = 0;}
+                <div class="card col" style="display:unset">
+                    <div class="table-responsive text-nowrap mt-3">
+                        <table class="table table-hover results sorttable centered" id="sortTable">
+                            <thead class="centered">
+                                <tr>
 
-                                        <th>
-                                        <script>document.write(monthNames[new Date().getMonth()]);</script> Ayı Kullanım Sıralaması</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-border-bottom-0">
-                                    <tr>
-                                        <td>
-                                            <ul id="ranks" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                            </ul>
-                                        </td>
-                                    </tr>
+                                    <th>
+                                        <script>document.write(monthNames[new Date().getMonth()]);</script> Ayı Kullanım Sıralaması
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-border-bottom-0">
+                                <tr>
+                                    <td>
+                                        <ul id="ranks" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                        </ul>
+                                    </td>
+                                </tr>
 
-                                </tbody>
-                            </table>
-
-                        </div>
-                        <div class="table-responsive text-nowrap mt-3">
-                            <table class="table table-hover results sorttable centered" id="sortTable">
-                                <thead class="centered">
-                                    <tr>
-                                        <th>Çevrimiçi Kullanıcılar(<span id="cevrimicisayi"></span>)</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-border-bottom-0">
-                                    <tr>
-                                        <td>
-                                            <ul id="onlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                            </ul>
-                                        </td>
-                                    </tr>
-
-                                </tbody>
-                            </table>
-
-                        </div>
-                        <div class="table-responsive text-nowrap">
-                            <table class="table table-hover results sorttable centered" id="sortTable">
-                                <thead class="centered">
-                                    <tr>
-                                        <th>Çevrimdışı Kullanıcılar(<span id="cevrimdisisayi"></span>)</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-border-bottom-0">
-                                    @{ var offlineusers = ViewBag.OfflineUsers; int b = 0;}
-                                    <tr>
-                                        <td>
-                                            <ul id="offlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                            </ul>
-                                        </td>
-
-
-
-                                    </tr>
-
-
-
-
-
-                                </tbody>
-                            </table>
-
-                        </div>
+                            </tbody>
+                        </table>
 
                     </div>
+                    <div class="table-responsive text-nowrap mt-3">
+                        <table class="table table-hover results sorttable centered" id="sortTable">
+                            <thead class="centered">
+                                <tr>
+                                    <th>Çevrimiçi Kullanıcılar(<span id="cevrimicisayi"></span>)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-border-bottom-0">
+                                <tr>
+                                    <td>
+                                        <ul id="onlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                        </ul>
+                                    </td>
+                                </tr>
 
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="table-responsive text-nowrap">
+                        <table class="table table-hover results sorttable centered" id="sortTable">
+                            <thead class="centered">
+                                <tr>
+                                    <th>Çevrimdışı Kullanıcılar(<span id="cevrimdisisayi"></span>)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-border-bottom-0">
+                                @{ var offlineusers = ViewBag.OfflineUsers; int b = 0;}
+                                <tr>
+                                    <td>
+                                        <ul id="offlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                        </ul>
+                                    </td>
+
+
+
+                                </tr>
+
+
+
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
 
                 </div>
+
+
             </div>
-
-
-
-            <!--/ Transactions -->
         </div>
 
-        <footer class="content-footer footer bg-footer-theme">
-            <div class="container-xxl d-flex  text-nowrap justify-content-between py-2 flex-md-row flex-column">
-                <div style="padding-left:40%">
-                    ©
-                    <script>document.write(new Date().getFullYear());</script>
-                    , designed by
-                    <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
 
-                </div>
-            </div>
-        </footer>
+
+        <!--/ Transactions -->
     </div>
 
+    <footer class="content-footer footer bg-footer-theme">
+        <div class="container-xxl d-flex  text-nowrap justify-content-between py-2 flex-md-row flex-column">
+            <div style="padding-left:40%">
+                ©
+                <script>document.write(new Date().getFullYear());</script>
+                , designed by
+                <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
+
+            </div>
+        </div>
+    </footer>
+</div>
 
 
 
-    <script>
 
+<script>
+  
+
+    
+                var $tickerWrapper = $(".tickerwrapper");
+                var $list = $tickerWrapper.find("ul.list");
+                var $clonedList = $list.clone();
+                var listWidth = 10;
+
+                $list.find("li").each(function (i) {
+                    listWidth += $(this, i).outerWidth(true);
+                });
+
+                var endPos = $tickerWrapper.width() - listWidth;
+
+                $list.add($clonedList).css({
+                    "width": listWidth + "px"
+                });
+
+                $clonedList.addClass("cloned").appendTo($tickerWrapper);
+
+                //TimelineMax
+                var infinite = new TimelineMax({ repeat: -1, paused: true });
+                var time = 40;
+
+                infinite
+                    .fromTo($list, time, { rotation: 0.01, x: 0 }, { force3D: true, x: -listWidth, ease: Linear.easeNone }, 0)
+                    .fromTo($clonedList, time, { rotation: 0.01, x: listWidth }, { force3D: true, x: 0, ease: Linear.easeNone }, 0)
+                    .set($list, { force3D: true, rotation: 0.01, x: listWidth })
+                    .to($clonedList, time, { force3D: true, rotation: 0.01, x: -listWidth, ease: Linear.easeNone }, time)
+                    .to($list, time, { force3D: true, rotation: 0.01, x: 0, ease: Linear.easeNone }, time)
+                    .progress(1).progress(0)
+                    .play();
+
+                //Pause/Play
+                $tickerWrapper.on("mouseenter", function () {
+                    infinite.pause();
+                }).on("mouseleave", function () {
+                    infinite.play();
+                });
 
             document.getElementById("anasayfa").className = "menu-item active";
 
@@ -302,8 +517,33 @@
 
                     document.getElementById("offlines").appendChild(li);
                 }
-            }).then(function () {
+            }).done(function () {
                 $('.durum').tooltip();
+                setInterval(function () {
+                    $.get('https://www.bloomberght.com/doviz', function (data) {
+                        var d = (data.split("USDTRY Curncy")[2].split(">")[1].split("<")[0]).replace(",", ".")
+                        $(".lab").text((parseFloat(d) + 0.15).toFixed(4));
+                        $(".lab2").text(((parseFloat(d) + 0.15) * (1 + ((0.035 / 30)) * 15)).toFixed(4));
+                        $(".lab3").text(((parseFloat(d) + 0.15) * (1 + ((0.035 / 30)) * 30)).toFixed(4));
+                        $(".lab4").text(((parseFloat(d) + 0.15) * (1 + ((0.035 / 30)) * 45)).toFixed(4));
+                        $(".lab5").text(((parseFloat(d) + 0.15) * (1 + ((0.035 / 30)) * 60)).toFixed(4));
+                    })
+                }, 1000);
+                
+                
+                //$.getJSON('http://assets.ino.com/data/quote/?format=json&s=FOREX_USDTRY?callback=?', function (data) {
+
+                //    var d = JSON.stringify(data);
+                //    alert(d);
+                //    $(".lab").text((parseFloat(d.FOREX_USDTRY.last) + 0.15).toFixed(4));
+                //    $(".lab2").text(((parseFloat(d.FOREX_USDTRY.last) + 0.15) * (1 + ((0.035 / 30)) * 15)).toFixed(4));
+                //    $(".lab3").text(((parseFloat(d.FOREX_USDTRY.last) + 0.15) * (1 + ((0.035 / 30)) * 30)).toFixed(4));
+                //    $(".lab4").text(((parseFloat(d.FOREX_USDTRY.last) + 0.15) * (1 + ((0.035 / 30)) * 45)).toFixed(4));
+                //    $(".lab5").text(((parseFloat(d.FOREX_USDTRY.last) + 0.15) * (1 + ((0.035 / 30)) * 60)).toFixed(4));
+                //})
+
+
+
             })
             $.getJSON('http://192.168.2.13:83/api/userlogin/exec/rank', function (data) {
                 if (data.length >= 10) {
@@ -372,6 +612,7 @@
 
             }).then(function () {
                 $('.durum').tooltip();
+
             })
 
         };
@@ -397,8 +638,51 @@
             script1();
 
 
-        };
-    </script>
+                };
+
+                var $tickerWrapper = $(".tickerwrapper");
+                var $list = $tickerWrapper.find("ul.list");
+                var $clonedList = $list.clone();
+                var listWidth = 10;
+
+                $list.find("li").each(function (i) {
+                    listWidth += $(this, i).outerWidth(true);
+                });
+
+                var endPos = $tickerWrapper.width() - listWidth;
+
+                $list.add($clonedList).css({
+                    "width": listWidth + "px"
+                });
+
+                $clonedList.addClass("cloned").appendTo($tickerWrapper);
+
+                //TimelineMax
+                var infinite = new TimelineMax({ repeat: -1, paused: true });
+                var time = 40;
+
+                infinite
+                    .fromTo($list, time, { rotation: 0.01, x: 0 }, { force3D: true, x: -listWidth, ease: Linear.easeNone }, 0)
+                    .fromTo($clonedList, time, { rotation: 0.01, x: listWidth }, { force3D: true, x: 0, ease: Linear.easeNone }, 0)
+                    .set($list, { force3D: true, rotation: 0.01, x: listWidth })
+                    .to($clonedList, time, { force3D: true, rotation: 0.01, x: -listWidth, ease: Linear.easeNone }, time)
+                    .to($list, time, { force3D: true, rotation: 0.01, x: 0, ease: Linear.easeNone }, time)
+                    .progress(1).progress(0)
+                    .play();
+
+                //Pause/Play
+                $tickerWrapper.on("mouseenter", function () {
+                    infinite.pause();
+                }).on("mouseleave", function () {
+                    infinite.play();
+                });
+
+
+    
+
+   
+
+</script>
 
 </body>
 </html>

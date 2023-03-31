@@ -1,5 +1,7 @@
 ﻿
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Http;
+using NetOpenX50;
 using NOVA.Models;
 using ServiceStack;
 using System;
@@ -15,6 +17,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.Security;
+using System.Windows.Forms;
 using static NOVA.Controllers.LoginController;
 using static ServiceStack.Diagnostics.Events;
 
@@ -146,6 +149,15 @@ namespace NOVA.Controllers
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Istatistik = "none";
+            }
+            else
+            {
+                ViewBag.Istatistik = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -422,16 +434,39 @@ namespace NOVA.Controllers
 
 
 
-
-
             
 
-            
-            
-           
+
+
+
             return View();
         }
-        
+        public JsonResult GetKur()
+        {
+
+
+            var apiUrl = "http://assets.ino.com/data/quote/?format=json&s=FOREX_USDTRY";
+
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            client.ResponseHeaders.Add("Application/json; utf-8");
+            client.Headers.Add("Access-Control-Allow-Origin", "*");
+            client.Headers.Add("Access-Control-Allow-Origin", "allowOrigin");
+            client.Headers.Add("Access-Control-Allow-Credentials", "true");
+            client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+            string json = client.DownloadString(url);
+          
+
+            //END
+
+            return Json(json, JsonRequestBehavior.AllowGet);
+        }
+        public class KurModel
+        {
+            public string USD { get; set; }
+        }
         public List<SignIn> GetSession(int id)
         {
 

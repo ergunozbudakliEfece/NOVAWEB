@@ -23,12 +23,13 @@
     }
 
     .search {
-        width: 90%;
+        width: 100%;
         position: relative;
-        float: right;
+        float: right !important;
     }
 
     .select2-container {
+        width: 100% !important;
         position: relative;
         float: right;
     }
@@ -56,7 +57,7 @@
                             data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
-               
+
 
 
             </div>
@@ -64,6 +65,13 @@
     </div>
     <div class="container-fluid">
         <div class="row">
+            <div class="col">
+                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                    <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                        <i class="bx bx-menu bx-sm"></i>
+                    </a>
+                </div>
+            </div>
             <div class="col">
                 <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
                     @{
@@ -112,13 +120,125 @@
             </div>
         </div>
         <div class="row">
+            <div id="employeeTableWrapper" class="tableWrapper">
+                <div class="mt-2" id="toolbar">
+                    <div class="row">
+                        <div class="col">
+                            <select id="filter" multiple="multiple" name="filterAlgorithm" style="width:15vw">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <table id="table"
+                       class="table table-striped"
+                       data-show-fullscreen="true"
+                       data-buttons-order="['filterTable','columns']"
+                       data-toggle="table"
+                       data-toolbar="#toolbar"
+                       data-show-export="false"
+                       data-export-data-type="all"
+                       data-export-types="['excel']"
+                       data-pagination="true"
+                       data-page-size="100"
+                       data-search="true"
+                       data-show-columns="true"
+                       data-show-columns-toggle-all="true"
+                       data-locale="tr-TR"
+                       data-filter-control="true"
+                       data-filter-control-multiple-search="true"
+                       data-loading-template="loadingTemplate"
+                       data-height="800"
+                       data-mobile-responsive="true"
+                       data-show-footer="false"
+                       data-detail-view="false"
+                       data-detail-formatter="detailFormatter"
+                       data-check-on-init="true"
+                       data-trim-on-search="false">
+                    <thead>
+                        <tr>
 
+                            <th data-field="USER_NAME" data-halign="center" data-align="center" data-sortable="true">Kullanıcı Adı</th>
+                            <th data-field="SESSION_DURATION" data-halign="center" data-align="center" data-sortable="true" data-formatter="sureFormatter">Toplam Süre</th>
+                            <th data-field="RATE" data-halign="center" data-align="center" data-sortable="true" data-formatter="yuzdeFormatter">Yüzde</th>
+                            <th data-field="MONTH" data-halign="center" data-align="center" data-sortable="true" data-formatter="ayFormatter">Ay</th>
+                            <th data-field="YEAR" data-halign="center" data-align="center" data-sortable="true">Yıl</th>
+                        </tr>
+                    </thead>
+                </table>
+
+
+            </div>
 
 
         </div>
     </div>
-   
+    <script>
+        var filt = [];
+        var filt2 = [];
+        $(document).ready(function () {
+            document.getElementById("yonetimpaneli").className = "menu-item open active";
+            document.getElementById("istatistik").className = "menu-item active";
+            var d = null;
+            
+            $.getJSON('http://192.168.2.13:83/api/userlogin/exec/ranks',function (data) {
+                d=data;
+            }).done(function () {
+                var aylist = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
+                for (let i = 0; i < d.length; i++) {
+                    if (!filt.includes(d[i].DONEM)) {
+                        filt.push(d[i].DONEM);
+                    }
+                   
+                }
+                for (let i = 0; i < filt.length; i++) {
+                    var option = document.createElement("option");
+                    option.innerHTML = aylist[filt[i].split('/')[0]-1]+'/'+filt[i].split('/')[1];
+                    option.value = filt[i];
+                    document.getElementById("filter").appendChild(option);
+                }
+             
+                
+                $('#table').bootstrapTable("load", d);
+
+            }).then(function () {
+                $("#filter").select2({ placeholder: 'DÖNEM' });
+               
+            })
+
+           
+            
+        })
+
+        function sureFormatter(value, index, row) {
+
+            return value.toLocaleString() +" dakika"
+        }
+        function yuzdeFormatter(value, index, row) {
+
+            return value.toLocaleString() + " %"
+        }
+        function ayFormatter(value, index, row) {
+            var aylist=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"]
+            return aylist[value-1];
+        }
+        var type = 'fa'
+        function loadingTemplate(message) {
+            if (type === 'fa') {
+                return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
+            }
+            if (type === 'pl') {
+                return '<div class="ph-item"><div class="ph-picture"></div></div>'
+            }
+        }
+        $('#toolbar').change(function (e) {
+            var filterAlgorithm = $('#filter').val()
+            $('#table').bootstrapTable('filterBy', {
+                DONEM: (filterAlgorithm.length > 0 ? filterAlgorithm : filt)
+                })
+        })
+    </script>
 </div>
+
 
 
 

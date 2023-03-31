@@ -1,0 +1,80 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+    <title>Scanner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        #html5-qrcode-button-camera-stop{
+            display:none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid h-100">
+       
+           
+                <div id="qr-reader" style="width:500px;margin-right:auto;margin-left:auto;margin-top:20vh"></div>
+                <div id="qr-reader-results"></div>
+            
+        
+    </div>
+        
+            
+    
+      
+        <script src="https://unpkg.com/html5-qrcode"></script>
+        <script>
+            $(document).ready(function () {
+                document.addEventListener("DOMContentLoaded", fn);
+            })
+        </script>
+        <script>
+            function docReady(fn) {
+                // see if DOM is already available
+                if (document.readyState === "complete"
+                    || document.readyState === "interactive") {
+                    // call on next available tick
+                    setTimeout(fn, 1);
+                } else {
+                    document.addEventListener("DOMContentLoaded", fn);
+                }
+            }
+
+            docReady(function () {
+                var resultContainer = document.getElementById('qr-reader-results');
+                var lastResult, countResults = 0;
+                function onScanSuccess(decodedText, decodedResult) {
+                    if (decodedText !== lastResult) {
+                        ++countResults;
+                        lastResult = decodedText;
+
+                        Swal.fire({
+                            position: 'center',
+                            title: '<span style="font-size:30px">'+decodedText+'</span>',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            timer: 1500
+                        }).then(function () {
+                            document.addEventListener("DOMContentLoaded", fn);
+                        })
+                        
+                    }
+                   
+                }
+
+                var html5QrcodeScanner = new Html5QrcodeScanner(
+                    "qr-reader", { fps: 60, qrbox: 250 });
+                html5QrcodeScanner.render(onScanSuccess);
+            });
+        </script>
+</body>
+   
+
+</html>

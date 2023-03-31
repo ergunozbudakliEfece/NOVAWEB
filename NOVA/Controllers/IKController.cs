@@ -22,8 +22,12 @@ namespace NOVA.Controllers
         // GET: IK
         public ActionResult PersonelBilgi()
         {
-            
-            
+            var m = GetModules(13);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
+
             var x = GetPersonelById(Request.Cookies["Id"].Value.ToInt());
             if (x.Count != 0)
             {
@@ -129,6 +133,15 @@ namespace NOVA.Controllers
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Istatistik = "none";
+            }
+            else
+            {
+                ViewBag.Istatistik = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -396,7 +409,11 @@ namespace NOVA.Controllers
         }
         public ActionResult PersonelBilgiYonetim()
         {
-            
+            var m = GetModules(14);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
             if (Session["Select"] != null)
             {
                 ViewBag.Select = Session["Select"];
@@ -513,6 +530,15 @@ namespace NOVA.Controllers
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Istatistik = "none";
+            }
+            else
+            {
+                ViewBag.Istatistik = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -766,7 +792,12 @@ namespace NOVA.Controllers
         }
         public ActionResult PersonelSubeYonetim()
         {
-           
+            var m = GetModules(15);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
+
             var sube = GetPersonelById(Request.Cookies["Id"].Value.ToInt())[0].SUBE;
             if (Session["Select"] != null)
             {
@@ -885,6 +916,15 @@ namespace NOVA.Controllers
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Istatistik = "none";
+            }
+            else
+            {
+                ViewBag.Istatistik = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -1157,6 +1197,23 @@ namespace NOVA.Controllers
             //END
 
             return jsonList;
+        }
+        public List<Modules> GetModules(int id)
+        {
+
+
+            var apiUrl = "http://192.168.2.13:83/api/modules";
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            string json = client.DownloadString(url);
+            JavaScriptSerializer ser = new JavaScriptSerializer();
+            List<Modules> jsonList = ser.Deserialize<List<Modules>>(json);
+
+            //END
+
+            return jsonList.Where(x => x.INCKEY == id).ToList();
         }
         [HttpPost]
         public async Task<ActionResult> Personel(Personel personel)
@@ -1515,11 +1572,7 @@ namespace NOVA.Controllers
             Uri url = new Uri(apiUrl);
             WebClient client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
-
             string json = client.DownloadString(url);
-            //END
-
-            //JSON Parse START
             JavaScriptSerializer ser = new JavaScriptSerializer();
             List<Personel> jsonList = ser.Deserialize<List<Personel>>(json);
 

@@ -30,10 +30,9 @@ namespace NOVA.Controllers
         [HandleError]
         public ActionResult YetkiAyar()
         {
-            Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
+           
 
-            // Stop Caching in Firefox
-            Response.Cache.SetNoStore();
+           
             var yetki= GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(x=> x.MODULE_INCKEY==11);
             if (yetkiKontrol.SELECT_AUTH != true)
@@ -118,6 +117,15 @@ namespace NOVA.Controllers
             var ziyaretkaydi = yetki.FirstOrDefault(x => x.MODULE_INCKEY == 30);
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Display2 = "none";
+            }
+            else
+            {
+                ViewBag.Display2 = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -373,6 +381,11 @@ namespace NOVA.Controllers
        
         public ActionResult KullaniciAyar()
         {
+            var m = GetModules(10);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
             if (Session["Durum"] != null)
             {
                 ViewBag.Durum = Session["Durum"];
@@ -495,6 +508,15 @@ namespace NOVA.Controllers
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Istatistik = "none";
+            }
+            else
+            {
+                ViewBag.Istatistik = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -705,7 +727,11 @@ namespace NOVA.Controllers
         }
         public ActionResult UygulamaIstatistik()
         {
-           
+            var m = GetModules(37);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
 
             if (Request.Cookies["Id"] == null)
             {
@@ -810,11 +836,11 @@ namespace NOVA.Controllers
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             if (uygulamaistatistik != true)
             {
-                ViewBag.Display2 = "none";
+                ViewBag.Istatistik = "none";
             }
             else
             {
-                ViewBag.Display2 = "unset";
+                ViewBag.Istatistik = "unset";
             }
             if (kuryetki != true)
             {
@@ -1139,7 +1165,23 @@ namespace NOVA.Controllers
 
             return jsonList;
         }
+        public List<Modules> GetModules(int id)
+        {
 
+
+            var apiUrl = "http://192.168.2.13:83/api/modules";
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            string json = client.DownloadString(url);
+            JavaScriptSerializer ser = new JavaScriptSerializer();
+            List<Modules> jsonList = ser.Deserialize<List<Modules>>(json);
+
+            //END
+
+            return jsonList.Where(x => x.INCKEY == id).ToList();
+        }
         public List<User> GetUsersApiData(int inc)
         {
 

@@ -24,6 +24,11 @@ namespace NOVA.Controllers
         // GET: SatinAlma
         public ActionResult SatinAlmaRaporu()
         {
+            var m = GetModules(19);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
             if (Request.Cookies["Id"] == null)
             {
                 FormsAuthentication.SignOut();
@@ -69,6 +74,8 @@ namespace NOVA.Controllers
                     ViewBag.Yuzde = Session["Yuzde"];
                     ViewBag.ToplamMiktar1 = Session["ToplamMiktar1"];
                     ViewBag.ToplamMiktar2 = Session["ToplamMiktar2"];
+                    ViewBag.SSIPTeslim = Session["SSIPTeslim"];
+                    ViewBag.SSIPBekleyen = Session["SSIPBekleyen"];
                     ViewBag.AltKalem = GetSiparisApiData();
                     ViewBag.AltKalem1= Session["Filter2"];
                     Session["AltKalem"] = "test";
@@ -279,6 +286,15 @@ namespace NOVA.Controllers
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Istatistik = "none";
+            }
+            else
+            {
+                ViewBag.Istatistik = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -1330,6 +1346,8 @@ namespace NOVA.Controllers
             decimal? toplamgbp = 0;
             decimal? toplammiktar1 = 0;
             decimal? toplammiktar2 = 0;
+            decimal? ssipteslim = 0;
+            decimal? ssipbekleyen = 0;
             decimal? yuzde = 0;
             int i = 0;
             foreach (var item in list)
@@ -1337,6 +1355,17 @@ namespace NOVA.Controllers
                 yuzde = yuzde + item.TESLIMAT_ORANI;
                 toplamtry = toplamtry + item.NET_TUTAR_KALEM;
                 toplammiktar1 = toplammiktar1 + item.MIKTAR;
+                toplammiktar2 = toplammiktar2 + item.MIKTAR2;
+                
+                if (item.TESLIM_MIKTARI != null)
+                {
+                    ssipteslim = ssipteslim + item.TESLIM_MIKTARI;
+                }
+                if (item.BAKIYE_MIKTARI != null)
+                {
+                    ssipbekleyen = ssipbekleyen + item.BAKIYE_MIKTARI;
+                }
+                
                 toplammiktar2 = toplammiktar2 + item.MIKTAR2;
                 if (item.DOV_TIP == "USD")
                     {
@@ -1364,6 +1393,8 @@ namespace NOVA.Controllers
             Session["ToplamGbp1"] = toplamgbp;
             Session["ToplamMiktar1"] = toplammiktar1;
             Session["ToplamMiktar2"] = toplammiktar2;
+            Session["SSIPTeslim"] = ssipteslim;
+            Session["SSIPBekleyen"] = ssipbekleyen;
             if (yuzde != 0)
             {
                 Session["Yuzde"] = yuzde / i;
@@ -1462,7 +1493,7 @@ namespace NOVA.Controllers
             JavaScriptSerializer ser = new JavaScriptSerializer();
             ser.MaxJsonLength = int.MaxValue;
             List<USTKALEMMODEL> jsonList = ser.Deserialize<List<USTKALEMMODEL>>(json);
-
+           
             //END
 
             return jsonList;

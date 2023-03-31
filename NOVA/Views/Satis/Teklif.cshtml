@@ -1,0 +1,486 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout_yonetim.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Teklif</title>
+    <style>
+        .floatlabel {
+            position: relative;
+        }
+
+            .floatlabel input {
+                -webkit-appearance: none;
+                color: #333;
+                padding: 10px 12px;
+            }
+
+            .floatlabel label.label {
+                position: absolute;
+                top: 14px;
+                left: 6px;
+                transition: all 0.2s ease-out;
+                background: #fff;
+                color: #999;
+                font-size: 16px;
+                cursor: text;
+            }
+
+                .floatlabel label.label.floatlabel-shift {
+                    top: -7px;
+                    left: 12px;
+                    padding: 0 4px;
+                    font-size: 14px;
+                    color: #999;
+                }
+
+                .floatlabel label.label.floatlabel-active {
+                    color: #0077c8 !important;
+                }
+                img:hover{
+                    opacity:.4;
+                }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+<body>
+    
+  
+   
+    
+    <form>
+        <div class="container-fluid text-center" style="margin-top:15vh;">
+            <div class="row">
+                <div class="col-sm-6 p-0" style="margin-bottom:-15px">
+                    <div class="btn-group w-100" role="group" aria-label="Basic example" style="z-index:5">
+                        <button type="button" class="btn btn-secondary" onclick="change(1)">Üst Bilgiler</button>
+                        <button type="button" class="btn btn-secondary" onclick="change(2)">Kalem Bilgileri</button>
+                        <button type="button" class="btn btn-secondary" onclick="change(3)">Toplamlar</button>
+                    </div>
+                </div>
+            </div>
+            
+            
+                    <div id="ust" class="row">
+                        <div class="col-sm-6 mb-2" style="border: 1px solid gray; border-radius: 10px; box-shadow: 2px 2px 10px grey; background-color: white">
+                            <h5 class="mt-3">Sabit Bilgiler</h5>
+                            <div class="row">
+
+                                <div class="col p-0">
+                                    <div class="container">
+                                        <select onchange="teklifchange()" id="teklifselect" class="form-control" style="width:100%">
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+
+
+                            </div>
+
+                            <div class="row mt-2" id="caridiv">
+                                <div class="col p-0">
+                                    <div class="container">
+
+                                        <select onchange="carichange()" id="cariler" class="form-control" style="width:100%">
+                                            <option value="0">Nova GEREKSİZ!</option>
+                                        </select>
+
+
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                            <div id="gereksiz" class="row mt-2" style="display:none">
+
+                                <div class="col p-0">
+                                    <div class="container">
+                                        <div class="form-group floatlabel">
+                                            <label class="label" for="c">Cari</label>
+                                            <input type="text" name="c" id="c" class="form-control"
+                                                   value="" />
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+                            </div>
+
+                            <div class="row mt-2">
+                                <div class="col p-0">
+                                    <div class="container">
+
+                                        <select id="modalkod1" class="form-control" style="width:100%">
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col p-0">
+                                    <div class="container">
+
+                                        <select id="modalkod2" class="form-control" style="width:100%">
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="row mt-2">
+                                <div class="container">
+                                    <div class="form-group floatlabel">
+                                        <label class="label" for="aciklama">Açıklama</label>
+                                        <input type="text" name="aciklama" id="aciklama" class="form-control"
+                                               value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="container">
+                                    <div class="form-group floatlabel">
+                                        <label class="label" for="plasiyerkod">Plasiyer Kodu</label>
+                                        <input type="text" name="plasiyerkod" id="plasiyerkod" class="form-control"
+                                               value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2 mb-3">
+                                <div class="col p-0">
+                                    <div class="container">
+
+                                        <select id="projekod" class="form-control" style="width:100%">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                            <h5 class="mt-1">Ek Sahalar</h5>
+                            <div class="row" style="display:none">
+                                <div class="container">
+                                    <div class="form-group floatlabel">
+                                        <label class="label" for="cari">CARİ (KAYITLI DEĞİLSE)</label>
+                                        <input type="text" name="cari" id="cari" class="form-control"
+                                               value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="container">
+                                    <div class="form-group floatlabel">
+                                        <label class="label" for="sevk">SEVK YERİ(CARİ ADRESİNDEN FARKLI İSE)</label>
+                                        <input type="text" name="sevk" id="sevk" class="form-control"
+                                               value="" />
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mt-2">
+                                <div class="container">
+                                    <div class="form-group floatlabel">
+                                        <label class="label" for="teslimat">TESLİMAT ŞEKLİ</label>
+                                        <input type="text" name="teslimat" id="teslimat" class="form-control"
+                                               value="" />
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mt-2">
+                                <div class="container">
+                                    <div class="form-group floatlabel">
+                                        <label class="label" for="gecerlilik">GEÇERLİLİK SÜRESİ</label>
+                                        <input type="text" name="gecerlilik" id="gecerlilik" class="form-control"
+                                               value="" />
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mt-2 mb-2">
+                                <div class="container">
+                                    <div class="form-group floatlabel">
+                                        <label class="label" for="tahsilat">TAHSİLAT ŞEKLİ</label>
+                                        <input type="text" name="tahsilat" id="tahsilat" class="form-control"
+                                               value="" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        
+                           
+                        
+                    </div>
+              
+            
+                    <div class="row" id="kalem" style="display:none">
+                        <div class="col-sm-6 p-0" style="border:1px solid gray;border-radius:10px;box-shadow:2px 2px 10px grey">
+                            <h5 class="mt-3">Kalem Girişi</h5>
+
+                            <table id="table"
+                                   class="table"
+                                   data-show-fullscreen="true"
+                                   data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                                   data-toggle="table"
+                                   data-toolbar="#toolbar"
+                                   data-show-export="false"
+                                   data-export-data-type="all"
+                                   data-export-types="['excel', 'pdf']"
+                                   data-pagination="false"
+                                   data-search="true"
+                                   data-show-columns="true"
+                                   data-show-columns-toggle-all="true"
+                                   data-locale="tr-TR"
+                                   data-filter-control="true"
+                                   data-filter-control-multiple-search="true"
+                                   data-loading-template="loadingTemplate"
+                                   data-mobile-responsive="false"
+                                   data-trim-on-search="false"
+                                   data-show-footer="false"
+                                   data-height="400">
+                                <thead>
+                                    <tr id="tst">
+                                        <th data-field="RULOKODU" data-sortable="true" data-align="center" data-halign="center" data-formatter="ruloFormatter">RULO KODU</th>
+                                        <th data-field="KONUM" data-sortable="true" data-align="center" data-halign="center">KONUM</th>
+                                        <th data-field="RENKKODU" data-sortable="true" data-align="center" data-halign="center">RENKKODU</th>
+                                        <th data-field="KALINLIK" data-sortable="true" data-align="center" data-halign="center" data-formatter="kalinlikFormatter">KALINLIK</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+
+               
+        </div>
+    </form>
+
+
+    <script>
+        $(document).ready(function () {
+            document.getElementById("satis").className = "menu-item open active";
+            document.getElementById("teklif").className = "menu-item active";
+            $.getJSON('http://192.168.2.13:83/api/musteri/cariler', function (data) {
+                var select = document.getElementById("cariler");
+                for (let i = 0; i < data.length; i++) {
+                    var option = document.createElement("option");
+                    if (data[i].CARI_ISIM != null) {
+                        option.value = data[i].CARI_KOD;
+                        option.innerHTML = (data[i].CARI_ISIM).replaceAll("Ý", "İ").replaceAll("Þ", "Ş").replaceAll("Ð", "Ğ");
+                        select.appendChild(option);
+                    }
+                }
+            }).done(function () {
+                $("#cariler").select2({
+                    placeholder: "Cari"
+                }).val(null).trigger("change");
+            })
+            $.getJSON('http://192.168.2.13:83/api/musteri/ozelkod1', function (data) {
+                var s = document.getElementById("modalkod1");
+                for (let i = 0; i < data.length; i++) {
+                    var option = document.createElement("option");
+                    if (data[i].OZELKOD != null) {
+                        option.value = data[i].OZELKOD;
+                        option.innerHTML = data[i].OZELKOD + " - " + (data[i].ACIKLAMA).replaceAll("Ý", "İ").replaceAll("Þ", "Ş").replaceAll("Ð", "Ğ");
+                        s.appendChild(option);
+                    }
+                }
+            }).done(function () {
+                $("#modalkod1").select2({
+                    placeholder: "Özel Kod1"
+                }).val(null).trigger("change");
+            })
+            $.getJSON('http://192.168.2.13:83/api/musteri/ozelkod2', function (data) {
+                var s = document.getElementById("modalkod2");
+                for (let i = 0; i < data.length; i++) {
+                    var option = document.createElement("option");
+                    if (data[i].OZELKOD != null) {
+                        option.value = data[i].OZELKOD;
+                        option.innerHTML = data[i].OZELKOD + " - " + (data[i].ACIKLAMA).replaceAll("Ý", "İ").replaceAll("Þ", "Ş").replaceAll("Ð", "Ğ");
+                        s.appendChild(option);
+                    }
+                }
+            }).done(function () {
+                $("#modalkod2").select2({
+                    placeholder: "Özel Kod2"
+                }).val(null).trigger("change");
+                $("#projekod").select2({
+                    placeholder: "Proje Kodu"
+                }).val(null).trigger("change")
+            })
+            $.getJSON('http://192.168.2.13:83/api/musteri/stoklar', function (data) {
+                var s = document.getElementById("stoklar");
+                for (let i = 0; i < data.length; i++) {
+                    var option = document.createElement("option");
+                    if (data[i].STOK_ADI != null) {
+                        option.value = data[i].STOK_KODU;
+                        option.innerHTML = (data[i].STOK_ADI).replaceAll("Ý", "İ").replaceAll("Þ", "Ş").replaceAll("Ð", "Ğ");
+                        s.appendChild(option);
+                    }
+                }
+            }).done(function () {
+               
+                $("#stoklar").select2({
+                    placeholder: "Stok Adı"
+                }).val(null).trigger("change")
+            })
+            $.getJSON('http://192.168.2.13:83/api/musteri/teklif', function (data) {
+                var s = document.getElementById("teklifselect");
+                var d = data.filter(x => x.FISNO.substring(0, 1) == "N");
+                for (let i = 0; i < d.length; i++) {
+                    var option = document.createElement("option");
+                    if (d[i].FISNO != null) {
+                        option.value = d[i].FISNO;
+                        option.innerHTML = d[i].FISNO;
+                        s.appendChild(option);
+                    }
+                }
+            }).done(function () {
+
+                $("#teklifselect").select2({
+                    placeholder: "Teklif No"
+                }).val(null).trigger("change")
+            })
+        })
+        jQuery(".floatlabel input").focus(function () {
+            var elementId = $(this).attr('id');
+            jQuery("label[for=" + elementId + "]").addClass('floatlabel-shift');
+        });
+        jQuery(".floatlabel input").blur(function () {
+            if ($(this).val().length == 0) {
+                var elementId = $(this).attr('id');
+                jQuery("label[for=" + elementId + "]").removeClass('floatlabel-shift');
+            }
+        });
+        jQuery(".floatlabel input").focus(function () {
+            var elementId = $(this).attr('id');
+            jQuery("label[for=" + elementId + "]").addClass('floatlabel-active');
+        });
+        jQuery(".floatlabel input").blur(function () {
+            var elementId = $(this).attr('id');
+            jQuery("label[for=" + elementId + "]").removeClass('floatlabel-active');
+        });
+
+        function change(value) {
+            if (value == 1) {
+                $('#ust').show();
+                $('#kalem').hide();
+            } else if (value == 2) {
+                $('#ust').hide();
+                $('#kalem').show();
+            } else {
+                $('#ust').hide();
+                $('#kalem').hide();
+            }
+        }
+
+        function showcarikod() {
+            $('#modalCenter').modal({ backdrop: 'static', keyboard: false })
+            $('#modalCenter').modal('show');
+        }
+        function showozelkod1() {
+            $('#ozelkod1').modal({ backdrop: 'static', keyboard: false })
+            $('#ozelkod1').modal('show');
+        }
+        function showozelkod2() {
+            $('#ozelkod2').modal({ backdrop: 'static', keyboard: false })
+            $('#ozelkod2').modal('show');
+        }
+        function showprojekodu() {
+            $('#projekod').modal({ backdrop: 'static', keyboard: false })
+            $('#projekod').modal('show');
+        }
+        function ekle() {
+
+            var cc = $("#cariler").val();
+
+            $("#carikod").val(cc).focus();
+            $('#modalCenter').modal('hide');
+
+        }
+        function ekleozelkod1() {
+
+            var cc = $("#modalkod1").val();
+
+            $("#kod1").val(cc).focus();
+            $('#ozelkod1').modal('hide');
+
+        }
+        function ekleozelkod2() {
+
+            var cc = $("#modalkod2").val();
+
+            $("#kod2").val(cc).focus();
+            $('#ozelkod2').modal('hide');
+
+        }
+        function ekleprojekod() {
+           
+            var cc = $("#modalprojekod").val();
+            
+            $("#proje").val(cc).focus();
+            $('#projekod').modal('hide');
+
+        }
+        function kalemekle() {
+            var cop = document.querySelector(".copydiv");
+            document.getElementById("pastecol").appendChild(cop.cloneNode(true));
+        }
+
+        function teklifchange() {
+            var teklif = $('#teklifselect').val();
+            var url = "http://192.168.2.13:83/api/musteri/teklifmas/" + teklif;
+            $.getJSON(url, function (data) {
+                $('#modalkod1').val(data.KOD1).trigger("change");
+                $('#modalkod2').val(data.KOD2).trigger("change");
+                $('#cariler').val(data.CARI_KODU).trigger("change");
+                $('#plasiyerkod').val(data.PLA_KODU).focus();
+                $('#aciklama').val(data.ACIKLAMA).focus();
+                $('#projekod').val(data.PROJE_KODU).trigger("change");
+            }).done(function () {
+                var url1 = "http://192.168.2.13:83/api/musteri/fatuek/" + teklif;
+                $.getJSON(url1, function (data) {
+                    $('#cari').val(data.ACIK1).focus();
+                    $('#sevk').val(data.ACIK2).focus();
+                    $('#teslimat').val(data.ACIK3).focus();
+                    $('#gecerlilik').val(data.ACIK4).focus();
+
+                })
+            })
+           
+           
+        }
+        function carichange() {
+            var cariler = $('#cariler').val();
+            if (cariler == "0") {
+                document.getElementById("caridiv").remove();
+                $('#gereksiz').show();
+                $('#c').focus();
+            } else {
+
+                $('#gereksiz').hide();
+            }
+        }
+    </script>
+
+
+</body>
+</html>
