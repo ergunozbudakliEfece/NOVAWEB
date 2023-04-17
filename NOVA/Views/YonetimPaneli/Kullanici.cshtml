@@ -67,7 +67,7 @@
         }
     }
 </style>
-<div class="jumbotron vertical-center">
+<div class="jumbotron vertical-center" style="overflow-y:hidden">
     <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -249,8 +249,7 @@
                    data-filter-control="true"
                    data-filter-control-multiple-search="true"
                    data-loading-template="loadingTemplate"
-                   data-mobile-responsive="true"
-                   data-url="http://192.168.2.13:83/api/user">
+                   data-mobile-responsive="true">
                 <thead>
                     <tr id="trid">
                         <th data-field="USER_NAME" data-halign="center" data-width="150" data-width-unit="px" data-align="center">USERNAME</th>
@@ -259,7 +258,7 @@
                         <th data-field="USER_FIRSTNAME" data-halign="center" data-align="center" data-width="150" data-width-unit="px" data-formatter="Formatter">FIRST NAME</th>
                         <th data-field="USER_LASTNAME" data-halign="center" data-align="center" data-width="150" data-width-unit="px" data-formatter="Formatter">LAST NAME</th>
                         <th data-field="USER_MAIL" data-halign="center" data-align="center" data-width="200" data-width-unit="px" data-formatter="Formatter">MAIL</th>
-                        <th data-field="ACTIVE" data-halign="center" data-align="center" data-formatter="ActiveFormatter">ACTIVE</th>
+                        <th data-field="ACTIVE" data-halign="center" data-align="center" data-width="100" data-formatter="ActiveFormatter">ACTIVE</th>
                     </tr>
                 </thead>
             </table>
@@ -269,7 +268,12 @@
                     return "<input class='form-control text-center' type='text' style='background:transparent' onkeyup='changeinp(this)' value='" + value + "'></input>"
                 }
                 function FormatterModule(value, index, row) {
-                    return "<input class='form-control text-center' type='text' style='background:transparent' onkeyup='changemod(this)' value='" + value + "'></input>"
+                    if (value=="1") {
+                        return '<input class="form-check-input" type="checkbox" value="" onchange="changemod()" checked="">';
+                    } else {
+                        return '<input class="form-check-input" type="checkbox" onchange="changemod()" value="" id="modulecheck">';
+                    }
+                    
                 }
                 function ActiveFormatter(value, index, row) {
                     if (value) {
@@ -434,12 +438,12 @@
                      }
 
                 }
-                 function changemod(v) {
-                     if (event.key == "Enter") {
+                 function changemod() {
+                     
 
-                         var row = document.getElementById("table").getElementsByTagName("tr")[v.parentNode.parentNode.rowIndex];
+                     var row = document.getElementById("table").getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.rowIndex];
                          var inckey = row.getElementsByTagName("td")[0].innerHTML;
-                         var active = row.getElementsByTagName("input")[0].value;
+                         var active = row.getElementsByTagName("input")[0].checked;
 
 
                          var json = { INCKEY: inckey, ACTIVE: active };
@@ -462,9 +466,10 @@
                         async: true,
                         processData: false
                     });
+
                      }
 
-                }
+                
 
 
             </script>
@@ -485,6 +490,7 @@
         }
         var last = null;
         $(document).ready(function () {
+
             document.getElementById("yonetimpaneli").className = "menu-item open active";
             document.getElementById("kullanici").className = "menu-item active";
             getModulesAsync().then(function (data) {
@@ -505,9 +511,10 @@
                 roles = data;
             }).then(function () {
 
-                $('#table').bootstrapTable('refresh', {
-                    url:'http://192.168.2.13:83/api/user'
-                })
+                $.getJSON("@Url.Action("GetUser","Satis")", function (result) {
+                    $("#table").bootstrapTable("destroy").bootstrapTable({ data: JSON.parse(result) })
+
+            })
             })
             getUserAsync().then(function (data) {
                 users = data;
@@ -525,11 +532,11 @@
             $('#filter2').hide();
 
         }).ajaxComplete(function () {
-          
+
             $('.select2clss').select2({width:"100%"}).on('change', function () {
                 changesel(this.parentNode.parentNode.rowIndex);
             });
-            
+
         })
         function changetable(value) {
 
@@ -539,52 +546,57 @@
                 $('#filter2').select2('destroy');
                 $('#filter2').hide();
                 $('#table').bootstrapTable('destroy');
-                $('#table').bootstrapTable({
-                    url: 'http://192.168.2.13:83/api/user',
-                    columns: [{
-                        field: 'USER_NAME',
-                        title: 'USERNAME'
-                    },
-                    {
-                        field: 'USER_PASSWORD',
-                        title: 'PASSWORD',
-                        formatter: 'Formatter',
-                        halign: 'center'
-                    },
-                    {
-                        field: 'USER_ROLE',
-                        title: 'ROLE',
-                        formatter: 'RoleFormatter',
-                        halign: 'center'
-                    },
-                    {
-                        field: 'USER_FIRSTNAME',
-                        title: 'FIRST NAME',
-                        formatter: 'Formatter',
-                        halign: 'center'
+                 $.getJSON("@Url.Action("GetUser","Satis")", function (result) {
+                     $('#table').bootstrapTable({
+                         data: JSON.parse(result),
+                         columns: [{
+                             field: 'USER_NAME',
+                             title: 'USERNAME'
+                         },
+                         {
+                             field: 'USER_PASSWORD',
+                             title: 'PASSWORD',
+                             formatter: 'Formatter',
+                             halign: 'center'
+                         },
+                         {
+                             field: 'USER_ROLE',
+                             title: 'ROLE',
+                             formatter: 'RoleFormatter',
+                             halign: 'center'
+                         },
+                         {
+                             field: 'USER_FIRSTNAME',
+                             title: 'FIRST NAME',
+                             formatter: 'Formatter',
+                             halign: 'center'
 
-                    },
-                    {
-                        field: 'USER_LASTNAME',
-                        title: 'LAST NAME',
-                        formatter: 'Formatter',
-                        halign: 'center'
-                    },
-                    {
-                        field: 'USER_MAIL',
-                        title: 'MAIL',
-                        formatter: 'Formatter',
-                        halign: 'center'
-                    },
-                    {
-                        field: 'ACTIVE',
-                        title: 'ACTIVE',
-                        formatter: 'ActiveFormatter',
-                        halign: 'center'
-                    }
-                    ]
+                         },
+                         {
+                             field: 'USER_LASTNAME',
+                             title: 'LAST NAME',
+                             formatter: 'Formatter',
+                             halign: 'center'
+                         },
+                         {
+                             field: 'USER_MAIL',
+                             title: 'MAIL',
+                             formatter: 'Formatter',
+                             halign: 'center'
+                         },
+                         {
+                             field: 'ACTIVE',
+                             title: 'ACTIVE',
+                             formatter: 'ActiveFormatter',
+                             halign: 'center',
+                             width: "100"
+                         }
+                         ]
 
-                })
+                     })
+
+            })
+               
             }
             else if (value == 2) {
 
@@ -620,28 +632,37 @@
                     {
                         field: 'USER_AUTH',
                         title: 'AUTH',
-                        formatter: 'formatterAuth'
+                        formatter: 'formatterAuth',
+                        align: 'center',
+                        width:"100"
                     },
                     {
                         field: 'SELECT_AUTH',
                         title: 'SELECT',
-                        formatter: 'formatterAuth'
+                        formatter: 'formatterAuth',
+                        align: 'center',
+                        width:"100"
                     },
                     {
                         field: 'INSERT_AUTH',
                         title: 'INSERT',
-                        formatter: 'formatterAuth'
+                        formatter: 'formatterAuth',
+                        align: 'center',
+                        width:"100"
                     },
                     {
                         field: 'UPDATE_AUTH',
                         title: 'UPDATE',
-                        formatter: 'formatterAuth'
+                        formatter: 'formatterAuth',
+                        align: 'center',
+                        width:"100"
                     },
                     {
                         field: 'DELETE_AUTH',
                         title: 'DELETE',
                         formatter: 'formatterAuth',
-                        align: 'center'
+                        align: 'center',
+                        width:"100"
                     }
                     ]
 
@@ -713,8 +734,8 @@
                     } else {
                         filterAlgorithm = null;
                     }
-                    
-                    
+
+
                     var moduleinc = [];
                     for (let i = 0; i < mods.length; i++) {
                         if (!moduleinc.includes(mods[i].INCKEY)) {
@@ -734,7 +755,7 @@
                             USER_ID: filterAlgorithm,
                             MODULE_INCKEY: filterAlgorithm2
                         })
-                        
+
                     } else {
                         $('#table').bootstrapTable('filterBy', {});
 
@@ -765,28 +786,32 @@
                     {
                         field: 'USER_AUTH',
                         title: 'AUTH',
-                        formatter: 'formatterAuth'
+                        formatter: 'RoleformatterAuth',
+                        width: "100"
                     },
                     {
                         field: 'SELECT_AUTH',
                         title: 'SELECT',
-                        formatter: 'formatterAuth'
+                        formatter: 'RoleformatterAuth',
+                        width: "100"
                     },
                     {
                         field: 'INSERT_AUTH',
                         title: 'INSERT',
-                        formatter: 'formatterAuth'
+                        formatter: 'RoleformatterAuth',
+                        width: "100"
                     },
                     {
                         field: 'UPDATE_AUTH',
                         title: 'UPDATE',
-                        formatter: 'formatterAuth'
+                        formatter: 'RoleformatterAuth',
+                        width: "100"
                     },
                     {
                         field: 'DELETE_AUTH',
                         title: 'DELETE',
-                        formatter: 'formatterAuth',
-                        align: 'center'
+                        formatter: 'RoleformatterAuth',
+                        width: "100"
                     }
                     ]
 
@@ -866,7 +891,7 @@
                         {
                             field: 'LAST_SEEN',
                             title: 'Son Görülme',
-                            formatter: 'userFormatter'
+                            formatter: 'userFormatter',
                         },
                         {
                             field: 'USER_STATUS',
@@ -899,7 +924,14 @@
             if (value) {
                 return '<input class="form-check-input" type="checkbox" value="" onchange="changeAuth(' + index.USER_ID + ',' + index.MODULE_INCKEY +')" checked="">';
             } else {
-                return '<input class="form-check-input" type="checkbox" onchange="changeAuth(' + index.USER_ID + ',' + index.MODULE_INCKEY+')" value="" id="defaultCheck3">';
+                return '<input class="form-check-input" type="checkbox" onchange="changeAuth(' + index.USER_ID + ',' + index.MODULE_INCKEY +')" value="" id="defaultCheck3">';
+            }
+        }
+        function RoleformatterAuth(value, index, row) {
+            if (value) {
+                return '<input class="form-check-input" type="checkbox" value="" onchange="changeRoleAuth(' + index.ROLE_ID + ',' + index.MODULE_INCKEY + ')" checked="">';
+            } else {
+                return '<input class="form-check-input" type="checkbox" onchange="changeRoleAuth(' + index.ROLE_ID + ',' + index.MODULE_INCKEY + ')" value="" id="defaultCheck3">';
             }
         }
         function userFormatter(value, index, row) {
@@ -908,16 +940,16 @@
             } else {
                 return "<span style='color:red'>" + value + "</span>";
             }
-            
+
         }
 
         function changeAuth(value, value2) {
-            
+
             var row = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.rowIndex-1];
             if (row == null) {
                 row = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex-1]
-            } 
-            
+            }
+
             var userid = value;
             var ua = row.getElementsByTagName("input")[0].checked;
             var sa = row.getElementsByTagName("input")[1].checked;
@@ -928,6 +960,38 @@
             var json = { USER_ID: userid, MODULE_INCKEY: mi, USER_AUTH: ua, SELECT_AUTH: sa, INSERT_AUTH: ia, UPDATE_AUTH: uaa, DELETE_AUTH:da };
                     $.ajax({
                         url: '@Url.Action("YetkiUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
+
+                        },
+                        async: true,
+                        processData: false
+                    });
+
+        }
+        function changeRoleAuth(value, value2) {
+
+            var row = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.rowIndex-1];
+            if (row == null) {
+                row = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.rowIndex-1]
+            }
+
+            var roleid = value;
+            var ua = row.getElementsByTagName("input")[0].checked;
+            var sa = row.getElementsByTagName("input")[1].checked;
+            var ia = row.getElementsByTagName("input")[2].checked;
+            var uaa = row.getElementsByTagName("input")[3].checked;
+            var da = row.getElementsByTagName("input")[4].checked;
+            var mi = value2;
+            var json = { ROLE_ID: roleid, MODULE_INCKEY: mi, USER_AUTH: ua, SELECT_AUTH: sa, INSERT_AUTH: ia, UPDATE_AUTH: uaa, DELETE_AUTH:da };
+                    $.ajax({
+                        url: '@Url.Action("RoleUpdate", "YonetimPaneli")',
                         type: 'POST',
                         data: JSON.stringify(json),
                         dataType: 'json',
@@ -1002,7 +1066,7 @@
             return roles.filter(x => x.ROLE_ID==value)[0].ROLE_NAME;
         }
         function formatterRoleFormatter(value, index, row) {
-            
+
             return ROLENAMES.filter(x => x.ROLE_ID == value)[0].ROLE_NAME;
         }
         function formatterModuleName(value, index, row) {
@@ -1021,7 +1085,7 @@
 
                 return ""
             }
-            
+
         }
         function oturumFormatter(value, index, row) {
             if (index.USER_STATUS=="Çevrimiçi") {
@@ -1030,7 +1094,7 @@
             else{
                 return "-";
             }
-           
+
 
         }
         function logoff(value) {
@@ -1095,10 +1159,10 @@
 
                         })
                     });
-                   
+
                 }
             })
-           
+
         }
 
         var type = 'fa'
@@ -1111,6 +1175,7 @@
                 return '<div class="ph-item"><div class="ph-picture"></div></div>'
             }
         }
+
     </script>
 </div>
 

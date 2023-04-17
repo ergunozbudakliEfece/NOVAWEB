@@ -1,0 +1,539 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout_Kur.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kur</title>
+    <link href="~/Content/table/bootstrap-table.min.css" rel="stylesheet" />
+    <link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        tr:nth-child(1) {
+            font-weight:bold;
+        }
+
+        .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+            background: transparent !important;
+        }
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        #table .form-control {
+            background-color: transparent;
+            border: none;
+        }
+
+            #table .form-control:hover {
+                background-color: transparent;
+                border: none;
+                outline: 0 none !important;
+            }
+
+        #table input:focus {
+            background-color: transparent !important;
+            outline: 0 none !important;
+        }
+
+        #table img {
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+            #table img:hover {
+                opacity: 0.4;
+            }
+
+        .vertical-center {
+            min-height: 95%;
+            min-height: 95vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .search {
+            width: 80%;
+            float: left !important;
+        }
+
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
+
+        .swal2-icon {
+            font-size: 15px;
+        }
+
+       
+
+        .card-view-title {
+            max-width: 32% !important;
+        }
+
+        .card-view:nth-child(5) .card-view-value {
+            margin-left: 32.5% !important;
+            margin-top: 7px;
+        }
+
+        @@media screen and (max-width: 600px) {
+            #table {
+                font-size: 12px;
+            }
+
+            input {
+                font-size: 12px !important;
+            }
+        }
+
+        @@media screen and (min-width: 601px) {
+
+            .swal2-modal {
+                width: 35vw !important;
+            }
+        }
+
+        @@keyframes heartbeat {
+            from {
+                opacity: 0.3;
+                transform: scale(0.32);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(0.40);
+            }
+        }
+
+        #employeeTableWrapper {
+            max-height: 800px !important;
+            overflow-y: auto;
+        }
+
+        #table input {
+            max-width: 100px;
+            border: none;
+            background-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="jumbotron vertical-center">
+        <div class="container-fluid" style="overflow:hidden">
+            <div class="card" style="font-size:14px;letter-spacing:1px">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col">
+                            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                                <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                                    <i class="bx bx-menu bx-sm"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col">
+
+                            <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                                @{
+                                    string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                                }
+                                <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                    <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                </object>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
+                                        <div class="d-flex">
+                                            <div class="flex-shrink-0 me-3">
+                                                <div class="avatar avatar-online">
+                                                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                                    </object>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                @if (@Request.Cookies["Name"] != null)
+                                                {
+                                                    <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                                    <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                                }
+                                                else
+                                                {
+                                                    <span class="fw-semibold d-block">Test</span>
+                                                    <small class="text-muted">Yetki: Test</small>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                       data-bs-target="#cikis">
+                                        <i class="bx bx-power-off me-2"></i>
+                                        <span class="align-middle">Oturumu Kapat</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                  
+                    <div class="row mt-2">
+
+                        <div class="col">
+                            <input class="form-control" id="kurmiktari" type="number" name="kur" placeholder="Kur" onKeyPress="if(((this.value).split('.'))[1].length==4) return false;"  required />
+                        </div>
+                        <div class="col">
+                            <input class="form-control" id="faiz" type="number" name="faiz" placeholder="Faiz Oranı" onKeyPress="if(((this.value).split('.'))[1].length==2) return false;"   required />
+                        </div>
+                        <div class="col">
+                            <div class="class=form-check form-switch text-center">
+                                <input class="form-check-input" type="checkbox" onchange="kurchange()"  unchecked="">
+                            </div>
+                            <div class="row text-center">
+                                <label style="font-size: 10px; letter-spacing:1px">Kur Geçmişi</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-info ms-5 float-end" onclick="kaydet()">Kaydet</button>
+                            <button class="btn btn-outline-info float-end" onclick="hesapla()">Hesapla</button>
+                        </div>
+
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="table-responsive">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="text-center">Spot</th>
+                                        <th class="text-center">5</th>
+                                        <th class="text-center">10</th>
+                                        <th class="text-center">15</th>
+                                        <th class="text-center">20</th>
+                                        <th class="text-center">25</th>
+                                        <th class="text-center">30</th>
+                                        <th class="text-center">35</th>
+                                        <th class="text-center">40</th>
+                                        <th class="text-center">45</th>
+                                        <th class="text-center">50</th>
+                                        <th class="text-center">55</th>
+                                        <th class="text-center">60</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center" id="spot"></td>
+                                        <td class="text-center" id="spot5"></td>
+                                        <td class="text-center" id="spot10"></td>
+                                        <td class="text-center" id="spot15"></td>
+                                        <td class="text-center" id="spot20"></td>
+                                        <td  class="text-center" id="spot25"></td>
+                                        <td class="text-center" id="spot30"></td>
+                                        <td class="text-center" id="spot35"></td>
+                                        <td class="text-center" id="spot40"></td>
+                                        <td class="text-center" id="spot45"></td>
+                                        <td class="text-center" id="spot50"></td>
+                                        <td class="text-center" id="spot55"></td>
+                                        <td class="text-center" id="spot60"></td>
+                                    </tr>
+                                    <tr >
+                                        <th class="text-end" colspan="13" id="guncelleme"></th>
+                                    </tr>        
+                                </table>
+                            </div>
+                              
+                            </div>
+
+
+                        </div>
+                    <div class="row mt-2" id="tablerow" style="display:none">
+                        <table id="table"
+                               class="table table-striped"
+                               data-show-fullscreen="false"
+                               data-buttons-order="['filterTable','columns']"
+                               data-toggle="table"
+                               data-show-export="false"
+                               data-export-data-type="all"
+                               data-export-types="['excel']"
+                               data-pagination="true"
+                               data-page-size="10"
+                               data-search="true"
+                               data-show-columns="false"
+                               data-show-columns-toggle-all="true"
+                               data-locale="tr-TR"
+                               data-filter-control="true"
+                               data-filter-control-multiple-search="true"
+                               data-loading-template="loadingTemplate"
+                               data-show-footer="false"
+                               data-detail-view="false"
+                               data-detail-formatter="detailFormatter"
+                               data-url="http://192.168.2.13:83/api/fiyat/kuroran"
+                               data-trim-on-search="false"
+                               data-mobile-responsive="true">
+                            <thead>
+                                <tr>
+                                    <th data-field="KUR" data-halign="center" data-align="center" data-sortable="true"  data-formatter="dataFormatter">Kur</th>
+                                    <th data-field="FAIZ_ORANI" data-halign="center" data-align="center" data-sortable="true"  data-formatter="dataFormatter">Faiz Oranı</th>
+                                    <th data-field="KAYIT_TARIHI" data-halign="center" data-align="center" data-sortable="true" data-formatter="TarihFormatter">Tarih</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                    </div>
+                    </div>
+                </div>
+                </div>
+               
+               
+            </div>
+
+   
+       
+
+
+    <script>
+       
+            $(document).ready(function () {
+                document.getElementById("finans").className = "menu-item open active";
+                document.getElementById("kur").className = "menu-item active";
+                 $.getJSON("http://192.168.2.13:83/api/fiyat/kuroran",function(data){
+
+                    var d=data;
+                    var sp5=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 5)).toFixed(4);
+                     var sp10=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 10)).toFixed(4);
+                     var sp15=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 15)).toFixed(4);
+                     var sp20=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 20)).toFixed(4);
+                     var sp25=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 25)).toFixed(4);
+                     var sp30=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 30)).toFixed(4);
+                     var sp35=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 35)).toFixed(4);
+                     var sp40=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 40)).toFixed(4);
+                     var sp45=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 45)).toFixed(4);
+                     var sp50=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 50)).toFixed(4);
+                     var sp55=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 55)).toFixed(4);
+                     var sp60=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 60)).toFixed(4);
+
+                       $("#spot").text((parseFloat(d[0].KUR) ).toFixed(4));
+                       $("#spot5").text(sp5);
+                      $("#spot10").text(sp10);
+                      $("#spot15").text(sp15);
+                      $("#spot20").text(sp20);
+                      $("#spot25").text(sp25);
+                      $("#spot30").text(sp30);
+                    $("#spot35").text(sp35);
+                      $("#spot40").text(sp40);
+                      $("#spot45").text(sp45);
+                    $("#spot50").text(sp50);
+                      $("#spot55").text(sp55);
+                     $("#spot60").text(sp60);
+                     $("#guncelleme").text("Son Güncelleme: "+new Date(d[0].KAYIT_TARIHI).toLocaleString());
+    
+                })
+            })
+
+        function kaydet(){
+
+            var kur=($("#kurmiktari").val()).replaceAll(",",".");
+            var faizoran=($("#faiz").val()).replaceAll(",",".");
+            var kulid=@Html.Raw(Json.Encode(Request.Cookies["UserId"].Value));
+
+            if(kur!="" && faizoran!=""){
+                  Swal.fire({
+                title: 'Yeni kur değerlerini girmek istediğinize emin misiniz?',
+                icon: 'question',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Evet',
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#03c3ec',
+                confirmButtonBorderColor: '#03c3ec',
+                cancelButtonColor: '#ff3e1d',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+
+                    
+                var url="http://192.168.2.13:83/api/fiyat/kuroran/"+kur+"/"+faizoran+"/"+kulid;
+            $.getJSON(url,function(data){
+            }).then(function(){
+                $("#table").bootstrapTable("refresh");
+                $("#kurmiktari").val(null).trigger("change");
+                $("#faiz").val(null).trigger("change");
+                  $.getJSON("http://192.168.2.13:83/api/fiyat/kuroran",function(data){
+
+                    var d=data;
+                    var sp5=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 5)).toFixed(4);
+                     var sp10=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 10)).toFixed(4);
+                     var sp15=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 15)).toFixed(4);
+                     var sp20=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 20)).toFixed(4);
+                     var sp25=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 25)).toFixed(4);
+                     var sp30=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 30)).toFixed(4);
+                     var sp35=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 35)).toFixed(4);
+                     var sp40=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 40)).toFixed(4);
+                     var sp45=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 45)).toFixed(4);
+                     var sp50=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 50)).toFixed(4);
+                     var sp55=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 55)).toFixed(4);
+                     var sp60=((parseFloat(d[0].KUR) ) * (1 + ((parseFloat(d[0].FAIZ_ORANI) / 3000)) * 60)).toFixed(4);
+
+                       $("#spot").text((parseFloat(d[0].KUR) ).toFixed(4));
+                       $("#spot5").text(sp5);
+                      $("#spot10").text(sp10);
+                      $("#spot15").text(sp15);
+                      $("#spot20").text(sp20);
+                      $("#spot25").text(sp25);
+                      $("#spot30").text(sp30);
+                    $("#spot35").text(sp35);
+                      $("#spot40").text(sp40);
+                      $("#spot45").text(sp45);
+                    $("#spot50").text(sp50);
+                      $("#spot55").text(sp55);
+                      $("#spot60").text(sp60);
+                      $("#guncelleme").text("Son Güncelleme: "+new Date(d[0].KAYIT_TARIHI).toLocaleString());
+    
+                })
+       
+        
+   
+            })
+
+            }
+
+                
+            })
+
+            }else{
+                const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'center',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Lütfen tüm değerleri girdiğinizden emin olun!'
+                    });
+            }
+       
+
+        }
+        
+function hesapla(){
+    var kur=($("#kurmiktari").val()).replaceAll(",",".");
+    var faizoran=($("#faiz").val()).replaceAll(",",".");
+
+    
+    if(kur!="" && faizoran!=""){
+    var sp1=(parseFloat(kur)).toFixed(4);
+       
+        
+    var sp5=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 5)).toFixed(4);
+    var sp10=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 10)).toFixed(4);
+    var sp15=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 15)).toFixed(4);
+    var sp20=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 20)).toFixed(4);
+    var sp25=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 25)).toFixed(4);
+    var sp30=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 30)).toFixed(4);
+    var sp35=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 35)).toFixed(4);
+    var sp40=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 40)).toFixed(4);
+    var sp45=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 45)).toFixed(4);
+    var sp50=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 50)).toFixed(4);
+    var sp55=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 55)).toFixed(4);
+    var sp60=((parseFloat(kur) ) * (1 + ((parseFloat(faizoran) / 3000)) * 60)).toFixed(4);
+
+
+    $("#spot").text(sp1).trigger("change");
+    $("#spot5").text(sp5).trigger("change");
+    $("#spot10").text(sp10).trigger("change");
+    $("#spot15").text(sp15).trigger("change");
+    $("#spot20").text(sp20).trigger("change");
+    $("#spot25").text(sp25).trigger("change");
+    $("#spot30").text(sp30).trigger("change");
+    $("#spot35").text(sp35).trigger("change");
+    $("#spot40").text(sp40).trigger("change");
+    $("#spot45").text(sp45).trigger("change");
+    $("#spot50").text(sp50).trigger("change");
+    $("#spot55").text(sp55).trigger("change");
+        $("#spot60").text(sp60).trigger("change");
+
+    }else{
+        const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'center',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Lütfen tüm değerleri girdiğinizden emin olun!'
+                    });
+    
+    }
+    
+
+}
+
+
+var type = 'fa'
+
+    function loadingTemplate(message) {
+        if (type === 'fa') {
+            return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
+        }
+        if (type === 'pl') {
+            return '<div class="ph-item"><div class="ph-picture"></div></div>'
+        }
+    }
+
+function dataFormatter(value,index,row){
+
+    return  parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+
+
+}
+function TarihFormatter(value,index,row){
+
+    return new Date(value).toLocaleString();
+
+}
+function kurchange(){
+     if ((event.currentTarget.checked)) {
+        $("#tablerow").show();
+            
+        } else {
+            $("#tablerow").hide();
+        }
+    
+
+}
+    </script>
+</body>
+</html>

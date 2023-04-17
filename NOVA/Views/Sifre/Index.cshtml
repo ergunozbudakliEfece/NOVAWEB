@@ -1,0 +1,144 @@
+﻿<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+
+<link href="~/assets/css/password-strength.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="~/assets/js/strength.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function ($) {
+        $('#myPassword').strength({
+            strengthClass: 'strength',
+            strengthMeterClass: 'strength_meter',
+            strengthButtonClass: 'button_strength',
+            strengthButtonText: 'Şifreyi Göster',
+            strengthButtonTextToggle: 'Şifreyi Gizle'
+        });
+    });
+</script>
+<style>
+    html {
+        background-color: #f5f5f9;
+    }
+    .square_btn {
+        display: inline-block;
+        padding: 0.5em 1em;
+        text-decoration: none;
+        border-radius: 4px;
+        color: #ffffff;
+        background-image: -webkit-linear-gradient(#6795fd 0%, #67ceff 100%);
+        background-image: linear-gradient(#6795fd 0%, #67ceff 100%);
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.29);
+        border-bottom: solid 3px #5e7fca;
+    }
+
+        .square_btn:active {
+            -ms-transform: translateY(4px);
+            -webkit-transform: translateY(4px);
+            transform: translateY(4px);
+            box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2);
+            border-bottom: none;
+        }
+        a{
+            display:none;
+        }
+    p {
+        margin-top: -22px;
+        margin-right: 50px;
+        font-size: 16px;
+    }
+    .password-container {
+        width: 100%;
+        position: relative;
+    }
+
+        .password-container input[type="password"],
+        .password-container input[type="text"] {
+            width: 100%;
+            padding: 12px 36px 12px 12px;
+            box-sizing: border-box;
+        }
+
+    .fa-eye {
+        position: absolute;
+        top: 30%;
+        right: 4%;
+        cursor: pointer;
+        color: lightgray;
+    }
+</style>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<div style="margin-top:20vh">
+    <h1><span>Şifre</span> Belirleme</h1>
+    <p style="margin-right:0 !important">Lütfen şifrenizi kimse ile paylaşmayınız!</p>
+    <form id="myform" action="" method="get" accept-charset="utf-8">
+        <div class="row">
+            <div class="password-container">
+                <input id="myPassword" type="password" placeholder="Yeni Şifre">
+                <i class="fa-solid fa-eye" id="eye"></i>
+            </div>
+            
+        </div>
+        <div class="row" style="margin-top:10px">
+            <input id="yeniden" type="password" placeholder="Yeni Şifre Tekrar" name="" value="">
+        </div>
+        <div class="row" style="margin-top:10px">
+
+            <a onclick="kaydet()" class="square_btn" style="margin-left:40%">KAYDET</a>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+       
+    })
+    const passwordInput = document.querySelector("#myPassword")
+    const eye = document.querySelector("#eye")
+    eye.addEventListener("click", function () {
+        this.classList.toggle("fa-eye-slash")
+        const type = passwordInput.getAttribute("type") === "password" ? "text" : "password"
+        passwordInput.setAttribute("type", type)
+    })
+    function kaydet() {
+        var query = window.location.search.split("l=")[1].split("&")[0];
+        var query1 = window.location.search.split("&us=")[1];
+        
+        var pw = $("#myPassword").val();
+        var yenidenpw = $("#yeniden").val();
+        if (pw == yenidenpw) {
+            var json = { USER_NAME: query1, USER_PASSWORD: pw, USER_FIRSTNAME: null, USER_LASTNAME: null, USER_MAIL: null, ACTIVE: true, USER_ROLE: null, LINK_ID: query };
+            $.ajax({
+                url: '@Url.Action("KullaniciUpdate", "Sifre")',
+                type: 'POST',
+                data: JSON.stringify(json),
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+
+                    Swal.fire(
+                        'BAŞARILI',
+                        'Şifre başarıyla güncellendi'
+                    )
+                    window.location.href = 'http://192.168.2.13/Login/Login';
+                },
+                async: true,
+                processData: false
+            });
+        } else {
+            Swal.fire(
+                'BAŞARISIZ',
+                'Girilen şfireler aynı değil!'
+            )
+        }
+
+    }
+
+</script>
+   
+
+
+
+

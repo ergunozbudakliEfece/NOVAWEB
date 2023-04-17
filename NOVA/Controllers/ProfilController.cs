@@ -1,11 +1,18 @@
 ﻿
+using DocumentFormat.OpenXml.EMMA;
 using NOVA.Models;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.Security;
@@ -270,6 +277,47 @@ namespace NOVA.Controllers
             }
             return View();
         }
+        public async Task<ActionResult> SendPasswordMail()
+        {
+            WebMail.SmtpServer = "192.168.2.13";
+            
+               var  subject = "NOVA | Kullanıcı Bilgileriniz";
+            
+            var apiUrl = "http://192.168.2.13:83/api/user/link";
+
+            var httpClient = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+            var response = await httpClient.SendAsync(request);
+
+
+            string u = "http://nova.efece.com/sifre/index?l=" + Encrypt(GetLink().ToString()) + "&us=" + Encrypt(Request.Cookies["UserName"].Value);
+            string body = "<a href='" + u + "'>Şifreyi değiştirmek için tıklayın.</a>";
+
+            WebMail.Send(Request.Cookies["Mail"].Value, subject, body, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+            return RedirectToAction("Index");
+        }
+        public int GetLink()
+        {
+
+
+            var apiUrl = "http://192.168.2.13:83/api/user/link";
+
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+
+            string json = client.DownloadString(url);
+            //END
+
+            //JSON Parse START
+            JavaScriptSerializer ser = new JavaScriptSerializer();
+            List<LinkM> jsonList = ser.Deserialize<List<LinkM>>(json);
+
+            //END
+
+            return jsonList[jsonList.Count - 1].ID;
+        }
         public List<User> GetYetki()
         {
             var apiUrl = "http://192.168.2.13:83/api/userwithroles";
@@ -325,6 +373,49 @@ namespace NOVA.Controllers
             JavaScriptSerializer ser = new JavaScriptSerializer();
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             return jsonList;
+        }
+        public static string Encrypt(string clearText)
+        {
+            string EncryptionKey = "abc123";
+            byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(clearBytes, 0, clearBytes.Length);
+                        cs.Close();
+                    }
+                    clearText = Convert.ToBase64String(ms.ToArray());
+                }
+            }
+            return clearText;
+        }
+        public static string Decrypt(string cipherText)
+        {
+            string EncryptionKey = "abc123";
+            cipherText = cipherText.Replace(" ", "+");
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(cipherBytes, 0, cipherBytes.Length);
+                        cs.Close();
+                    }
+                    cipherText = Encoding.Unicode.GetString(ms.ToArray());
+                }
+            }
+            return cipherText;
         }
     }
 }

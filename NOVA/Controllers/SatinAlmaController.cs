@@ -35,158 +35,8 @@ namespace NOVA.Controllers
                 TempData["LOG"] = "ok";
                 return RedirectToAction("Login", "Login");
             }
-            if (Session["Filter"] != null || Session["Filter1"] != null || Session["AltKalem"]!=null)
-            {
-                if (Session["Filter1"] == null)
-                {
-                    Session["Filter1"] = "filter1";
-
-                    Session["Filter2"] = Session["Filter"];
-
-
-                    Session["ToplamUsd2"] = Session["ToplamUsd"];
-                    Session["ToplamEur2"] = Session["ToplamEur"];
-                    Session["ToplamGbp2"] = Session["ToplamGbp"];
-                    Session["ToplamTryFilter2"] = Session["ToplamTryFilter"];
-                }
-                else
-                {
-                    Session["Filter1"] = null;
-                }
-                ViewBag.Toplam = Session["Toplam"];
-                ViewBag.Toplam1 = Session["Toplam1"];
-
-                ViewBag.ToplamTryFilter = Session["ToplamTryFilter2"];
-                ViewBag.ToplamEur = Session["ToplamEur2"];
-                ViewBag.ToplamUsd = Session["ToplamUsd2"];
-                ViewBag.ToplamGbp = Session["ToplamGbp2"];
-                ViewBag.UstKalem = Session["Filter2"];
-                ViewBag.FilterPlasiyer = Session["FilterPlasiyer"];
-                ViewBag.FilterTeslim = Session["FilterTeslim"];
-                ViewBag.FilterDoviz = Session["FilterDoviz"];
-                ViewBag.FilterUretilecekmi = Session["FilterUretilecekmi"];
-                ViewBag.ToplamTryFilter1 = Session["ToplamTryFilter1"];
-                ViewBag.ToplamEur1 = Session["ToplamEur1"];
-                ViewBag.ToplamUsd1 = Session["ToplamUsd1"];
-                ViewBag.ToplamGbp1 = Session["ToplamGbp1"];
-                if ((string)Session["AltKalem"] == "altkalem")
-                {
-                    ViewBag.Yuzde = Session["Yuzde"];
-                    ViewBag.ToplamMiktar1 = Session["ToplamMiktar1"];
-                    ViewBag.ToplamMiktar2 = Session["ToplamMiktar2"];
-                    ViewBag.SSIPTeslim = Session["SSIPTeslim"];
-                    ViewBag.SSIPBekleyen = Session["SSIPBekleyen"];
-                    ViewBag.AltKalem = GetSiparisApiData();
-                    ViewBag.AltKalem1= Session["Filter2"];
-                    Session["AltKalem"] = "test";
-                    return View();
-
-                }
-                else if ((string)Session["AltKalem"] == "test")
-                {
-                    Session["AltKalem"] = null;
-                }
-                ViewBag.AltKalem = GetSiparisApiData();
-                ViewBag.AltKalem1 = ViewBag.AltKalem;
-
-
-                return View();
-            }
-            else
-            {
-                ViewBag.UstKalem = GetSiparisUstKAlem();
-                ViewBag.AltKalem = GetSiparisApiData();
-                ViewBag.AltKalem1 = ViewBag.AltKalem;
-            }
-            List<USTKALEMMODEL> list = GetSiparisUstKAlem();
-            List<SiparisModel> list1 = GetSiparisApiData();
-            decimal? toplamtry = 0;
-            decimal? toplamtryfilter = 0;
-            decimal? toplameur = 0;
-            decimal? toplamusd = 0;
-            decimal? toplamgbp = 0;
-            decimal? toplamtry1 = 0;
-            decimal? toplamtryfilter1 = 0;
-            decimal? toplameur1 = 0;
-            decimal? toplamusd1 = 0;
-            decimal? toplamgbp1 = 0;
-            foreach (var item in list)
-            {
-                toplamtry = toplamtry + item.GENELTOPLAM;
-                if (item.DOV_TIP != null)
-                {
-                    if (item.DOV_TIP == "USD")
-                    {
-                        toplamusd = toplamusd + item.DOV_GENELTOPLAM;
-                    }
-                    if (item.DOV_TIP == "EUR")
-                    {
-                        toplameur = toplameur + item.DOV_GENELTOPLAM;
-                    }
-                    if (item.DOV_TIP == "GBP")
-                    {
-                        toplamgbp = toplamgbp + item.DOV_GENELTOPLAM;
-                    }
-                    if (item.DOV_TIP == "TRY")
-                    {
-                        toplamtryfilter = toplamtryfilter + item.GENELTOPLAM;
-                    }
-                }
-
-            }
-            foreach (var item in list1)
-            {
-                toplamtry1 = toplamtry1 + item.NET_TUTAR_KALEM;
-                
-                    if (item.DOV_TIP == "USD")
-                    {
-                        toplamusd1 = toplamusd1 + item.DOV_TUTAR;
-                    }
-                    if (item.DOV_TIP == "EURO")
-                    {
-                        toplameur1 = toplameur1 + item.DOV_TUTAR;
-                    }
-                    if (item.DOV_TIP == "GBP")
-                    {
-                        toplamgbp1 = toplamgbp1 + item.DOV_TUTAR;
-                    }
-                if (item.DOV_TIP == null)
-                {
-                    toplamtryfilter1 = toplamtryfilter1 + item.NET_TUTAR_KALEM;
-                }
-                
-               
-                    
-                
-
-            }
-            ViewBag.Toplam = toplamtry;
-
-            ViewBag.ToplamTryFilter = toplamtryfilter;
-            ViewBag.ToplamEur = toplameur;
-            ViewBag.ToplamUsd = toplamusd;
-            ViewBag.ToplamGbp = toplamgbp;
-            ViewBag.Toplam1 = toplamtry1;
-
-            ViewBag.ToplamTryFilter1 = toplamtryfilter1;
-            ViewBag.ToplamEur1 = toplameur1;
-            ViewBag.ToplamUsd1 = toplamusd1;
-            ViewBag.ToplamGbp1 = toplamgbp1;
-            Session["Toplam1"] = toplamtry1;
-            Session["ToplamTryFilter1"] = toplamtryfilter1;
-            Session["ToplamEur1"] = toplameur1;
-            Session["ToplamUsd1"] = toplamusd1;
-            Session["ToplamGbp1"] = toplamgbp1;
-            Session["Toplam"] = toplamtry;
-            Session["ToplamTryFilter"] = toplamtryfilter;
-            Session["ToplamEur"] = toplameur;
-            Session["ToplamUsd"] = toplamusd;
-            Session["ToplamGbp"] = toplamgbp;
-
-
-            ViewBag.Page = 4;
-            ViewBag.RoleName = Request.Cookies["RoleName"].Value;
-            ViewBag.Id = Request.Cookies["Id"].Value;
+           
+           
             var yetki = GetYetki();
             
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 19);
@@ -198,64 +48,62 @@ namespace NOVA.Controllers
             }
             else
             {
-                if (Request.Cookies["Id"].Value.ToInt() != 10050 && Request.Cookies["Id"].Value.ToInt() != 10000)
-                { //Kullanıcının en son logid si bulunur
-                    string json1 = null;
-                    LoginModel createdlog = null;
-                    var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
-                    Uri url1 = new Uri(apiUrl1);
-                    WebClient client1 = new WebClient();
-                    client1.Encoding = System.Text.Encoding.UTF8;
+                //Kullanıcının en son logid si bulunur
+                string json1 = null;
+                LoginModel createdlog = null;
+                var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
+                Uri url1 = new Uri(apiUrl1);
+                WebClient client1 = new WebClient();
+                client1.Encoding = System.Text.Encoding.UTF8;
 
-                    json1 = client1.DownloadString(url1);
-                    JavaScriptSerializer ser1 = new JavaScriptSerializer();
-                    createdlog = ser1.Deserialize<LoginModel>(json1);
-
+                json1 = client1.DownloadString(url1);
+                JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                createdlog = ser1.Deserialize<LoginModel>(json1);
 
 
 
 
-                    //Kullanıcının en son logid si bulunur
 
-                    string json2 = null;
-                    List<ExecModel> createdlog1 = null;
-                    var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
-                    Uri url2 = new Uri(apiUrl2);
-                    WebClient client2 = new WebClient();
-                    client2.Encoding = System.Text.Encoding.UTF8;
+                //Kullanıcının en son logid si bulunur
 
-                    json2 = client2.DownloadString(url2);
-                    JavaScriptSerializer ser2 = new JavaScriptSerializer();
-                    createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+                string json2 = null;
+                List<ExecModel> createdlog1 = null;
+                var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
+                Uri url2 = new Uri(apiUrl2);
+                WebClient client2 = new WebClient();
+                client2.Encoding = System.Text.Encoding.UTF8;
 
-                    if (createdlog1[0].SITUATION != false)
+                json2 = client2.DownloadString(url2);
+                JavaScriptSerializer ser2 = new JavaScriptSerializer();
+                createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+
+                if (createdlog1[0].SITUATION != false)
+                {
+                    LoginModel login = new LoginModel();
+                    login.LOG_ID = createdlog.LOG_ID;
+                    login.LAST_ACTIVITY = 19;
+                    var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                    var httpClientnew = new System.Net.Http.HttpClient();
+                    var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
                     {
-                        LoginModel login = new LoginModel();
-                        login.LOG_ID = createdlog.LOG_ID;
-                        login.LAST_ACTIVITY = 19;
-                        var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+                        Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                    };
 
-                        var httpClientnew = new System.Net.Http.HttpClient();
-                        var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
-                        {
-                            Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
-                        };
-
-                        var responsenew = httpClientnew.SendAsync(requestnew);
-                    }
-                    else
-                    {
-                        FormsAuthentication.SignOut();
-                        return RedirectToAction("Login", "Login");
-                    }
-
-
+                    var responsenew = httpClientnew.SendAsync(requestnew);
                 }
+                else
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+
+
+
             }
-            if (yetkiKontrol.UPDATE_AUTH == true)
-            {
-                ViewBag.Yetki = "yetkili";
-            }
+
+
+
             var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
 
             var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;

@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Http;
-using NetOpenX50;
+//using NetOpenX50;
 using NOVA.Models;
 using ServiceStack;
 using System;
@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.Security;
@@ -38,7 +39,7 @@ namespace NOVA.Controllers
                 }
             public ActionResult Index()
         {
-           
+            
             if (Request.Cookies["Id"] == null){
                 FormsAuthentication.SignOut();
                 return RedirectToAction("Login","Login");
@@ -444,24 +445,25 @@ namespace NOVA.Controllers
         public JsonResult GetKur()
         {
 
+            try
+            {
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
 
-            var apiUrl = "http://assets.ino.com/data/quote/?format=json&s=FOREX_USDTRY";
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-            //Connect API
-            Uri url = new Uri(apiUrl);
-            WebClient client = new WebClient();
-            client.Encoding = System.Text.Encoding.UTF8;
-            client.ResponseHeaders.Add("Application/json; utf-8");
-            client.Headers.Add("Access-Control-Allow-Origin", "*");
-            client.Headers.Add("Access-Control-Allow-Origin", "allowOrigin");
-            client.Headers.Add("Access-Control-Allow-Credentials", "true");
-            client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-            string json = client.DownloadString(url);
-          
+                var webClient = new WebClient();
 
-            //END
+                var json = webClient.DownloadString("https://assets.ino.com/data/quote/?format=json&s=FOREX_USDTRY");
+                return Json(json, JsonRequestBehavior.AllowGet);
 
-            return Json(json, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                
+                return Json(ex.Message, JsonRequestBehavior.AllowGet);
+            }
+
         }
         public class KurModel
         {

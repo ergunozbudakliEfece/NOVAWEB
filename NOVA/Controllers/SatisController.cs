@@ -2526,13 +2526,22 @@ namespace NOVA.Controllers
         }
         public JsonResult GetUser()
         {
-           
+            string URI = "http://192.168.2.13:83/api/login/login";
+            string myParameters = "Email=ergunozbudakli@efecegalvaniz.com&Password=begum142088";
+            string HtmlResult = "";
+            using (WebClient wc = new WebClient())
+            {
+                wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+                HtmlResult = wc.UploadString(URI, myParameters);
+
+            }
 
             var apiUrl = "http://192.168.2.13:83/api/user";
             //Connect API
             Uri url = new Uri(apiUrl);
             WebClient client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
+            client.Headers.Add("Authorization", "Bearer " + HtmlResult);
             string json = client.DownloadString(url);
 
 

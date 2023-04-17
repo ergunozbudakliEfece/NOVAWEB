@@ -19,7 +19,8 @@ using System.Web.Script.Serialization;
 using System.Web.Security;
 using static NOVA.Controllers.LoginController;
 using static ServiceStack.LicenseUtils;
-
+using System.Security.Cryptography;
+using System.IO;
 
 namespace NOVA.Controllers
 {
@@ -1292,6 +1293,28 @@ namespace NOVA.Controllers
 
             return jsonList;
         }
+        public int GetLink()
+        {
+
+
+            var apiUrl = "http://192.168.2.13:83/api/user/link";
+
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+
+            string json = client.DownloadString(url);
+            //END
+
+            //JSON Parse START
+            JavaScriptSerializer ser = new JavaScriptSerializer();
+            List<LinkM> jsonList = ser.Deserialize<List<LinkM>>(json);
+
+            //END
+
+            return jsonList[jsonList.Count-1].ID;
+        }
         [HttpPost]
         public async Task<ActionResult> YetkiAyar([Bind(Prefix = "Item1")] User user)
         {
@@ -1343,7 +1366,7 @@ namespace NOVA.Controllers
 
         }
         [HttpPost]
-        public ActionResult SendMail([Bind(Prefix = "Item2")] Mail model)
+        public async Task<ActionResult> SendMail([Bind(Prefix = "Item2")] Mail model)
         {
             GetKullaniciApiData();
 
@@ -1371,7 +1394,8 @@ namespace NOVA.Controllers
                             {
                                 subject = "NOVA | Kullanıcı Bilgileriniz";
                             }
-                            string body = "Merhaba Çalışma Arkadaşım,</br></br>Nova, Efece Galvaniz çalışanların çalışmalarını kolaylaştırmak üzere tasarlanmış mobil ve web uygulamalardır.</br></br>Mobil uygulama yüklemek için “İş ve Süreç Geliştirme” departmanı ile iletişime geçebilirsiniz.</br></br>Web uygulamaya;</br></br>Bilgisayar üzerinde → <strong><a href='http://nova.efece.com'>NOVA</a></strong> </br></br>Mobil için → <strong><a href='http://192.168.2.13'>NOVA</a></strong> </br></br>Linklerine tıklayarak ulaşabilirsiniz.</br></br>Efece Galvaniz çatısı altında yapacağın çalışmalarında sana kolaylık sağlayabilmem için uygulamaya giriş yapabileceğin kullanıcı adın ve şifren aşağıdaki gibidir;</br></br><strong>Kullanıcı Adı: " + GetUserByMail(model.MailAdresi[i]).USER_NAME + "</strong></br></br><strong>Şifre: " + GetUserByMail(model.MailAdresi[i]).USER_PASSWORD + "</strong></br></br>Kullanıcı bilgileriniz yapacağınız işlemlerde kayıt tutulmasında kullanılacağı için şifrenizi uygulamaya giriş yaptıktan sonra kişisel olmayan bir şifrenizle değiştirip <strong><u>kimseyle</u></strong> paylaşmamanızı öneririz.";
+                            string u = "http://localhost:44332/sifre/index?l=U2FsdGVkX1+2HP5R1j2vhaIUaH77YI3wYDqv3RSHko4=&us=U2FsdGVkX1+ro1yUzE2P+eB5lCVq54zigdaUmTCdunI=";
+                            string body = "Merhaba Çalışma Arkadaşım,</br></br>Nova, Efece Galvaniz çalışanların çalışmalarını kolaylaştırmak üzere tasarlanmış mobil ve web uygulamalardır.</br></br>Mobil uygulama yüklemek için “İş ve Süreç Geliştirme” departmanı ile iletişime geçebilirsiniz.</br></br>Web uygulamaya;</br></br>Bilgisayar üzerinde → <strong><a href='http://nova.efece.com'>NOVA</a></strong> </br></br>Mobil için → <strong><a href='http://192.168.2.13'>NOVA</a></strong> </br></br>Linklerine tıklayarak ulaşabilirsiniz.</br></br>Efece Galvaniz çatısı altında yapacağın çalışmalarında sana kolaylık sağlayabilmem için uygulamaya giriş yapabileceğin kullanıcı adın ve şifren aşağıdaki gibidir;</br></br><strong>Kullanıcı Adı: " + GetUserByMail(model.MailAdresi[i]).USER_NAME + "</strong></br></br><strong>Şifre: <a href='"+u+"'> Şifreyi değiştirmek için tıklayın.</a></strong></br></br>Kullanıcı bilgileriniz yapacağınız işlemlerde kayıt tutulmasında kullanılacağı için şifrenizi uygulamaya giriş yaptıktan sonra kişisel olmayan bir şifrenizle değiştirip <strong><u>kimseyle</u></strong> paylaşmamanızı öneririz.";
 
 
                             WebMail.SmtpServer = "192.168.2.13";
@@ -1420,8 +1444,15 @@ namespace NOVA.Controllers
                         {
                            subject = "NOVA | Kullanıcı Bilgileriniz";
                         }
+                        var apiUrl = "http://192.168.2.13:83/api/user/link";
 
-                        string body = "Merhaba Çalışma Arkadaşım,</br></br>Nova, Efece Galvaniz çalışanların çalışmalarını kolaylaştırmak üzere tasarlanmış mobil ve web uygulamalardır.</br></br>Mobil uygulama yüklemek için “İş ve Süreç Geliştirme” departmanı ile iletişime geçebilirsiniz.</br></br>Web uygulamaya;</br></br>Bilgisayar üzerinde → <strong><a href='http://nova.efece.com'>NOVA</a></strong> </br></br>Mobil için → <strong><a href='http://192.168.2.13'>NOVA</a></strong> </br></br>Linklerine tıklayarak ulaşabilirsiniz.</br></br>Efece Galvaniz çatısı altında yapacağın çalışmalarında sana kolaylık sağlayabilmem için uygulamaya giriş yapabileceğin kullanıcı adın ve şifren aşağıdaki gibidir;</br></br><strong>Kullanıcı Adı: " + GetUserByMail(model.MailAdresi[i]).USER_NAME + "</strong></br></br><strong>Şifre: " + GetUserByMail(model.MailAdresi[i]).USER_PASSWORD + "</strong></br></br>Kullanıcı bilgileriniz yapacağınız işlemlerde kayıt tutulmasında kullanılacağı için şifrenizi uygulamaya giriş yaptıktan sonra kişisel olmayan bir şifrenizle değiştirip <strong><u>kimseyle</u></strong> paylaşmamanızı öneririz.";
+                        var httpClient = new HttpClient();
+                        var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+                        var response = await httpClient.SendAsync(request);
+
+                        
+                        string u = "http://nova.efece.com/sifre/index?l="+ Encrypt(GetLink().ToString()) + "&us="+ Encrypt(GetUserByMail(model.MailAdresi[i]).USER_NAME);
+                        string body = "Merhaba Çalışma Arkadaşım,</br></br>Nova, Efece Galvaniz çalışanların çalışmalarını kolaylaştırmak üzere tasarlanmış mobil ve web uygulamalardır.</br></br>Mobil uygulama yüklemek için “İş ve Süreç Geliştirme” departmanı ile iletişime geçebilirsiniz.</br></br>Web uygulamaya;</br></br>Bilgisayar üzerinde → <strong><a href='http://nova.efece.com'>NOVA</a></strong> </br></br>Mobil için → <strong><a href='http://192.168.2.13'>NOVA</a></strong> </br></br>Linklerine tıklayarak ulaşabilirsiniz.</br></br>Efece Galvaniz çatısı altında yapacağın çalışmalarında sana kolaylık sağlayabilmem için uygulamaya giriş yapabileceğin kullanıcı adın ve şifren aşağıdaki gibidir;</br></br><strong>Kullanıcı Adı: " + GetUserByMail(model.MailAdresi[i]).USER_NAME + "</strong></br></br><strong>Şifre: <a href='" + u + "'>Şifreyi değiştirmek için tıklayın.</a></strong></br></br>Kullanıcı bilgileriniz yapacağınız işlemlerde kayıt tutulmasında kullanılacağı için şifrenizi uygulamaya giriş yaptıktan sonra kişisel olmayan bir şifrenizle değiştirip <strong><u>kimseyle</u></strong> paylaşmamanızı öneririz.";
 
                         WebMail.Send(model.MailAdresi[i].ToString(), subject, body, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                         //WebMail.Send("ergunozbudakli@efecegalvaniz.com,ergunozbudakli@gmail.com,ugurkonakci@gmail.com,ugurkonakci@efecegalvaniz.com", subject, body, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
@@ -1442,7 +1473,7 @@ namespace NOVA.Controllers
                         {
                             subject = "NOVA | Kullanıcı Bilgileriniz";
                         }
-                        string body = model.Icerik+ "Yeni yılınız kutlu olsun!</br>Efece'de \"Dijital Dönüşüm Süreci\" nin başladığı ve en önemli adımlarından biri olan Nova ile tanıştığımız 2022 yılına veda ederken;</br>Geliştirilen yeni modülleriyle beraber aktif olarak kullanıldığı son 6 ayında Nova Web ve Nova Android uygulamalarındaki kullanım istatistiklerini paylaşmak istedik.</br></br>En Fazla Oturum Sayısı:</br></br>1.\tmustafaduzdaslik</br>2.\tahmetkoparan</br>3.\tmuratruzgar</br>4.\tselineken</br>5.\tbugraguclu</br>6.\tfikretcetin</br>7.\tyusufakgul</br>8.\tmanar</br>9.\terkangundogan</br>10.\tyaseminkurutac</br>En Fazla Oturum Açılan Platform:</br>1.\tAndroid App       →  % 44</br>2.\tGoogle Chrome →  % 43</br>3.\tOpera                   →  %  7</br>4.\tSafari                     →  %  3</br>5.\tMicrosoft Edge  →  %  2</br>6.\tFirefox                  →  %  1</br></br>İlk 10'a giren kullanıcılara teşekkürlerimizi sunar, 2023 yılının Nova'nın daha da aktif kullanıldığı, sağlıklı, mutlu, huzurlu ve başarılı bir yıl olmasını dileriz.</br>";
+                        string body = model.Icerik;
 
                         WebMail.SmtpServer = "192.168.2.13";
                         WebMail.Send(model.MailAdresi[i].ToString(), subject, body, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
@@ -1568,13 +1599,40 @@ namespace NOVA.Controllers
 
             return Json(response, JsonRequestBehavior.AllowGet);
         }
-        public async Task<ActionResult> ModuleActiveUpdate(ModuleActive mod)
+        public async Task<ActionResult> RoleUpdate(RoleModel role)
         {
             string apiUrl;
             var httpClient = new HttpClient();
             HttpRequestMessage request;
             HttpResponseMessage response;
 
+
+            apiUrl = "http://192.168.2.13:83/api/rolesauth/" + role.ROLE_ID + "/" + role.MODULE_INCKEY;
+
+
+            request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(role), Encoding.UTF8, "application/json")
+            };
+
+            response = await httpClient.SendAsync(request);
+
+            return Json(response, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<ActionResult> ModuleActiveUpdate(ModuleActive mod)
+        {
+            string apiUrl;
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+            if (mod.ACTIVE == "False")
+            {
+                mod.ACTIVE = "0";
+            }
+            else
+            {
+                mod.ACTIVE = "1";
+            }
 
             apiUrl = "http://192.168.2.13:83/api/modules/active";
 
@@ -1630,6 +1688,24 @@ namespace NOVA.Controllers
             public bool INSERT_AUTH { get; set; }
             public bool DELETE_AUTH { get; set; }
         }
+        public class RoleModel
+        {
+            public string ROLE_ID { get; set; }
+
+
+            public string MODULE_INCKEY { get; set; }
+
+            public bool SELECT_AUTH { get; set; }
+
+            public bool USER_AUTH { get; set; }
+
+
+            public bool UPDATE_AUTH { get; set; }
+
+
+            public bool INSERT_AUTH { get; set; }
+            public bool DELETE_AUTH { get; set; }
+        }
         public ActionResult MailForm(string password)
         {
 
@@ -1645,13 +1721,22 @@ namespace NOVA.Controllers
         {
 
 
-            var apiUrl = "http://192.168.2.13:83/api/user";
+            string URI = "http://192.168.2.13:83/api/login/login";
+            string myParameters = "Email=ergunozbudakli@efecegalvaniz.com&Password=begum142088";
+            string HtmlResult = "";
+            using (WebClient wc = new WebClient())
+            {
+                wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+                HtmlResult = wc.UploadString(URI, myParameters);
 
+            }
+
+            var apiUrl = "http://192.168.2.13:83/api/user";
             //Connect API
             Uri url = new Uri(apiUrl);
             WebClient client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
-
+            client.Headers.Add("Authorization", "Bearer " + HtmlResult);
             string json = client.DownloadString(url);
             //END
 
@@ -1737,6 +1822,7 @@ namespace NOVA.Controllers
         {
             try
             {
+
                 var apiUrl = "http://192.168.2.13:83/api/user";
 
                 var httpClient = new HttpClient();
@@ -1768,6 +1854,49 @@ namespace NOVA.Controllers
 
             string name = user.USER_NAME;
             return View();
+        }
+        public static string Encrypt(string clearText)
+        {
+            string EncryptionKey = "abc123";
+            byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(clearBytes, 0, clearBytes.Length);
+                        cs.Close();
+                    }
+                    clearText = Convert.ToBase64String(ms.ToArray());
+                }
+            }
+            return clearText;
+        }
+        public static string Decrypt(string cipherText)
+        {
+            string EncryptionKey = "abc123";
+            cipherText = cipherText.Replace(" ", "+");
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(cipherBytes, 0, cipherBytes.Length);
+                        cs.Close();
+                    }
+                    cipherText = Encoding.Unicode.GetString(ms.ToArray());
+                }
+            }
+            return cipherText;
         }
     }
 }

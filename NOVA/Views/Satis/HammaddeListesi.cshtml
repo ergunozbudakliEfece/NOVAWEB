@@ -138,7 +138,7 @@
     }
 </style>
 <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
-<div class="container-fluid d-flex h-100">
+<div class="container-fluid h-100">
 
     <div class="card mx-auto" style="font-size:12px">
         <div class="card-header pb-0">
@@ -254,16 +254,16 @@
                                 <div class="col">
                                     <div class="row">
                                         <div class="col-sm">
-                                            <label id="toptonhep" class="float-start text-nowrap"><b>∑ Seçilen Stok Miktarı:</b> </label>
+                                            <label id="toptonhep" class="float-start text-nowrap" ><b>∑ Seçilen Stok Miktarı:</b> </label>
                                         </div>
                                         <div class="col-sm">
-                                            <label id="topton" class="float-start text-nowrap" style="display:none"><b>∑ Seçilen Stok Miktarı TRY:</b> </label>
+                                            <label id="topton" class="float-start text-nowrap" style="display: none; color: #0085fc "><b>∑ Seçilen Stok Miktarı TRY:</b> </label>
                                         </div>
                                         <div class="col-sm">
-                                            <label id="topton1" class="float-start text-nowrap" style="display:none"><b>∑ Seçilen Stok Miktarı USD:</b> </label>
+                                            <label id="topton1" class="float-start text-nowrap" style="display: none; color: #fc6a5d "><b>∑ Seçilen Stok Miktarı USD:</b> </label>
                                         </div>
                                         <div class="col-sm">
-                                            <label id="topton2" class="float-start text-nowrap" style="display:none"><b>∑ Seçilen Stok Miktarı EUR:</b> </label>
+                                            <label id="topton2" class="float-start text-nowrap" style="display: none; color: #aa4f82 "><b>∑ Seçilen Stok Miktarı EUR:</b> </label>
                                         </div>
                                         <div class="col-sm">
                                             <label class="float-start text-nowrap"><b>Son Güncelleme Tarihi: </b> @ViewBag.LastModified </label>
@@ -279,16 +279,16 @@
                                     {
                                         <div class="row">
                                             <div class="col-sm">
-                                                <label id="tumortfiyat" class="float-start text-nowrap" style="display:none"><b>Ağ. Ort. Fiyat Tümü:</b> </label>
+                                                <label id="tumortfiyat" class="float-start text-nowrap" style="display: none" ><b>Ağ. Ort. Fiyat Tümü:</b> </label>
                                             </div>
                                             <div class="col-sm">
-                                                <label id="ortfiyat" class="float-start text-nowrap" style="display:none"><b>Ağ. Ort. Fiyat TRY:</b> </label>
+                                                <label id="ortfiyat" class="float-start text-nowrap" style="display: none; color: #0085fc "><b>Ağ. Ort. Fiyat TRY:</b> </label>
                                             </div>
                                             <div class="col-sm">
-                                                <label id="ortfiyat1" class="float-start text-nowrap" style="display:none"><b>Ağ. Ort. Fiyat USD:</b> </label>
+                                                <label id="ortfiyat1" class="float-start text-nowrap" style="display: none; color: #fc6a5d "><b>Ağ. Ort. Fiyat USD:</b> </label>
                                             </div>
                                             <div class="col-sm">
-                                                <label id="ortfiyat2" class="float-start text-nowrap" style="display:none"><b>Ağ. Ort. Fiyat EUR:</b> </label>
+                                                <label id="ortfiyat2" class="float-start text-nowrap" style="display: none; color: #aa4f82 "><b>Ağ. Ort. Fiyat EUR:</b> </label>
                                             </div>
                                             <div class="col-sm">
 
@@ -521,10 +521,30 @@
         return parseFloat((value).replace(',', '.')).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     function tonFormatter(value, index, row) {
-        return parseInt(value).toLocaleString()
+        if (index.DOV_TIP == "TRY") {
+            return "<span style='color:#0085fc'>" + parseInt(value).toLocaleString() + "</span>";
+        } else if (index.DOV_TIP == "USD") {
+            return "<span style='color: #fc6a5d'>" + parseInt(value).toLocaleString() + "</span>";
+        }
+        else if (index.DOV_TIP == "EUR") {
+            return "<span style='color: #aa4f82'>" + parseInt(value).toLocaleString() + "</span>";
+        } else {
+            return "<span>" + parseInt(value).toLocaleString() + "</span>";
+        }
+       
     }
     function fiyatFormatter(value, index, row) {
-        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " " + (index.DOV_TIP != null ? index.DOV_TIP:"");
+        if (index.DOV_TIP == "TRY") {
+            return "<span style='color:#0085fc'>" + parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " " + (index.DOV_TIP != null ? index.DOV_TIP : "") + "</span>";
+        } else if (index.DOV_TIP == "USD") {
+            return "<span style='color:#fc6a5d'>" + parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " " + (index.DOV_TIP != null ? index.DOV_TIP : "") + "</span>";
+        }
+        else if (index.DOV_TIP == "EUR") {
+            return "<span style='color: #aa4f82'>" + parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " " + (index.DOV_TIP != null ? index.DOV_TIP : "") + "</span>";
+        } else {
+            return "<span>" + parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " " + (index.DOV_TIP != null ? index.DOV_TIP : "") + "</span>";
+        }
+        
     }
     function tarihFormatter(value, index, row) {
         return new Date(value).toLocaleDateString();

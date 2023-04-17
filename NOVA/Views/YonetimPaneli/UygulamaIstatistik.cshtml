@@ -12,6 +12,7 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://code.jscharting.com/2.9.0/jscharting.js"></script>
 
 <style>
     .vertical-center {
@@ -64,6 +65,12 @@
         </div>
     </div>
     <div class="container-fluid">
+        <div class="btn-group menu1" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" onclick="change(1)" name="btnradio" id="btnradio1" checked="" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio1">İSTATİSTİKLER</label>
+            <input type="radio" class="btn-check" onclick="change(2)" name="btnradio" id="btnradio2" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio2">GRAFİK</label>
+        </div>
         <div class="row">
             <div class="col">
                 <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
@@ -119,7 +126,7 @@
                 </ul>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="row1">
             <div id="employeeTableWrapper" class="tableWrapper">
                 <div class="mt-2" id="toolbar">
                     <div class="row">
@@ -171,8 +178,76 @@
 
 
         </div>
-    </div>
+        <div class="row" id="row2" style="display:none">
+            <div class="row">
+                <div class="col">
+                    <select id="filter2" onchange="changedonem()" multiple="multiple" name="filterAlgorithm" style="width:15vw">
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div id="chartDiv" style="width:100%; margin:0 auto;"></div>
+                </div>
+            </div>
+            </div>
+        </div>
     <script>
+        function changedonem() {
+            var d = null
+            var newdonem = $("#filter2").val();
+            var url = "http://192.168.2.13:83/api/userlogin/exec/ranks/" + newdonem;
+            $.getJSON(url, function (data) {
+               
+                    d = data;
+               
+
+            }).done(function () {
+                JSC.Chart('chartDiv', {
+                    type: 'column',
+                    series: [
+                        {
+                            points: [
+                                { x: d[0].USER_NAME, y: d[0].SESSION_DURATION, color: 'green' },
+                                { x: d[1].USER_NAME, y: d[1].SESSION_DURATION, color: 'green' },
+                                { x: d[2].USER_NAME, y: d[2].SESSION_DURATION, color: 'green' },
+                                { x: d[3].USER_NAME, y: d[3].SESSION_DURATION, color: 'green' },
+                                { x: d[4].USER_NAME, y: d[4].SESSION_DURATION, color: 'green' },
+                                { x: d[5].USER_NAME, y: d[5].SESSION_DURATION, color: 'blue' },
+                                { x: d[6].USER_NAME, y: d[6].SESSION_DURATION, color: 'blue' },
+                                { x: d[7].USER_NAME, y: d[7].SESSION_DURATION, color: 'blue' },
+                                { x: d[8].USER_NAME, y: d[8].SESSION_DURATION, color: 'blue' },
+                                { x: d[9].USER_NAME, y: d[9].SESSION_DURATION, color: 'blue' },
+                                { x: d[10].USER_NAME, y: d[10].SESSION_DURATION, color: 'blue' },
+                                { x: d[11].USER_NAME, y: d[11].SESSION_DURATION, color: 'blue' },
+                                { x: d[12].USER_NAME, y: d[12].SESSION_DURATION, color: 'yellow' },
+                                { x: d[13].USER_NAME, y: d[13].SESSION_DURATION, color: 'yellow' },
+                                { x: d[14].USER_NAME, y: d[14].SESSION_DURATION, color: 'yellow' },
+                                { x: d[15].USER_NAME, y: d[15].SESSION_DURATION, color: 'yellow' },
+                                { x: d[16].USER_NAME, y: d[16].SESSION_DURATION, color: 'yellow' },
+                                { x: d[17].USER_NAME, y: d[17].SESSION_DURATION, color: 'yellow' },
+                                { x: d[18].USER_NAME, y: d[18].SESSION_DURATION, color: 'yellow' },
+                                { x: d[19].USER_NAME, y: d[19].SESSION_DURATION, color: 'orange' },
+                                { x: d[20].USER_NAME, y: d[20].SESSION_DURATION, color: 'orange' },
+                                { x: d[21].USER_NAME, y: d[21].SESSION_DURATION, color: 'orange' },
+                                { x: d[22].USER_NAME, y: d[22].SESSION_DURATION, color: 'orange' },
+                                { x: d[23].USER_NAME, y: d[23].SESSION_DURATION, color: 'orange' },
+                                { x: d[24].USER_NAME, y: d[24].SESSION_DURATION, color: 'orange' },
+                                { x: d[25].USER_NAME, y: d[25].SESSION_DURATION, color: 'orange' },
+                                { x: d[26].USER_NAME, y: d[26].SESSION_DURATION, color: 'orange' },
+                                { x: d[27].USER_NAME, y: d[27].SESSION_DURATION, color: 'red' },
+                                { x: d[28].USER_NAME, y: d[28].SESSION_DURATION, color: 'red' },
+                                { x: d[29].USER_NAME, y: d[29].SESSION_DURATION, color: 'red' },
+                                { x: d[30].USER_NAME, y: d[30].SESSION_DURATION, color: 'red' },
+                                { x: d[31].USER_NAME, y: d[31].SESSION_DURATION, color: 'red' },
+                                { x: d[32].USER_NAME, y: d[32].SESSION_DURATION, color: 'red' }
+                            ]
+                        }
+                    ]
+                });
+            })
+          
+        }
         var filt = [];
         var filt2 = [];
         $(document).ready(function () {
@@ -184,17 +259,16 @@
                 d=data;
             }).done(function () {
                 var aylist = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
-                for (let i = 0; i < d.length; i++) {
-                    if (!filt.includes(d[i].DONEM)) {
-                        filt.push(d[i].DONEM);
-                    }
-                   
-                }
-                for (let i = 0; i < filt.length; i++) {
+
+                for (let i = 2; i <= new Date().getMonth(); i++) {
                     var option = document.createElement("option");
-                    option.innerHTML = aylist[filt[i].split('/')[0]-1]+'/'+filt[i].split('/')[1];
-                    option.value = filt[i];
+                    option.innerHTML = aylist[i] + '/' + new Date().getFullYear();
+                    option.value = (i+1)+ '/' + new Date().getFullYear();
                     document.getElementById("filter").appendChild(option);
+                    var option2 = document.createElement("option");
+                    option2.innerHTML = aylist[i] + '/' + new Date().getFullYear();
+                    option2.value = (i + 1) + '/' + new Date().getFullYear();
+                    document.getElementById("filter2").appendChild(option2);
                 }
              
                 
@@ -202,6 +276,7 @@
 
             }).then(function () {
                 $("#filter").select2({ placeholder: 'DÖNEM' });
+                $("#filter2").select2({ placeholder: 'DÖNEM' });
                
             })
 
@@ -232,10 +307,105 @@
         }
         $('#toolbar').change(function (e) {
             var filterAlgorithm = $('#filter').val()
-            $('#table').bootstrapTable('filterBy', {
-                DONEM: (filterAlgorithm.length > 0 ? filterAlgorithm : filt)
+            var f = filterAlgorithm.toString().split(",");
+            
+            if (f.length == 1) {
+                var url = "http://192.168.2.13:83/api/userlogin/exec/ranks/" + filterAlgorithm;
+                $('#table').bootstrapTable('refresh', {
+                    url: url
                 })
+            } else {
+                var d = [];
+                var conc = null;
+                    for (let i = 0; i < f.length; i++) {
+                        var url = "http://192.168.2.13:83/api/userlogin/exec/ranks/" + f[i];
+                        $.getJSON(url, function (data) {
+                            d.push(data);
+                        }).done(function () {
+                            if (d.length > 1) {
+                                for (let a = 1; a < d.length; a++) {
+                                    conc = d[a-1].concat(d[a])
+                                }
+                               
+                            }
+                            
+                            $('#table').bootstrapTable("destroy");
+                            $('#table').bootstrapTable({ data: conc })
+                        })
+                    }
+             
+                
+            }        
+
         })
+        var d = null;
+
+        $.getJSON("http://192.168.2.13:83/api/userlogin/exec/ranks", function (data) {
+            for (let i = 0; i < data.length; i++) {
+                d=data;
+            }
+
+        })
+        function change(value) {
+            if (value == 1) {
+                $("#row1").show();
+                $("#row2").hide();
+            } else {
+                $("#row2").show();
+                $("#row1").hide();
+                var d = null;
+
+                $.getJSON("http://192.168.2.13:83/api/userlogin/exec/ranks", function (data) {
+                    for (let i = 0; i < data.length; i++) {
+                        d = data;
+                    }
+
+                }).done(function () {
+                    JSC.Chart('chartDiv', {
+                        type: 'column',
+                        series: [
+                            {
+                                points: [
+                                    { x: d[0].USER_NAME, y: d[0].SESSION_DURATION, color: 'green' },
+                                    { x: d[1].USER_NAME, y: d[1].SESSION_DURATION, color: 'green' },
+                                    { x: d[2].USER_NAME, y: d[2].SESSION_DURATION, color: 'green' },
+                                    { x: d[3].USER_NAME, y: d[3].SESSION_DURATION, color: 'green' },
+                                    { x: d[4].USER_NAME, y: d[4].SESSION_DURATION, color: 'green' },
+                                    { x: d[5].USER_NAME, y: d[5].SESSION_DURATION, color: 'blue' },
+                                    { x: d[6].USER_NAME, y: d[6].SESSION_DURATION, color: 'blue' },
+                                    { x: d[7].USER_NAME, y: d[7].SESSION_DURATION, color: 'blue' },
+                                    { x: d[8].USER_NAME, y: d[8].SESSION_DURATION, color: 'blue' },
+                                    { x: d[9].USER_NAME, y: d[9].SESSION_DURATION, color: 'blue' },
+                                    { x: d[10].USER_NAME, y: d[10].SESSION_DURATION, color: 'blue' },
+                                    { x: d[11].USER_NAME, y: d[11].SESSION_DURATION, color: 'blue' },
+                                    { x: d[12].USER_NAME, y: d[12].SESSION_DURATION, color: 'yellow' },
+                                    { x: d[13].USER_NAME, y: d[13].SESSION_DURATION, color: 'yellow' },
+                                    { x: d[14].USER_NAME, y: d[14].SESSION_DURATION, color: 'yellow' },
+                                    { x: d[15].USER_NAME, y: d[15].SESSION_DURATION, color: 'yellow' },
+                                    { x: d[16].USER_NAME, y: d[16].SESSION_DURATION, color: 'yellow' },
+                                    { x: d[17].USER_NAME, y: d[17].SESSION_DURATION, color: 'yellow' },
+                                    { x: d[18].USER_NAME, y: d[18].SESSION_DURATION, color: 'yellow' },
+                                    { x: d[19].USER_NAME, y: d[19].SESSION_DURATION, color: 'orange' },
+                                    { x: d[20].USER_NAME, y: d[20].SESSION_DURATION, color: 'orange' },
+                                    { x: d[21].USER_NAME, y: d[21].SESSION_DURATION, color: 'orange' },
+                                    { x: d[22].USER_NAME, y: d[22].SESSION_DURATION, color: 'orange' },
+                                    { x: d[23].USER_NAME, y: d[23].SESSION_DURATION, color: 'orange' },
+                                    { x: d[24].USER_NAME, y: d[24].SESSION_DURATION, color: 'orange' },
+                                    { x: d[25].USER_NAME, y: d[25].SESSION_DURATION, color: 'orange' },
+                                    { x: d[26].USER_NAME, y: d[26].SESSION_DURATION, color: 'orange' },
+                                    { x: d[27].USER_NAME, y: d[27].SESSION_DURATION, color: 'red' },
+                                    { x: d[28].USER_NAME, y: d[28].SESSION_DURATION, color: 'red' },
+                                    { x: d[29].USER_NAME, y: d[29].SESSION_DURATION, color: 'red' },
+                                    { x: d[30].USER_NAME, y: d[30].SESSION_DURATION, color: 'red' },
+                                    { x: d[31].USER_NAME, y: d[31].SESSION_DURATION, color: 'red' },
+                                    { x: d[32].USER_NAME, y: d[32].SESSION_DURATION, color: 'red' }
+                                ]
+                            }
+                        ]
+                    });
+                })
+            }
+        }
     </script>
 </div>
 

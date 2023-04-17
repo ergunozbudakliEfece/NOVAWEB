@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+
+
+<html
+  lang="en"
+  class="light-style layout-menu-fixed"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Nova | Efece Galvaniz</title>
+
+    <meta name="description" content="" />
+
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/brands/Nova_White.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" type="text/css" />
+
+    <!-- Icons. Uncomment required icon fonts -->
+
+    <link href="\assets\boxicons-2.1.2\css\boxicons.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\animations.css" rel="stylesheet" type="text/css" />
+    <link href="\assets\boxicons-2.1.2\css\transformations.css" rel="stylesheet" type="text/css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\css\theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" type="text/css" href="\assets\css\demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
+
+    <link rel="stylesheet" type="text/css" href="\assets\vendor\libs/apex-charts/apex-charts.css" />
+
+    <!-- Page CSS -->
+    <!-- Helpers -->
+    <script type="text/javascript" src="\assets\vendor\js\helpers.js"></script>
+    <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+
+    <link href="~/assets/vendor/css/accordion.css" rel="stylesheet" />
+    <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script type="text/javascript" src="\assets\js\config.js"></script>
+    <script src="/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="/Scripts/jquery.validate.js" type='text/javascript'></script>
+    <script src="/Scripts/jquery.validate.unobtrusive.js" type='text/javascript'></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script data-require="jquery@2.0.3" data-semver="2.0.3" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="~/assets/vendor/css/scripts.js"></script>
+    
+    <style>
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
+
+        @@keyframes heartbeat {
+            from {
+                opacity: 0.3;
+                transform: scale(0.32);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(0.40);
+            }
+        }
+
+        .centercontent {
+            position: absolute;
+            max-width: 100%;
+            height: auto;
+            top: 65%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+
+        #wrapper {
+            margin: 0 auto;
+            padding: 0px;
+            text-align: center;
+            width: 995px;
+        }
+
+            #wrapper h1 {
+                margin-top: 50px;
+                font-size: 45px;
+                color: #585858;
+            }
+
+                #wrapper h1 p {
+                    font-size: 20px;
+                }
+
+        #table_detail {
+            width: 500px;
+            text-align: left;
+            border-collapse: collapse;
+            color: #2E2E2E;
+            border: #A4A4A4;
+        }
+
+            #table_detail tr:hover {
+                background-color: #F2F2F2;
+            }
+
+            #table_detail .hidden_row {
+                display: none;
+            }
+    </style>
+    <style>
+        .results tr[visible='false'],
+        .no-result {
+            display: none;
+        }
+
+        .results tr[visible='true'] {
+            display: table-row;
+        }
+
+        .counter {
+            padding: 8px;
+            color: #ccc;
+        }
+
+        .full-width-div {
+            position: absolute;
+            width: 100%;
+            left: 0;
+        }
+
+        .sticky {
+            position: fixed;
+            top: 0;
+        }
+
+        .sticky-left {
+            position: fixed;
+            left: 0;
+        }
+
+        table thead tr td {
+            background-color: gray;
+            min-width: 100px;
+            position: relative;
+        }
+
+        .filter {
+            position: absolute;
+            border: solid 1px;
+            max-height: 500px;
+            top: 40px;
+            background-color: white;
+            width: 140px;
+            right: 0;
+            display: none;
+            overflow: scroll;
+        }
+
+        .spinner {
+            position: absolute;
+            top: 50%;
+            left: 53%;
+            margin-left: -50px;
+            margin-top: -50px;
+            background-size: 100%;
+        }
+    </style>
+
+   
+    <script type="text/javascript">
+        function showHideRow(row) {
+            $("#" + row).toggle("fast");
+        }
+    </script>
+</head>
+
+<body onclose="close()">
+    <div class="centercontent" id="spinner" style="display:unset">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+    </div>
+   
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <!-- Menu -->
+
+            @Html.Partial("_Layout_menu")
+            <!-- / Menu -->
+            <!-- Layout container -->
+            <div class="layout-page overflow-hidden">
+                <!-- Navbar -->
+
+                <nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+                     id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                        <!-- Search -->
+                        <div class="navbar-nav align-items-center">
+                            <div class="nav-item d-flex align-items-center">
+                                <i id="click" class="bx bx-search fs-4 lh-0"></i>
+                                <input type="text"
+                                       class="form-control border-0 shadow-none"
+                                       id="search"
+                                       placeholder="Arama..."
+                                       aria-label="Search..." />
+                            </div>
+                        </div>
+                        <!-- /Search -->
+
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+
+                            @{
+                                string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                            }
+                            <!-- User -->
+                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                    <div class="avatar avatar-online">
+                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto ">
+                                        </object>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href='@Url.Action("Index","Profil")'>
+                                            <div class="d-flex">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <div class="avatar avatar-online">
+                                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto ">
+                                                        </object>
+                                                    </div>
+                                                </div>
+                                                @{var fullname = "";
+                                                    if (Session["Name"] == null)
+                                                    {
+                                                        fullname = Request.Cookies["Name"].Value;
+                                                    }
+                                                    else
+                                                    {
+                                                        fullname = Session["Name"].ToString();
+                                                    }
+                                                }
+                                                <div class="flex-grow-1">
+                                                    <span class="fw-semibold d-block">@fullname</span>
+                                                    <small class="text-muted">Yetki: @ViewBag.RoleName</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                           data-bs-target="#cikis">
+                                            <i class="bx bx-power-off me-2"></i>
+                                            <span class="align-middle">Oturumu Kapat</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--/ User -->
+                        </ul>
+                    </div>
+                </nav>
+                <div id="cikis" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalCenterTitle">ÇIKIŞ</h5>
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 class="modal-body">Çıkış yapmak istediğinize emin misiniz?</h5>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("LogOff", "Login")'">EVET</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">HAYIR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- / Navbar -->
+                <!-- Content wrapper -->
+                <div class="container-fluid">
+                    <!-- Content -->
+                    <div class="container-fluid flex-grow-1 container-p-y h-px-20">
+                        @if (Session["Info"] != null)
+                        {
+                            <div class="row mb-1">
+                                <div class="alert alert-success" role="alert">
+                                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                                    Mail başarıyla gönderilmiştir.
+                                </div>
+                            </div>
+                            Session["Info"] = null;
+                        }
+                        <div class="row">
+                            <div class="col d-flex">
+
+                                <button type="button" class="btn btn-success float-end" onclick="myUpdateFunction()" data-bs-toggle='tooltip' data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" data-bs-original-title='<i class="bx bxs-info-circle bx-xs" ></i> <span>Güncel tüm satın alma raporunu mail atar.</span>'><i class='bx bx-mail-send'></i></button>
+                                <button id="submitbutton" type="button" class="btn btn-success float-end" style="display:none" onclick="location.href='@Url.Action("MailDetayliSip", "SatinAlma")'"></button>
+
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-switch  float-end">
+                                    <label class="form-check-label  fs-tiny" for="mal">MAL BAZINDA</label>
+                                    <input class="form-check-input" type="checkbox" id="mal" unchecked="" onclick="mal()">
+                                </div>
+                                <script>
+                                    function mal() {
+
+                                        if (document.getElementById("mal").checked) {
+
+                                            document.getElementById("old").style.display = "none";
+                                            document.getElementById("new").style.display = "block";
+
+                                        }
+                                        else {
+                                            document.getElementById("new").style.display = "none";
+                                            document.getElementById("old").style.display = "block";
+                                        }
+
+
+                                    }
+                                </script>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="container-fluid flex-grow-1 container-p-y" id="old">
+                        <div class="row">
+
+                            <!-- Total Revenue -->
+                            <div class="col-12 col-lg order-2 order-md-3 order-lg-2 mb-2">
+                                <div class="card">
+                                    <div class="row row-bordered g-0">
+                                        <div class="col-md">
+                                            @using (Html.BeginForm("Filter", "SatinAlma", FormMethod.Post, new { @id = "filterForm" }))
+                                            {<div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-4 d-flex">
+
+                                                            <select class="js-example-basic-multiple w-100" id="TESLIM_YERI" name="TESLIM_YERI" multiple="multiple">
+
+                                                                @{
+
+                                                                    List<String> teslim = new List<String>();
+                                                                    foreach (var item in ViewBag.AltKalem)
+                                                                    {
+                                                                        if (!teslim.Contains(item.TESLIM_YERI))
+                                                                        {
+                                                                            teslim.Add(item.TESLIM_YERI);
+                                                                        }
+
+                                                                    }
+                                                                    foreach (var item2 in teslim)
+                                                                    {
+                                                                        if (ViewBag.FilterTeslim != null)
+                                                                        {
+                                                                            if (ViewBag.FilterTeslim.Contains(item2))
+                                                                            {
+                                                                                <option value="@item2" selected> @item2 </option>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <option value="@item2"> @item2 </option>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+
+                                                                            <option value="@item2"> @item2 </option>
+                                                                        }
+
+                                                                    }
+                                                                }
+
+
+                                                            </select>
+
+                                                        </div>
+                                                        <div class="d-flex col-4">
+                                                            <input class="form-control h-75" type="date" id="BASLANGIC_TARIH" name="BASLANGIC_TARIH" value=" " placeholder="Başlangıç Tarihi">
+                                                        </div>
+                                                        <div class="d-flex col-4 mb-2">
+                                                            <div class="form-check form-switch">
+                                                                <label class="form-check-label  fs-tiny" for="flexSwitchCheckChecked1">Üretim</label>
+
+                                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked2" unchecked="" onclick="uret1()" name="URETILECEKMI">
+
+
+
+                                                            </div>
+                                                            <script>
+                                                                function uret1() {
+
+                                                                    if (document.getElementById("flexSwitchCheckChecked2").checked) {
+
+                                                                        document.getElementById("flexSwitchCheckChecked2").value = true;
+
+                                                                    }
+                                                                    else {
+                                                                        document.getElementById("flexSwitchCheckChecked2").value = false;
+                                                                    }
+
+
+                                                                }
+                                                            </script>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row mb-2">
+                                                        <div class="col-4 d-flex">
+                                                            <select class="js-example-basic-multiple-plasiyer w-100" id="PLASIYER_ADI" name="PLASIYER_ADI" multiple="multiple">
+                                                                @{
+
+                                                                    List<String> cari = new List<String>();
+                                                                    foreach (var ps in ViewBag.AltKalem)
+                                                                    {
+                                                                        if (!cari.Contains(ps.CARI_ISIM))
+                                                                        {
+                                                                            cari.Add(ps.CARI_ISIM);
+                                                                        }
+
+
+                                                                    }
+                                                                    foreach (var item2 in cari)
+                                                                    {
+
+                                                                        <option value="@item2"> @item2 </option>
+
+
+
+
+                                                                    }
+                                                                }
+
+
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-4 d-flex">
+                                                            <input class="form-control h-75" type="date" id="BITIS_TARIH" name="BITIS_TARIH" value=" " placeholder="Bitiş Tarihi">
+
+                                                        </div>
+                                                        <div class="col-4 d-flex">
+                                                            <div class="form-check form-switch">
+                                                                <label class="form-check-label  fs-tiny" for="dovizswitch">TRY Bazında</label>
+                                                                <input class="form-check-input " type="checkbox" id="dovizswitch" unchecked="" onclick="change()">
+                                                            </div>
+                                                            <script>
+                                                                function change() {
+                                                                    if (document.getElementById("dovizswitch").checked) {
+
+                                                                        for (let i = 0; i < document.getElementsByClassName('geneltoplamTL').length; i++) {
+                                                                            document.getElementsByClassName("geneltoplamTL")[i].style.display = "table-cell";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('geneltoplamDoviz').length; i++) {
+                                                                            document.getElementsByClassName("geneltoplamDoviz")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('nettutar').length; i++) {
+                                                                            document.getElementsByClassName("nettutar")[i].style.display = "block";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('nettutardoviz').length; i++) {
+                                                                            document.getElementsByClassName("nettutardoviz")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamUSD').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamUSD")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamEUR').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamEUR")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamGBP').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamGBP")[i].style.display = "none";
+                                                                        }
+
+                                                                    }
+                                                                    else {
+                                                                        for (let i = 0; i < document.getElementsByClassName('geneltoplamTL').length; i++) {
+                                                                            document.getElementsByClassName("geneltoplamTL")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('geneltoplamDoviz').length; i++) {
+                                                                            document.getElementsByClassName("geneltoplamDoviz")[i].style.display = "table-cell";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('nettutar').length; i++) {
+                                                                            document.getElementsByClassName("nettutar")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('nettutardoviz').length; i++) {
+                                                                            document.getElementsByClassName("nettutardoviz")[i].style.display = "block";
+                                                                        }
+
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamUSD').length; i++) {
+
+                                                                            document.getElementsByClassName("filtreToplamUSD")[i].style.display = "block";
+
+                                                                        }
+
+
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamEUR').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamEUR")[i].style.display = "block";
+                                                                        }
+
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamGBP').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamGBP")[i].style.display = "block";
+                                                                        }
+
+
+                                                                    }
+
+
+                                                                }
+                                                            </script>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-2">
+                                                        <div class="col-4 d-flex">
+                                                            <select class="js-example-basic-multiple-doviz w-100" id="CARI_DOVIZ_TIPI" name="CARI_DOVIZ_TIPI" multiple="multiple">
+                                                                @{
+
+                                                                    List<String> doviz = new List<String>();
+                                                                    foreach (var item in ViewBag.AltKalem)
+                                                                    {
+                                                                        if (!doviz.Contains(item.CARI_DOVIZ_TIPI))
+                                                                        {
+                                                                            doviz.Add(item.CARI_DOVIZ_TIPI);
+                                                                        }
+
+                                                                    }
+                                                                    foreach (var item2 in doviz)
+                                                                    {
+                                                                        if (ViewBag.FilterDoviz != null)
+                                                                        {
+                                                                            if (ViewBag.FilterDoviz.Contains(item2))
+                                                                            {
+                                                                                <option value="@item2" selected> @item2 </option>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <option value="@item2"> @item2 </option>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <option value="@item2"> @item2 </option>
+                                                                        }
+
+                                                                    }
+
+
+                                                                }
+
+
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <i style="font-size:25px;cursor:pointer" class='bx bx-filter-alt mt-1' id="btnsubmit1"></i>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div id="refresh1">
+                                                        <div class="row mb-2 d-flex">
+
+                                                            @if (ViewBag.Toplam != null)
+                                                            {
+                                                                if (ViewBag.ToplamTryFilter != null)
+                                                                {
+                                                                    <div class="col fs-tiny d-flex text-nowrap"><span class="nettutar" style="display:none"><strong>∑ TRY:</strong>@string.Format("{0:N02}", ViewBag.Toplam)₺</span><span class="nettutardoviz"><strong>∑ TRY:</strong>@string.Format("{0:N02}", ViewBag.ToplamTryFilter)₺</span></div>
+
+                                                                }
+                                                                if (ViewBag.ToplamUsd != 0)
+                                                                {<div class="col fs-tiny d-flex text-nowrap"><strong><span class="filtreToplamUSD">∑ USD:  </span></strong> <span class="filtreToplamUSD text-end">@string.Format("{0:N02}", ViewBag.ToplamUsd)$</span></div>
+                                                            }
+
+                                                            if (ViewBag.ToplamEur != 0)
+                                                            {<div class="col fs-tiny d-flex text-nowrap"><strong><span class="filtreToplamEUR">∑ EUR:  </span> </strong><span class="filtreToplamEUR text-end">@string.Format("{0:N02}", ViewBag.ToplamEur)€</span></div>
+                                                        }
+
+                                                        if (ViewBag.ToplamGbp != 0)
+                                                        {<div class="col fs-tiny d-flex text-nowrap"><strong><span class="filtreToplamGBP">∑ GBP:  </span></strong><span class="filtreToplamGBP text-end">@string.Format("{0:N02}", ViewBag.ToplamGbp)£</span></div>
+                                                    }
+
+                                                }
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+
+
+
+
+                                            }
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/ Total Revenue -->
+                        </div>
+                        <div class="row" id="refresh">
+
+                            <!-- Total Revenue -->
+                            <div class="col-12 col-lg order-2 order-md-3 order-lg-2">
+                                <div class="card" onreset="refreshtable()">
+                                    <div class="centercontent" id="spinner" style="display:none">
+                                        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:5vw" /></div>
+                                    </div>
+                                    <div class="row row-bordered g-0">
+                                        <div class="col-md">
+                                            <div class="table-responsive text-nowrap " style="max-height: 55vh;">
+                                                <table class="table table-sm grid ">
+
+                                                    <tbody>
+                                                        <tr class=" position-sticky sticky-top" style="background-color: #E2F3FF; height: 30px;top:-2px;">
+                                                            <td style="font-size: 14px; background-color: #E2F3FF; width: 50px" class="position-sticky sticky-left"><strong>Sipariş No</strong><div class="filter table-responsive"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Tarih</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Termin</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" colspan="4" class="text-center"><strong>Cari İsim</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Hesap Türü</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Teslim Yeri</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-end"><strong>Plasiyer Adı</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center" colspan="8"><span><strong>Genel Toplam</strong></span><div class="filter"></div></td>
+
+
+
+                                                        </tr>
+
+                                                        @{ int i = 0;
+                                                            var x = ViewBag.AltKalem as ICollection<NOVA.Models.SiparisModel>;
+                                                            int sayac = 1;
+                                                        }
+
+
+                                                        @foreach (var item in ViewBag.UstKalem)
+                                                        {
+                                                            var y = x.FirstOrDefault(t => t.SIPARIS_NO == item.SIPARIS_NO);
+                                                            String stokadi = "";
+                                                            String miktar = "";
+                                                            String olcu = "";
+                                                            String brutfiyat = "";
+                                                            String satisiskonto = "";
+                                                            String netfiyat = "";
+                                                            String nettutar = "";
+                                                            String teslimat, teslimatmsip, teslimatssip, teslimaturetim = "";
+                                                            String msipstring, ssipstring, uretimstring = "";
+                                                            int start = 0, startmsip = 0, startssip = 0, starturetim = 0;
+                                                            int end, endssip, endmsip, enduretim = 0;
+                                                            string cari_isim = @item.CARI_ISIM;
+                                                            string updated_cari_isim = "";
+                                                            int msiptoplamoran = 0, ssiptoplamoran = 0, uretimtoplamoran = 0;
+                                                            int topac = 0, topacuretim = 0, topacssip = 0;
+                                                            decimal? toplamteslimmiktarssip = 0;
+                                                            decimal? bakiyemiktarssip = 0;
+                                                            decimal? uretilenmiktar = 0;
+                                                            decimal? uretilecekmiktar = 0;
+                                                            decimal? msipteslim = 0;
+                                                            if (cari_isim.Length > 28)
+                                                                updated_cari_isim = (cari_isim.Substring(0, 14)) + "..." + (cari_isim.Substring(cari_isim.Length - 10));
+                                                            else
+                                                                updated_cari_isim = cari_isim;
+
+
+                                                            string sipno = @item.SIPARIS_NO;
+                                                            string updated_sipno = "";
+                                                            updated_sipno = (sipno.Substring(0, 1)) + (sipno.Substring(3, 2)) + "-" + (sipno.Substring(sipno.Length - 5));
+                                                            string dovtip = "";
+                                                            if (item.DOV_TIP == null)
+                                                                dovtip = "TRY";
+                                                            else
+                                                                dovtip = item.DOV_TIP;
+
+
+
+                                                            decimal geneltoplam = 0;
+                                                            if (dovtip != "TRY")
+                                                                geneltoplam = item.DOV_GENELTOPLAM;
+                                                            else
+                                                                geneltoplam = item.GENELTOPLAM;
+
+                                                            var dis = "none";
+                                                            if (y != null)
+                                                                dis = "table-row";
+
+                                                            var a = "";
+                                                            if (item.TARIH.ToString("dd/MM/yy") == item.TESLIM_TARIHI.ToString("dd/MM/yy"))
+                                                                a = "-";
+
+                                                            if(item.TARIH.ToString("dd/MM/yy") != item.TESLIM_TARIHI.ToString("dd/MM/yy"))
+                                                                a = item.TESLIM_TARIHI.ToString("dd/MM/yy"); 
+                                                        <tr style="background-color: #F4FBFF; cursor: pointer;display:@dis" class="filt w3-border-light-blue w3-animate-top searchable" onclick="showHideRow('@i');">
+                                                            <td class="sticky-left position-sticky text-center w3-border-light-blue" style="background-color: #F4FBFF;width:30px">@updated_sipno</td>
+                                                            <td class="text-center">@item.TARIH.ToString("dd/MM/yy")</td>
+                                                            <td class="text-center">@a</td>
+                                                            <td colspan="4" class="text-start">@updated_cari_isim</td>
+                                                            <td class="text-center">@dovtip</td>
+                                                            <td class="text-center">@item.TESLIM_YERI</td>
+                                                            <td class="text-end">@item.PLASIYER_ADI</td>
+                                                            <td class="text-center geneltoplamTL" colspan="8" style="display:none"><span>@string.Format("{0:N02}", item.GENELTOPLAM) TRY</span></td>
+                                                            <td class="text-center geneltoplamDoviz" colspan="8"><span>@string.Format("{0:N02}", geneltoplam) @dovtip</span></td>
+
+                                                        </tr>
+
+
+
+                                                        <tr class="table-light w3-border-light-blue toggle" id="@i" style="display:none;">
+                                                            <td colspan="1" class="sticky-left position-sticky" style="vertical-align: top">
+                                                                <p class="mt-0"><strong><u>Sıra No</u></strong></p>
+
+
+
+
+                                                                @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {
+
+
+                                                                    <p><strong>@sayac</strong></p>
+                                                                    teslimatmsip = @String.Format("{0:0}", item1.TESLIMAT_ORANI * 100);
+                                                                    teslimatssip = @String.Format("{0:0}", item1.TESLIMAT_ORANI_SSIP * 100);
+                                                                    teslimaturetim = @String.Format("{0:0}", item1.URETIM_ORANI * 100);
+                                                                    if (teslimatmsip == "0" || teslimatmsip == "")
+                                                                        startmsip = startmsip + (int.Parse("0"));
+                                                                    else
+                                                                        startmsip = (startmsip + (int.Parse(teslimatmsip)));
+                                                                    if (teslimatssip == "0" || teslimatssip == "")
+                                                                        startssip = startssip + (int.Parse("0"));
+                                                                    else
+                                                                        startssip = (startssip + (int.Parse(teslimatssip)));
+                                                                    if (teslimaturetim == "0" || teslimaturetim == "")
+                                                                        starturetim = starturetim + (int.Parse("0"));
+                                                                    else
+                                                                        starturetim = (starturetim + (int.Parse(teslimaturetim)));
+                                                                    if (item1.URETILECEKMI == "E")
+                                                                        topacuretim++;
+                                                                    if (item1.TESLIM_MIKTARI_SSIP + item1.BAKIYE_MIKTARI_SSIP > 0)
+                                                                        topacssip++;
+                                                                    if (item1.TESLIM_MIKTARI + item1.BAKIYE_MIKTARI > 0)
+                                                                        topac++;
+
+                                                                    sayac++;
+
+                                                                }
+                                                                @{
+                                                                    msipstring = @String.Format("{0:0}", msiptoplamoran);
+
+                                                                    if (topacuretim > 0)
+                                                                        uretimtoplamoran = starturetim / topacuretim;
+                                                                    else
+                                                                        uretimtoplamoran = starturetim;
+                                                                    if (topacssip > 0)
+                                                                        ssiptoplamoran = startssip / topacssip;
+                                                                    else
+                                                                        ssiptoplamoran = startssip;
+                                                                    if (topac > 0)
+                                                                        msiptoplamoran = startmsip / topac;
+                                                                    else
+                                                                        msiptoplamoran = startmsip;
+
+                                                                    msipstring = @String.Format("{0:0}", msiptoplamoran);
+                                                                    uretimstring = @String.Format("{0:0}", uretimtoplamoran);
+                                                                    ssipstring = @String.Format("{0:0}", ssiptoplamoran);
+                                                                    endmsip = 100 - msiptoplamoran;
+                                                                    endssip = 100 - ssiptoplamoran;
+                                                                    enduretim = 100 - uretimtoplamoran;
+
+                                                                    sayac = 1;
+                                                                }
+
+                                                                <p>
+                                                                    <span class="top-0">
+                                                                        <svg width="60%" viewBox="0 0 40 40" class="donut">
+                                                                            <circle class="donut-hole" cx="20" cy="20" r="15.91549430918954" fill="#fff"></circle>
+                                                                            <circle class="donut-ring" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5"></circle>
+                                                                            <circle class="donut-segment-msip" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5" stroke-dasharray="@msiptoplamoran @endmsip" stroke-dashoffset="25"></circle>
+                                                                            <g class="donut-text">
+
+                                                                                <text y="55%" transform="translate(0, 2)">
+                                                                                    <tspan x="50%" text-anchor="middle" class="donut-percent-msip" style="font-size:13px;font-weight:bold;font-stretch:condensed">@msipstring<tspan style="font-size: 10px; font-weight:normal">%</tspan></tspan>
+                                                                                </text>
+                                                                            </g>
+                                                                        </svg>
+                                                                    </span>
+                                                                </p>
+
+                                                            </td>
+                                                            @{
+                                                                startmsip = 0;
+                                                                startssip = 0;
+                                                                starturetim = 0;
+                                                            }
+                                                            <td colspan="1" style="vertical-align: top">
+
+                                                                <p class="mt-0"><strong><u>Stok Adı</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {<p class="text-nowrap">@item1.STOK_ADI.Replace('Ý', 'I') </p>teslimat = @String.Format("{0:0}", item1.TESLIMAT_ORANI * 100);
+                                                                start = int.Parse(teslimat);
+                                                                end = 100 - start;
+                                                            }
+
+
+
+
+
+
+                                                            </td>
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                 
+                                                                <p class="mt-0"><strong><u>Termin</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO)){
+                                                                    var tes = (dynamic)item1.TESLIM_TARIHI;
+                                                                    if(tes!=null)
+                                                                    {
+                                                                        tes = tes.ToString("dd/MM/yy");
+                                                                    }
+                                                                    <p class="text-nowrap">@tes</p>
+                                                                }
+                                                            </td>
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                <p class="text-end"><strong><u>Miktar 1</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {<p class="text-end"><span>@String.Format("{0:N02}", item1.MIKTAR)</span>&nbsp;&nbsp;<span class="text-end">@item1.OLCU_BR1</span></p>
+
+                                                            }
+
+
+
+                                                            </td>
+
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                <p class="text-end"><strong><u>Miktar 2</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {<p class="text-end"><span>@String.Format("{0:N02}", item1.MIKTAR2)</span>&nbsp;&nbsp;<span class="text-end">@item1.OLCU_BR2</span></p>
+
+                                                            }
+
+                                                            </td>
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                <p class="text-end"><strong><u>KALINLIK</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {
+                                                                    if (item1.GERCEK_KALINLIK != null)
+                                                                    {<p class="text-end"><span>@String.Format("{0:N02}", item1.GERCEK_KALINLIK)</span></p> }
+                                                                else
+                                                                {
+                                                                    <p class="text-center"><span>-</span></p>
+                                                                }
+
+                                                            }
+
+                                                            </td>
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                <p class="text-end"><strong><u>GENISLIK</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {
+                                                                    if (item1.GENISLIK != null)
+                                                                    {<p class="text-end"><span>@String.Format("{0:N02}", item1.GENISLIK)</span></p> }
+                                                                else
+                                                                {
+                                                                    <p class="text-center"><span>-</span></p>
+                                                                }
+
+
+                                                            }
+
+                                                            </td>
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                <p class="text-end"><strong><u>KALITE</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {
+                                                                    if (item1.KALITE != null)
+                                                                    {<p class="text-end"><span>@String.Format("{0:N02}", item1.KALITE)</span></p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <p class="text-center"><span>-</span></p>
+                                                                }
+
+
+                                                            }
+
+                                                            </td>
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                <p class="text-end"><strong><u>KAPLAMA</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {
+                                                                    if (item1.KAPLAMA_KALINLIK != null)
+                                                                    {<p class="text-end"><span>@String.Format("{0:N02}", item1.KAPLAMA_KALINLIK)</span></p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <p class="text-center"><span>-</span></p>
+                                                                }
+
+                                                            }
+
+                                                            </td>
+
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                <p class="text-end"><strong><u>Brüt Fiyat</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {
+                                                                    decimal? brut_fiyat = 0;
+                                                                    if (item1.DOV_TIP != null && item1.DOV_TIP != "null")
+                                                                    {
+                                                                        brut_fiyat = item1.DOV_FIAT;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        brut_fiyat = item1.BRUT_FIYAT;
+                                                                    }
+                                                                    <p class="text-end"><span class="nettutar" style="display:none">@String.Format("{0:N02}", item1.BRUT_FIYAT)</span><span class="nettutardoviz">@String.Format("{0:N02}", brut_fiyat)</span></p>
+
+                                                                }
+
+                                                            </td>
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                <p class="text-end"><strong><u>İskonto</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {<p class="text-end">@String.Format("{0:0.00}", item1.SATIS_ISKONTOSU)%</p>
+
+                                                            }
+
+                                                            </td>
+
+                                                            <td colspan="1" style="vertical-align: top">
+                                                                <p class="text-end"><strong><u>Net Fiyat</u></strong></p>@foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {
+                                                                    decimal? net_fiyat = 0;
+                                                                    if (item1.DOV_TIP != null && item1.DOV_TIP != "null")
+                                                                    {
+                                                                        net_fiyat = item1.DOV_NET_FIYAT;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        net_fiyat = item1.NET_FIYAT;
+                                                                    }
+                                                                    <p class="text-end"><span class="nettutar" style="display:none">@String.Format("{0:N02}", item1.NET_FIYAT)</span><span class="nettutardoviz">@String.Format("{0:N02}", net_fiyat)</span></p>
+
+                                                                }
+                                                                <p class="text-end"><strong>Brüt Toplam:</strong></p><p class="text-end"><strong>Toplam KDV:</strong></p><p class="text-end"><strong>Tevkifat:</strong></p><p class="text-end"><strong>Genel Toplam:</strong></p>
+
+                                                            </td>
+                                                            <td style="vertical-align: top">
+                                                                <p class="text-end"><span class="float-end"><strong><u>Net Tutar</u></strong></span></p><br />
+                                                                @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {
+                                                                    decimal? net_tutar = 0;
+                                                                    if (item1.DOV_TIP != null)
+                                                                    {
+                                                                        net_tutar = item1.DOV_TUTAR;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        net_tutar = item1.NET_TUTAR_KALEM;
+                                                                    }
+                                                                    <p class="text-end"><span class="nettutar" style="display:none">@String.Format("{0:N02}", item1.NET_TUTAR_KALEM)</span><span class="nettutardoviz">@String.Format("{0:N02}", net_tutar)</span></p>
+
+                                                                }
+                                                                @{
+                                                                    decimal? brut = 0, toplamkdv = 0, tevkifat = 0, geneltop = 0;
+                                                                    if (y != null)
+                                                                    {
+                                                                        if (y.DOV_TIP != null)
+                                                                        {
+                                                                            brut = y.DOV_BRUTTUTAR; toplamkdv = y.DOV_TOPLAM_KDV; tevkifat = y.DOV_TEVKIFAT; geneltop = y.DOV_GENELTOPLAM;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            brut = y.BRUTTUTAR; toplamkdv = y.TOPLAM_KDV; tevkifat = y.TEVKIFAT; geneltop = y.GENELTOPLAM;
+                                                                        }
+                                                                    }
+
+                                                                }
+
+                                                                <p class="text-end" style="height:22.94px"><span class="nettutar float-end" style="display:none">@String.Format("{0:N02}", brut)</span><span class="nettutardoviz float-end">@String.Format("{0:N02}", brut)</span></p><p style="height:22.94px"><span class="nettutar float-end" style="display:none"> @String.Format("{0:N02}", toplamkdv) </span><span class="nettutardoviz float-end"> @String.Format("{0:N02}", toplamkdv) </span></p><p style="height:22.94px"><span class="nettutar float-end" style="display:none"> @String.Format("{0:N02}", tevkifat)</span><span class="nettutardoviz float-end"> @String.Format("{0:N02}", tevkifat)</span> </p><p style="height:22.94px"><span class="nettutar float-end" style="display:none"><strong> @String.Format("{0:N02}", geneltop)</strong></span><span class="nettutardoviz float-end"><strong> @String.Format("{0:N02}", geneltop)</strong></span></p>
+
+                                                                <br />
+                                                            </td>
+                                                            <td style="vertical-align: top; background-color: #f2faf5">
+                                                                <p class="text-end"><span><strong><u>SSIP Teslim</u></strong></span></p>
+                                                                @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {<p class="text-end"><span>@String.Format("{0:N02}", item1.TESLIM_MIKTARI)</span></p>
+                                                                msipteslim = msipteslim + item1.TESLIM_MIKTARI;
+                                                            }
+                                                                @if (msipteslim != 0)
+                                                                {<p class="text-end"><span><strong><u>Toplam</u></strong></span></p>
+                                                                    <p class="text-end"><span><stron>@String.Format("{0:N02}", msipteslim)</stron></span></p>}
+                                                            </td>
+                                                            <td style="vertical-align: top; background-color: #f2faf5">
+                                                                <p class="text-end"><span><strong><u>SSIP Bekleyen</u></strong></span></p>
+                                                                @{
+                                                                    decimal? msipbekleyen = 0;}
+                                                                @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {<p class="text-end"><span>@String.Format("{0:N02}", item1.BAKIYE_MIKTARI)</span></p>
+
+                                                                msipbekleyen = msipbekleyen + item1.BAKIYE_MIKTARI;
+
+                                                            }
+                                                                @if (msipbekleyen != 0)
+                                                                {<p class="text-end"><span><strong><u>Toplam</u></strong></span></p>
+                                                                    <p class="text-end"><span><stron>@String.Format("{0:N02}", msipbekleyen)</stron></span></p>}
+
+                                                            </td>
+                                                            <td style="vertical-align: top; background-color: #f2faf5">
+                                                                <p class="text-center"><span><strong><u>SSIP Süreç</u></strong></span></p>
+                                                                @foreach (var item1 in x.Where(t => t.SIPARIS_NO == item.SIPARIS_NO))
+                                                                {
+                                                                    teslimat = @String.Format("{0:0}", item1.TESLIMAT_ORANI * 100);
+                                                                    start = int.Parse(teslimat);
+                                                                    end = 100 - start;
+
+
+                                                                    <p class="meter" id="meter-msip" style="height:22.94px;"><span style="width:@start%"><span class="progress" id="progress-msip"><span style="margin-bottom:10px;text-align:end;color:black">@start%</span></span></span></p>
+
+
+
+
+                                                                }
+
+
+
+                                                            </td>
+
+
+
+
+
+
+
+                                                        </tr>
+                                                        i++;
+                                                        }
+
+
+
+
+                                                    </tbody>
+
+                                                </table>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/ Total Revenue -->
+                        </div>
+
+                    </div>
+                    <!-- / Content -->
+                    <!-- Footer -->
+                    <div class="container-fluid flex-grow-1 container-p-y" id="new" style="display:none">
+                        <div class="row">
+
+                            <!-- Total Revenue -->
+                            <div class="col-12 col-lg order-2 order-md-3 order-lg-2 mb-2">
+                                <div class="card">
+                                    <div class="row row-bordered g-0">
+                                        <div class="col-md">
+                                            @using (Html.BeginForm("Filter", "SatinAlma", FormMethod.Post, new { @id = "filterForm" }))
+                                            {<div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-4 d-flex">
+
+                                                            <select class="js-example-basic-multiple1" id="TESLIM_YERI1" name="TESLIM_YERI" multiple="multiple" style="width:100%">
+
+                                                                @{
+
+                                                                    List<String> teslim = new List<String>();
+                                                                    foreach (var item in ViewBag.AltKalem1)
+                                                                    {
+                                                                        if (!teslim.Contains(item.TESLIM_YERI))
+                                                                        {
+                                                                            teslim.Add(item.TESLIM_YERI);
+                                                                        }
+
+                                                                    }
+                                                                    foreach (var item2 in teslim)
+                                                                    {
+                                                                        if (ViewBag.FilterTeslim != null)
+                                                                        {
+                                                                            if (ViewBag.FilterTeslim.Contains(item2))
+                                                                            {
+                                                                                <option value="@item2" selected> @item2 </option>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <option value="@item2"> @item2 </option>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+
+                                                                            <option value="@item2"> @item2 </option>
+                                                                        }
+
+                                                                    }
+                                                                }
+
+
+                                                            </select>
+
+                                                        </div>
+                                                        <div class="d-flex col-4">
+                                                            <input class="form-control h-75" type="date" id="BASLANGIC_TARIH1" name="BASLANGIC_TARIH" value=" " placeholder="Başlangıç Tarihi">
+                                                        </div>
+                                                        <div class="d-flex col-4 mb-2">
+                                                            <div class="form-check form-switch">
+                                                                <label class="form-check-label  fs-tiny" for="flexSwitchCheckChecked2">Üretim</label>
+
+                                                                <input class="form-check-input" type="checkbox" id="uretim" unchecked="" onclick="flex()" name="URETILECEKMI">
+
+
+
+                                                            </div>
+                                                            <script>
+                                                                function flex() {
+
+                                                                    if (document.getElementById("uretim").checked) {
+
+                                                                        document.getElementById("uretim").value = true;
+
+                                                                    }
+                                                                    else {
+                                                                        document.getElementById("uretim").value = false;
+                                                                    }
+
+
+                                                                }
+                                                            </script>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-2">
+                                                        <div class="col-4 d-flex">
+                                                            <select class="js-example-basic-multiple-plasiyer1" style="width:100%" id="STOK_ADI" name="STOK_ADI" multiple="single">
+                                                                <option value=""></option>
+                                                                @{
+
+                                                                    List<String> stokadi = new List<String>();
+                                                                    foreach (var ps in ViewBag.AltKalem1)
+                                                                    {
+                                                                        if (!stokadi.Contains("*" + ps.STOK_ADI))
+                                                                        {
+                                                                            stokadi.Add("*" + ps.STOK_ADI);
+                                                                        }
+
+
+                                                                    }
+                                                                    foreach (var item2 in stokadi)
+                                                                    {
+
+                                                                        <option value="@item2"> @item2 </option>
+
+
+
+
+                                                                    }
+                                                                }
+
+
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-4 d-flex">
+                                                            <input class="form-control h-75" type="date" id="BITIS_TARIH1" name="BITIS_TARIH" value=" " placeholder="Bitiş Tarihi">
+
+                                                        </div>
+                                                        <div class="col-4 d-flex">
+                                                            <div class="form-check form-switch">
+                                                                <label class="form-check-label  fs-tiny" for="dovizswitch1">TRY Bazında</label>
+                                                                <input class="form-check-input " type="checkbox" id="dovizswitch1" unchecked="" onclick="change5()">
+                                                            </div>
+                                                            <script>
+                                                                function change5() {
+                                                                    if (document.getElementById("dovizswitch1").checked) {
+
+                                                                        for (let i = 0; i < document.getElementsByClassName('geneltoplamTL1').length; i++) {
+                                                                            document.getElementsByClassName("geneltoplamTL1")[i].style.display = "table-cell";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('geneltoplamDoviz1').length; i++) {
+                                                                            document.getElementsByClassName("geneltoplamDoviz1")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('nettutar1').length; i++) {
+                                                                            document.getElementsByClassName("nettutar1")[i].style.display = "block";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('nettutardoviz1').length; i++) {
+                                                                            document.getElementsByClassName("nettutardoviz1")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamUSD1').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamUSD1")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamEUR1').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamEUR1")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamGBP1').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamGBP1")[i].style.display = "none";
+                                                                        }
+
+                                                                    }
+                                                                    else {
+                                                                        for (let i = 0; i < document.getElementsByClassName('geneltoplamTL1').length; i++) {
+                                                                            document.getElementsByClassName("geneltoplamTL1")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('geneltoplamDoviz1').length; i++) {
+                                                                            document.getElementsByClassName("geneltoplamDoviz1")[i].style.display = "table-cell";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('nettutar1').length; i++) {
+                                                                            document.getElementsByClassName("nettutar1")[i].style.display = "none";
+                                                                        }
+                                                                        for (let i = 0; i < document.getElementsByClassName('nettutardoviz1').length; i++) {
+                                                                            document.getElementsByClassName("nettutardoviz1")[i].style.display = "block";
+                                                                        }
+
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamUSD1').length; i++) {
+
+                                                                            document.getElementsByClassName("filtreToplamUSD1")[i].style.display = "block";
+
+                                                                        }
+
+
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamEUR1').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamEUR1")[i].style.display = "block";
+                                                                        }
+
+                                                                        for (let i = 0; i < document.getElementsByClassName('filtreToplamGBP1').length; i++) {
+                                                                            document.getElementsByClassName("filtreToplamGBP1")[i].style.display = "block";
+                                                                        }
+
+
+                                                                    }
+
+
+                                                                }
+                                                            </script>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-2">
+                                                        <div class="col-4 d-flex">
+                                                            <select class="js-example-basic-multiple-doviz1" style="width:100%" id="CARI_DOVIZ_TIPI1" name="CARI_DOVIZ_TIPI" multiple="multiple">
+                                                                @{
+
+                                                                    List<String> doviz = new List<String>();
+                                                                    foreach (var item in ViewBag.AltKalem1)
+                                                                    {
+                                                                        if (!doviz.Contains(item.CARI_ISIM))
+                                                                        {
+                                                                            doviz.Add(item.CARI_ISIM);
+                                                                        }
+
+                                                                    }
+                                                                    foreach (var item2 in doviz)
+                                                                    {
+                                                                        if (ViewBag.FilterDoviz != null)
+                                                                        {
+                                                                            if (ViewBag.FilterDoviz.Contains(item2))
+                                                                            {
+                                                                                <option value="@item2" selected> @item2 </option>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <option value="@item2"> @item2 </option>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <option value="@item2"> @item2 </option>
+                                                                        }
+
+                                                                    }
+
+
+                                                                }
+
+
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <i style="font-size:25px;cursor:pointer" class='bx bx-filter-alt mt-1' id="btnsubmit2"></i>
+                                                        </div>
+
+                                                    </div>
+                                                    <div id="refresh3">
+                                                        <div class="row mb-2 d-flex">
+
+                                                            @if (ViewBag.Toplam1 != null)
+                                                            {
+                                                                if (ViewBag.ToplamTryFilter1 != null)
+                                                                {
+                                                                    <div class="col fs-tiny d-flex text-nowrap"><span class="nettutar1" style="display:none"><strong>∑ TRY:</strong>@string.Format("{0:N02}", ViewBag.Toplam1)₺</span><span class="nettutardoviz1"><strong>∑ TRY:</strong>@string.Format("{0:N02}", ViewBag.ToplamTryFilter1)₺</span></div>
+
+                                                                }
+                                                                if (ViewBag.ToplamUsd1 != 0)
+                                                                {<div class="col fs-tiny d-flex text-nowrap"><strong><span class="filtreToplamUSD1">∑ USD:  </span></strong> <span class="filtreToplamUSD1 text-end">@string.Format("{0:N02}", ViewBag.ToplamUsd1)$</span></div>
+                                                            }
+
+                                                            if (ViewBag.ToplamEur1 != 0)
+                                                            {<div class="col fs-tiny d-flex text-nowrap"><strong><span class="filtreToplamEUR1">∑ EUR:  </span> </strong><span class="filtreToplamEUR1 text-end">@string.Format("{0:N02}", ViewBag.ToplamEur1)€</span></div>
+                                                        }
+
+                                                        if (ViewBag.ToplamGbp1 != 0)
+                                                        {<div class="col fs-tiny d-flex text-nowrap"><strong><span class="filtreToplamGBP1">∑ GBP:  </span></strong><span class="filtreToplamGBP1 text-end">@string.Format("{0:N02}", ViewBag.ToplamGbp1)£</span></div>
+                                                    }
+
+                                                }
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+
+
+
+
+                                            }
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/ Total Revenue -->
+                        </div>
+                        <div class="row" id="refresh2">
+
+                            <!-- Total Revenue -->
+                            <div class="col-12 col-lg order-2 order-md-3 order-lg-2 mb-4">
+                                <div class="card" onreset="refreshtable()" style="background-color:transparent">
+                                    <div class="centercontent" id="spinner1" style="display:none">
+                                        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:5vw" /></div>
+                                    </div>
+                                    <div class="row row-bordered g-0">
+                                        <div class="col-md">
+                                            <div class="table-responsive text-nowrap " style="max-height: 55vh;">
+                                                <table class="table table-sm grid ">
+                                                    <thead style="display:none;" id="head">
+                                                        <tr>
+                                                            <td colspan="5" style="border-style: none"></td>
+                                                            <td style="font-size: 14px; border-style: none" class="text-center"><strong><u>Toplam</u></strong></td>
+                                                            <td style="font-size: 14px; border-style: none" class="text-center"><strong><u>Toplam</u></strong></td>
+                                                            <td colspan="6" style="border-style: none"></td>
+                                                            <td style="font-size: 14px; border-style: none" class="text-center"><strong><u>Genel Ortalama</u></strong></td>
+                                                            <td style="font-size: 14px; border-style: none" class="text-center"><strong><u>Toplam</u></strong></td>
+                                                            <td style="font-size: 14px; border-style: none" class="text-center"><strong><u>Toplam</u></strong></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="5"></td>
+                                                            @{ string miktar1, miktar2, teslimat1, ssipteslim, ssipbekleyen;
+                                                                int start1 = 0, end1 = 0;
+                                                                if (ViewBag.ToplamMiktar1 != null)
+                                                                {
+                                                                    miktar1 = @String.Format("{0:N02}", ViewBag.ToplamMiktar1);
+                                                                }
+                                                                else
+                                                                {
+                                                                    miktar1 = "";
+                                                                }
+                                                                if (ViewBag.SSIPTeslim != null)
+                                                                {
+                                                                    ssipteslim = @String.Format("{0:N02}", ViewBag.SSIPTeslim);
+                                                                }
+                                                                else
+                                                                {
+                                                                    ssipteslim = "";
+                                                                }
+                                                                if (ViewBag.SSIPBekleyen != null)
+                                                                {
+                                                                    ssipbekleyen = @String.Format("{0:N02}", ViewBag.SSIPBekleyen);
+                                                                }
+                                                                else
+                                                                {
+                                                                    ssipbekleyen = "";
+                                                                }
+                                                                if (ViewBag.ToplamMiktar2 != null)
+                                                                {
+                                                                    miktar2 = @String.Format("{0:N02}", ViewBag.ToplamMiktar2);
+                                                                }
+                                                                else
+                                                                {
+                                                                    miktar2 = "";
+                                                                }
+                                                                if (ViewBag.Yuzde != null)
+                                                                {
+                                                                    teslimat1 = @String.Format("{0:0}", ViewBag.Yuzde * 100);
+                                                                    start1 = int.Parse(teslimat1);
+                                                                    end1 = 100 - start1;
+                                                                }
+                                                                else
+                                                                {
+                                                                    teslimat1 = "";
+                                                                    start1 = 0;
+                                                                    end1 = 100;
+                                                                }
+
+                                                            }
+                                                            <td class="text-center">@miktar1</td>
+                                                            <td class="text-center">@miktar2</td>
+                                                            <td colspan="6"></td>
+                                                            <td class="text-center">
+                                                                <span class="top-0">
+                                                                    <svg width="40%" viewBox="0 0 40 40" class="donut">
+                                                                        <circle class="donut-hole" cx="20" cy="20" r="15.91549430918954" fill="#fff"></circle>
+                                                                        <circle class="donut-ring" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5"></circle>
+                                                                        <circle class="donut-segment-msip" cx="20" cy="20" r="15.91549430918954" fill="transparent" stroke-width="3.5" stroke-dasharray="@start1 @end1" stroke-dashoffset="25"></circle>
+                                                                        <g class="donut-text">
+
+                                                                            <text y="55%" transform="translate(0, 2)">
+                                                                                <tspan x="50%" text-anchor="middle" class="donut-percent-msip" style="font-size:13px;font-weight:bold;font-stretch:condensed">@teslimat1<tspan style="font-size: 10px; font-weight:normal">%</tspan></tspan>
+                                                                            </text>
+                                                                        </g>
+                                                                    </svg>
+                                                                </span>
+                                                            </td>
+                                                            <td class="text-center">@ssipteslim</td>
+                                                            <td class="text-center">@ssipbekleyen</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class=" position-sticky sticky-top" style="background-color: #E2F3FF; height: 30px;top:-2px">
+                                                            <td style="font-size: 14px; background-color: #E2F3FF; width: 50px;" class="position-sticky sticky-left"><strong>Sipariş No</strong><div class="filter table-responsive"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Tarih</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Termin</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Cari İsim</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Stok Adı</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Miktar1</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Miktar2</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Kalınlık</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Genişlik</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Kalite</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Kaplama</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Brüt Fiyat</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>İskonto</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Net Fiyat</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>SSIP Teslim</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>SSIP Bekleyen</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><strong>Teslim Yeri</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-end"><strong>SSIP Süreç</strong><div class="filter"></div></td>
+                                                            <td style="font-size:14px" class="text-center"><span><strong>Net Tutar</strong></span><div class="filter"></div></td>
+
+
+
+                                                        </tr>
+
+
+
+                                                        @foreach (var item in ViewBag.AltKalem1)
+                                                        {
+                                                            String stokadi = "";
+                                                            String miktar = "";
+                                                            String olcu = "";
+                                                            String brutfiyat = "";
+                                                            String satisiskonto = "";
+                                                            String netfiyat = "";
+                                                            String nettutar = "";
+                                                            String teslimat, teslimatmsip, teslimatssip, teslimaturetim = "";
+                                                            String msipstring, ssipstring, uretimstring = "";
+                                                            int start = 0, startmsip = 0, startssip = 0, starturetim = 0;
+                                                            int end, endssip, endmsip, enduretim = 0;
+                                                            string cari_isim = @item.CARI_ISIM;
+                                                            string updated_cari_isim = "";
+                                                            int msiptoplamoran = 0, ssiptoplamoran = 0, uretimtoplamoran = 0;
+                                                            int topac = 0, topacuretim = 0, topacssip = 0;
+                                                            decimal? toplamteslimmiktarssip = 0;
+                                                            decimal? bakiyemiktarssip = 0;
+                                                            decimal? uretilenmiktar = 0;
+                                                            decimal? uretilecekmiktar = 0;
+                                                            decimal? msipteslim = 0;
+                                                            decimal? kalinlik = 0;
+                                                            teslimat = @String.Format("{0:0}", item.TESLIMAT_ORANI * 100);
+                                                            start = int.Parse(teslimat);
+                                                            end = 100 - start;
+                                                            if (cari_isim.Length > 28)
+                                                                updated_cari_isim = (cari_isim.Substring(0, 14)) + "..." + (cari_isim.Substring(cari_isim.Length - 10));
+                                                            else
+                                                                updated_cari_isim = cari_isim;
+
+
+                                                            string sipno = @item.SIPARIS_NO;
+                                                            string updated_sipno = "";
+                                                            updated_sipno = (sipno.Substring(0, 1)) + (sipno.Substring(3, 2)) + "-" + (sipno.Substring(sipno.Length - 5));
+                                                            string dovtip = "";
+                                                            if (item.DOV_TIP == null)
+                                                                dovtip = "TRY";
+                                                            else
+                                                                dovtip = item.DOV_TIP;
+
+
+
+                                                            decimal geneltoplam = 0;
+                                                            if (dovtip != "TRY")
+                                                                geneltoplam = item.DOV_TUTAR;
+                                                            else
+                                                                geneltoplam = item.NET_TUTAR_KALEM;
+                                                            <tr style="background-color: white " class="filt w3-border-black w3-animate-top searchable" onclick="showHideRow('@i');">
+                                                                <td class="sticky-left position-sticky text-center w3-border-black" style="background-color: white;width:30px;border-style:solid !important">@updated_sipno</td>
+                                                                <td class="text-center">@item.TARIH.ToString("dd/MM/yy")</td>
+                                                                <td class="text-center">@item.TESLIM_TARIHI.ToString("dd/MM/yy")</td>
+                                                                <td class="text-start">@updated_cari_isim (@dovtip)</td>
+                                                                <td class="text-center">@item.STOK_ADI.Replace('Ý', 'İ')</td>
+                                                                <td class="text-center">@String.Format("{0:N02}", item.MIKTAR)</td>
+                                                                <td class="text-center">@String.Format("{0:N02}", item.MIKTAR2)</td>
+                                                                @if (item.GERCEK_KALINLIK != null)
+                                                                {
+                                                                    <td class="text-center">@String.Format("{0:N02}", item.GERCEK_KALINLIK)</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td class="text-center">-</td>
+                                                                }
+                                                                @if (item.GENISLIK != null)
+                                                                {
+                                                                    <td class="text-center">@String.Format("{0:N02}", item.GENISLIK)</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td class="text-center">-</td>
+                                                                }
+                                                                @if (item.KALITE != null)
+                                                                {
+                                                                    <td class="text-center">@String.Format("{0:N02}", item.KALITE)</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td class="text-center">-</td>
+                                                                }
+                                                                @if (item.KAPLAMA_KALINLIK != null)
+                                                                {
+                                                                    <td class="text-center">@String.Format("{0:N02}", item.KAPLAMA_KALINLIK)</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td class="text-center">-</td>
+                                                                }
+                                                                @{ 
+                                                                    var n = "";
+                                                                    if (item.DOV_NET_FIYAT == 0)
+                                                                    {
+                                                                        n = String.Format("{0:N02}", item.NET_FIYAT);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        n = String.Format("{0:N02}", item.DOV_NET_FIYAT);
+                                                                    }
+                                                                    var b = "";
+                                                                    if (item.DOV_FIAT == 0)
+                                                                    {
+                                                                        b = String.Format("{0:N02}", item.BRUT_FIYAT);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        b = String.Format("{0:N02}", item.DOV_FIAT);
+                                                                    }
+                                                                }
+                                                                
+                                                                <td class="text-center geneltoplamTL1" style="display:none">@String.Format("{0:N02}", item.NET_FIYAT)</td>
+                                                                <td class="text-center geneltoplamDoviz1">@b</td>
+                                                                <td class="text-center">@String.Format("{0:0.00}", item.SATIS_ISKONTOSU)%</td>
+                                                                <td class="text-center geneltoplamTL1" style="display:none">@String.Format("{0:N02}", item.BRUT_FIYAT)</td>
+                                                                <td class="text-center geneltoplamDoviz1">@n</td>
+                                                                <td class="text-center">@String.Format("{0:N02}", item.TESLIM_MIKTARI)</td>
+                                                                <td class="text-center">@String.Format("{0:N02}", item.BAKIYE_MIKTARI)</td>
+                                                                <td class="text-center">@item.TESLIM_YERI</td>
+                                                                <td class="text-end">
+                                                                    <div class="meter" id="meter-msip" style="height:22.94px;"><span style="width:@start%"><span class="progress" id="progress-msip"><span style="margin-bottom:10px;text-align:end;color:black">@start%</span></span></span></div>
+                                                                </td>
+                                                                <td class="text-center geneltoplamTL1" style="display:none"><span>@String.Format("{0:N02}", item.NET_TUTAR_KALEM) TRY</span></td>
+                                                                <td class="text-center geneltoplamDoviz1"><span>@string.Format("{0:N02}", geneltoplam) @dovtip</span></td>
+
+                                                            </tr>
+
+
+
+
+                                                            i++;
+                                                        }
+
+
+
+
+                                                    </tbody>
+
+                                                </table>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/ Total Revenue -->
+                        </div>
+
+                    </div>
+                    <footer class="content-footer footer bg-footer-theme">
+                        <div class="container-xxl d-flex  text-nowrap justify-content-between py-2 flex-md-row flex-column">
+                            <div style="padding-left:40%">
+                                ©
+                                <script>document.write(new Date().getFullYear());</script>
+                                , designed by
+                                <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
+
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- / Footer -->
+
+                    <div class="content-backdrop fade"></div>
+                </div>
+                <!-- Content wrapper -->
+            </div>
+            <!-- / Layout page -->
+        </div>
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+    <!-- / Layout wrapper -->
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../assets/vendor/js/bootstrap.js"></script>
+    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script src="../assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script src="../assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="../assets/js/dashboards-analytics.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        document.getElementById("satinalma").className = "menu-item open active";
+        document.getElementById("satinalmadetsip").className = "menu-item active";
+        $(document).ready(function () {
+            $('.js-example-basic-multiple').select2({
+                placeholder: "Teslim Yeri"
+
+            });
+            $('.js-example-basic-multiple-plasiyer').select2({
+                placeholder: "Cari İsim"
+
+            });
+            $('.js-example-basic-multiple-doviz').select2({
+                placeholder: "Döviz Tipi"
+
+            });
+            $('.js-example-basic-multiple1').select2({
+                placeholder: "Teslim Yeri"
+
+            });
+            $('.js-example-basic-multiple-plasiyer1').select2({
+                placeholder: "Stok Adı"
+
+            });
+            $('.js-example-basic-multiple-doviz1').select2({
+                placeholder: "Cari İsim"
+
+            });
+            $("#spinner").hide();
+        });
+    </script>
+    <script>
+        function refreshtable() {
+
+            document.getElementById("spinner1").style.display = "none";
+        }
+        $(function () {
+
+            $("#btnsubmit1").click(function () {
+                if (document.getElementById("dovizswitch").checked) {
+                    document.getElementById("dovizswitch").checked = false;
+                }
+                document.getElementById("spinner").style.display = "flex";
+                var formData = new FormData();
+                if ($("#TESLIM_YERI").val() != "") {
+
+                    formData.append("TESLIM_YERI", $("#TESLIM_YERI").val());
+
+                }
+
+                if ($("#PLASIYER_ADI").val() != "") {
+                    formData.append("PLASIYER_ADI", $("#PLASIYER_ADI").val());
+                }
+
+                if ($("#CARI_DOVIZ_TIPI").val() != "") {
+                    formData.append("CARI_DOVIZ_TIPI", $("#CARI_DOVIZ_TIPI").val());
+                }
+
+                if ($("#flexSwitchCheckChecked2").val() != "") {
+                    formData.append("URETILECEKMI", $("#flexSwitchCheckChecked2").val());
+                }
+                if ($("#BASLANGIC_TARIH").val() != "") {
+                    formData.append("BASLANGIC_TARIH", $("#BASLANGIC_TARIH").val());
+                }
+                if ($("#BITIS_TARIH").val() != "") {
+                    formData.append("BITIS_TARIH", $("#BITIS_TARIH").val());
+                }
+                if ($("#SSIP_CHECK").val() != "") {
+                    formData.append("SSIP_CHECK", $("#SSIP_CHECK").val());
+                }
+
+
+
+                $.ajax({
+                    url: "/SatinAlma/Filter",
+                    type: 'POST',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function (response) {
+                        $("#refresh").load(" #refresh > *", function () {
+                            document.getElementById("spinner").style.display = "none";
+                            $("#refresh1").load(" #refresh1 > *");
+                        })
+                    },
+                    complete: function (response) {
+
+                    }
+                });
+
+            });
+        });
+        $(function () {
+
+            $("#btnsubmit2").click(function () {
+                if (document.getElementById("dovizswitch1").checked) {
+                    document.getElementById("dovizswitch1").checked = false;
+                }
+                document.getElementById("spinner1").style.display = "flex";
+
+                var formData = new FormData();
+                if ($("#TESLIM_YERI1").val() != "") {
+
+                    formData.append("TESLIM_YERI", $("#TESLIM_YERI1").val());
+
+                }
+
+                if ($("#STOK_ADI").val() != "") {
+                    formData.append("STOK_ADI", $("#STOK_ADI").val());
+                }
+
+                if ($("#CARI_DOVIZ_TIPI1").val() != "") {
+                    formData.append("CARI_DOVIZ_TIPI", $("#CARI_DOVIZ_TIPI1").val());
+                }
+
+                if ($("#uretim").val() != "") {
+                    formData.append("URETILECEKMI", $("#uretim").val());
+                }
+                if ($("#BASLANGIC_TARIH1").val() != "") {
+                    formData.append("BASLANGIC_TARIH", $("#BASLANGIC_TARIH1").val());
+                }
+                if ($("#BITIS_TARIH1").val() != "") {
+                    formData.append("BITIS_TARIH", $("#BITIS_TARIH1").val());
+                }
+
+
+
+
+                $.ajax({
+                    url: "/SatinAlma/FilterAltKalem",
+                    type: 'POST',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function (response) {
+                        $("#refresh2").load(" #refresh2 > *", function () {
+                            document.getElementById("spinner1").style.display = "none";
+                            document.getElementById("head").style.display = "table-header-group";
+                            $("#refresh3").load(" #refresh3 > *");
+                        })
+                    },
+                    complete: function (response) {
+
+                    }
+                });
+
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('input').keyup(function () {
+                this.value = this.value.toLocaleUpperCase();
+            });
+        });
+        $("#click").on("click", function () {
+
+            var value = $("#search").val();
+
+            if (value.length >= 3) {
+                document.getElementById("refresh1").style.display = "none";
+                for (let i = 0; i < document.getElementsByClassName('toggle').length; i++) {
+                    document.getElementsByClassName('toggle')[i].style.display = "none";
+
+                }
+
+                $("td").closest(".searchable").hide()
+                $("td:contains('" + value.toUpperCase() + "')").each(function (index) {
+                    console.log(index)
+                    const parent = $(this).closest(".searchable")
+                    const rowspan = $(this).attr("rowspan")
+                    console.log(rowspan)
+                    if (rowspan != undefined) {
+                        var current = parent
+                        for (var i = 0; i < rowspan; i++) {
+                            console.log(current.text())
+                            current.show()
+                            current = current.next()
+                        }
+                    }
+                    else {
+                        parent.show()
+                    }
+                })
+            } else {
+                $("td").closest(".searchable").show()
+            }
+
+            if (value.length == 0) {
+                document.getElementById("refresh1").style.display = "flex";
+            }
+
+
+
+
+
+        });
+
+        $(document).keypress(function (e) {
+            if ((e.keyCode || e.which) == 13) {
+                // Enter key pressed
+                $('#click').trigger('click');
+            }
+        });
+
+        function close() {
+            @{Session["Filter"] = null;}
+        }
+
+
+    </script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript">
+        function myUpdateFunction() {
+            var s = "submitbutton";
+            Swal.fire({
+                title: 'Mail göndermek istediğinize emin misiniz?',
+                icon: 'question',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Evet',
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#03c3ec',
+                confirmButtonBorderColor: '#03c3ec',
+                cancelButtonColor: '#ff3e1d',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    document.getElementById(s).click();
+                }
+            })
+        }
+    </script>
+</body>
+</html>
