@@ -154,6 +154,15 @@ namespace NOVA.Controllers
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (uygulamaistatistik != true)
             {
                 ViewBag.Istatistik = "none";
@@ -524,6 +533,15 @@ namespace NOVA.Controllers
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (uygulamaistatistik != true)
             {
                 ViewBag.Istatistik = "none";
@@ -912,6 +930,15 @@ namespace NOVA.Controllers
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (uygulamaistatistik != true)
             {
                 ViewBag.Istatistik = "none";
@@ -1294,6 +1321,15 @@ namespace NOVA.Controllers
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (uygulamaistatistik != true)
             {
                 ViewBag.Istatistik = "none";
@@ -1698,6 +1734,15 @@ namespace NOVA.Controllers
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -2964,6 +3009,15 @@ namespace NOVA.Controllers
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (uygulamaistatistik != true)
             {
                 ViewBag.Istatistik = "none";
@@ -3294,6 +3348,15 @@ namespace NOVA.Controllers
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (uygulamaistatistik != true)
             {
                 ViewBag.Istatistik = "none";

@@ -18,8 +18,7 @@
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress>
-    </Use64BitIISExpress>
+    <Use64BitIISExpress>false</Use64BitIISExpress>
     <IISExpressSSLPort>44331</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -323,7 +322,6 @@
     <Compile Include="Controllers\SatinAlmaController.cs" />
     <Compile Include="Controllers\SatisController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ScannerController.cs" />
     <Compile Include="Controllers\SessionTimeoutAttribute.cs" />
     <Compile Include="Controllers\SevkiyatController.cs" />
     <Compile Include="Controllers\SifreController.cs" />
@@ -334,6 +332,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AuthorizeIPAddressAttribute.cs" />
     <Compile Include="Models\Cikti_SERI_MODEL.cs" />
     <Compile Include="Models\ExecModel.cs" />
     <Compile Include="Models\Fav.cs" />
@@ -1991,6 +1990,7 @@
     <Content Include="assets\boxicons-2.1.2\svg\solid\bxs-zoom-out.svg" />
     <Content Include="assets\css\arrow.css" />
     <Content Include="assets\css\demo.css" />
+    <Content Include="assets\css\github_contribution_graph.css" />
     <Content Include="assets\css\mutluyillar.css" />
     <Content Include="assets\css\password-strength.css" />
     <Content Include="assets\happy-new-year2022\dist\index.html" />
@@ -2144,6 +2144,7 @@
     <Content Include="assets\img\icons\unicons\floppy-disk.png" />
     <Content Include="assets\img\icons\unicons\mobile.png" />
     <Content Include="assets\img\icons\unicons\paypal.png" />
+    <Content Include="assets\img\icons\unicons\power-off.png" />
     <Content Include="assets\img\icons\unicons\refresh.png" />
     <Content Include="assets\img\icons\unicons\row.png" />
     <Content Include="assets\img\icons\unicons\wallet-info.png" />
@@ -2159,6 +2160,7 @@
     <Content Include="assets\js\dashboards-analytics.js" />
     <Content Include="assets\js\extended-ui-perfect-scrollbar.js" />
     <Content Include="assets\js\form-basic-inputs.js" />
+    <Content Include="assets\js\github_contribution.js" />
     <Content Include="assets\js\main.js" />
     <Content Include="assets\js\mutluyillar.js" />
     <Content Include="assets\js\pages-account-settings-account.js" />
@@ -2182,6 +2184,13 @@
     <Content Include="assets\vendor\css\pages\page-misc.css" />
     <Content Include="assets\vendor\css\scripts.js" />
     <Content Include="assets\vendor\css\theme-default.css" />
+    <Content Include="Content\Barcode-scanner-beep-sound.mp3" />
+    <Content Include="Content\cıkıs.mp3" />
+    <Content Include="Content\giris.mp3" />
+    <Content Include="Content\hata.mp3" />
+    <Content Include="Content\Images\efeceyazi.png" />
+    <Content Include="Content\Images\logoefece.png" />
+    <Content Include="Content\theme-default.css" />
     <Content Include="assets\vendor\js\bootstrap.js" />
     <Content Include="assets\vendor\js\helpers.js" />
     <Content Include="assets\vendor\js\menu.js" />
@@ -3208,6 +3217,9 @@
     <None Include="Views\Error\Error.cshtml" />
     <Content Include="Scripts\tippy\popper.min.js" />
     <Content Include="Scripts\tippy\tippy-bundle.umd.js" />
+    <Content Include="Views\Home\assets\css\styles.css" />
+    <Content Include="Views\Home\assets\img\perfil.jpg" />
+    <Content Include="Views\Home\assets\js\main.js" />
     <Content Include="Views\Login\Login.cshtml" />
     <Content Include="Views\Profil\Index.cshtml" />
     <Content Include="Views\IK\PersonelBilgi.cshtml" />
@@ -3228,6 +3240,9 @@
     <Content Include="Views\Finans\Kur.cshtml" />
     <Content Include="Views\Satis\DetayliSiparis.cshtml" />
     <Content Include="Views\Finans\Index.cshtml" />
+    <Content Include="Views\Home\Test.cshtml" />
+    <Content Include="Views\Home\assets\scss\styles.scss" />
+    <Content Include="Views\IK\PersonelPuantaj.cshtml" />
     <None Include="Views\Satis\maintenance.cshtml" />
     <Content Include="Views\Sevkiyat\SaticiSiparisRaporu.cshtml" />
     <Content Include="Views\Uretim\buttons.css" />
@@ -3248,15 +3263,15 @@
     <Content Include="Views\Shared\_Layout_ZiyaretPlanlari.cshtml" />
     <Content Include="Views\Sevkiyat\Test.cshtml" />
     <Content Include="Views\Shared\_Layout _yonetim_stok.cshtml" />
-    <Content Include="Views\Shared\_Layout_menu.cshtml" />
     <Content Include="Views\Shared\_Layout_Fiyat_yonetim.cshtml" />
     <Content Include="Views\Satis\Test.cshtml" />
-    <Content Include="Views\Scanner\Scanner.cshtml" />
     <Content Include="Views\Satis\Teklif.cshtml" />
     <None Include="Views\Shared\_Layout_kullanici.cshtml" />
     <Content Include="Views\Shared\_Layout_Kur.cshtml" />
     <Content Include="Views\Shared\_layout_satinalma.cshtml" />
     <Content Include="Views\Sifre\Index.cshtml" />
+    <Content Include="Views\Shared\_Layout_menu.cshtml" />
+    <Content Include="Views\Shared\_Layout_menu2.cshtml" />
     <None Include="Views\Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -3331,24 +3346,6 @@
     </COMReference>
     <COMReference Include="NetGraphLibrary">
       <Guid>{301E1EC3-682B-427B-A230-9613E6C74378}</Guid>
-      <VersionMajor>5</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="NetOpenX50">
-      <Guid>{184B0A14-1416-44D7-978C-DECC4FC09693}</Guid>
-      <VersionMajor>5</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="NetsisCOMLibrary50">
-      <Guid>{B4DEC8C7-F03D-4595-86CF-68106B9F6462}</Guid>
       <VersionMajor>5</VersionMajor>
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
@@ -3570,9 +3567,6 @@
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.29.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.6.29.0\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Pipelines, Version=5.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Pipelines.5.0.2\lib\net461\System.IO.Pipelines.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory.Data, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.Data.7.0.0\lib\net462\System.Memory.Data.dll</HintPath>

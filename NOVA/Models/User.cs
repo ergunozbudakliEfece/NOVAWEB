@@ -30,18 +30,18 @@ namespace NOVA.Models
         [Required(AllowEmptyStrings = false, ErrorMessage = "Lütfen Mail Adresinizi Girin")]
         [DataType(DataType.EmailAddress)]
         public string USER_MAIL { get; set; }
-        public bool USER_AUTH { get; set; }
+        public bool? USER_AUTH { get; set; }
 
 
-        public bool SELECT_AUTH { get; set; }
+        public bool? SELECT_AUTH { get; set; }
 
-        public bool INSERT_AUTH { get; set; }
+        public bool? INSERT_AUTH { get; set; }
 
-        public bool UPDATE_AUTH { get; set; }
+        public bool? UPDATE_AUTH { get; set; }
 
-        public bool DELETE_AUTH { get; set; }
+        public bool? DELETE_AUTH { get; set; }
 
-        public int MODULE_INCKEY { get; set; }
+        public int? MODULE_INCKEY { get; set; }
 
         public Modules modules { get; set; }
         public Mail mail { get; set; }

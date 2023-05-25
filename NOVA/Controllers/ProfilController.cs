@@ -55,6 +55,15 @@ namespace NOVA.Controllers
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -281,7 +290,7 @@ namespace NOVA.Controllers
         {
             WebMail.SmtpServer = "192.168.2.13";
             
-               var  subject = "NOVA | Kullanıcı Bilgileriniz";
+               var  subject = "NOVA | Şifre Değişikliği";
             
             var apiUrl = "http://192.168.2.13:83/api/user/link";
 

@@ -1,0 +1,1727 @@
+﻿
+@{
+    Layout = "/Views/Shared/_layout_satinalma.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>PersonelPuantaj</title>
+    <link href="~/assets/css/github_contribution_graph.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        .isimsiz{
+            border-color:red !important;
+        }
+
+        .floatlabel {
+            position: relative;
+        }
+
+            .floatlabel input {
+                -webkit-appearance: none;
+                color: #333;
+                padding: 3px 12px;
+            }
+
+            .floatlabel label.label {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                transition: all 0.2s ease-out;
+                background: #fff;
+                color: #999;
+                font-size: 16px;
+                cursor: text;
+            }
+
+                .floatlabel label.label.floatlabel-shift {
+                    top: -2px;
+                    left: 12px;
+                    padding: 0 4px;
+                    font-size: 14px;
+                    color: #999;
+                }
+
+                .floatlabel label.label.floatlabel-active {
+                    color: #0077c8 !important;
+                }
+
+        img:hover {
+            opacity: .4;
+        }
+    </style>
+    <style>
+
+        html {
+            --x: "";
+            --y: "";
+            --background: rgba(0,0,0,.4);
+            --color: #D6E685;
+        }
+        
+        .swal2-popup {
+            padding: 0 !important;
+            margin-top: 35vh !important;
+            margin-left: 35vw !important;
+        }
+            .swal2-title{
+            font-size:12px;
+        }
+        .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+            background: var(--background) !important;
+        }
+        .animate__animated.animate__zoomIn {
+            --animate-duration: .3s;
+        }
+
+        .animate__animated.animate__zoomOut {
+            --animate-duration: .3s;
+        }
+        .animate__animated.animate__fadeIn {
+            --animate-duration: .03s;
+        }
+
+        .animate__animated.animate__fadeOut {
+            --animate-duration: .03s;
+        }
+
+        svg {
+            width: 70vw !important;
+            height: 92vh !important;
+        }
+        .pop {
+            margin-top: var(--y) !important;
+            margin-left: var(--x) !important;
+            height:auto;
+            width:125px;
+        }
+        .pop3 {
+            margin-top: var(--y) !important;
+            margin-left: var(--x) !important;
+            height: auto;
+            width: 125px;
+        }
+        .pop2 {
+            margin-top: 35vh !important;
+            margin-left: 35vw !important;
+        }
+        .swal2-container{
+            display:unset !important;
+        }
+        .swal2-container.swal2-center > .swal2-popup {
+            grid-column: unset;
+            grid-row: unset;
+            align-self: center;
+            justify-self: center;
+        }
+        @@media screen and (max-width: 600px) {
+            #github_chart_1 {
+                width: 123vw
+            }
+
+            #select {
+                width: 50vw !important;
+            }
+
+            .select2-container {
+                margin-left: 35vw !important;
+            }
+
+            body {
+                width: 100vw !important;
+            }
+
+            svg {
+                width: 126vw !important;
+                height: 124vh !important;
+            }
+            
+        }
+        .bg-footer-theme {
+            background-color: transparent !important;
+            color: #697a8d;
+        }
+
+        .centercontent {
+            position: absolute;
+            max-width: 100%;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
+
+        @@keyframes heartbeat {
+            from {
+                opacity: 0.3;
+                transform: scale(0.32);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(0.40);
+            }
+        }
+    </style>
+    <script src="~/assets/js/github_contribution.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <div class="centercontent" id="content">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+    </div>
+    <div class="container-fluid text-center">
+        <div class="row" style="margin-bottom:-20vh;">
+            <div class="col text-center">
+                <select class="form-control" style="width:20vw" id="select" onchange="change()">
+                </select>
+            </div>
+        </div>
+        <div id="github_chart_1"></div>
+
+
+    </div>
+
+
+
+    <script>
+        var CurrentMouseXPostion;
+        var CurrentMouseYPostion;
+
+        $(document).mousemove(function (event) {
+            CurrentMouseXPostion = event.pageX;
+            CurrentMouseYPostion = event.pageY;
+        });
+        $.getJSON("http://192.168.2.13:83/api/personel", function (data) {
+            for (let i = 0; i < data.length; i++) {
+                var option = document.createElement("option");
+                option.innerHTML = data[i].ISIM + " " + data[i].SOYISIM
+                option.value = data[i].USER_ID;
+                document.getElementById("select").appendChild(option);
+            }
+        }).done(function () {
+            $("#select").select2({ placeholder: "Personel Seçin" });
+            $("#select").val('').trigger('change')
+        })
+
+        function changesel() {
+            if (event.currentTarget.value != 21 && event.currentTarget.value != 0) {
+                $("#baslangic").hide();
+                $("#bitis").hide();
+                $("#tab1").hide();
+                /*$(".swal2-confirm").attr("onclick", "oldclick()");*/
+                $(swal.getConfirmButton()).prop('disabled', false)
+                $(".swal2-confirm").attr("onclick", "oldclick()");
+            } else {
+                if (event.currentTarget.value == 0) {
+                    $(".swal2-confirm").attr("onclick", "newclick()");
+                } else {
+                   /* $(".swal2-confirm").attr("onclick", "oldclick()");*/
+                }
+                $("#baslangic").show();
+                $("#bitis").show();
+                $("#tab1").show();
+                $(swal.getConfirmButton()).prop('disabled', true)
+            }
+
+        }
+        function newclick() {
+            $("#content").show();
+            var smartdate = "00:00";
+            var bas = $("#baslangic").val();
+            var bit = $("#bitis").val();
+            var userid = $("#select").val();
+            var b = true;
+            var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+            if (bas != "" && bit != "") {
+                var minute = (new Date("1970-01-01T" + bas).getHours() * 60) + (new Date("1970-01-01T" + bas).getMinutes())
+                var minute1 = (new Date("1970-01-01T" + bit).getHours() * 60) + (new Date("1970-01-01T" + bit).getMinutes())
+
+                if (list!=null&&list.length > 0) {
+                    var url = 'http://192.168.2.13:83/api/attendance/addcontrol/' + userid + '/' + tarih + '/' + minute + '/' + minute1
+                    $.getJSON(url, function (data) {
+                        if (data[0].RESULT != 'True') {
+                            b = false;
+                        }
+                    }).done(function () {
+                        if (b == true) {
+
+                            var baslangic = document.getElementById("baslangic").value;
+                            var bitis = document.getElementById("bitis").value;
+
+                            var id = $("#select").val();
+                            var urlbaslangic = "http://192.168.2.13:83/api/attendance/manual/" + id + "/" + tarih + " " + baslangic + "/S"
+                            var urlbitis = "http://192.168.2.13:83/api/attendance/manual/" + id + "/" + tarih + " " + bitis + "/E"
+                            $.getJSON(urlbaslangic, function (data) {
+
+                            }).done(function () {
+                                if (bitis != "" && bitis != null) {
+                                    $.getJSON(urlbitis, function (data) {
+
+                                    }).done(function () {
+                                        Swal.fire(
+                                            'Başarılı!',
+                                            'İşlem başarılı',
+                                            'success'
+                                        ).then((result) => {
+                                            if (result.isConfirmed) {
+                                                $("#content").hide();
+                                        $("#select").trigger('change')
+
+                                    }
+                                })
+                                    })
+                                } else {
+                                    Swal.fire(
+                                        'Başarılı!',
+                                        'İşlem başarılı',
+                                        'success'
+                                    ).then((result) => {
+                                        if (result.isConfirmed) {
+                                            $("#content").hide();
+                                            $("#select").trigger('change')
+
+                                        }
+                                    })
+                                }
+
+                            })
+                        }
+                        else {
+                            Swal.fire(
+                                '',
+                                'Girdiğiniz saat aralığında giriş bulunmaktadır',
+                                'warning'
+                            ).then(function () {
+                                $("#content").hide();
+                                $("#select").trigger('change');
+                            })
+                        }
+                    })
+
+                } else {
+
+                    var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+
+                    var id = $("#select").val();
+                    var urlbaslangic = "http://192.168.2.13:83/api/attendance/manual/" + id + "/" + tarih + " " + bas + "/S"
+                    var urlbitis = "http://192.168.2.13:83/api/attendance/manual/" + id + "/" + tarih + " " + bit + "/E"
+                    $.getJSON(urlbaslangic, function (data) {
+
+
+                    }).done(function () {
+
+                            $.getJSON(urlbitis, function (data) {
+
+                            }).done(function () {
+                                Swal.fire(
+                                    'Başarılı!',
+                                    'İşlem başarılı',
+                                    'success'
+                                ).then(function () {
+                                    $("#content").hide();
+                                    $("#select").trigger('change');
+                                })
+                            })
+
+
+                    })
+                }
+
+            } else {
+                Swal.fire(
+                    '',
+                    'Tüm alanları doldurduğunuzdan emin olun',
+                    'warning'
+                ).then(function () {
+                    $("#content").hide();
+                    $("#select").trigger('change');
+                })
+            }
+
+
+
+        }
+        function oldclick() {
+            $("#content").show();
+            var code = $("#izinselect").val();
+            var userid = document.getElementById("select").value;
+            var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+
+            var d = { INCKEY: null, USER_ID: parseInt(userid), DATE: tarih, START_DATE: null, END_DATE: null, OFFDAY_CODE: parseInt(code), CONFIRM_CODE: 1 }
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("PostData")",
+                            dataType: "json",
+                            data: d,
+                            success: function (msg) {
+                                Swal.fire(
+                                    'Başarılı!',
+                                    'İşlem başarılı',
+                                    'success'
+                                ).then(function () {
+                                    $("#content").hide();
+                                    $("#select").trigger('change');
+                                })
+                            },
+                            error: function (msg) { alert(JSON.stringify(msg)); }
+                        });
+        }
+        var f = null;
+        function openform(value) {
+            list = [];
+            var valval = null;
+            var options = "";
+            var userid = $("#select").val();
+            var table = "";
+            var url = "http://192.168.2.13:83/api/attendance/off/" + userid
+            for (let i = 0; i < izinler.length; i++) {
+
+                options = options + "<option value='" + izinlercodes[i] + "'>" + izinler[i] + "</option>";
+                if (i == izinler.length - 1) {
+                    options = options + "<option value='" + 0 + "'>Mesai</option>";
+                }
+            }
+            f = null;
+            var t = null;
+            var inckey = null;
+            $.getJSON(url, function (data) {
+                f = data.filter(x => x.DATE === value.getAttribute("data-date"));
+                if (f.length > 0) {
+                    for (let i = 0; i < f.length; i++) {
+                        var izin = tumizinler.filter(x => x.OFFDAY_CODE === f[i].OFFDAY_CODE);
+                        if (f[i].START_DATE != null) {
+                            table = table + "<tr><td>" + izin[0].OFFDAY_EXP1 + "</td><td>" + (f[i].START_DATE.split("T")[1]).substring(0, 5) + "</td>" + "<td>" + f[i].END_DATE.split("T")[1].substring(0, 5) + "</td><td>" +
+                                '<img onclick="deleteizinconfirm(this)" style="cursor: pointer;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAKlJREFUSEvtlcERQDAQRZ9KlIBOlEIFlKQUOqASJjM4hJ0fIje5ZTbZ9//uJJuReGWJ86MANdABpSFkBlpgsIQqgEuQC5cjUL0FrPtFS4iKyxKpBCp+ARwXYnt/OvatJwccyqV1z6J5/nXzvgb4CtX+5Ic6UAmjS/QDLu/qaUn+HsivKbpEivAYEDJofOh0N/msl+xGZQ8USvoeX4DmbnSqkRmY3z6WHLABUDk4GfuOp84AAAAASUVORK5CYII=">' + "</td><td style='display:none'>" + f[i].INCKEY + "</td></tr>"
+                        } else {
+                            table = table + "<tr><td>" + izin[0].OFFDAY_EXP1 + "</td><td class='text-center'>-</td>" + "<td class='text-center'>-</td><td>" +
+                                '<img onclick="deleteizinconfirm(this)" style="cursor: pointer;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAKlJREFUSEvtlcERQDAQRZ9KlIBOlEIFlKQUOqASJjM4hJ0fIje5ZTbZ9//uJJuReGWJ86MANdABpSFkBlpgsIQqgEuQC5cjUL0FrPtFS4iKyxKpBCp+ARwXYnt/OvatJwccyqV1z6J5/nXzvgb4CtX+5Ic6UAmjS/QDLu/qaUn+HsivKbpEivAYEDJofOh0N/msl+xGZQ8USvoeX4DmbnSqkRmY3z6WHLABUDk4GfuOp84AAAAASUVORK5CYII=">' + "</td><td style='display:none'>" + f[i].INCKEY + "</td></tr>"
+                        }
+
+                    }
+                    if (table != "") {
+                        t = '<table id="tab" class="table table-borderless"><tr><th></th><th>Giriş</th><th>Çıkış</th></tr>' + table + '</table>'
+                        valval = f[0].OFFDAY_CODE;
+                        inckey = f[0].INCKEY;
+                    }
+
+                } else {
+                    t = "";
+                }
+
+            }).done(function () {
+                var dd = value.getAttribute('fill');
+
+                if (t == "" && dd != "#eeeeee" && dd != "#D6E685") {
+                    var m = value.getAttribute("data-date");
+                    var m2 = value;
+                    decisionduzenle(m,m2);
+
+                } else if (t == "" && dd == "#eeeeee") {
+                    $(swal.getConfirmButton()).prop('disabled', false);
+                    var m = value.getAttribute("data-date")
+                    decision(m);
+
+                } else if (t != "" && (dd == "#D6E685" || dd=="url(#MyGradient)")) {
+                    var m = value.getAttribute("data-date");
+                    decisionduzenlesat(m);
+                } else if (t == "" && dd == "#D6E685") {
+                    var m = value.getAttribute("data-date");
+                    decisionduzenlesat(m);
+                } else {
+                    var m = value;
+                    decisionduzenleizin(m, inckey);
+                }
+
+                //$(swal.getConfirmButton()).prop('disabled', true)
+
+
+                jQuery(".floatlabel input").focus(function () {
+                    var elementId = $(this).attr('id');
+                    jQuery("label[for=" + elementId + "]").addClass('floatlabel-shift');
+                });
+                jQuery(".floatlabel input").blur(function () {
+                    if ($(this).val().length == 0) {
+                        var elementId = $(this).attr('id');
+                        jQuery("label[for=" + elementId + "]").removeClass('floatlabel-shift');
+                    }
+                });
+                jQuery(".floatlabel input").focus(function () {
+                    var elementId = $(this).attr('id');
+                    jQuery("label[for=" + elementId + "]").addClass('floatlabel-active');
+                });
+                jQuery(".floatlabel input").blur(function () {
+                    var elementId = $(this).attr('id');
+                    jQuery("label[for=" + elementId + "]").removeClass('floatlabel-active');
+                });
+
+                $(".inp").focus();
+            })
+
+
+        }
+        var tumizinler = null;
+        var izinler = [];
+        var izinlercodes = [];
+        $(document).ready(function () {
+            $("#content").hide();
+            $.getJSON("http://192.168.2.13:83/api/attendance/offday", function (data) {
+                tumizinler = data;
+                for (let i = 4; i < data.length; i++) {
+                    if (!izinler.includes(data[i].OFFDAY_EXP1) && data[i].DETAIL_CODE>3){
+                        izinler.push(data[i].OFFDAY_EXP1);
+                        izinlercodes.push(data[i].OFFDAY_CODE);
+                    }
+                }
+            })
+
+            if ($(window).width() < 600) {
+                $("#divPartial2").show();
+                document.getElementById("ik").className = "menu-item open active";
+                document.getElementById("puantaj").className = "menu-item active";
+            }
+            else {
+                $("#divPartial").show();
+                document.getElementById("ik1").className = "nav__link active";
+                document.getElementById("puantaj1").className = "nav__dropdown-item active";
+            }
+            var myData = [];
+            var url = "http://192.168.2.13:83/api/attendance/find/" + 10000;
+            $.getJSON(url, function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    myData.push(new Date(data[i].START_DATE).getTime())
+                }
+            }).done(function () {
+                $('#github_chart_1').github_graph({
+                    data: myData,
+                    texts: ['', ''],
+                    userid: 10000,
+                    userName: "Personel",
+                    colors: ['#eeeeee', '#d6e685', '#8cc665', '#f5d033', '#44a340'],
+                    month_names: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+                    h_days: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
+
+                });
+            })
+
+
+
+        });
+        var personaldata = null;
+        var list = [];
+        function change() {
+            if (event.currentTarget.value != null) {
+                $("#content").show();
+            }
+            list = [];
+            var val = document.getElementById("select").value;
+            var name = document.getElementById("select2-select-container").innerHTML;
+            var myData = [];
+            var url = "http://192.168.2.13:83/api/attendance/find/" + val;
+            personaldata = null;
+            $.getJSON(url, function (data) {
+
+                personaldata = data;
+                for (let i = 0; i < data.length; i++) {
+                    myData.push(new Date(data[i].START_DATE).getTime())
+                }
+
+            }).done(function () {
+                $('#github_chart_1').github_graph({
+                    data: myData,
+                    texts: ['', ''],
+                    userid: val,
+                    userName: name,
+                    userData: personaldata,
+                    colors: ['#eeeeee', '#d6e685', '#8cc665', '#d6e685', '#44a340'],
+                    month_names: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+                    h_days: ['Pzt','Sal', 'Çar', 'Per','Cum','Cmt','Paz']
+
+                })
+                $("#content").hide();
+            })
+
+        }
+        function deleteizin(value) {
+            var inc = value.parentNode.parentNode.getElementsByTagName("td")[5].innerHTML;
+
+            var ur = "http://192.168.2.13:83/api/attendance/off/delete/" + inc
+
+            $.getJSON(ur, function (data) {
+
+            }).done(function () {
+                Swal.fire(
+                    'Başarılı!',
+                    'İşlem başarılı',
+                    'success'
+                ).then(function () {
+                    $("#select").trigger('change');
+                })
+            })
+        }
+        function deletemesai(value) {
+            var userid = $("#select").val();
+            var ur1 = "http://192.168.2.13:83/api/attendance/delete/" + userid + "/" + value;
+            $.getJSON(ur1, function (data) {
+
+            }).done(function () {
+                Swal.fire(
+                    'Başarılı!',
+                    'İşlem başarılı',
+                    'success'
+                ).then(function () {
+                    $("#select").trigger('change');
+                })
+            })
+        }
+        function mesaisil(value) {
+
+            var inckey = value.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+            var inckey1 = value.parentNode.parentNode.getElementsByTagName("td")[1].innerHTML;
+            var ur1 = "http://192.168.2.13:83/api/attendance/deletemanual/" + inckey;
+            var ur12 = "http://192.168.2.13:83/api/attendance/deletemanual/" + inckey1;
+            $.getJSON(ur1, function (data) {
+
+            }).done(function () {
+                $.getJSON(ur12, function (data) {
+
+                }).done(function () {
+                    Swal.fire(
+                        'Başarılı!',
+                        'İşlem başarılı',
+                        'success'
+                    ).then(function () {
+                        $("#select").trigger('change');
+                    })
+                })
+
+            })
+        }
+        function keyup() {
+            var bas = $("#baslangic").val();
+            var bit = $("#bitis").val();
+
+            if (bas != bit) {
+                $(swal.getConfirmButton()).prop('disabled', false)
+            } else {
+                $(swal.getConfirmButton()).prop('disabled', true)
+            }
+        }
+        function keychange() {
+            var bas = $("#baslangic").val();
+            var bit = $("#bitis").val();
+
+            if (bas != bit && bit>bas) {
+                $(swal.getConfirmButton()).prop('disabled', false)
+            } else {
+                $(swal.getConfirmButton()).prop('disabled', true)
+            }
+        }
+        function keyup1() {
+            var bas = document.getElementsByTagName("input")[0].value;
+            var bit = document.getElementsByTagName("input")[1].value;
+            if (bas != null && bas != "") {
+                if (bas != bit) {
+                    $(swal.getConfirmButton()).prop('disabled', false)
+                } else {
+                    $(swal.getConfirmButton()).prop('disabled', true)
+                }
+            } else {
+                $(swal.getConfirmButton()).prop('disabled', true)
+            }
+
+        }
+        function keychange1() {
+            var bas = document.getElementsByTagName("input")[0].value;
+            var bit = document.getElementsByTagName("input")[1].value;
+            if (bas != null && bas != "") {
+                if (bas != bit) {
+                    $(swal.getConfirmButton()).prop('disabled', false)
+                } else {
+                    $(swal.getConfirmButton()).prop('disabled', true)
+                }
+            } else {
+                $(swal.getConfirmButton()).prop('disabled', true)
+            }
+        }
+        function ekleduzenle(value) {
+
+
+            options = "";
+            for (let i = 0; i < izinler.length; i++) {
+
+                    options = options + "<option value='" + izinlercodes[i] + "'>" + izinler[i] + "</option>";
+
+
+                if (i == izinler.length - 1) {
+                    if (new Date() > new Date(value)) {
+                        options = options + "<option value='" + 0 + "'>Mesai</option>";
+                    } else {
+
+                        options = options + "<option style='color:#dddddd;' disabled value='" + 0 + "'>Mesai (İleri tarihe mesai girilemez)</option>";
+                    }
+
+                }
+            }
+            document.documentElement.style.cssText = "--x:'';  --y:''; --background:rgba(0,0,0,.4)";
+
+            Swal.fire({
+                title: value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0],
+                html:'<select value="21" onchange="changesel()" class="swal2-select" id="izinselect" style="display: flex;width:80%">'+options+'</select></br>'+
+                    '<table id="tab1" style="display:none" class="table table-borderless inp"><tr><th>Giriş</th><th>Çıkış</th></tr><tr><td><input class="form-control text-center" onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz1()" type="time"  id="baslangic" style="display:none"></td>' +
+                    '<td><input class="form-control text-center" onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz()" type="time" id="bitis" style="display:none"></td></tr>',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Kaydet',
+                    cancelButtonText: 'İptal',
+                    showClass: {
+                        popup: 'pop2 animate__animated animate__zoomIn'
+                    },
+                    hideClass: {
+                        popup: 'pop2 animate__animated animate__zoomOut'
+                    }
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+                    var code = $("#izinselect").val();
+                    var userid = document.getElementById("select").value;
+                    var start = value + " " + document.getElementById("tab1").getElementsByTagName("input")[0].value;
+
+                    var end = value+" "+document.getElementById("tab1").getElementsByTagName("input")[1].value
+                    if (code != 21) {
+                        start = null;
+                        end=null;
+                    }
+                        var d = { INCKEY: null, USER_ID: parseInt(userid), DATE: value, START_DATE: start, END_DATE: end, OFFDAY_CODE: parseInt(code), CONFIRM_CODE: 1 }
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("PostData")",
+                            dataType: "json",
+                            data: d,
+                            success: function (msg) {
+                                Swal.fire(
+                                    'Başarılı!',
+                                    'İşlem başarılı',
+                                    'success'
+                                ).then(function () {
+                                    $("#select").trigger('change');
+                                })
+                            },
+                            error: function (msg) { alert(JSON.stringify(msg)); }
+                        });
+
+
+
+                }
+            })
+
+        }
+        function decision(value) {
+            ekleduzenle(value);
+        }
+        function decisionduzenleizin(value,value2) {
+
+            document.documentElement.style.cssText = "--x: " + CurrentMouseXPostion + "px;" + " " + "--y: " + CurrentMouseYPostion + "px; --background:unset";
+            var disp = "none";
+            var dispsil = "block";
+            if (value.getAttribute("data-holiday") == "Saatlik İzin") {
+                disp = "block";
+                dispsil = "none";
+            }
+            Swal.fire({
+                html: '<div style="font-size:10px !important"><b>' + value.getAttribute("data-date").split("-")[2] + "-" + value.getAttribute("data-date").split("-")[1] + "-" + value.getAttribute("data-date").split("-")[0] + "</b></div>" +
+                    '<div style="display:' + disp +'"><button class="btn btn-sm btn-success w-100 mt-1" style="font-size:10px" onclick="ekleizinsat(\'' + value.getAttribute("data-date") +'\')">Ekle</button></br></div>' +
+                    '<div style="display:' + dispsil + '"><button class="btn btn-sm btn-info w-100 mt-1" style="font-size:10px" onclick="duzenle(\'' + value.getAttribute("data-date") + '\',\'' + value.getAttribute("data-holiday") + '\',\'' + value2 + '\')">Düzenle</button></br></div>' +
+                    '<div style="display:' + disp + '"><button class="btn btn-sm btn-info w-100 mt-1" style="font-size:10px" onclick="eklesat1(\'' + value.getAttribute("data-date") + '\')">Düzenle</button></br></div>'+
+                    '<div  style="display:' + disp + '"><button class="btn btn-sm btn-warning mt-1 w-100" style="font-size:10px" onclick="izinlerisil(\'' + value.getAttribute("data-date") + '\')">Sil</button></div>'+
+                    '<div  style="display:' + dispsil +'"><button class="btn btn-sm btn-warning mt-1 w-100" style="font-size:10px" onclick="izinsilconfirm(' + value2 +')">Sil</button></div>',
+                showCancelButton: false,
+                background: "#e8e6eb",
+                showConfirmButton: false,
+                showClass: {
+                    popup: 'pop animate__animated animate__fadeIn'
+                },
+                hideClass: {
+                    popup: 'pop animate__animated animate__fadeOut'
+                }
+            })
+        }
+        function izinsil(val) {
+            var ur = "http://192.168.2.13:83/api/attendance/off/delete/" + val
+
+            $.getJSON(ur, function (data) {
+
+            }).done(function () {
+                Swal.fire(
+                    'Başarılı!',
+                    'İşlem başarılı',
+                    'success'
+                ).then(function () {
+                    $("#select").trigger('change');
+                })
+            })
+
+        }
+        function izinlerisil(val) {
+            var userid = $("#select").val();
+            var ur = "http://192.168.2.13:83/api/attendance/off/deletedate/" + userid + "/" + val
+
+            $.getJSON(ur, function (data) {
+
+            }).done(function () {
+                Swal.fire(
+                    'Başarılı!',
+                    'İşlem başarılı',
+                    'success'
+                ).then(function () {
+                    $("#select").trigger('change');
+                })
+            })
+        }
+        function decisionduzenle(value, value2) {
+
+            var display = "inline-block"
+            if (value2.getAttribute("fill") == "#44A340") {
+                display = "none";
+            }
+            document.documentElement.style.cssText = "--x: " + CurrentMouseXPostion + "px;" + " " + "--y: " + CurrentMouseYPostion + "px; --background:unset";
+
+            Swal.fire({
+                html: '<div style="font-size:10px !important"><b>' + value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0] + "</b></div>" +
+                    '<div style="display:'+display+'"><button class="btn btn-sm btn-success w-100 mt-1" style="font-size:10px" onclick="eklemesai(\'' + value + '\')">Ekle</button></br></div>'+
+                    '<button class="btn btn-sm btn-info w-100 mt-1" style="font-size:10px" onclick="ekle(\'' + value + '\')">Düzenle</button></br>' +
+                    '<button class="btn btn-sm btn-warning mt-1 w-100" style="font-size:10px" onclick="deleteconfirm(\'' + value + '\')">Sil</button>',
+                showCancelButton: false,
+                background: "#e8e6eb",
+                showConfirmButton: false,
+                showClass: {
+                    popup: 'pop3 animate__animated animate__fadeIn'
+                },
+                hideClass: {
+                    popup: 'pop3 animate__animated animate__fadeOut'
+                }
+            })
+        }
+        function decisionduzenlesat(value) {
+            document.documentElement.style.cssText = "--x: " + CurrentMouseXPostion + "px;" + " " + "--y: " + CurrentMouseYPostion + "px; --background:unset";
+
+            Swal.fire({
+                html: '<div style="font-size:10px !important"><b>' + value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0] + "</b></div>" +
+                    '<button class="btn btn-sm btn-success w-100 mt-1" style="font-size:10px" onclick="eklemesaisat(\'' + value + '\')">Ekle</button></br>' +
+                    '<button class="btn btn-sm btn-info w-100 mt-1" style="font-size:10px" onclick="eklesat(\'' + value + '\')">Düzenle</button></br>' +
+                    '<button class="btn btn-sm btn-warning mt-1 w-100" style="font-size:10px" onclick="deleteconfirm(\'' + value + '\')">Sil</button>',
+                showCancelButton: false,
+                background: "#e8e6eb",
+                showConfirmButton: false,
+                showClass: {
+                    popup: 'pop3 animate__animated animate__fadeIn'
+                },
+                hideClass: {
+                    popup: 'pop3 animate__animated animate__fadeOut'
+                }
+            })
+        }
+
+        function eklemesaisat(value) {
+            options = "";
+
+
+            options = options + "<option value='" + izinlercodes[3] + "'>" + izinler[3] + "</option>";
+
+            options = options + "<option selected value='" + 0 + "'>Mesai</option>";
+
+
+            document.documentElement.style.cssText = "--x:'';  --y:''; --background:rgba(0,0,0,.4)";
+            var p = personaldata.filter(x => x.DATE === value);
+            p.sort((a, b) => (a.START_DATE > b.START_DATE) ? 1 : -1)
+            var tt = "<tr><td></td><th>Giriş</th><th>Çıkış</th></tr>";
+
+            for (let i = 0; i < p.length; i++) {
+                tt = tt + "<tr><th>" + (p[i].CODE == 0 ? "Mesai" : "Saatlik İzin") + "</th><td>" + (p[i].START_DATE != null ? p[i].START_DATE.split("T")[1].substring(0, 5) : "-") + "</td><td>" + (p[i].END_DATE != null ? p[i].END_DATE.split("T")[1].substring(0, 5) : "-") + "</td></tr>"
+
+                list.push({
+                    "MIN": p[i].MIN, "MAX": p[i].MAX, "INCKEY": p[i].START_INCKEY, "ENDINCKEY": p[i].END_INCKEY,"CODE":p[i].CODE });
+
+            }
+
+
+            Swal.fire({
+                title: value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0],
+                html: '<select class="swal2-select" onchange="eklemesaichange()" id="izinselect" style="display: flex;width:80%">' + options + '</select></br>' +
+                    '<table id="tab1" class="table table-borderless inp"><tr><th>Giriş</th><th>Çıkış</th></tr><tr><td><input onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz1()" class="form-control text-center" " type="time"  id="baslangic"></td>' +
+                    '<td><input class="form-control text-center" onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz()" type="time" id="bitis"></td></tr>' + '<table id="tab2" class="table table-borderless inp">'+tt+'<table>',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Kaydet',
+                cancelButtonText: 'İptal',
+                showClass: {
+                    popup: 'pop2 animate__animated animate__zoomIn'
+                },
+                hideClass: {
+                    popup: 'pop2 animate__animated animate__zoomOut'
+                }
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+
+                    newclick();
+
+
+
+                }
+            })
+        }
+        function eklemesai(value) {
+              options = "";
+
+
+               options = options + "<option value='" + izinlercodes[3] + "'>" + izinler[3] + "</option>";
+
+               options = options + "<option selected value='" + 0 + "'>Mesai</option>";
+
+
+            document.documentElement.style.cssText = "--x:'';  --y:''; --background:rgba(0,0,0,.4)";
+            var p = personaldata.filter(x => x.DATE === value);
+            var tt = "";
+            var liststart = [];
+            for (let i = 0; i < p.length; i++) {
+                tt = tt + "<tr><td>" + (p[i].START_DATE != null ? p[i].START_DATE.split("T")[1].substring(0, 5) : "-") + "</td><td>" + (p[i].END_DATE != null ? p[i].END_DATE.split("T")[1].substring(0, 5) : "-") + "</td></tr>"
+                liststart.push((p[i].START_DATE != null ? p[i].START_DATE.split("T")[1].substring(0, 5) : "0"));
+            }
+            liststart.sort(function (a, b) {
+                if (a > b) { return -1; }
+                if (a < b) { return 1; }
+                return 0;
+            });
+            Swal.fire({
+                title: value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0],
+                html:'<select class="swal2-select" onchange="eklemesaichange()" id="izinselect" style="display: flex;width:80%">'+options+'</select></br>'+
+                    '<table id="tab1" class="table table-borderless inp"><tr><th>Giriş</th><th>Çıkış</th></tr><tr><td><input class="form-control text-center" onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz1()" type="time"  id="baslangic"></td>' +
+                    '<td><input class="form-control text-center" onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz()" type="time" id="bitis"></td></tr>'+tt,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Kaydet',
+                    cancelButtonText: 'İptal',
+                    showClass: {
+                        popup: 'pop2 animate__animated animate__zoomIn'
+                    },
+                    hideClass: {
+                        popup: 'pop2 animate__animated animate__zoomOut'
+                    }
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+
+                    newclick();
+
+
+
+                }
+            })
+        }
+        function ekleizinsat(value) {
+
+
+            options = "";
+
+
+            options = options + "<option value='" + izinlercodes[3] + "'>" + izinler[3] + "</option>";
+
+            if (new Date(value) > new Date()) {
+                options = options + "<option style='color:#dddddd;' disabled value='" + 0 + "'>Mesai(İleri tarihe mesai girilemez)</option>";
+            } else {
+                options = options + "<option value='" + 0 + "'>Mesai</option>";
+            }
+
+            document.documentElement.style.cssText = "--x:'';  --y:''; --background:rgba(0,0,0,.4)";
+            var p = personaldata.filter(x => x.DATE === value);
+            p.sort((a, b) => (a.START_DATE > b.START_DATE) ? 1 : -1)
+            var tt = "<tr><td></td><th>Giriş</th><th>Çıkış</th></tr>";
+            for (let i = 0; i < p.length; i++) {
+                tt = tt + "<tr><th>" + (p[i].CODE == 0 ? "Mesai" : "Saatlik İzin") + "</th><td>" + p[i].START_DATE.split("T")[1].substring(0, 5) + "</td><td>" + p[i].END_DATE.split("T")[1].substring(0, 5) + "</td></tr>"
+                list.push({ "MIN": p[i].MIN, "MAX": p[i].MAX, "INCKEY": p[i].START_INCKEY, "ENDINCKEY": p[i].END_INCKEY, "CODE": p[i].CODE });
+            }
+
+            Swal.fire({
+                title: value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0],
+                html: '<select class="swal2-select" onchange="eklemesaichange()" id="izinselect" style="display: flex;width:80%">' + options + '</select></br>' +
+                    '<table id="tab1" class="table table-borderless inp"><tr><th>Giriş</th><th>Çıkış</th></tr><tr><td><input class="form-control text-center" onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz1()" type="time"  id="baslangic"></td>' +
+                    '<td><input class="form-control text-center" onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz()" type="time" id="bitis"></td></tr>' + '<table id="tab2" class="table table-borderless inp">' + tt + '<table>',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Kaydet',
+                cancelButtonText: 'İptal',
+                showClass: {
+                    popup: 'pop2 animate__animated animate__zoomIn'
+                },
+                hideClass: {
+                    popup: 'pop2 animate__animated animate__zoomOut'
+                }
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+
+                    izingirisi();
+
+
+
+                }
+            })
+        }
+        function ekle(value) {
+            var mesai = personaldata.filter(x => x.DATE === value)
+                    var tr = "";
+                    document.documentElement.style.cssText = "--x:35vw;  --y:30vh; --background:rgba(0,0,0,.4)";
+            for (let i = 0; i < mesai.length; i++) {
+                tr = tr + '<tr><td style="display:none">' + (mesai[i].START_INCKEY == null ? "" : mesai[i].START_INCKEY) + '</td><td style="display:none">' + (mesai[i].END_INCKEY == null ? "" : mesai[i].END_INCKEY) + '</td><td><input onchange="keychange1()" onkeyup="keyup1()" value="' + (mesai[i].START_DATE != null ? (mesai[i].START_DATE).split("T")[1].substring(0, 5) : "") + '" class="form-control text-center inp"  type="time" name="' + i + 'giris" id="' + i + 'giris"></td>' + '<td><input onchange="keychange1()" onkeyup="keyup1()" class="form-control text-center inp"  type="time" name="' + i + 'cikis" value="' + (mesai[i].END_DATE != null ? (mesai[i].END_DATE).split("T")[1].substring(0, 5) : "") + '" id="' + i + 'cikis"></td></tr>'
+                    }
+
+                     Swal.fire({
+                         title: value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0],
+                         html: '<table class="table table-borderless" id="table"><tr><th>Giriş</th><th>Çıkış</th></tr>' + tr +'</table>',
+                         showCancelButton: true,
+                         confirmButtonColor: '#3085d6',
+                         cancelButtonColor: '#d33',
+                         confirmButtonText: 'Kaydet',
+                         cancelButtonText: 'İptal',
+                    showClass: {
+                        popup: 'pop2 animate__animated animate__zoomIn'
+                    },
+                    hideClass: {
+                        popup: 'pop2 animate__animated animate__zoomOut'
+                    }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var tr = document.getElementById("table").getElementsByTagName("tr");
+                    for (let i = 1; i < tr.length; i++) {
+                        var baslangic = tr[i].getElementsByTagName("input")[0].value;
+                        var bitis = tr[i].getElementsByTagName("input")[1].value;
+                        var userid=$('#select').val();
+                        var inckey = tr[i].getElementsByTagName("td")[0].innerHTML;
+                        var inckeyend = tr[i].getElementsByTagName("td")[1].innerHTML;
+                        var d = { START_INCKEY: inckey, END_INCKEY: inckeyend, USER_ID: parseInt(userid), DATE: value, START_DATE: value + " " + baslangic, END_DATE: value + " " + bitis, OFFDAY_CODE: null, CONFIRM_CODE: 1 }
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("PostDataMesai")",
+                            dataType: "json",
+                            data: d,
+                            success: function (msg) {
+                                if (i == tr.length-1) {
+                                    Swal.fire(
+                                        'Başarılı!',
+                                        'İşlem başarılı',
+                                        'success'
+                                    ).then(function () {
+                                        $("#select").trigger('change');
+                                    })
+                                }
+
+                            },
+                            error: function (msg) { alert(JSON.stringify(msg)); }
+                        });
+                    }
+
+                }
+            })
+        }
+        function eklesat(value) {
+
+             var mesai = personaldata.filter(x => x.DATE === value);
+             var userid = $("#select").val();
+             options = "";
+             var ff = "";
+
+                 options = options + "<option value='" + izinlercodes[3] + "'>" + izinler[3] + "</option>";
+                 options = options + "<option selected value='" + 0 + "'>Mesai</option>";
+
+
+
+
+                    var tr = "";
+             document.documentElement.style.cssText = "--x:35vw;  --y:30vh; --background:rgba(0,0,0,.4)";
+
+             for (let i = 0; i < mesai.length; i++) {
+                 var disp = "table-row";
+                 var classname = "mesai";
+                 var funct = "mesaisilconfirm";
+                 var izininc = f.filter(x => x.START_DATE == mesai[i].START_DATE);
+                 var y = "";
+                 if (izininc.length > 0) {
+                     y = izininc[0].INCKEY;
+                 }
+                 if (mesai[i].CODE != 0) {
+                     disp = "none";
+                     classname = "izin";
+                     funct = "deleteizinconfirm";
+                 }
+                 tr = tr + '<tr class="' + classname + '" style="display:' + disp + '"><td style="display:none">' + (mesai[i].START_INCKEY == null ? "" : mesai[i].START_INCKEY) + '</td><td style="display:none">' + (mesai[i].END_INCKEY == null ? "" : mesai[i].END_INCKEY) + '</td><td><input onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz1()" value="' + (mesai[i].START_DATE != null ? (mesai[i].START_DATE).split("T")[1].substring(0, 5) : "") + '" class="form-control text-center inp"  type="time" name="' + i + 'giris" id="' + i + 'giris"></td>' + '<td><input onfocusout="lastkeyupduz()" onkeyup="keychange()" onfocus="keychange()" class="form-control text-center inp"  type="time" name="' + i + 'cikis" value="' + (mesai[i].END_DATE != null ? (mesai[i].END_DATE).split("T")[1].substring(0, 5) : "") + '" id="' + i + 'cikis"></td><td><img onclick="' + funct + '(this)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAKlJREFUSEvtlcERQDAQRZ9KlIBOlEIFlKQUOqASJjM4hJ0fIje5ZTbZ9//uJJuReGWJ86MANdABpSFkBlpgsIQqgEuQC5cjUL0FrPtFS4iKyxKpBCp+ARwXYnt/OvatJwccyqV1z6J5/nXzvgb4CtX+5Ic6UAmjS/QDLu/qaUn+HsivKbpEivAYEDJofOh0N/msl+xGZQ8USvoeX4DmbnSqkRmY3z6WHLABUDk4GfuOp84AAAAASUVORK5CYII="/></td><td style="display:none">' + y + '</td></tr>';
+                 list.push({ "MIN": mesai[i].MIN, "MAX": mesai[i].MAX, "INCKEY": mesai[i].START_INCKEY, "ENDINCKEY": mesai[i].END_INCKEY, "CODE": mesai[i].CODE });
+                    }
+
+
+                     Swal.fire({
+                         title: value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0],
+                         html: '<select class="swal2-select" onchange="duzenlemesaichange('+ff+')" id="izinselect" style="display: flex;width:80%">' + options + '</select></br>' +
+                             '<table class="table table-borderless" id="table"><tr><th>Giriş</th><th>Çıkış</th></tr>' + tr + '</table>',
+                         showCancelButton: true,
+                         confirmButtonColor: '#3085d6',
+                         cancelButtonColor: '#d33',
+                         confirmButtonText: 'Kaydet',
+                         cancelButtonText: 'İptal',
+                    showClass: {
+                        popup: 'pop2 animate__animated animate__zoomIn'
+                    },
+                    hideClass: {
+                        popup: 'pop2 animate__animated animate__zoomOut'
+                         }
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    mesaidegistir();
+
+                }
+            })
+
+        }
+        function eklesat1(value) {
+             var mesai = personaldata.filter(x => x.DATE === value);
+             var userid = $("#select").val();
+             options = "";
+             var ff = "";
+
+                 options = options + "<option selected value='" + izinlercodes[3] + "'>" + izinler[3] + "</option>";
+
+
+
+
+                    var tr = "";
+             document.documentElement.style.cssText = "--x:35vw;  --y:30vh; --background:rgba(0,0,0,.4)";
+
+             for (let i = 0; i < mesai.length; i++) {
+                 var disp = "table-row";
+                 var classname = "mesai";
+                 var funct = "mesaisilconfirm";
+                 var izininc = f.filter(x => x.START_DATE == mesai[i].START_DATE);
+                 var y = "";
+                 if (izininc.length > 0) {
+                     y = izininc[0].INCKEY;
+                 }
+                 if (mesai[i].CODE != 0) {
+                     disp = "none";
+                     classname = "izin";
+                     funct = "deleteizinconfirm";
+                 }
+                 tr = tr + '<tr class="' + classname + '"><td style="display:none">' + (mesai[i].START_INCKEY == null ? "" : mesai[i].START_INCKEY) + '</td><td style="display:none">' + (mesai[i].END_INCKEY == null ? "" : mesai[i].END_INCKEY) + '</td><td><input onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz1()" value="' + (mesai[i].START_DATE != null ? (mesai[i].START_DATE).split("T")[1].substring(0, 5) : "") + '" class="form-control text-center inp"  type="time" name="' + i + 'giris" id="' + i + 'giris"></td>' + '<td><input onkeyup="keychange()" onfocusout="lastkeyupduz()" onfocus="keychange()" class="form-control text-center inp"  type="time" name="' + i + 'cikis" value="' + (mesai[i].END_DATE != null ? (mesai[i].END_DATE).split("T")[1].substring(0, 5) : "") + '" id="' + i + 'cikis"></td><td><img onclick="' + funct + '(this)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAKlJREFUSEvtlcERQDAQRZ9KlIBOlEIFlKQUOqASJjM4hJ0fIje5ZTbZ9//uJJuReGWJ86MANdABpSFkBlpgsIQqgEuQC5cjUL0FrPtFS4iKyxKpBCp+ARwXYnt/OvatJwccyqV1z6J5/nXzvgb4CtX+5Ic6UAmjS/QDLu/qaUn+HsivKbpEivAYEDJofOh0N/msl+xGZQ8USvoeX4DmbnSqkRmY3z6WHLABUDk4GfuOp84AAAAASUVORK5CYII="/></td><td style="display:none">' + y +'</td></tr>'
+
+                 list.push({ "MIN": mesai[i].MIN, "MAX": mesai[i].MAX, "INCKEY": mesai[i].START_INCKEY, "ENDINCKEY": mesai[i].END_INCKEY, "CODE": mesai[i].CODE });
+
+             }
+
+
+                     Swal.fire({
+                         title: value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0],
+                         html: '<select class="swal2-select" onchange="duzenlemesaichange('+ff+')" id="izinselect" style="display: flex;width:80%">' + options + '</select></br>' +
+                             '<table class="table table-borderless" id="table"><tr><th>Giriş</th><th>Çıkış</th></tr>' + tr + '</table>',
+                         showCancelButton: true,
+                         confirmButtonColor: '#3085d6',
+                         cancelButtonColor: '#d33',
+                         confirmButtonText: 'Kaydet',
+                         cancelButtonText: 'İptal',
+                    showClass: {
+                        popup: 'pop2 animate__animated animate__zoomIn'
+                    },
+                    hideClass: {
+                        popup: 'pop2 animate__animated animate__zoomOut'
+                         }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    izindegistir()
+                }
+            })
+
+        }
+        function duzenle(value, value2, value3) {
+
+             options = "";
+            for (let i = 0; i < izinler.length; i++) {
+                if (izinler[i]==value2) {
+                    options = options + "<option selected value='" + izinlercodes[i] + "'>" + izinler[i] + "</option>";
+                } else {
+                    options = options + "<option value='" + izinlercodes[i] + "'>" + izinler[i] + "</option>";
+                }
+
+
+
+                if (i == izinler.length - 1) {
+                    if (new Date() > new Date(value)) {
+                        options = options + "<option value='" + 0 + "'>Mesai</option>";
+                    } else {
+
+                        options = options + "<option disabled value='" + 0 + "'>Mesai</option>";
+                    }
+
+                }
+            }
+            document.documentElement.style.cssText = "--x:'';  --y:''; --background:rgba(0,0,0,.4)";
+            function checkVal(val) {
+                return val == value2;
+            }
+            var display = "none";
+            var displaytab = "none";
+            if (izinler.findIndex(checkVal) == 3) {
+                display = "block";
+                displaytab = "table";
+            }
+            var p = personaldata.filter(x => x.DATE === value);
+
+            Swal.fire({
+                title: value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0],
+                html: '<select value=' + izinlercodes[izinler.findIndex(checkVal)] + ' class="swal2-select" id="izinselect" onchange="pop2change()" style="display: flex;width:80%">' + options + '</select></br>' +
+                    '<table id="tab1" style="display:' + displaytab + '" class="table table-borderless inp"><tr><th>Giriş</th><th>Çıkış</th></tr><tr><td><input value="' + (p[0].CODE == 7 ? p[0].START_DATE.split("T")[1] : null) + '" class="form-control text-center" onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz1()" type="time"  id="baslangic" style="display:' + display + '"></td>' +
+                    '<td><input class="form-control text-center" value="' + (p[0].CODE == 7 ? p[0].END_DATE.split("T")[1] : null) + '" onfocus="keychange()" onkeyup="keychange()" onfocusout="lastkeyupduz()" type="time" id="bitis" style="display:' + display + '"></td></tr>',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Kaydet',
+                    cancelButtonText: 'İptal',
+                    showClass: {
+                        popup: 'pop2 animate__animated animate__zoomIn'
+                    },
+                    hideClass: {
+                        popup: 'pop2 animate__animated animate__zoomOut'
+                    }
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+
+                    var code = $("#izinselect").val();
+                    var userid = document.getElementById("select").value;
+                    var baslangic = value + " " + document.getElementById("baslangic").value;
+                    var bitis = value + " " + document.getElementById("bitis").value;
+
+                    if (code != 21) {
+                        baslangic = null;
+                        bitis = null;
+                    }
+                    var d = { INCKEY: value3, USER_ID: parseInt(userid), DATE: value, START_DATE: baslangic, END_DATE: bitis, OFFDAY_CODE: parseInt(code), CONFIRM_CODE: 1 }
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("PutData")",
+                            dataType: "json",
+                            data: d,
+                            success: function (msg) {
+                                Swal.fire(
+                                    'Başarılı!',
+                                    'İşlem başarılı',
+                                    'success'
+                                ).then(function () {
+                                    $("#select").trigger('change');
+                                })
+                            },
+                            error: function (msg) { alert(JSON.stringify(msg)); }
+                        });
+
+
+
+                }
+            })
+        }
+        function addrow() {
+            var tr = document.createElement("tr");
+            var td = document.createElement("td");
+            var td2 = document.createElement("td");
+            td2.style.display = "none";
+            td.innerHTML = "<input onchange='keychange1()' onkeyup='keyup1()' class='form-control text-center inp' value='' type='time'/>";
+            var td1 = document.createElement("td");
+            var td3 = document.createElement("td");
+            td3.style.display = "none";
+            td1.innerHTML = "<input onchange='keychange1()' onkeyup='keyup1()' class='form-control text-center inp' value='' type='time'/>";
+            tr.appendChild(td2);
+            tr.appendChild(td);
+            tr.appendChild(td1);
+            tr.appendChild(td3);
+            document.getElementById("table").appendChild(tr);
+        }
+        function eklemesaichange() {
+            if (event.currentTarget.value != 0) {
+                $(".swal2-confirm").attr("onclick", "izingirisi()");
+            } else {
+                $(".swal2-confirm").attr("onclick", "newclick()");
+            }
+        }
+        function izingirisi() {
+            var bas = $("#baslangic").val();
+            var bit = $("#bitis").val();
+            var userid = $("#select").val();
+            var minute = (new Date("1970-01-01T" + bas).getHours() * 60) + (new Date("1970-01-01T" + bas).getMinutes())
+            var minute1 = (new Date("1970-01-01T" + bit).getHours() * 60) + (new Date("1970-01-01T" + bit).getMinutes())
+            var b = true;
+            var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+            if (list != null && list.length > 0) {
+                var url = 'http://192.168.2.13:83/api/attendance/addcontrol/'+userid+'/'+tarih+'/'+minute+'/'+minute1
+                $.getJSON(url, function (data) {
+                    if (data[0].RESULT != 'True') {
+                        b = false;
+                    }
+                }).done(function () {
+                     if (b == true) {
+                     var code = $("#izinselect").val();
+
+            userid = document.getElementById("select").value;
+            var start = tarih + " " + document.getElementById("tab1").getElementsByTagName("input")[0].value;
+
+            var end = tarih + " " + document.getElementById("tab1").getElementsByTagName("input")[1].value;
+            var d = { INCKEY: null, USER_ID: parseInt(userid), DATE: tarih, START_DATE: start, END_DATE: end, OFFDAY_CODE: parseInt(code), CONFIRM_CODE: 1 }
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("PostData")",
+                            dataType: "json",
+                            data: d,
+                            success: function (msg) {
+                                Swal.fire(
+                                    'Başarılı!',
+                                    'İşlem başarılı',
+                                    'success'
+                                ).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $("#select").trigger('change')
+
+                                    }
+                                })
+                            },
+                            error: function (msg) { alert(JSON.stringify(msg)); }
+                        });
+                } else {
+                    Swal.fire(
+                        '',
+                        'Girdiğiniz saat aralığında giriş bulunmaktadır',
+                        'warning'
+                    ).then(function () {
+                        $("#select").trigger('change');
+                    })
+                }
+                })
+
+            } else {
+                 var code = $("#izinselect").val();
+            var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+            var userid = document.getElementById("select").value;
+            var start = tarih + " " + document.getElementById("tab1").getElementsByTagName("input")[0].value;
+
+            var end = tarih + " " + document.getElementById("tab1").getElementsByTagName("input")[1].value;
+            var d = { INCKEY: null, USER_ID: parseInt(userid), DATE: tarih, START_DATE: start, END_DATE: end, OFFDAY_CODE: parseInt(code), CONFIRM_CODE: 1 }
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("PostData")",
+                            dataType: "json",
+                            data: d,
+                            success: function (msg) {
+                                Swal.fire(
+                                    'Başarılı!',
+                                    'İşlem başarılı',
+                                    'success'
+                                ).then(function () {
+                                    $("#select").trigger('change');
+                                })
+                            },
+                            error: function (msg) { alert(JSON.stringify(msg)); }
+                        });
+            }
+
+        }
+        function pop2change() {
+            if (event.currentTarget.value == 21) {
+
+                var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+                var p = personaldata.filter(x => x.DATE === tarih && x.CODE == 7);
+                if (p.length > 0) {
+                    var baslangic = p[0].START_DATE.split("T")[1];
+                    var bitis = p[0].END_DATE.split("T")[1];
+                    $("#baslangic").val(baslangic);
+                    $("#bitis").val(bitis);
+                }
+
+                $("#tab1").show();
+                $("#baslangic").show();
+                $("#bitis").show();
+            } else {
+                $("#baslangic").val(null);
+                $("#bitis").val(null);
+                $("#tab1").hide();
+                $("#baslangic").hide();
+                $("#bitis").hide();
+            }
+        }
+        function duzenlemesaichange(value) {
+
+            if (event.currentTarget.value == 21) {
+                var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+                $(".izin").show();
+                $(".mesai").hide();
+                $(".swal2-confirm").attr("onclick", "izindegistir()");
+            } else {
+                $(".mesai").show();
+                $(".izin").hide();
+                $(".swal2-confirm").attr("onclick", "mesaidegistir()");
+            }
+        }
+        function mesaidegistir() {
+            $("#content").show();
+                var c = true;
+                var mes = document.getElementsByClassName("mesai");
+                var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+                var userid = $("#select").val();
+                for (let b = 0; b < mes.length; b++) {
+
+                    var bas = mes[b].getElementsByTagName("input")[0].value;
+                    var bit = mes[b].getElementsByTagName("input")[1].value;
+                    var inc = mes[b].getElementsByTagName("td")[0].innerHTML;
+                    var incend = mes[b].getElementsByTagName("td")[1].innerHTML;
+                    var minute = (new Date("1970-01-01T" + bas).getHours() * 60) + (new Date("1970-01-01T" + bas).getMinutes())
+                    var minute1 = (new Date("1970-01-01T" + bit).getHours() * 60) + (new Date("1970-01-01T" + bit).getMinutes())
+                    var url = 'http://192.168.2.13:83/api/attendance/addcontrol/' + userid + '/' + tarih + '/' + minute + '/' + minute1 + '/' + inc + '/' + 0
+                    var l = list.filter(x => x.INCKEY == inc);
+                    if (l[0].MAX != minute || l[0].MIN != minute1) {
+                        inc = mes[b].getElementsByTagName("td")[0].innerHTML;
+                        incend = mes[b].getElementsByTagName("td")[1].innerHTML;
+                        url = 'http://192.168.2.13:83/api/attendance/addcontrol/' + userid + '/' + tarih + '/' + minute + '/' + minute1 + '/' + inc + '/' + 0
+
+                        $.getJSON(url, function (data) {
+                            if (data[0].RESULT != 'True') {
+                                c = false;
+                            }
+                        }).done(function () {
+                             bas = mes[b].getElementsByTagName("input")[0].value;
+                            bit = mes[b].getElementsByTagName("input")[1].value;
+                            inc = mes[b].getElementsByTagName("td")[0].innerHTML;
+                            incend = mes[b].getElementsByTagName("td")[1].innerHTML;
+                            if (c == true) {
+                                var d = { START_INCKEY: inc, END_INCKEY: incend, USER_ID: userid, DATE: tarih, START_DATE: tarih + " " + bas, END_DATE: tarih + " " + bit, OFFDAY_CODE: null, CONFIRM_CODE: 1 }
+
+                                $.ajax({
+                                        type: "POST",
+                                        url: "@Url.Action("PostDataMesai")",
+                                        dataType: "json",
+                                        data: d,
+                                        success: function (msg) {
+                                            $("#content").hide();
+                                            Swal.fire(
+                                                'Başarılı!',
+                                                'İşlem başarılı',
+                                                'success'
+                                            ).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    $("#select").trigger('change')
+
+                                                }
+                                            })
+
+
+                                        },
+                                        error: function (msg) { alert(JSON.stringify(msg)); }
+                                    });
+
+                        } else {
+
+                        Swal.fire(
+                            '',
+                            'Girdiğiniz saat aralığında giriş bulunmaktadır',
+                            'warning'
+                        ).then(function () {
+                            $("#content").hide();
+                            $("#select").trigger('change');
+                        })
+                    }
+                        })
+                    }
+
+                    }
+
+
+
+            $("#content").hide();
+
+
+        }
+        function izindegistir() {
+
+            $("#content").show();
+
+
+            if (list != null && list.length > 0) {
+
+                var c = true;
+                var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+                var iz = document.getElementsByClassName("izin");
+                var userid = $("#select").val();
+                for (let b = 0; b < iz.length; b++) {
+
+                    var bas = iz[b].getElementsByTagName("input")[0].value;
+                    var bit = iz[b].getElementsByTagName("input")[1].value;
+                    var inc = iz[b].getElementsByTagName("td")[0].innerHTML;
+                    var minute = (new Date("1970-01-01T" + bas).getHours() * 60) + (new Date("1970-01-01T" + bas).getMinutes())
+                    var minute1 = (new Date("1970-01-01T" + bit).getHours() * 60) + (new Date("1970-01-01T" + bit).getMinutes())
+                    var url = 'http://192.168.2.13:83/api/attendance/addcontrol/' + userid + '/' + tarih + '/' + minute + '/' + minute1 + '/' + inc + '/' + 0
+                    var l = list.filter(x => x.INCKEY == inc);
+                    if (l[0].MAX != minute || l[0].MIN != minute1) {
+                        inc = iz[b].getElementsByTagName("td")[0].innerHTML;
+                        incend = iz[b].getElementsByTagName("td")[1].innerHTML;
+                        url = 'http://192.168.2.13:83/api/attendance/addcontrol/' + userid + '/' + tarih + '/' + minute + '/' + minute1 + '/' + inc + '/' + 0
+
+                        $.getJSON(url, function (data) {
+                            if (data[0].RESULT != 'True') {
+                                c = false;
+                            }
+                        }).done(function () {
+                            if (c == true) {
+
+                                var code = $("#izinselect").val();
+                                var userid = document.getElementById("select").value;
+                                var len = document.getElementsByClassName("izin");
+                                var baslangic = null;
+                                var bitis = null;
+                                var inckey = null;
+                                for (let i = 0; i < len.length; i++) {
+                                    baslangic = tarih + " " + document.getElementsByClassName("izin")[i].getElementsByTagName("input")[0].value;
+                                    bitis = tarih + " " + document.getElementsByClassName("izin")[i].getElementsByTagName("input")[1].value;
+                                    inckey = document.getElementsByClassName("izin")[i].getElementsByTagName("td")[5].innerHTML;
+                                    if (code != 21) {
+                                        baslangic = null;
+                                        bitis = null;
+                                    }
+                                    var d = { INCKEY: inckey, USER_ID: parseInt(userid), DATE: tarih, START_DATE: baslangic, END_DATE: bitis, OFFDAY_CODE: parseInt(code), CONFIRM_CODE: 1 }
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "@Url.Action("PutData")",
+                                        dataType: "json",
+                                        data: d,
+                                        success: function (msg) {
+
+
+                                        },
+                                        error: function (msg) { alert(JSON.stringify(msg)); }
+                                    });
+                                    if (i == len.length - 1) {
+                                        $("#content").hide();
+                                        Swal.fire(
+                                            'Başarılı!',
+                                            'İşlem başarılı',
+                                            'success'
+                                        ).then((result) => {
+                                            if (result.isConfirmed) {
+                                                $("#select").trigger('change')
+
+                                            }
+                                        })
+                                    }
+                                }
+                            }
+                            else {
+                                Swal.fire(
+                                    '',
+                                    'Girdiğiniz saat aralığında giriş bulunmaktadır',
+                                    'warning'
+                                ).then(function () {
+                                    $("#content").hide();
+                                    $("#select").trigger('change');
+                                    b = true;
+                                })
+                            }
+                        })
+                    }
+                    
+
+                }
+                $("#content").hide();
+
+            }
+            else {
+            var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+                    var code = $("#izinselect").val();
+            var userid = document.getElementById("select").value;
+            var len = document.getElementsByClassName("izin");
+            var baslangic =null;
+            var bitis = null;
+            var inckey = null;
+            for (let i = 0; i < len.length; i++) {
+                baslangic = tarih + " " + document.getElementsByClassName("izin")[i].getElementsByTagName("input")[0].value;
+                bitis = tarih + " " + document.getElementsByClassName("izin")[i].getElementsByTagName("input")[1].value;
+                inckey = document.getElementsByClassName("izin")[i].getElementsByTagName("td")[5].innerHTML;
+                 if (code != 21) {
+                        baslangic = null;
+                        bitis = null;
+                    }
+                var d = { INCKEY: inckey, USER_ID: parseInt(userid), DATE: tarih, START_DATE: baslangic, END_DATE: bitis, OFFDAY_CODE: parseInt(code), CONFIRM_CODE: 1 }
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("PutData")",
+                            dataType: "json",
+                            data: d,
+                            success: function (msg) {
+
+
+                            },
+                            error: function (msg) { alert(JSON.stringify(msg)); }
+                        });
+                if (i == len.length - 1) {
+                    Swal.fire(
+                        'Başarılı!',
+                        'İşlem başarılı',
+                        'success'
+                    ).then(function () {
+                        $("#select").trigger('change');
+                    })
+                }
+            }
+            }
+
+
+
+
+        }
+        function deleteconfirm(value) {
+            Swal.fire({
+                text: "Emin misiniz?",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet',
+                cancelButtonText:"Hayır"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deletemesai(value);
+                    Swal.fire(
+                        'Başarılı!',
+                        'İşlem başarılı',
+                        'success'
+                    )
+                }
+            })
+        }
+        function izinsilconfirm(value) {
+            Swal.fire({
+                text: "Emin misiniz?",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet',
+                cancelButtonText: "Hayır"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    izinsil(value);
+                    Swal.fire(
+                        'Başarılı!',
+                        'İşlem başarılı',
+                        'success'
+                    )
+                }
+            })
+        }
+        function deleteizinconfirm(value) {
+            Swal.fire({
+                text: "Emin misiniz?",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet',
+                cancelButtonText: "Hayır"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteizin(value);
+                    Swal.fire(
+                        'Başarılı!',
+                        'İşlem başarılı',
+                        'success'
+                    )
+                }
+            })
+        }
+        function mesaisilconfirm(value) {
+            Swal.fire({
+                text: "Emin misiniz?",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet',
+                cancelButtonText: "Hayır"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    mesaisil(value);
+                    Swal.fire(
+                        'Başarılı!',
+                        'İşlem başarılı',
+                        'success'
+                    )
+                }
+            })
+        }
+        function lastkeyup() {
+            var baslangic = $("#baslangic").val();
+            if (event.currentTarget.value.length == 5) {
+                if (event.currentTarget.value < baslangic) {
+                    event.currentTarget.value = "";
+                   
+                   
+                }
+            }
+
+        }
+        function lastkeyupduz() {
+            
+            var baslangic = event.currentTarget.parentNode.parentNode.getElementsByTagName("input")[0].value;
+            if (event.currentTarget.value.length == 5) {
+                if (event.currentTarget.value <= baslangic) {
+                    event.currentTarget.value = "";
+                }
+            }
+            if (event.currentTarget.value != "" && baslangic!="") {
+                $(".swal2-confirm").prop('disabled', false)
+            }
+
+        }
+        function lastkeyupduz1() {
+
+            var bitis = event.currentTarget.parentNode.parentNode.getElementsByTagName("input")[1].value;
+            if (bitis != "") {
+                if (event.currentTarget.value.length == 5) {
+                    if (event.currentTarget.value >= bitis) {
+                        event.currentTarget.value = "";
+
+                    }
+                }
+                if (event.currentTarget.value != "" && bitis != "") {
+                    $(".swal2-confirm").prop('disabled', false)
+                }
+            }
+            
+
+        }
+        function keychange() {
+            $(".swal2-confirm").prop('disabled', true);
+        }
+
+    </script>
+    <script src="~/assets/vendor/libs/popper/popper.js"></script>
+    <script src="~/assets/js/ui-popover.js"></script>
+</body>
+</html>

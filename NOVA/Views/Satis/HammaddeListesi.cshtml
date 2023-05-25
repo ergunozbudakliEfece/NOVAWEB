@@ -374,8 +374,18 @@
     </div>
 </div>
 <script>
-    document.getElementById("satis").className = "menu-item open active";
-    document.getElementById("fabstokfiyatli").className = "menu-item active";
+    if ($(window).width() < 600) {
+        $("#divPartial2").show();
+        document.getElementById("satis").className = "menu-item open active";
+        document.getElementById("fabstokfiyatli").className = "menu-item active";
+    }
+    else {
+        $("#divPartial").show();
+
+        document.getElementById("satis1").className = "nav__link active";
+        document.getElementById("fabstokfiyatli1").className = "nav__dropdown-item active";
+    }
+    
 
     var tumliste2 = null;
     var tumliste = null;
@@ -561,7 +571,7 @@
         var genislikAlgorithm = $('#genislik').val()
         var menseiAlgorithm = $('#mensei').val()
         var kuralAlgorithm = $('#kural').val()
-     
+       
         if ($('#filter').val().length > 0) {
             var det = detayli.filter(x => filterAlgorithm.includes(x.RULOKODU));
            
@@ -693,16 +703,17 @@
             if (!$('#kalinlik').val().length > 0) {
 
                 var kalfilt = [];
-
+                
                 $('#kalinlik').children('option').remove();
                 for (let i = 0; i < det.length; i++) {
                     if (!kalfilt.includes(parseFloat(det[i].KALINLIK.replace(',', '.')))) {
                         kalfilt.push(parseFloat(det[i].KALINLIK.replace(',', '.')))
                     }
                 }
+                
                 kalfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < kalfilt.length; i++) {
-                    var newOption = new Option(kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), kalfilt[i], false, false);
+                    var newOption = new Option(kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), kalfilt[i].toLocaleString(), false, false);
                     $('#kalinlik').append(newOption);
                 }
             }
@@ -779,6 +790,7 @@
             }
         }
         else if ($('#kalinlik').val().length > 0) {
+            
             var det = detayli.filter(x => kalinlikAlgorithm.includes(x.KALINLIK));
 
             if (!$('#filter').val().length > 0) {
@@ -1360,7 +1372,6 @@
         }
         
         
-         
         $('#table').bootstrapTable('filterBy', {
             RULOKODU: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimfilter),
             RENKKODU: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : renkfilter),

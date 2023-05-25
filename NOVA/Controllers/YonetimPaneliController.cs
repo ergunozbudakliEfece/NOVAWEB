@@ -119,6 +119,15 @@ namespace NOVA.Controllers
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (uygulamaistatistik != true)
             {
                 ViewBag.Display2 = "none";
@@ -510,6 +519,15 @@ namespace NOVA.Controllers
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (uygulamaistatistik != true)
             {
                 ViewBag.Istatistik = "none";
@@ -835,6 +853,15 @@ namespace NOVA.Controllers
             var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
             if (uygulamaistatistik != true)
             {
                 ViewBag.Istatistik = "none";
@@ -1844,6 +1871,37 @@ namespace NOVA.Controllers
             {
 
                 Session["Durum"] = "Kullanıcı eklenemedi!";
+            }
+
+            return RedirectToAction("KullaniciAyar");
+        }
+        [HttpPost]
+        public async Task<ActionResult> AddModul([Bind(Prefix = "Item3")] Modules modules)
+        {
+            try
+            {
+
+                var apiUrl = "http://192.168.2.13:83/api/modules";
+
+                var httpClient = new HttpClient();
+                var req = new JavaScriptSerializer().Serialize(modules);
+                var request = new HttpRequestMessage(HttpMethod.Post, apiUrl)
+                {
+                    Content = new StringContent(req, Encoding.UTF8, "application/json")
+                };
+
+                var response = await httpClient.SendAsync(request);
+
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                ViewBag.Users = GetUsersApiData();
+
+                Session["Durum"] = "Modul başarıyla eklendi!";
+
+            }
+            catch (Exception)
+            {
+
+                Session["Durum"] = "Modul eklenemedi!";
             }
 
             return RedirectToAction("KullaniciAyar");
