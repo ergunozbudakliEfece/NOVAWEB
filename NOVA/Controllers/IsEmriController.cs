@@ -11,7 +11,10 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Web.Security;
 using System.Web.Helpers;
-
+using NetOpenX50;
+using static NOVA.Controllers.SatisController;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace NOVA.Controllers
 {
@@ -63,7 +66,8 @@ namespace NOVA.Controllers
                         bitmap.Save("C:\\Users\\surec.gelistirme2\\Desktop\\hello.jpeg",
                                     System.Drawing.Imaging.ImageFormat.Jpeg);
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         return null;
                     }
                 }
@@ -77,7 +81,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.Hata = TempData["Hata"];
             }
-            
+
             if (Request.Cookies["Id"] == null)
             {
                 FormsAuthentication.SignOut();
@@ -112,111 +116,182 @@ namespace NOVA.Controllers
             return View();
         }
 
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult UretimSonuKaydı(string isemrino, double miktar1,double miktar2)
+        {
+            Kernel kernel = new Kernel();
+            Sirket sirket = default(Sirket);
+            SerbestUSK uretim = default(SerbestUSK);
+            IsEmri isemri = default(IsEmri);
+            string serino = null;
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                                 "TEST2022",
+                                                 "TEMELSET",
+                                                 "",
+                                                 "nova",
+                                                 "Efc@+180", 0);
+                isemri = kernel.yeniIsEmri(sirket);
+                
+                isemri.kayitOku(TOkumaTipi.otAc, "ISEMRI.ISEMRINO='" + isemrino + "'");
+                {
+                    isemri.kayitOku(TOkumaTipi.otIlk);
+                    serino=isemri.SeriNo;
+                }
+               
+                uretim = kernel.yeniSerbestUSK(sirket);
+                uretim.IsEmrindenGetir(isemrino);
+                uretim.UretSon_FisNo = uretim.SonFisNumarasi("N");
+                uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                uretim.BelgeTipi = TBelgeTipi.btIsEmri;
+                uretim.Proje_Kodu = "1";
+                uretim.UretSon_Miktar = miktar1;
+                uretim.UretSon_Depo = 45;        
+                uretim.I_Yedek1 = 45;
+                uretim.OTO_YMAM_GIRDI_CIKTI = true;
+                uretim.OTO_YMAM_STOK_KULLAN = false;
+                uretim.F_Yedek1 = miktar2;
+                uretim.BAKIYE_DEPO = 0;
+                if (serino == null)
+                {
+                    uretim.OTOSERIURET();
+                    uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", miktar1, miktar2);
+                }
+                else
+                {
+                    uretim.SeriEkle(serino, "", "", "", miktar1, miktar2);
+                }
+               
+                uretim.FisUret();
+                uretim.Kaydet();
+                NetRS netRS = kernel.yeniNetRS(sirket);
 
+                netRS.Ac("UPDATE TBLSTHAR SET STHAR_GCMIK=" + miktar1 + ",STHAR_GCMIK2="+miktar2+ ", WHERE FISNO='" + uretim.UretSon_FisNo + "' AND STHAR_GCKOD='C'");
+                netRS.Ac("SELECT * FROM TBLSTHAR WHERE FISNO='" + uretim.UretSon_FisNo + "'");
+                var inckey=netRS.FieldByName("INCKEYNO");
+                netRS.Ac("UPDATE TBLSERITRA SET MIKTAR=" + miktar1 + ",MIKTAR2=" + miktar2 + ", WHERE STRA_INC='" + inckey + "'");
+                //Stok hareketleri gerçeklestiriliyor
+                //uretim.kayitFisNoIleUretimSonu(uretim.UretSon_FisNo, TUretSonDepo.usdAktif,false,false);
+            }
+            catch (Exception e)
+            {
+                var exp = e.Message;
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(uretim);
+                Marshal.ReleaseComObject(sirket);
+                kernel.FreeNetsisLibrary();
+                Marshal.ReleaseComObject(kernel);
+            }
+            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+        }
 
-        [HttpPost]
+            [HttpPost]
         public ActionResult Post(List<IsEmriModel> isemri)
         {
 
             var isemridis = isemri.GroupBy(x => x.GIRDI2).Select(y => y.First()).ToList();
-            
-            
-            //try
-            //{
-            //    var isemridis = isemri.GroupBy(x => x.GIRDI2).Select(y => y.First()).ToList();
-            //    Kernel kernel = new Kernel();
-
-            //    Sirket sirket = default(Sirket);
-
-            //    sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-            //                                 "TEST2022",
-            //                                 "TEMELSET",
-            //                                 "",
-            //                                 "erguno",
-            //                                 "begum142088", 0);
-
-            //    for (int i = 0; i < isemridis.Count(); i++)
-            //    {
-
-            //        if (isemridis[i].REF_ISEMRINO != null)
-            //        {
-            //            var stokkodu = stokadlari.Where(x => x.STOK_ADI == isemridis[i].REF_STOKOLCUSU);
-
-            //            IsEmri Isemri = default(IsEmri);
-            //            Isemri = kernel.yeniIsEmri(sirket);
-            //            Isemri.IsEmriNo = isemridis[i].REF_ISEMRINO;
-            //            Isemri.StokKodu = stokkodu.First().STOK_KODU;
-            //            Isemri.Kapali = false;
-            //            Isemri.ReceteSaklansin = true;
-            //            Isemri.ProjeKodu = "1";
-            //            Isemri.Oncelik = 0;
-            //            Isemri.Aciklama = isemridis[i].REF_ADET;
-
-            //            Isemri.DepoKodu = 45;
-            //            Isemri.CikisDepoKodu = 45;
-            //            Isemri.SeriNo = isemridis[i].GIRDI2;
-            //            Isemri.SeriNo2 = isemridis[i].GENISLIK;
-            //            Isemri.TeslimTarihi = Convert.ToDateTime("2022-12-31");
-            //            Isemri.SipKont = isemridis[i].SIPKONT;
-            //            Isemri.SiparisNo = isemridis[i].SIPARISNO;
-            //            double m2 = 0;
-            //            if (isemridis[i].AGIRLIK.Contains('.'))
-            //            {
-            //                m2 = Double.Parse(isemridis[i].AGIRLIK.Split('.')[0] + isemridis[i].AGIRLIK.Split('.')[1]);
-            //            }
-            //            else
-            //            {
-            //                m2 = Double.Parse(isemridis[i].AGIRLIK);
-            //            }
-            //            Isemri.Miktar = m2;
-            //            Isemri.kayitYeni();
-
-            //            NetRS netRS = kernel.yeniNetRS(sirket);
-
-            //            netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',DEPO_KODU='45',MIKTAR=" + m2 + ",MIKTARSABITLE='E' WHERE ISEMRINO='" + isemridis[i].REF_ISEMRINO + "'");
-            //        }
 
 
+            try
+            {
+                var stokadlari = GetStokAdlari();
+                Kernel kernel = new Kernel();
 
-            //        var stokkodu1 = stokadlari.Where(x => x.STOK_ADI == isemridis[i].STOKADI);
-            //        IsEmri Isemri1 = default(IsEmri);
-            //        Isemri1 = kernel.yeniIsEmri(sirket);
-            //        Isemri1.IsEmriNo = isemridis[i].ISEMRINO;
-            //        Isemri1.StokKodu = stokkodu1.First().STOK_KODU;
-            //        Isemri1.Aciklama = isemridis[i].ADET;
-            //        Isemri1.Kapali = false;
-            //        Isemri1.ReceteSaklansin = true;
-            //        Isemri1.ProjeKodu = "1";
-            //        Isemri1.Oncelik = 0;
-            //        Isemri1.RefIsEmriNo = isemridis[i].REF_ISEMRINO;
-            //        Isemri1.DepoKodu = 45;
-            //        Isemri1.CikisDepoKodu = 45;
-            //        Isemri1.SeriNo = isemridis[i].GIRDI2;
-            //        Isemri1.SeriNo2 = isemridis[i].GENISLIK;
-            //        double mik = 0;
-            //        if (isemridis[i].AGIRLIK.Contains('.'))
-            //        {
-            //            mik = Double.Parse(isemridis[i].AGIRLIK.Split('.')[0] + isemridis[i].AGIRLIK.Split('.')[1]);
-            //        }
-            //        else
-            //        {
-            //            mik = Double.Parse(isemridis[i].AGIRLIK);
-            //        }
-            //        Isemri1.Miktar = mik;
-            //        Isemri1.TeslimTarihi = Convert.ToDateTime("2022-12-31");
-            //        Isemri1.kayitYeni();
-            //        NetRS netRS2 = kernel.yeniNetRS(sirket);
+                Sirket sirket = default(Sirket);
 
-            //        netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR=" + isemridis[i].HAMSARF + ",MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                             "TEST2022",
+                                             "TEMELSET",
+                                             "",
+                                             "nova",
+                                             "Efc@+180", 0);
 
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
+                for (int i = 0; i < isemridis.Count(); i++)
+                {
 
-            //    TempData["Hata"] = "HATA";
-            //    return View("Index");
-            //}
+                    if (isemridis[i].REF_ISEMRINO != null)
+                    {
+                        var stokkodu = stokadlari.Where(x => x.STOK_ADI == isemridis[i].REF_STOKOLCUSU);
+
+                        IsEmri Isemri = default(IsEmri);
+                        Isemri = kernel.yeniIsEmri(sirket);
+                        Isemri.IsEmriNo = isemridis[i].REF_ISEMRINO;
+                        Isemri.StokKodu = stokkodu.First().STOK_KODU;
+                        Isemri.Kapali = false;
+                        Isemri.ReceteSaklansin = true;
+                        Isemri.ProjeKodu = "1";
+                        Isemri.Oncelik = 0;
+                        Isemri.Aciklama = isemridis[i].REF_ADET;
+                        Isemri.DepoKodu = 45;
+                        Isemri.CikisDepoKodu = 45;
+                        Isemri.SeriNo = null;
+                        Isemri.SeriNo2 = isemridis[i].GENISLIK;
+                        Isemri.Tarih= Convert.ToDateTime(DateTime.Now.Year+"-"+ DateTime.Now.Month+"-"+ DateTime.Now.Day);
+                        Isemri.TeslimTarihi = Convert.ToDateTime("2023-12-31");
+                        Isemri.SipKont = isemridis[i].SIPKONT;
+                        Isemri.SiparisNo = isemridis[i].SIPARISNO;
+                        double m2 = 0;
+                        if (isemridis[i].AGIRLIK.Contains('.'))
+                        {
+                            m2 = Double.Parse(isemridis[i].AGIRLIK.Split('.')[0] + isemridis[i].AGIRLIK.Split('.')[1]);
+                        }
+                        else
+                        {
+                            m2 = Double.Parse(isemridis[i].AGIRLIK);
+                        }
+                        Isemri.Miktar = m2;
+                        Isemri.kayitYeni();
+
+                        NetRS netRS = kernel.yeniNetRS(sirket);
+
+                        netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI2 + "',DEPO_KODU='45',MIKTAR=" + m2 + ",MIKTARSABITLE='E' WHERE ISEMRINO='" + isemridis[i].REF_ISEMRINO + "'");
+                    }
+
+
+
+                    var stokkodu1 = stokadlari.Where(x => x.STOK_ADI == isemridis[i].STOKADI);
+                    IsEmri Isemri1 = default(IsEmri);
+                    Isemri1 = kernel.yeniIsEmri(sirket);
+                    Isemri1.IsEmriNo = isemridis[i].ISEMRINO;
+                    Isemri1.StokKodu = stokkodu1.First().STOK_KODU;
+                    Isemri1.Aciklama = isemridis[i].ADET;
+                    Isemri1.Kapali = false;
+                    Isemri1.ReceteSaklansin = true;
+                    Isemri1.ProjeKodu = "1";
+                    Isemri1.Oncelik = 0;
+                    Isemri1.RefIsEmriNo = isemridis[i].REF_ISEMRINO;
+                    Isemri1.DepoKodu = 45;
+                    Isemri1.CikisDepoKodu = 45;
+                    Isemri1.SeriNo = isemridis[i].GIRDI2;
+                    Isemri1.SeriNo2 = isemridis[i].GENISLIK;
+                    double mik = 0;
+                    if (isemridis[i].AGIRLIK.Contains('.'))
+                    {
+                        mik = Double.Parse(isemridis[i].AGIRLIK.Split('.')[0] + isemridis[i].AGIRLIK.Split('.')[1]);
+                    }
+                    else
+                    {
+                        mik = Double.Parse(isemridis[i].AGIRLIK);
+                    }
+                    Isemri1.Miktar = mik;
+                    Isemri1.TeslimTarihi = Convert.ToDateTime("2022-12-31");
+                    Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                    Isemri1.kayitYeni();
+                    NetRS netRS2 = kernel.yeniNetRS(sirket);
+
+                    netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR=" + isemridis[i].HAMSARF + ",MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                TempData["Hata"] = "HATA";
+                return View("Index");
+            }
 
 
 
@@ -228,11 +303,11 @@ namespace NOVA.Controllers
         [HttpPost]
         public ActionResult Mail(List<MailModel> mail)
         {
-            var m = mail.GroupBy(x => new { x.MUSTERI,x.STOKOLCULERI,x.KALINLIK, x.KALITE, x.KAPLAMA}).Select(grp=>new {MUSTERI=grp.First().MUSTERI,STOKOLCULERI=grp.First().STOKOLCULERI,KALINLIK=grp.First().KALINLIK,KALITE=grp.First().KALITE,KAPLAMA=grp.First().KAPLAMA,ADET=grp.Sum(s=>int.Parse(s.ADET)),AGIRLIK= grp.Sum(s => int.Parse(s.AGIRLIK))}).ToList();
+            var m = mail.GroupBy(x => new { x.MUSTERI, x.STOKOLCULERI, x.KALINLIK, x.KALITE, x.KAPLAMA }).Select(grp => new { MUSTERI = grp.First().MUSTERI, STOKOLCULERI = grp.First().STOKOLCULERI, KALINLIK = grp.First().KALINLIK, KALITE = grp.First().KALITE, KAPLAMA = grp.First().KAPLAMA, ADET = grp.Sum(s => int.Parse(s.ADET)), AGIRLIK = grp.Sum(s => int.Parse(s.AGIRLIK)) }).ToList();
             string subject = "";
-            List<string> makineler =new List<string>();
+            List<string> makineler = new List<string>();
             List<string> makinelerref = new List<string>();
-            for (int i= 0; i < mail.Count; i++)
+            for (int i = 0; i < mail.Count; i++)
             {
                 if (!makineler.Contains(mail[i].MAKINE))
                 {
@@ -240,7 +315,7 @@ namespace NOVA.Controllers
                     {
                         makineler.Add(mail[i].MAKINE);
                     }
-                    
+
                 }
                 if (!makinelerref.Contains(mail[i].MAKINEREF))
                 {
@@ -248,7 +323,7 @@ namespace NOVA.Controllers
                     {
                         makinelerref.Add(mail[i].MAKINEREF);
                     }
-                    
+
                 }
             }
             for (int i = 0; i < makineler.Count; i++)
@@ -257,39 +332,40 @@ namespace NOVA.Controllers
             }
             for (int i = 0; i < makinelerref.Count; i++)
             {
-                
-                    subject = subject + makinelerref[i] + "-";
-                
-                
+
+                subject = subject + makinelerref[i] + "-";
+
+
             }
             var upt = "";
-            for(int i = 0; i < subject.Split('-').Length ; i++)
+            for (int i = 0; i < subject.Split('-').Length; i++)
             {
                 if (subject.Split('-')[i] != "")
                 {
-                    upt = upt + subject.Split('-')[i]+"-";
+                    upt = upt + subject.Split('-')[i] + "-";
                 }
-                
-            }
-            
 
-            var subject2=upt.Substring(0, upt.Length - 1)+" İŞ EMRİ - "+Request.Cookies["UserName"].Value;
+            }
+
+
+            var subject2 = upt.Substring(0, upt.Length - 1) + " İŞ EMRİ - " + Request.Cookies["UserName"].Value;
             string body = "<tr style='outline: thin solid;margin-bottom:15px'><th style='margin-right:10px'>MUSTERI</th><th style='margin-right:10px'>STOKOLCULERI</th><th style='margin-right:10px'>KALINLIK</th><th style='margin-right:10px'>KALITE</th><th style='margin-right:10px'>KAPLAMA</th><th style='margin-right:10px'>ADET</th><th style='margin-right:10px'>AĞIRLIK</th></tr>";
             for (int i = 0; i < m.Count; i++)
             {
-                body = body + "<tr style='outline: thin solid;margin-bottom:10px'>" + "<td style='border-collapse: collapse;margin-right:10px' >" + m[i].MUSTERI +"</td>" + "<td style='border-collapse: collapse;margin-right:10px'' >" + m[i].STOKOLCULERI + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + m[i].KALINLIK  +"</td>"+ "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + m[i].KALITE + "</td>"+ "<td style='border-collapse: collapse' style='text-align: center;margin-right:10px'' >" + m[i].KAPLAMA + "</td>"+ "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + String.Format("{0:n0}", m[i].ADET) + "</td>"+ "<td style='border-collapse: collapse;text-align: center;margin-right:10px'' >" + String.Format("{0:n0}", m[i].AGIRLIK) + "</td>" + "</tr>";
+                body = body + "<tr style='outline: thin solid;margin-bottom:10px'>" + "<td style='border-collapse: collapse;margin-right:10px' >" + m[i].MUSTERI + "</td>" + "<td style='border-collapse: collapse;margin-right:10px'' >" + m[i].STOKOLCULERI + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + m[i].KALINLIK + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + m[i].KALITE + "</td>" + "<td style='border-collapse: collapse' style='text-align: center;margin-right:10px'' >" + m[i].KAPLAMA + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + String.Format("{0:n0}", m[i].ADET) + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px'' >" + String.Format("{0:n0}", m[i].AGIRLIK) + "</td>" + "</tr>";
             }
-           
+
 
 
             WebMail.SmtpServer = "192.168.2.13";
-            WebMail.Send(Request.Cookies["Mail"].Value, subject2, "<p>NOVA üzerinde <strong>"+Request.Cookies["UserName"].Value+"</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>"+"<table style='border: 1px solid black;border-collapse: collapse'>" + body +"</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
-           /* WebMail.Send("ugurkonakci@efecegalvaniz.com", subject2, "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);*/
-            WebMail.Send("ergunozbudakli@efecegalvaniz.com", subject2+TempData["Hata"], "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+            WebMail.Send(Request.Cookies["Mail"].Value, subject2, "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+            /* WebMail.Send("ugurkonakci@efecegalvaniz.com", subject2, "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);*/
+            WebMail.Send("ergunozbudakli@efecegalvaniz.com", subject2 + TempData["Hata"], "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
             return RedirectToAction("Index");
         }
-        public class MailModel{
-           
+        public class MailModel
+        {
+
             public string MAKINE { get; set; }
             public string MAKINEREF { get; set; }
             public string MUSTERI { get; set; }
@@ -442,65 +518,65 @@ namespace NOVA.Controllers
 
             return jsonList;
         }
-      
-//        public void IsEmriSend(List<IsEmriModel1> IsEmriModel)
-//        {
-//            Kernel kernel = new Kernel();
-//            Sirket sirket = default(Sirket);
-//            sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-//                                          "TEST2022",
-//                                          "TEMELSET",
-//                                          "",
-//                                          "erguno",
-//                                          "begum142088", 0);
+
+        //        public void IsEmriSend(List<IsEmriModel1> IsEmriModel)
+        //        {
+        //            Kernel kernel = new Kernel();
+        //            Sirket sirket = default(Sirket);
+        //            sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+        //                                          "TEST2022",
+        //                                          "TEMELSET",
+        //                                          "",
+        //                                          "erguno",
+        //                                          "begum142088", 0);
 
 
-//            IsEmri Isemri = default(IsEmri);
-//            Isemri = kernel.yeniIsEmri(sirket);
-//            Isemri.kayitOku(TOkumaTipi.otSon);
-//            Cari cari = default(Cari);
-//            cari = kernel.yeniCari(sirket);
+        //            IsEmri Isemri = default(IsEmri);
+        //            Isemri = kernel.yeniIsEmri(sirket);
+        //            Isemri.kayitOku(TOkumaTipi.otSon);
+        //            Cari cari = default(Cari);
+        //            cari = kernel.yeniCari(sirket);
 
-//            IsEmri Isemri = default(IsEmri);
-//            Isemri = kernel.yeniIsEmri(sirket);
-//            Isemri.kayitOku(TOkumaTipi.otSon);
-//            Cari cari= default(Cari);
-//            cari = kernel.yeniCari(sirket);
-            
-//            CariRiskBilgi risk=default(CariRiskBilgi);
-//            cari.kayitOku(TOkumaTipi.otAc, "");
-//            {
-//                cari.kayitOku(TOkumaTipi.otIlk);
-//                double v=risk.Irsaliye;
-//            };
-//>>>>>>> 583f979c8b4f162108744191180e5cc5f2f95024
-            
-//            //CariRiskBilgi risk=default(CariRiskBilgi);
-//            //cari.kayitOku(TOkumaTipi.otAc, "");
-//            //{
-//            //    cari.kayitOku(TOkumaTipi.otIlk);
-//            //    double v=risk.Irsaliye;
-//            //};
-            
-//            //Isemri.IsEmriNo = IsEmriModel[0].ISEMRINO;
-//            ////Isemri.Tarih = Convert.ToDateTime(isemri.TARIH);
-//            //Isemri.ReceteSaklansin = true;
-//            //Isemri.RezervasyonDurumu = TRezervasyonDurumu.rdYeni;
-            
-//            //Isemri.StokKodu = IsEmriModel[0].STOK_KODU;
-//            //Isemri.Kapali = false;
-//            //Isemri.Miktar = IsEmriModel[0].MIKTAR;
-//            //Isemri.Aciklama = IsEmriModel[0].ADET;
-//            //Isemri.SeriNo2 = IsEmriModel[0].GENISLIK;
-//            //Isemri.DepoKodu =0;
-//            //Isemri.CikisDepoKodu = IsEmriModel[0].DEPOKODU;
-//            //Isemri.ProjeKodu = "1";
-            
-//            //Isemri.kayitYeni();
+        //            IsEmri Isemri = default(IsEmri);
+        //            Isemri = kernel.yeniIsEmri(sirket);
+        //            Isemri.kayitOku(TOkumaTipi.otSon);
+        //            Cari cari= default(Cari);
+        //            cari = kernel.yeniCari(sirket);
 
-//            //var e = IsEmriModel;
-          
-//        }
+        //            CariRiskBilgi risk=default(CariRiskBilgi);
+        //            cari.kayitOku(TOkumaTipi.otAc, "");
+        //            {
+        //                cari.kayitOku(TOkumaTipi.otIlk);
+        //                double v=risk.Irsaliye;
+        //            };
+        //>>>>>>> 583f979c8b4f162108744191180e5cc5f2f95024
+
+        //            //CariRiskBilgi risk=default(CariRiskBilgi);
+        //            //cari.kayitOku(TOkumaTipi.otAc, "");
+        //            //{
+        //            //    cari.kayitOku(TOkumaTipi.otIlk);
+        //            //    double v=risk.Irsaliye;
+        //            //};
+
+        //            //Isemri.IsEmriNo = IsEmriModel[0].ISEMRINO;
+        //            ////Isemri.Tarih = Convert.ToDateTime(isemri.TARIH);
+        //            //Isemri.ReceteSaklansin = true;
+        //            //Isemri.RezervasyonDurumu = TRezervasyonDurumu.rdYeni;
+
+        //            //Isemri.StokKodu = IsEmriModel[0].STOK_KODU;
+        //            //Isemri.Kapali = false;
+        //            //Isemri.Miktar = IsEmriModel[0].MIKTAR;
+        //            //Isemri.Aciklama = IsEmriModel[0].ADET;
+        //            //Isemri.SeriNo2 = IsEmriModel[0].GENISLIK;
+        //            //Isemri.DepoKodu =0;
+        //            //Isemri.CikisDepoKodu = IsEmriModel[0].DEPOKODU;
+        //            //Isemri.ProjeKodu = "1";
+
+        //            //Isemri.kayitYeni();
+
+        //            //var e = IsEmriModel;
+
+        //        }
         public class IsEmriModel1
         {
             public string ISEMRINO { get; set; }

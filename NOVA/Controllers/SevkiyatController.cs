@@ -127,6 +127,15 @@ namespace NOVA.Controllers
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (puantaj != true)
             {
                 ViewBag.Puantaj = "none";
@@ -512,6 +521,15 @@ namespace NOVA.Controllers
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (puantaj != true)
             {
                 ViewBag.Puantaj = "none";

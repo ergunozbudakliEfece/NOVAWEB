@@ -664,7 +664,7 @@ namespace NOVA.Controllers
 
 
 
-            var apiUrl = "http://192.168.2.13:83/api/user/" + GetUserByMail(Session["Mail"].ToString()).USER_ID.ToInt();
+            var apiUrl = "http://192.168.2.13:83/api/user/" + GetUserByMail(Session["Mail"].ToString()).USER_ID;
 
 
             var httpClient = new System.Net.Http.HttpClient();

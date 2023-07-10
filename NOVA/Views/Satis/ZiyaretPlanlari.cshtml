@@ -215,11 +215,16 @@
                                     mus3.append(st);
                                     mus4.append(st1);
                                 }
-                                getRandevuAsync()
+                                var id = null;
+                                var url = "http://192.168.2.13:83/api/user/name/" + value;
+                                $.getJSON(url, function (data) {
+                                    id = data[0].USER_ID;
+                                }).done(function () {
+                                    getRandevuAsync()
                                     .then(function (result) {
                                         var musteriler = JSON.parse(data).filter(x => x.PLASIYER == value);
                                         calendar.removeAllEvents();
-                                        var d = JSON.parse(result);
+                                        var d = JSON.parse(result).filter(x => x.KAYIT_YAPAN_KULLANICI_ID === id);
                                         for (let i = 0; i < musteriler.length; i++) {
                                             var musid = d.filter(x => x.MUSTERI_ID == musteriler[i].MUSTERI_ID);
                                             if (musid.length > 0) {
@@ -264,10 +269,6 @@
 
 
                                         }
-
-
-
-
 
                                     }).then(function () {
                                         $('#editbutton').show();
@@ -368,6 +369,8 @@
                                         }
 
                                     })
+                                })
+
                             })
                         }
                     </script>
@@ -861,8 +864,10 @@
                 return data;
         }
         async function getRandevuAsync() {
+            $("#content").show();
                 let response = await fetch(`@Url.Action("GetRandevu","Satis")`);
-                let data = await response.json()
+            let data = await response.json()
+            $("#content").hide();
                 return data;
         }
 
@@ -871,6 +876,7 @@
             getMusterilerAsync().then(function (data) {
                 getRandevuAsync()
                     .then(function (result) {
+                        
                         var musteriler = JSON.parse(data).filter(x=>x.PLASIYER==username);
                         calendar.removeAllEvents();
                         var d = JSON.parse(result);

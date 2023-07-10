@@ -36,6 +36,16 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using Workbook = DocumentFormat.OpenXml.Spreadsheet.Workbook;
 using DocumentFormat.OpenXml.Packaging;
 using static NOVA.Controllers.LoginController;
+using DocumentFormat.OpenXml.Office2016.Drawing.Command;
+using System.Threading;
+using System.Web.Http;
+using System.Net.Http.Headers;
+using iTextSharp.text.html.simpleparser;
+using Microsoft.AspNetCore.Html;
+using DocumentFormat.OpenXml.Bibliography;
+using System.Globalization;
+using NetOpenX50;
+using System.Runtime.InteropServices;
 
 namespace NOVA.Controllers
 {
@@ -155,6 +165,15 @@ namespace NOVA.Controllers
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (puantaj != true)
             {
                 ViewBag.Puantaj = "none";
@@ -424,6 +443,395 @@ namespace NOVA.Controllers
             
             return View();
         }
+        public ActionResult Tekliflerim()
+        {
+            var m = GetModules(39);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
+
+            if (Request.Cookies["Id"] == null)
+            {
+                FormsAuthentication.SignOut();
+                TempData["LOG"] = "ok";
+                return RedirectToAction("Login", "Login");
+            }
+
+
+            ViewBag.Page = 1;
+
+            var yetki = GetYetki();
+            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39);
+            if (yetkiKontrol.SELECT_AUTH != true)
+            {
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                //Kullanıcının en son logid si bulunur
+                string json1 = null;
+                LoginModel createdlog = null;
+                var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
+                Uri url1 = new Uri(apiUrl1);
+                WebClient client1 = new WebClient();
+                client1.Encoding = System.Text.Encoding.UTF8;
+
+                json1 = client1.DownloadString(url1);
+                JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                createdlog = ser1.Deserialize<LoginModel>(json1);
+                //Kullanıcının en son logid si bulunur
+                string json2 = null;
+                List<ExecModel> createdlog1 = null;
+                var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
+                Uri url2 = new Uri(apiUrl2);
+                WebClient client2 = new WebClient();
+                client2.Encoding = System.Text.Encoding.UTF8;
+
+                json2 = client2.DownloadString(url2);
+                JavaScriptSerializer ser2 = new JavaScriptSerializer();
+                createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+
+                if (createdlog1[0].SITUATION != false)
+                {
+                    LoginModel login = new LoginModel();
+                    login.LOG_ID = createdlog.LOG_ID;
+                    login.LAST_ACTIVITY = 39;
+                    var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                    var httpClientnew = new System.Net.Http.HttpClient();
+                    var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
+                    {
+                        Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                    };
+
+                    var responsenew = httpClientnew.SendAsync(requestnew);
+                }
+                else
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+
+
+
+            }
+
+            if (yetkiKontrol.UPDATE_AUTH == true)
+            {
+                ViewBag.Update = "Yetkili";
+            }
+
+            var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
+            var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
+            var yetkiKontrolUretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 3).USER_AUTH;
+            var yetkiKontrolSatinAlma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 4).USER_AUTH;
+            var yetkiKontrolFinans = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 5).USER_AUTH;
+            var yetkiKontrolMuhasebe = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 6).USER_AUTH;
+            var yetkiKontrol1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 9).USER_AUTH;
+            var kullaniciayar = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 10).USER_AUTH;
+            var kullaniciyetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 11).USER_AUTH;
+            var istatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 12).USER_AUTH;
+            var yetkiKontrolYonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 8).USER_AUTH;
+            var yetkiKontrolSube = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 15).USER_AUTH;
+            var yetkiKontrolSevkiyat = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 17).USER_AUTH;
+            var yetkiKontrolDetayliSip = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 16).USER_AUTH;
+            var yetkiKontrolSiparisRaporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 18).USER_AUTH;
+            var yetkidetaylisatinalma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 19).USER_AUTH;
+            var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
+            var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
+            var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
+            var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var ozelyetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 32).USER_AUTH;
+            var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Istatistik = "none";
+            }
+            else
+            {
+                ViewBag.Istatistik = "unset";
+            }
+            if (kuryetki != true)
+            {
+                ViewBag.DisplayKur = "none";
+            }
+            else
+            {
+                ViewBag.DisplayKur = "unset";
+            }
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
+
+
+            if (yonetimstok != true)
+            {
+                ViewBag.Stok = "none";
+            }
+            else
+            {
+                ViewBag.Stok = "unset";
+            }
+            ViewBag.OzelYetki = ozelyetki;
+            if (ziyaretplani != true)
+            {
+                ViewBag.DisplayZiyaretPlani = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretPlani = "unset";
+            }
+            if (musteriraporuozel != true)
+            {
+                ViewBag.DisplayMusteriOzel = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMusteriOzel = "unset";
+            }
+            if ((musteriraporu == true && musteriraporuozel == false) || (Request.Cookies["Id"].Value == "10001" || Request.Cookies["Id"].Value == "10002"))
+            {
+                ViewBag.DisplayMusteriRaporu = "unset";
+            }
+            else
+            {
+                ViewBag.DisplayMusteriRaporu = "none";
+
+            }
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
+            if (yetkifiyatsizstok != true)
+            {
+                ViewBag.DisplayFiyatsizStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatsizStok = "unset";
+            }
+            if (yetkifiyatlistok != true)
+            {
+                ViewBag.DisplayFiyatliStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatliStok = "unset";
+            }
+            if (yetkisaticisiparisi != true)
+            {
+                ViewBag.DisplaySaticiSiparisRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySaticiSiparisRaporu = "unset";
+            }
+            if (yetkidetaylisatinalma != true)
+            {
+                ViewBag.DisplaySatinAlmaRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatinAlmaRaporu = "unset";
+            }
+            if (yetkiKontrolSiparisRaporu != true)
+            {
+                ViewBag.DisplaySiparisRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySiparisRaporu = "unset";
+            }
+            if (yetkiKontrolSevkiyat != true)
+            {
+                ViewBag.DisplaySevkiyat = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySevkiyat = "unset";
+            }
+            if (yetkiKontrolDetayliSip != true)
+            {
+                ViewBag.DisplaySiparis = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySiparis = "unset";
+            }
+            if (yetkiKontrolSube != true)
+            {
+                ViewBag.Sube = "none";
+            }
+            else
+            {
+                ViewBag.Sube = "unset";
+            }
+            if (yetkiKontrolYonetim != true)
+            {
+                ViewBag.DisplayYonetim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayYonetim = "unset";
+            }
+            if (yetkiKontrolUretim != true)
+            {
+                ViewBag.DisplayUretim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayUretim = "unset";
+            }
+            if (yetkiKontrolSatinAlma != true)
+            {
+                ViewBag.DisplaySatinAlma = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatinAlma = "unset";
+            }
+            if (yetkiKontrolFinans != true)
+            {
+                ViewBag.DisplayFinans = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFinans = "unset";
+            }
+            if (yetkiKontrolMuhasebe != true)
+            {
+                ViewBag.DisplayMuhasebe = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMuhasebe = "unset";
+            }
+            if (yetkiKontrolStok != true)
+            {
+                ViewBag.DisplayStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayStok = "unset";
+            }
+            if (yetkiKontrolSatis != true)
+            {
+                ViewBag.DisplaySatis = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatis = "unset";
+            }
+            if (yetkiKontrol1 != true)
+            {
+                ViewBag.Display = "none";
+            }
+            else
+            {
+                ViewBag.Display = "unset";
+            }
+            if (kullaniciayar != true)
+            {
+                ViewBag.Display1 = "none";
+            }
+            else
+            {
+                ViewBag.Display1 = "unset";
+            }
+            if (kullaniciyetki != true)
+            {
+                ViewBag.Display2 = "none";
+            }
+            else
+            {
+                ViewBag.Display2 = "unset";
+            }
+            if (istatistik != true)
+            {
+                ViewBag.Display3 = "none";
+            }
+            else
+            {
+                ViewBag.Display3 = "unset";
+            }
+            var ik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 7).USER_AUTH;
+            if (ik != true)
+            {
+                ViewBag.Display4 = "none";
+            }
+            else
+            {
+                ViewBag.Display4 = "unset";
+            }
+            var ik1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 13).USER_AUTH;
+            if (ik1 != true)
+            {
+                ViewBag.Display5 = "none";
+            }
+            else
+            {
+                ViewBag.Display5 = "unset";
+            }
+            var ik2 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 14).USER_AUTH;
+            if (ik2 != true)
+            {
+                ViewBag.Display6 = "none";
+            }
+            else
+            {
+                ViewBag.Display6 = "unset";
+            }
+
+
+
+
+            return View();
+        }
+
         public ActionResult FiyatYonetimi()
         {
             var m = GetModules(34);
@@ -534,6 +942,15 @@ namespace NOVA.Controllers
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (puantaj != true)
             {
                 ViewBag.Puantaj = "none";
@@ -931,6 +1348,15 @@ namespace NOVA.Controllers
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (puantaj != true)
             {
                 ViewBag.Puantaj = "none";
@@ -1322,6 +1748,15 @@ namespace NOVA.Controllers
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (puantaj != true)
             {
                 ViewBag.Puantaj = "none";
@@ -1587,7 +2022,776 @@ namespace NOVA.Controllers
         }
        public ActionResult Teklif()
         {
+            var m = GetModules(39);
+            if (m[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
+
+            if (Request.Cookies["Id"] == null)
+            {
+                FormsAuthentication.SignOut();
+                TempData["LOG"] = "ok";
+                return RedirectToAction("Login", "Login");
+            }
+
+
+            ViewBag.Page = 1;
+
+            var yetki = GetYetki();
+            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39);
+            if (yetkiKontrol.SELECT_AUTH != true)
+            {
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                //Kullanıcının en son logid si bulunur
+                string json1 = null;
+                LoginModel createdlog = null;
+                var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
+                Uri url1 = new Uri(apiUrl1);
+                WebClient client1 = new WebClient();
+                client1.Encoding = System.Text.Encoding.UTF8;
+
+                json1 = client1.DownloadString(url1);
+                JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                createdlog = ser1.Deserialize<LoginModel>(json1);
+                //Kullanıcının en son logid si bulunur
+                string json2 = null;
+                List<ExecModel> createdlog1 = null;
+                var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
+                Uri url2 = new Uri(apiUrl2);
+                WebClient client2 = new WebClient();
+                client2.Encoding = System.Text.Encoding.UTF8;
+
+                json2 = client2.DownloadString(url2);
+                JavaScriptSerializer ser2 = new JavaScriptSerializer();
+                createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+
+                if (createdlog1[0].SITUATION != false)
+                {
+                    LoginModel login = new LoginModel();
+                    login.LOG_ID = createdlog.LOG_ID;
+                    login.LAST_ACTIVITY = 39;
+                    var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                    var httpClientnew = new System.Net.Http.HttpClient();
+                    var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
+                    {
+                        Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                    };
+
+                    var responsenew = httpClientnew.SendAsync(requestnew);
+                }
+                else
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+
+
+
+            }
+
+            if (yetkiKontrol.UPDATE_AUTH == true)
+            {
+                ViewBag.Update = "Yetkili";
+            }
+
+            var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
+            var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
+            var yetkiKontrolUretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 3).USER_AUTH;
+            var yetkiKontrolSatinAlma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 4).USER_AUTH;
+            var yetkiKontrolFinans = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 5).USER_AUTH;
+            var yetkiKontrolMuhasebe = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 6).USER_AUTH;
+            var yetkiKontrol1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 9).USER_AUTH;
+            var kullaniciayar = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 10).USER_AUTH;
+            var kullaniciyetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 11).USER_AUTH;
+            var istatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 12).USER_AUTH;
+            var yetkiKontrolYonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 8).USER_AUTH;
+            var yetkiKontrolSube = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 15).USER_AUTH;
+            var yetkiKontrolSevkiyat = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 17).USER_AUTH;
+            var yetkiKontrolDetayliSip = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 16).USER_AUTH;
+            var yetkiKontrolSiparisRaporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 18).USER_AUTH;
+            var yetkidetaylisatinalma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 19).USER_AUTH;
+            var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
+            var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
+            var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
+            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
+            var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var ozelyetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 32).USER_AUTH;
+            var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
+            var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
+            var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
+            if (puantaj != true)
+            {
+                ViewBag.Puantaj = "none";
+            }
+            else
+            {
+                ViewBag.Puantaj = "unset";
+            }
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Istatistik = "none";
+            }
+            else
+            {
+                ViewBag.Istatistik = "unset";
+            }
+            if (kuryetki != true)
+            {
+                ViewBag.DisplayKur = "none";
+            }
+            else
+            {
+                ViewBag.DisplayKur = "unset";
+            }
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
+
+
+            if (yonetimstok != true)
+            {
+                ViewBag.Stok = "none";
+            }
+            else
+            {
+                ViewBag.Stok = "unset";
+            }
+            ViewBag.OzelYetki = ozelyetki;
+            if (ziyaretplani != true)
+            {
+                ViewBag.DisplayZiyaretPlani = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretPlani = "unset";
+            }
+            if (musteriraporuozel != true)
+            {
+                ViewBag.DisplayMusteriOzel = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMusteriOzel = "unset";
+            }
+            if ((musteriraporu == true && musteriraporuozel == false) || (Request.Cookies["Id"].Value == "10001" || Request.Cookies["Id"].Value == "10002"))
+            {
+                ViewBag.DisplayMusteriRaporu = "unset";
+            }
+            else
+            {
+                ViewBag.DisplayMusteriRaporu = "none";
+
+            }
+            if (ziyaretkaydi != true)
+            {
+                ViewBag.DisplayZiyaretKaydi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretKaydi = "unset";
+            }
+            if (yetkifiyatsizstok != true)
+            {
+                ViewBag.DisplayFiyatsizStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatsizStok = "unset";
+            }
+            if (yetkifiyatlistok != true)
+            {
+                ViewBag.DisplayFiyatliStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatliStok = "unset";
+            }
+            if (yetkisaticisiparisi != true)
+            {
+                ViewBag.DisplaySaticiSiparisRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySaticiSiparisRaporu = "unset";
+            }
+            if (yetkidetaylisatinalma != true)
+            {
+                ViewBag.DisplaySatinAlmaRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatinAlmaRaporu = "unset";
+            }
+            if (yetkiKontrolSiparisRaporu != true)
+            {
+                ViewBag.DisplaySiparisRaporu = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySiparisRaporu = "unset";
+            }
+            if (yetkiKontrolSevkiyat != true)
+            {
+                ViewBag.DisplaySevkiyat = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySevkiyat = "unset";
+            }
+            if (yetkiKontrolDetayliSip != true)
+            {
+                ViewBag.DisplaySiparis = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySiparis = "unset";
+            }
+            if (yetkiKontrolSube != true)
+            {
+                ViewBag.Sube = "none";
+            }
+            else
+            {
+                ViewBag.Sube = "unset";
+            }
+            if (yetkiKontrolYonetim != true)
+            {
+                ViewBag.DisplayYonetim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayYonetim = "unset";
+            }
+            if (yetkiKontrolUretim != true)
+            {
+                ViewBag.DisplayUretim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayUretim = "unset";
+            }
+            if (yetkiKontrolSatinAlma != true)
+            {
+                ViewBag.DisplaySatinAlma = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatinAlma = "unset";
+            }
+            if (yetkiKontrolFinans != true)
+            {
+                ViewBag.DisplayFinans = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFinans = "unset";
+            }
+            if (yetkiKontrolMuhasebe != true)
+            {
+                ViewBag.DisplayMuhasebe = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMuhasebe = "unset";
+            }
+            if (yetkiKontrolStok != true)
+            {
+                ViewBag.DisplayStok = "none";
+            }
+            else
+            {
+                ViewBag.DisplayStok = "unset";
+            }
+            if (yetkiKontrolSatis != true)
+            {
+                ViewBag.DisplaySatis = "none";
+            }
+            else
+            {
+                ViewBag.DisplaySatis = "unset";
+            }
+            if (yetkiKontrol1 != true)
+            {
+                ViewBag.Display = "none";
+            }
+            else
+            {
+                ViewBag.Display = "unset";
+            }
+            if (kullaniciayar != true)
+            {
+                ViewBag.Display1 = "none";
+            }
+            else
+            {
+                ViewBag.Display1 = "unset";
+            }
+            if (kullaniciyetki != true)
+            {
+                ViewBag.Display2 = "none";
+            }
+            else
+            {
+                ViewBag.Display2 = "unset";
+            }
+            if (istatistik != true)
+            {
+                ViewBag.Display3 = "none";
+            }
+            else
+            {
+                ViewBag.Display3 = "unset";
+            }
+            var ik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 7).USER_AUTH;
+            if (ik != true)
+            {
+                ViewBag.Display4 = "none";
+            }
+            else
+            {
+                ViewBag.Display4 = "unset";
+            }
+            var ik1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 13).USER_AUTH;
+            if (ik1 != true)
+            {
+                ViewBag.Display5 = "none";
+            }
+            else
+            {
+                ViewBag.Display5 = "unset";
+            }
+            var ik2 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 14).USER_AUTH;
+            if (ik2 != true)
+            {
+                ViewBag.Display6 = "none";
+            }
+            else
+            {
+                ViewBag.Display6 = "unset";
+            }
+
+
+
+
             return View();
+        }
+        public void CreatePdf(string carikod, string cariAd, string odeme, string teklif, string plasiyer, string gsm, string mail, string adres, string geneltoplam, string tevkifat, string bruttop, string isktop, string kdv, string dovizadi, List<TableModel> input)
+        {
+            CreatePdfs(carikod, cariAd, odeme, teklif, plasiyer, gsm, mail, adres, geneltoplam, tevkifat, bruttop, isktop, kdv, dovizadi, input);
+        }
+        public void  CreatePdfs(string carikod,string cariAd,string odeme, string teklif, string plasiyer, string gsm, string mail,string adres,string geneltoplam, string tevkifat,string bruttop,string isktop,string kdv,string dovizadi,List<TableModel> input)
+        {
+            string pdfpath = Server.MapPath("PDF");
+
+            string imagepath = Server.MapPath("Content");
+            iTextSharp.text.Document document = new iTextSharp.text.Document(PageSize.A4, 10f,10f,10f,10f);
+            iTextSharp.text.pdf.BaseFont STF_Helvetica_Turkish = iTextSharp.text.pdf.BaseFont.CreateFont("Helvetica", "CP1254", iTextSharp.text.pdf.BaseFont.NOT_EMBEDDED);
+
+            iTextSharp.text.Font fontNormal = new iTextSharp.text.Font(STF_Helvetica_Turkish, 8, iTextSharp.text.Font.NORMAL);
+            var file = new FileStream(pdfpath + teklif + ".pdf", FileMode.Create);
+            PdfWriter writer = PdfWriter.GetInstance(document,file);
+
+            document.Open();
+            iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(imagepath + "/teklif.png");
+            png.ScaleToFit(3500,850);
+            png.Alignment = iTextSharp.text.Image.UNDERLYING;
+
+            png.SetAbsolutePosition(0, 0);
+            // Belgeye içerik eklemek
+            document.Add(png);
+            PdfContentByte cb = writer.DirectContent;
+            ColumnText ct = new ColumnText(cb);
+            ct.SetSimpleColumn(new Phrase(new Chunk(carikod+"\n"+cariAd, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 9, iTextSharp.text.Font.NORMAL))),
+                              36, 720, 250, 50, 15, Element.ALIGN_LEFT);
+            ct.Go();
+            ColumnText ct2 = new ColumnText(cb);
+            ct2.SetSimpleColumn(new Phrase(new Chunk(adres, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 9, iTextSharp.text.Font.NORMAL))),
+                              285, 712, 600, 295, 10, Element.ALIGN_LEFT);
+            ct2.Go();
+            ColumnText ct3 = new ColumnText(cb);
+            ct3.SetSimpleColumn(new Phrase(new Chunk("ÖDEME ŞEKLİ: "+ odeme+ "\nVADE: ÖN PEŞİN\nTESLİMAT ŞEKLİ:\nTEKLİF GEÇERLİLİK SÜRESİ: 1 İŞ GÜNÜ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD))),
+                              36, 660, 600, 295, 10, Element.ALIGN_LEFT);
+            ct3.Go();
+            ColumnText ct4 = new ColumnText(cb);
+            ct4.SetSimpleColumn(new Phrase(new Chunk("TEKLİF NO: " + teklif + "\nTEKLİFİ HAZIRLAYAN: "+plasiyer+ "\nGSM: "+gsm+ "\nE-MAIL:"+mail, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD))),
+                              285, 660, 600, 295, 10, Element.ALIGN_LEFT);
+            ct4.Go();
+            PdfPTable table = new PdfPTable(8);
+            var firsth = new PdfPCell(new Phrase("MALZEME CİNSİ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            var firsth2 = new PdfPCell(new Phrase("MİKTAR 1", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            var firsth3 = new PdfPCell(new Phrase("MİKTAR 2", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            var firsth4 = new PdfPCell(new Phrase("DÖVİZ FİYAT", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            var firsth9 = new PdfPCell(new Phrase("DÖVİZ TUTAR", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            var firsth10 = new PdfPCell(new Phrase("BİRİM FİYAT", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            var firsth5 = new PdfPCell(new Phrase("İSK ( % )", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            var firsth6 = new PdfPCell(new Phrase("TUTAR", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            var firsth7 = new PdfPCell(new Phrase("TERMİN", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            var firsth8 = new PdfPCell(new Phrase("TESLİM YERİ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth.Border = Rectangle.NO_BORDER;
+            firsth.BorderWidthBottom = 1f;
+            firsth.HorizontalAlignment = Rectangle.ALIGN_LEFT;
+            table.AddCell(firsth);
+            firsth2.Border = Rectangle.NO_BORDER;
+            firsth2.BorderWidthBottom = 1f;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth2);
+            firsth3.Border = Rectangle.NO_BORDER;
+            firsth3.BorderWidthBottom = 1f;
+            firsth3.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth3);
+            firsth4.Border = Rectangle.NO_BORDER;
+            firsth4.BorderWidthBottom = 1f;
+            firsth4.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth4);
+            firsth5.Border = Rectangle.NO_BORDER;
+            firsth5.BorderWidthBottom = 1f;
+            firsth5.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth9);
+            firsth5.Border = Rectangle.NO_BORDER;
+            firsth5.BorderWidthBottom = 1f;
+            firsth5.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth10);
+            firsth5.Border = Rectangle.NO_BORDER;
+            firsth5.BorderWidthBottom = 1f;
+            firsth5.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth5);
+            firsth6.Border = Rectangle.NO_BORDER;
+            firsth6.BorderWidthBottom = 1f;
+            firsth6.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth6);
+            firsth7.Border = Rectangle.NO_BORDER;
+            firsth7.BorderWidthBottom = 1f;
+            firsth7.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth7);
+            firsth8.Border = Rectangle.NO_BORDER;
+            firsth8.BorderWidthBottom = 1f;
+            firsth8.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth8);
+            for (var i = 0; i < input.Count; i++)
+            {
+                firsth = new PdfPCell(new Phrase(input[i].STOK_ADI, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(input[i].MIKTAR1)) + " " + input[i].OLCUBR1, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth3 = (new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(input[i].MIKTAR2)) + " " + input[i].OLCUBR2, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL))));
+                firsth4 = (new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(input[i].STHAR_BF)) + " " + dovizadi, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL))));
+                firsth5 =new PdfPCell(new Phrase( (Double.Parse(input[i].STHAR_SATISK)*10)+" %", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth6 = new PdfPCell(new Phrase(String.Format("{0:N}", (100- input[i].STHAR_SATISK.ToDecimal()*10) * input[i].STHAR_BF.ToDecimal() / 100* input[i].MIKTAR1.ToDecimal())+" "+dovizadi, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth7 = new PdfPCell(new Phrase(input[i].TESLIM_TARIHI, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth8 = new PdfPCell(new Phrase(input[i].TESLIM_YERI, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth.Border = Rectangle.NO_BORDER;
+                firsth.HorizontalAlignment = Rectangle.ALIGN_LEFT;
+                table.AddCell(firsth);
+                firsth2.Border = Rectangle.NO_BORDER;
+                firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                table.AddCell(firsth2);
+                firsth3.Border = Rectangle.NO_BORDER;
+                firsth3.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                table.AddCell(firsth3);
+                firsth4.Border = Rectangle.NO_BORDER;
+                firsth4.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                table.AddCell(firsth4);
+                firsth5.Border = Rectangle.NO_BORDER;
+                firsth5.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                table.AddCell(firsth5);
+                firsth6.Border = Rectangle.NO_BORDER;
+                firsth6.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                table.AddCell(firsth6);
+                firsth7.Border = Rectangle.NO_BORDER;
+                firsth7.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                table.AddCell(firsth7);
+                firsth8.Border = Rectangle.NO_BORDER;
+                firsth8.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                table.AddCell(firsth8);
+            }
+            firsth = new PdfPCell(new Phrase("BRÜT TOPLAM : ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(bruttop.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth.Border = Rectangle.NO_BORDER;
+            firsth.Colspan = 7;
+            firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth);
+            firsth2.Border = Rectangle.NO_BORDER;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth2);
+            firsth = new PdfPCell(new Phrase("TOPLAM İSKONTO :", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(isktop.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth.Border = Rectangle.NO_BORDER;
+            firsth.Colspan = 7;
+            firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth);
+            firsth2.Border = Rectangle.NO_BORDER;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth2);
+            firsth = new PdfPCell(new Phrase("TOPLAM KDV : ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(kdv.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth.Border = Rectangle.NO_BORDER;
+            firsth.Colspan = 7;
+            firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth);
+            firsth2.Border = Rectangle.NO_BORDER;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth2);
+            firsth = new PdfPCell(new Phrase("TEVKİFAT (5/10) : ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(tevkifat.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth.Border = Rectangle.NO_BORDER;
+            firsth.Colspan=7;
+            firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth);
+            firsth2.Border = Rectangle.NO_BORDER;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth2);
+            firsth = new PdfPCell(new Phrase("GENEL TOPLAM : ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(geneltoplam.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
+            firsth.Border = Rectangle.NO_BORDER;
+            firsth.Colspan = 7;
+            firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth);
+            firsth2.Border = Rectangle.NO_BORDER;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            table.AddCell(firsth2);
+
+            ColumnText ct5 = new ColumnText(cb);
+            ct5.SetSimpleColumn(new Rectangle(0, 270, 600, 570));
+            ct5.AddElement(table);
+            ct5.Go();
+            // Belgeyi kapat
+            
+            //var s = ConvertToBase64(file);
+            
+            //MailMessage mmail = new MailMessage();
+
+            //var pdf = new Attachment(file, teklif+".pdf");
+            //mmail.Bcc.Add(Request.Cookies["Mail"].Value);
+            //mmail.From = new MailAddress("sistem@efecegalvaniz.com");
+            //mmail.Attachments.Add(pdf);
+            //mmail.Body = "";
+            //mmail.Subject = teklif;
+
+
+            //mmail.IsBodyHtml = true;
+
+            //SmtpClient smtp = new System.Net.Mail.SmtpClient();
+            //smtp.Host = "192.168.2.13";
+            //smtp.UseDefaultCredentials = true;
+
+            //smtp.Send(mmail);
+            document.Close();
+
+
+        }
+        public string ConvertToBase64(Stream stream)
+        {
+            if (stream is MemoryStream memoryStream)
+            {
+                return Convert.ToBase64String(memoryStream.ToArray());
+            }
+
+            var bytes = new Byte[(int)stream.Length];
+
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.Read(bytes, 0, (int)stream.Length);
+
+            return Convert.ToBase64String(bytes);
+        }
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult TeklifOlustur(TeklifUstModel ust)
+        {
+            Kernel kernel = new Kernel();
+            Sirket sirket = default(Sirket);
+            Fatura fatura = default(Fatura);
+            FatUst fatUst = default(FatUst);
+            FatKalem fatKalem = default(FatKalem);
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                                "TEST2022",
+                                                "TEMELSET",
+                                                "",
+                                                "nova",
+                                                "Efc@+180", 0);
+                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftSatTeklif);
+                fatUst = fatura.Ust();
+                fatUst.FATIRS_NO = ust.FATIRS_NO;
+                fatUst.CariKod = ust.CARI_KODU;
+                fatUst.Tarih = DateTime.Now;
+                fatUst.TIPI = TFaturaTipi.ft_YurtIci;
+                fatUst.PLA_KODU = ust.PLA_KODU;
+                fatUst.Proje_Kodu = ust.PROJE_KODU;
+                fatUst.KDV_DAHILMI = false;
+                fatUst.KOD1 = ust.KOD1;
+                fatUst.KOD2 = ust.KOD2;
+                fatUst.SIPARIS_TEST = DateTime.Now.AddMonths(1);
+                for (var i = 0; i < ust.KALEM.Count; i++)
+                {
+                    fatKalem = fatura.kalemYeni(ust.KALEM[i].STOK_KODU);
+                    fatKalem.DEPO_KODU = int.Parse(ust.KALEM[i].DEPO_KODU);
+                    fatKalem.STra_GCMIK = double.Parse(ust.KALEM[i].MIKTAR1);
+                    fatKalem.STra_GCMIK2 = double.Parse(ust.KALEM[i].MIKTAR2);
+                    fatKalem.STra_NF = double.Parse(ust.KALEM[i].NF);
+                    fatKalem.STra_BF = double.Parse(ust.KALEM[i].BF);
+                    fatKalem.STra_SatIsk = double.Parse(ust.KALEM[i].ISKONTO);
+                    fatKalem.ProjeKodu = ust.PROJE_KODU;
+                    fatKalem.STra_DOVTIP = int.Parse(ust.KALEM[i].DOVTIP);
+                    fatKalem.SatirBaziAcik[1] = ust.KALEM[i].KUR;
+                    fatKalem.STra_testar = DateTime.Now.AddMonths(1);
+                }
+
+                fatura.kayitYeni();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(fatKalem);
+                Marshal.ReleaseComObject(fatUst);
+                Marshal.ReleaseComObject(fatura);
+                Marshal.ReleaseComObject(sirket);
+                kernel.FreeNetsisLibrary();
+                Marshal.ReleaseComObject(kernel);
+            }
+
+            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+        }
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult TeklifDuzelt(TeklifUstModel ust)
+        {
+
+
+            Kernel kernel = new Kernel();
+            Sirket sirket = default(Sirket);
+            Fatura fatura = default(Fatura);
+            FatUst fatUst = default(FatUst);
+            FatKalem fatKalem = default(FatKalem);
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                                 "TEST2022",
+                                                 "TEMELSET",
+                                                 "",
+                                                 "nova",
+                                                 "Efc@+180", 0);
+                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftSatTeklif);
+                fatura.OkuUst(ust.FATIRS_NO, ust.CARI_KODU);
+                fatura.kayitSil();
+                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftSatTeklif);
+                fatUst = fatura.Ust();
+                fatUst.FATIRS_NO = ust.FATIRS_NO;
+                fatUst.CariKod = ust.CARI_KODU;
+                fatUst.Tarih = DateTime.Now;
+                fatUst.TIPI = TFaturaTipi.ft_YurtIci;
+                fatUst.PLA_KODU = ust.PLA_KODU;
+                fatUst.Proje_Kodu = ust.PROJE_KODU;
+                fatUst.KDV_DAHILMI = false;
+                fatUst.KOD1 = ust.KOD1;
+                fatUst.KOD2 = ust.KOD2;
+                fatUst.SIPARIS_TEST = DateTime.Now.AddMonths(1);
+                for (var i = 0; i < ust.KALEM.Count; i++)
+                {
+                    fatKalem = fatura.kalemYeni(ust.KALEM[i].STOK_KODU);
+                    fatKalem.DEPO_KODU = int.Parse(ust.KALEM[i].DEPO_KODU);
+                    fatKalem.STra_GCMIK = double.Parse(ust.KALEM[i].MIKTAR1);
+                    fatKalem.STra_GCMIK2 = double.Parse(ust.KALEM[i].MIKTAR2);
+                    fatKalem.STra_NF = double.Parse(ust.KALEM[i].NF);
+                    fatKalem.STra_BF = double.Parse(ust.KALEM[i].BF);
+                    fatKalem.STra_SatIsk = double.Parse(ust.KALEM[i].ISKONTO);
+                    fatKalem.ProjeKodu = ust.PROJE_KODU;
+                    fatKalem.OBR1 = ust.KALEM[i].OLCUBR1;
+                    fatKalem.OBR2 = ust.KALEM[i].OLCUBR2;
+                    fatKalem.STra_DOVTIP = int.Parse(ust.KALEM[i].DOVTIP);
+                    fatKalem.SatirBaziAcik[1] = ust.KALEM[i].KUR;
+                    fatKalem.STra_testar = DateTime.Now.AddMonths(1);
+                }
+
+                fatura.kayitYeni();
+            }
+            catch (Exception e)
+            {
+                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(fatKalem);
+                Marshal.ReleaseComObject(fatUst);
+                Marshal.ReleaseComObject(fatura);
+                Marshal.ReleaseComObject(sirket);
+                kernel.FreeNetsisLibrary();
+                Marshal.ReleaseComObject(kernel);
+            }
+
+            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+        }
+        public class TeklifUstModel
+        {
+            public string FATIRS_NO { get; set; }
+            public string CARI_KODU { get; set; }
+            public string PLA_KODU { get; set; }
+            public string KOD2 { get; set; }
+            public string KOD1 { get; set; }
+            public string ACIKLAMA { get; set; }
+            public string PROJE_KODU { get; set; }
+            public string SEVK_YERI { get; set; }
+            public string TESLIMAT_SEKLI { get; set; }
+            public string GECERLILIK_SURESI { get; set; }
+            public string TAHSILAT_SEKLI { get; set; }
+            public List<TeklifKalemModel> KALEM { get; set; }
+        }
+
+        public class TeklifKalemModel
+        {
+            public string STOK_KODU { get; set; }
+            public string MIKTAR1 { get; set; }
+            public string MIKTAR2 { get; set; }
+            public string BF { get; set; }
+            public string NF { get; set; }
+            public string ISKONTO { get; set; }
+            public string DEPO_KODU { get; set; }
+            public string KUR { get; set; }
+            public string DOVTIP { get; set; }
+            public string OLCUBR1 { get; set; }
+            public string OLCUBR2 { get; set; }
+        }
+        public class TableModel
+        {
+            public string STOK_ADI { get; set; }
+            public string MIKTAR1 { get; set; }
+            public string OLCUBR1 { get; set; }
+            public string MIKTAR2 { get; set; }
+            public string OLCUBR2 { get; set; }
+            public string STHAR_SATISK { get; set; }
+            public string STHAR_BF { get; set; }
+            public string TESLIM_TARIHI { get; set; }
+            public string TESLIM_YERI { get; set; }
         }
         public class StokListeLocal
         {
@@ -1735,6 +2939,15 @@ namespace NOVA.Controllers
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (puantaj != true)
             {
                 ViewBag.Puantaj = "none";
@@ -2023,6 +3236,15 @@ namespace NOVA.Controllers
             var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (ziyaretplani != true)
             {
                 ViewBag.DisplayZiyaretPlani = "none";
@@ -2290,6 +3512,15 @@ namespace NOVA.Controllers
             var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (musteriraporuozel != true)
             {
                 ViewBag.DisplayMusteriOzel = "none";
@@ -2843,7 +4074,7 @@ namespace NOVA.Controllers
         public async Task<JsonResult> RandevuSil(MusteriRandevu m)
         {
             MusteriUrunModel musteri = new MusteriUrunModel();
-            var httpClient = new HttpClient();
+            var httpClient = new System.Net.Http.HttpClient();
             HttpRequestMessage request;
             HttpResponseMessage response;
 
@@ -3345,10 +4576,29 @@ namespace NOVA.Controllers
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
             var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
             var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            var tekliflerim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 40).USER_AUTH;
+            if (tekliflerim != true)
+            {
+                ViewBag.DisplayTekliflerim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTekliflerim = "unset";
+            }
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (puantaj != true)
             {
                 ViewBag.Puantaj = "none";
@@ -3365,7 +4615,14 @@ namespace NOVA.Controllers
             {
                 ViewBag.Istatistik = "unset";
             }
-
+            if (ziyaretplani != true)
+            {
+                ViewBag.DisplayZiyaretPlani = "none";
+            }
+            else
+            {
+                ViewBag.DisplayZiyaretPlani = "unset";
+            }
             if (fiyatyonetim != true)
             {
                 ViewBag.FiyatYonetim = "none";
@@ -3571,6 +4828,11 @@ namespace NOVA.Controllers
             {
                 ViewBag.Display6 = "unset";
             }
+            if (yetkifiyatlistok == true)
+            {
+                ViewBag.OzelYetki = "Yetkili";
+            }
+            
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
             FileInfo fi = new FileInfo("\\\\192.168.2.3\\ortak\\EFECE_LISTELER\\NOVA\\NOVA_EFECE_HAMMADDE_LISTESI.xlsx");
             var created = fi.CreationTime;

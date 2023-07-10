@@ -67,10 +67,9 @@ namespace NOVA.Controllers
                 Uri url1 = new Uri(apiUrl1);
                 WebClient client1 = new WebClient();
                 client1.Encoding = System.Text.Encoding.UTF8;
-              
-                    json1 = client1.DownloadString(url1);
-                    JavaScriptSerializer ser1 = new JavaScriptSerializer();
-                    createdlog = ser1.Deserialize<LoginModel>(json1);
+               json1 = client1.DownloadString(url1);
+               JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                createdlog = ser1.Deserialize<LoginModel>(json1);
 
               
                 
@@ -166,6 +165,24 @@ namespace NOVA.Controllers
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
             var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
+            var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            var tekliflerim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 40).USER_AUTH;
+            if (tekliflerim != true)
+            {
+                ViewBag.DisplayTekliflerim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTekliflerim = "unset";
+            }
+            if (teklif != true)
+            {
+                ViewBag.DisplayTeklif = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTeklif = "unset";
+            }
             if (puantaj != true)
             {
                 ViewBag.Puantaj = "none";

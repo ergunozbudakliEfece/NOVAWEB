@@ -8473,7 +8473,7 @@ $.extend( Datepicker.prototype, {
 			iValue = 0,
 			shortYearCutoffTemp = ( settings ? settings.shortYearCutoff : null ) || this._defaults.shortYearCutoff,
 			shortYearCutoff = ( typeof shortYearCutoffTemp !== "string" ? shortYearCutoffTemp :
-				new Date().getFullYear() % 100 + parseInt( shortYearCutoffTemp, 10 ) ),
+				2022 % 100 + parseInt( shortYearCutoffTemp, 10 ) ),
 			dayNamesShort = ( settings ? settings.dayNamesShort : null ) || this._defaults.dayNamesShort,
 			dayNames = ( settings ? settings.dayNames : null ) || this._defaults.dayNames,
 			monthNamesShort = ( settings ? settings.monthNamesShort : null ) || this._defaults.monthNamesShort,
@@ -8601,9 +8601,9 @@ $.extend( Datepicker.prototype, {
 		}
 
 		if ( year === -1 ) {
-			year = new Date().getFullYear();
+			year = 2022;
 		} else if ( year < 100 ) {
-			year += new Date().getFullYear() - new Date().getFullYear() % 100 +
+			year += 2022 - 2022 % 100 +
 				( year <= shortYearCutoff ? 0 : -100 );
 		}
 
@@ -9281,7 +9281,7 @@ $.extend( Datepicker.prototype, {
 
 				// determine range of years to display
 				years = this._get( inst, "yearRange" ).split( ":" );
-				thisYear = new Date().getFullYear();
+				thisYear = 2022;
 				determineYear = function( value ) {
 					var year = ( value.match( /c[+\-].*/ ) ? drawYear + parseInt( value.substring( 1 ), 10 ) :
 						( value.match( /[+\-].*/ ) ? thisYear + parseInt( value, 10 ) :
@@ -9388,7 +9388,7 @@ $.extend( Datepicker.prototype, {
 			years = this._get( inst, "yearRange" );
 			if ( years ) {
 				yearSplit = years.split( ":" );
-				currentYear = new Date().getFullYear();
+				currentYear = 2022;
 				minYear = parseInt( yearSplit[ 0 ], 10 );
 				maxYear = parseInt( yearSplit[ 1 ], 10 );
 				if ( yearSplit[ 0 ].match( /[+\-].*/ ) ) {
@@ -9409,7 +9409,7 @@ $.extend( Datepicker.prototype, {
 	_getFormatConfig: function( inst ) {
 		var shortYearCutoff = this._get( inst, "shortYearCutoff" );
 		shortYearCutoff = ( typeof shortYearCutoff !== "string" ? shortYearCutoff :
-			new Date().getFullYear() % 100 + parseInt( shortYearCutoff, 10 ) );
+			2022 % 100 + parseInt( shortYearCutoff, 10 ) );
 		return { shortYearCutoff: shortYearCutoff,
 			dayNamesShort: this._get( inst, "dayNamesShort" ), dayNames: this._get( inst, "dayNames" ),
 			monthNamesShort: this._get( inst, "monthNamesShort" ), monthNames: this._get( inst, "monthNames" ) };

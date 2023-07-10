@@ -159,15 +159,22 @@
             document.body.style.cursor = 'default';
         }
 
-       var userData = [];
+       @*var userData = [];
        userData.push({ USERID: "@Request.Cookies["UserId"].Value", USERNAME: "@Request.Cookies["UserName"].Value", PLATFORM: "@Request.Cookies["Platform"].Value", LASTACTIVETIME: "@DateTime.Now.ToString()" });
-       localStorage.userlist = JSON.stringify(userData[0]);
+       localStorage.userlist = JSON.stringify(userData[0]);*@
 
     </script>
     @{ var seriler = ViewBag.Seriler;}
+    <div id="divPartial" style="display:none">
+        @Html.Partial("_Layout_menu")
+    </div>
+    <div id="divPartial2" style="display:none">
+        @Html.Partial("_Layout_menu2")
+    </div>
     <div class="authentication-wrapper authentication-basic container-fluid">
         <div class="authentication-inner" id="body">
-
+           
+            
             <div class="card mt-2">
 
 
@@ -781,6 +788,7 @@
                                             old2 = JSON.parse(localStorage.list2);
 
                                         }
+                                       
                                         for (var i = 1; i < rows1.length; i++) {
 
                                             var val = rows1[i].getElementsByTagName("input")[1].value;
@@ -791,7 +799,7 @@
                                             var ilk2 = "";
                                             var or2 = "";
                                             var so2 = "";
-
+                                           
 
                                             if (((parseInt(or) + 1).toString()).length == 1) {
                                                 or = "0000" + (parseInt(or)+1);
@@ -806,14 +814,16 @@
                                             }else {
                                                 or = (parseInt(or) + 1).toString();
                                             }
-
+                                           
                                             var jsonObjSeri = @Html.Raw(Json.Encode(ViewBag.Seriler));
                                             var jsonObjSip = @Html.Raw(Json.Encode(ViewBag.Cariler));
                                             var isno = rows1[i].getElementsByTagName("input")[1].value;
                                             var stokadi = rows1[i].getElementsByTagName("select")[1].value;
                                             var urunkodu = document.getElementById("seri").value;
+                                           
                                             var newser = null
                                             if (old == null) {
+                                               
                                                 newser = (((jsonObjSeri.filter(x => x.SERI_NO == (document.getElementById("seri").value).substring(8)))[0].SERI_SIRA) + i - 1).toString();
                                                 if (newser.length == 1) {
                                                     newser = "00" + newser;
@@ -850,7 +860,7 @@
                                                 }
                                             }
 
-
+                                            
 
                                             var urunkodunew = "EFC22" + newser + (document.getElementById("seri").value).substring(8);
 
@@ -871,12 +881,8 @@
                                             }
                                             var refadet = rows1[i].getElementsByTagName("input")[5].value;
                                             var refagirlik = rows1[i].getElementsByTagName("input")[6].value;
-                                            var adet = "";
-                                            if (rows1[i].getElementsByTagName("input")[5].value != "") {
-                                                adet = rows1[i].getElementsByTagName("input")[5].value;
-                                            } else {
-                                                adet = rows1[i].getElementsByTagName("input")[3].value;
-                                            }
+                                            var adet = rows1[i].getElementsByTagName("input")[3].value;
+                                            
 
                                             var siparisno = rows1[i].getElementsByTagName("select")[4].name.split(" ")[1];
                                             var agirlik =null;
@@ -889,7 +895,7 @@
                                                 }
 
                                             }
-
+                                           
                                             var musteri = rows1[i].getElementsByTagName("select")[rows1[i].getElementsByTagName("select").length-1].value;
                                             var stokolcu = null;
                                             if (rows1[i].getElementsByTagName("select")[3]) {
@@ -940,7 +946,7 @@
 
 
                                         }
-
+                                       
                                         var ta = document.getElementById("test");
                                         var ro = ta.getElementsByTagName("tr");
                                         var tp = 0;
@@ -952,6 +958,7 @@
                                         }
                                         var tpl = $.pivotUtilities.aggregatorTemplates;
                                         var takiplist = [];
+                                        
                                         function drawPivot() {
 
                                             $(function () {
@@ -1259,7 +1266,7 @@
             };
 
 
-
+       
 
 
 
@@ -2211,7 +2218,7 @@
 
 
                                 }
-                            
+
                             }
                         }
                         else if (i == 11) {
@@ -3088,6 +3095,7 @@ $(document).ready(function(){
     var tp = 0;
     var fireag = document.getElementById("fireagirligi1");
     var fireyuz = document.getElementById("fireyuzde1");
+    $("#makkodlari").select2();
     document.getElementById("test").getElementsByTagName("tbody")[0].onclick = function (e) {
         console.log(e.target.parentNode.rowIndex)
         console.log(e.target.innerHTML)
@@ -4177,6 +4185,12 @@ $(document).ready(function(){
 
         }
         $(document).ready(function () {
+            if ($(window).width() < 600) {
+                $("#divPartial2").show();
+            }
+            else {
+                $("#divPartial").show();
+            }
             $('.js-example-basic-single').select2({
                 tags: true
             }
