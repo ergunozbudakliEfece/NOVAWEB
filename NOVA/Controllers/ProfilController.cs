@@ -33,12 +33,13 @@ namespace NOVA.Controllers
             ViewBag.Id=Request.Cookies["Id"].Value.ToString();
             var yetki = GetYetki();
             var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
+
             var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
             var yetkiKontrolUretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 3).USER_AUTH;
             var yetkiKontrolSatinAlma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 4).USER_AUTH;
             var yetkiKontrolFinans = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 5).USER_AUTH;
             var yetkiKontrolMuhasebe = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 6).USER_AUTH;
-            var yetkiKontrol1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 9).USER_AUTH;
+            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 9).USER_AUTH;
             var kullaniciayar = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 10).USER_AUTH;
             var kullaniciyetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 11).USER_AUTH;
             var istatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 12).USER_AUTH;
@@ -47,17 +48,33 @@ namespace NOVA.Controllers
             var yetkiKontrolSevkiyat = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 17).USER_AUTH;
             var yetkiKontrolDetayliSip = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 16).USER_AUTH;
             var yetkiKontrolSiparisRaporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 18).USER_AUTH;
+            var yetkiKontrolIstatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 8).USER_AUTH;
             var yetkidetaylisatinalma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 19).USER_AUTH;
             var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
+            var isemrikayit = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 27).USER_AUTH;
+            var yetkianlikuretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 26).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
             var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var musteriraporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
             var musteriraporuozel = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31).USER_AUTH;
             var ziyaretplani = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
+            var yonetimstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33).USER_AUTH;
+            var fiyatyonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34).USER_AUTH;
+            var fiyatlistesi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35).USER_AUTH;
             var kuryetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 36).USER_AUTH;
+            var uygulamaistatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37).USER_AUTH;
             var puantaj = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38).USER_AUTH;
             var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
+            var tekliflerim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 40).USER_AUTH;
+            if (tekliflerim != true)
+            {
+                ViewBag.DisplayTekliflerim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayTekliflerim = "unset";
+            }
             if (teklif != true)
             {
                 ViewBag.DisplayTeklif = "none";
@@ -74,6 +91,14 @@ namespace NOVA.Controllers
             {
                 ViewBag.Puantaj = "unset";
             }
+            if (uygulamaistatistik != true)
+            {
+                ViewBag.Istatistik = "none";
+            }
+            else
+            {
+                ViewBag.Istatistik = "unset";
+            }
             if (kuryetki != true)
             {
                 ViewBag.DisplayKur = "none";
@@ -81,6 +106,30 @@ namespace NOVA.Controllers
             else
             {
                 ViewBag.DisplayKur = "unset";
+            }
+            if (fiyatlistesi != true)
+            {
+                ViewBag.DisplayFiyatListesi = "none";
+            }
+            else
+            {
+                ViewBag.DisplayFiyatListesi = "unset";
+            }
+            if (fiyatyonetim != true)
+            {
+                ViewBag.FiyatYonetim = "none";
+            }
+            else
+            {
+                ViewBag.FiyatYonetim = "unset";
+            }
+            if (yonetimstok != true)
+            {
+                ViewBag.Stok = "none";
+            }
+            else
+            {
+                ViewBag.Stok = "unset";
             }
             if (ziyaretplani != true)
             {
@@ -131,6 +180,22 @@ namespace NOVA.Controllers
             {
                 ViewBag.DisplayFiyatliStok = "unset";
             }
+            if (yetkianlikuretim != true)
+            {
+                ViewBag.DisplayAnlikUretim = "none";
+            }
+            else
+            {
+                ViewBag.DisplayAnlikUretim = "unset";
+            }
+            if (isemrikayit != true)
+            {
+                ViewBag.DisplayIsEmriKayit = "none";
+            }
+            else
+            {
+                ViewBag.DisplayIsEmriKayit = "unset";
+            }
             if (yetkisaticisiparisi != true)
             {
                 ViewBag.DisplaySaticiSiparisRaporu = "none";
@@ -146,6 +211,14 @@ namespace NOVA.Controllers
             else
             {
                 ViewBag.DisplaySatinAlmaRaporu = "unset";
+            }
+            if (yetkiKontrolIstatistik != true)
+            {
+                ViewBag.DisplayIstatistik = "none";
+            }
+            else
+            {
+                ViewBag.DisplayIstatistik = "unset";
             }
             if (yetkiKontrolSiparisRaporu != true)
             {
@@ -235,7 +308,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.DisplaySatis = "unset";
             }
-            if (yetkiKontrol1 != true)
+            if (yetkiKontrol != true)
             {
                 ViewBag.Display = "none";
             }
@@ -302,7 +375,7 @@ namespace NOVA.Controllers
             
                var  subject = "NOVA | Şifre Değişikliği";
             
-            var apiUrl = "http://192.168.2.13:83/api/user/link";
+            var apiUrl = "http://192.168.2.13:83/api/user/link/1";
 
             var httpClient = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
