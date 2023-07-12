@@ -114,6 +114,7 @@
     <div class="centercontent" id="content" style="display:none">
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
     </div>
+   
     <!-- Content -->
     @if (Session["AlertLogin"] != null)
     {
@@ -388,7 +389,7 @@
         </div>
     }
 
-
+   
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @if (ViewBag.Mesaj == "Hata")
     {
@@ -431,7 +432,15 @@
     <script type="text/javascript" async defer src="https://buttons.github.io/buttons.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            
+            var cc = @Html.Raw(Json.Encode(ViewBag.Info));
+            if(cc != null) {
+                Swal.fire({
+                    icon: 'success',
+                    title: cc,
+                });
+            }
+                
+
             $("#just_load_please").on("click", function (e) {
                 e.preventDefault();
                 $("#loadMe").modal({
