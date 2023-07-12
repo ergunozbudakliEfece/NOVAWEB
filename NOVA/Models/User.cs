@@ -7,7 +7,7 @@ namespace NOVA.Models
 {
     
 
-    public partial class User
+    public class User
     {
       
         public string USER_ID { get; set; }

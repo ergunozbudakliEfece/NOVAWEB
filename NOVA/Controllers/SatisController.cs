@@ -73,7 +73,7 @@ namespace NOVA.Controllers
           
             ViewBag.Page = 1;
 
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -461,7 +461,7 @@ namespace NOVA.Controllers
 
             ViewBag.Page = 1;
 
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -845,7 +845,7 @@ namespace NOVA.Controllers
                 TempData["LOG"] = "ok";
                 return RedirectToAction("Login", "Login");
             }
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 34);
             if (yetkiKontrol1.SELECT_AUTH != true)
             {
@@ -1251,7 +1251,7 @@ namespace NOVA.Controllers
                 TempData["LOG"] = "ok";
                 return RedirectToAction("Login", "Login");
             }
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 35);
             if (yetkiKontrol1.SELECT_AUTH != true)
             {
@@ -1655,7 +1655,7 @@ namespace NOVA.Controllers
             {
                 return RedirectToAction("Maintenance", "Home");
             }
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -2038,7 +2038,7 @@ namespace NOVA.Controllers
 
             ViewBag.Page = 1;
 
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -2845,7 +2845,7 @@ namespace NOVA.Controllers
                 TempData["LOG"] = "ok";
                 return RedirectToAction("Login", "Login");
             }
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30);
 
             if (yetkiKontrol.SELECT_AUTH != true)
@@ -3202,7 +3202,7 @@ namespace NOVA.Controllers
                 TempData["LOG"] = "ok";
                 return RedirectToAction("Login", "Login");
             }
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -3479,7 +3479,7 @@ namespace NOVA.Controllers
                 TempData["LOG"] = "ok";
                 return RedirectToAction("Login", "Login");
             }
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 31);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -4148,7 +4148,7 @@ namespace NOVA.Controllers
            
            
 
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 16);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -4493,7 +4493,7 @@ namespace NOVA.Controllers
                 return RedirectToAction("Login", "Login");
             }
             
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -4853,7 +4853,7 @@ namespace NOVA.Controllers
             {
                 return RedirectToAction("Maintenance", "Home");
             }
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -5410,9 +5410,9 @@ namespace NOVA.Controllers
             ViewBag.FilterUretilecekmi = u;
             return null;
         }
-        public List<User> GetYetki()
+        public List<User> GetYetki(int id)
         {
-            var apiUrl = "http://192.168.2.13:83/api/userwithroles";
+            var apiUrl = "http://192.168.2.13:83/api/user/auth/"+id;
 
             //Connect API
             Uri url = new Uri(apiUrl);

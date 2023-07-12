@@ -27,7 +27,7 @@ namespace NOVA.Controllers
         public ActionResult Index()
         {
            
-           
+
             Session["Name"]=Request.Cookies["Name"].Value.ToString();
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
             ViewBag.Id=Request.Cookies["Id"].Value.ToString();
