@@ -87,6 +87,37 @@ namespace NOVA.Controllers
         {
             return View();
         }
+        public ActionResult SevkMalKabul()
+        {
+            int moduleId = 42;
+
+            List<Modules> Modules = GetModules(moduleId);
+
+            if (Modules[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
+
+            User UserData = RoleHelper.RoleControl(Request.Cookies["Id"].Value, moduleId);
+
+            if (UserData.SELECT_AUTH != true)
+            {
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                bool Logged = AuthHelper.LoginLog(Request.Cookies["Id"].Value, Request.Cookies["LogId"].Value, moduleId);
+
+                if (!Logged)
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+            }
+            RoleHelper.CheckRoles(this);
+            return View();
+        }
 
         public ActionResult SaticiSiparisRaporu()
         {
@@ -466,7 +497,6 @@ namespace NOVA.Controllers
             }
             return View();
         }
-
         public List<SignIn> GetSession(int id)
         {
 

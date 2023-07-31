@@ -168,7 +168,8 @@ namespace NOVA.Controllers
             var teklif = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 39).USER_AUTH;
             var tekliflerim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 40).USER_AUTH;
             bool? yetkiMalKabulForm = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 41).USER_AUTH;
-
+            bool? yetkiSevkMalKabul = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 42).USER_AUTH;
+            ViewBag.DisplaySevkMalKabul = yetkiSevkMalKabul is true ? "unset" : "none";
             ViewBag.DisplayMalKabulForm = yetkiMalKabulForm is true ? "unset" : "none";
             if (tekliflerim != true)
             {

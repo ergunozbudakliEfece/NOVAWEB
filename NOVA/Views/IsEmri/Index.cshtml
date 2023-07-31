@@ -145,6 +145,21 @@
             transform: translate(-50%, -50%);
             z-index: 5;
         }
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
+
+        @@keyframes heartbeat {
+            from {
+                opacity: 0.3;
+                transform: scale(0.32);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(0.40);
+            }
+        }
     </style>
 </head>
 <body style="background-color: #f5f5f9 !important;font-size:10px !important;">
@@ -172,9 +187,12 @@
         @Html.Partial("_Layout_menu2")
     </div>
     <div class="authentication-wrapper authentication-basic container-fluid">
+        <div class="centercontent" id="content" style="display:unset">
+            <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+        </div>
         <div class="authentication-inner" id="body">
             <button class="btn btn-outline-danger d-none" onclick="testFunction()">SERİTRA</button>
-            
+
             <div class="card mt-2">
 
 
@@ -449,12 +467,12 @@
                                                             var s = m.filter(x => x.ISEMRINO.substring(0, 4) == value);
                                                             var stringArray = [];
                                                             for (let i = 0; i < s.length; i++) {
-                                                               
+
                                                                 if (!stringArray.includes((parseInt(s[i].ISEMRINO.substring(6, 11))).toString().padStart(5, '0'))) {
                                                                     stringArray.push((parseInt(s[i].ISEMRINO.substring(6, 11))).toString().padStart(5, '0'));
                                                                 }
                                                             }
-                                                            
+
                                                             if (stringArray.length > 0) {
 
 
@@ -753,7 +771,7 @@
 
                             </div>
                         </div>
-                        
+
                         <div class="col-6">
                             <div class="row me-1">
                                 <div class="col">
@@ -788,8 +806,8 @@
                                         }
                                         var say = 0;
                                         var sonSeri = null;
-                                       
-                                        $.getJSON("http://192.168.2.13:83/api/seri", function (data) {
+
+                                        $.getJSON("http://192.168.2.13:83/api/exec/seri/1", function (data) {
                                             sonSeri = data;
                                         }).done(function () {
                                             for (var i = 1; i < rows1.length; i++) {
@@ -921,7 +939,7 @@
                                                     var s = sonSeri[0].BASLANGICKARAKTER + (b + num).toString().padStart(11, '0');
                                                     var s1 = isno.substring(0, 13).replaceAll('.', '') + (b + parseInt(isno.substring(13, isno.length))).toString().padStart(3, '0');
                                                     s1 = s1.substring(0, 6) + "0" + s1.substring(6, s1.length);
-                                                    
+
                                                     var s2 = refisemri.substring(0, 13).replaceAll('.', '') + (b + parseInt(refisemri.substring(13, refisemri.length))).toString().padStart(3, '0');
                                                     s2 = s2.substring(0, 6) + "0" + s2.substring(6, s2.length);
                                                     var e = urunkodunew.substring(8, urunkodunew.length);
@@ -950,7 +968,7 @@
                                                     list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKOLCULERI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: agirlik/adet });
 
                                                 }
-                                              
+
 
                                                 rows1[i].getElementsByTagName("input")[1].value = ilk + '.' + or + '.' + so;
                                                 if (val2 != "") {
@@ -976,8 +994,12 @@
 
 
                                             }
-                                            var uu = "http://192.168.2.13:83/api/seri/" + (parseInt(oncekiadet) + sonSeri[0].SONNUMARA);
-                                            $.getJSON(uu, function (data) { });
+                                            var uu = "http://192.168.2.13:83/api/exec/seri/1";
+                                            var rowNumber = document.getElementsByTagName("table")[1].getElementsByTagName("tr").length - 1;
+                                            for (let e = 0; e < rowNumber; e++) {
+                                                $.getJSON(uu, function (data) { });
+                                            }
+                                            
                                         var ta = document.getElementById("test");
                                         var ro = ta.getElementsByTagName("tr");
                                         var tp = 0;
@@ -1316,6 +1338,7 @@
 
 
         function netsisaktar() {
+            $("#progress").show();
             document.body.style.cursor = 'wait';
             var lis = [];
             lis = JSON.parse(localStorage.list4);
@@ -1325,6 +1348,7 @@
                 type: 'POST',
                 data: { isemri: lis, number: len.length-2 }
             }).success(function () {
+                $("#progress").hide();
                 mail();
                 const Toast = Swal.mixin({
                     toast: true,
@@ -3165,7 +3189,7 @@
 
 
 
-$(document).ready(function(){
+        $(document).ready(function () {
     var tp = 0;
     var fireag = document.getElementById("fireagirligi1");
     var fireyuz = document.getElementById("fireyuzde1");
@@ -4277,6 +4301,7 @@ $(document).ready(function(){
                 tags: true
             }
             );
+            $("#progress").hide();
         });
         $(document).ready(function () {
             $('.select2-single1').select2({

@@ -238,7 +238,10 @@
     </div>
    
     <script>
+        var m1 = "";
+        var m2 = "";
         var constant = 0;
+        var genislik = 0;
         $(document).ready(function () {
             $("#uretimkaydi").focus();
             $('body').click(function () {
@@ -371,6 +374,9 @@
                 for (let i = 0; i < data.length; i++) {
                     var b = document.createElement("button");
                     b.className = "mak btn btn-outline-secondary me-4";
+                    b.setAttribute("data-stokkodu", data[i].STOK_KODU);
+                    b.setAttribute("data-genislik", data[i].BANT_GENISLIGI);
+                    b.setAttribute("data-hat", data[i].HAT_KODU)
                     b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> TOPLAM: " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + "&nbsp KULLANILAN: " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1+"</span>";
                     b.setAttribute("onclick", "stokadichange(this)");
                     var p = document.createElement("p");
@@ -407,18 +413,18 @@
 
 
         }
-        var m1 = 0;
-        var m2 = 0;
+       
         function keychange() {
 
-            m1 = $("#miktar1").val();
-            m2 = $("#miktar2").val();
+            m1 = $("#miktar11").val();
+            m2 = $("#miktar22").val();
         }
+       
         function stokadichange(value) {
             Swal.fire({
                 title: value.innerHTML.split("<p")[0],
-                html: '<table id="tab1" class="table table-borderless inp"><tr><th>Miktar1</th><th>Miktar2</th></tr><tr><td><input onfocus="inputclick(this)" onkeyup="keychange()" class="form-control text-center"  type="number"  id="miktar1" ></td>' +
-                    '<td><input class="form-control text-center" onkeyup="keychange()" type="number" id="miktar2"></td></tr></table>',
+                html: '<table id="tab1" class="table table-borderless inp"><tr><th>Miktar1</th><th>Miktar2</th></tr><tr><td><input onfocus="inputclick()" onkeyup="keychange()" class="form-control text-center"  type="number"  id="miktar11" ></td>' +
+                    '<td><input class="form-control text-center" onfocus="inputclick()" onkeyup="keychange()" type="number" id="miktar22"></td></tr></table>',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
@@ -433,18 +439,18 @@
             }).then((result) => {
                 $("#progress").show();
                 if (result.isConfirmed) {
-                    var ISEMRINO = null;
-                    var u = "http://192.168.2.13:83/api/IE/" + sabit;
-                    $.getJSON(u, function (data) {
-
-                        ISEMRINO = data[0].ISEMRINO;
-
-                    }).done(function () {
+                    var stokkodu = value.dataset.stokkodu;
+                    var hat = value.dataset.hat;
+                    var genislik = value.dataset.genislik;
                         $.ajax({
                             url: '@Url.Action("UretimSonuKaydı", "IsEmri")',
                             type: 'POST',
-                            data: { "isemrino": ISEMRINO, "miktar1": "1500", "miktar2":"0"  },
+                            data: { "hatkodu": hat, "stokkodu": stokkodu, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": m1.toString().trim(), "mik2": m2.toString().trim() },
                             error: function (data) {
+                                alert(JSON.stringify(data));
+                                $("#progress").hide();
+                            },
+                            success: function (data) {
                                 $("#progress").hide();
                                 Swal.fire(
                                     'Başarılı!',
@@ -454,7 +460,7 @@
                                 document.getElementById(btnid).onclick();
                             }
                         })
-                    })
+                   
 
 
                 } else {
@@ -497,7 +503,7 @@
                 document.addEventListener("DOMContentLoaded", fn);
             }
         }
-        function inputclick(value) {
+        function inputclick() {
             constant = 2;
         }
 
