@@ -160,7 +160,7 @@ namespace NOVA.Controllers
                         var eskimiktar = netRS.FieldByName("MIKTAR").AsFloat;
                     if (jsonList[i].KULL_MIKTAR != eskimiktar)
                     {
-                        netRS.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + jsonList[i].BAKIYE + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                        netRS.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + jsonList[i].KULL_MIKTAR + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                     }
 
 
@@ -171,15 +171,15 @@ namespace NOVA.Controllers
                         uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                         uretim.BelgeTipi = TBelgeTipi.btIsEmri;
                         uretim.Proje_Kodu = "1";
-                        uretim.UretSon_Miktar = jsonList[i].BAKIYE;
+                        uretim.UretSon_Miktar = jsonList[i].KULL_MIKTAR;
                         uretim.UretSon_Depo = 45;
                         uretim.I_Yedek1 = 45;
                         uretim.OTO_YMAM_GIRDI_CIKTI = true;
                         uretim.OTO_YMAM_STOK_KULLAN = false;
 
-                    var o = Math.Round(jsonList[i].BAKIYE / Int32.Parse(mik1) * Int32.Parse(mik2));
+                    var o = jsonList[i].MIKTAR2;
                     uretim.F_Yedek1 = o;
-                        uretim.BAKIYE_DEPO = 0;
+                    uretim.BAKIYE_DEPO = 0;
                     netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                     var seri= netRS.FieldByName("SERINO").AsString;
                     NetRS netRS1 = kernel.yeniNetRS(sirket);
@@ -197,7 +197,7 @@ namespace NOVA.Controllers
                     netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE  GCKOD='C' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                     if (eskimiktar!= jsonList[i].KULL_MIKTAR)
                     {
-                        netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].BAKIYE) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                        netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                     }
 
                     if (i == jsonList.Count - 1)
@@ -269,7 +269,7 @@ namespace NOVA.Controllers
                     uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     uretim.BelgeTipi = TBelgeTipi.btIsEmri;
                     uretim.Proje_Kodu = "1";
-                    uretim.UretSon_Miktar = jsonList[i].BAKIYE;
+                    uretim.UretSon_Miktar = jsonList[i].KULL_MIKTAR;
                     uretim.UretSon_Depo = 45;
                     uretim.I_Yedek1 = 45;
                     uretim.OTO_YMAM_GIRDI_CIKTI = true;
@@ -279,11 +279,11 @@ namespace NOVA.Controllers
                     if (serino == null)
                     {
                         uretim.OTOSERIURET();
-                        uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].BAKIYE, 0);
+                        uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, 0);
                     }
                     else
                     {
-                        uretim.SeriEkle(jsonList[i].SERI_NO, "", "", "", jsonList[i].BAKIYE, 0);
+                        uretim.SeriEkle(jsonList[i].SERI_NO, "", "", "", jsonList[i].KULL_MIKTAR, 0);
                     }
                     NetRS netRS1 = kernel.yeniNetRS(sirket);
                     uretim.FisUret();
@@ -794,15 +794,11 @@ namespace NOVA.Controllers
         }
         public class USKModel
         {
-            public int INCKEY { get; set; }
+            
             public string SERI_NO { get; set; }
             public string ISEMRINO { get; set; }
-            public string STOK_KODU { get; set; }
-            public string HAM_KODU { get; set; }
-            public double BAKIYE { get; set; }
-            public double? IEMIKTAR2 { get; set; }
-            public double GENISLIK { get; set; }
             public double KULL_MIKTAR { get; set; }
+            public double MIKTAR2 { get; set; }
         }
     }
 }
