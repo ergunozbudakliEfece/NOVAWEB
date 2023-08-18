@@ -1,0 +1,220 @@
+﻿<div class="modal fade" id="SevkFormSeri" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SevkFormSeriLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable full-modal">
+        <div class="modal-content modal-belge" style="box-shadow: inset 0 0 15px #dbdbdb;">
+
+            <div class="modal-header ml-auto mr-auto">
+                <h5 class="modal-title text-center w-100" id="SevkFormSeriLabel">SERİ NO LİSTESİ</h5>
+                <button type="button" class="ds btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body  py-2">
+                <div class="container-fluid">
+                    <div class="centercontent" id="content" style="display:flex;justify-content:center;">
+                        <div class="heart"><img id="SevkFormSeriTableProgress" src="~/images/novasaydam.png" style="max-width:10vw" /></div>
+                    </div>
+
+                    <div id="SevkFormBelgeTableRow" class="row mb-2 gy-2">
+                        <div class="table-responsive">
+                            <table id="SevkFormSeriTable"
+                                   class="table-striped"
+                                   data-search="true"
+                                   data-show-refresh="false"
+                                   data-show-toggle="false"
+                                   data-show-fullscreen="false"
+                                   data-show-columns="false"
+                                   data-show-columns-toggle-all="false"
+                                   data-detail-view="false"
+                                   data-detail-view-by-click="false"
+                                   data-show-export="false"
+                                   data-click-to-select="true"
+                                   data-minimum-count-columns="2"
+                                   data-show-pagination-switch="false"
+                                   data-page-size="6"
+                                   data-pagination="true"
+                                   data-id-field="id"
+                                   data-show-footer="false"
+                                   data-mobile-responsive="true"
+                                   data-response-handler="responseHandler"
+                                   data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
+                                   data-locale="tr-TR">
+                                <thead>
+                                    <tr>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO" data-halign="center" data-align="center">SERİ NO</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="MIKTAR" data-halign="center" data-align="center">MİKTAR 1</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="MIKTAR2" data-halign="center" data-align="center">MİKTAR 2</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIK1" data-halign="center" data-align="center">AÇIK 1</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIK2" data-halign="center" data-align="center">AÇIK 2</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIK3" data-halign="center" data-align="center">AÇIK 3</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIKLAMA_4" data-halign="center" data-align="center">AÇIKLAMA 3</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIKLAMA_5" data-halign="center" data-align="center">AÇIKLAMA 3</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_3" data-halign="center" data-align="center">SERİ NO 3</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center">SERİ NO 4</th>
+                                        <th data-formatter="BarkodSecimFormatter" data-halign="center" data-align="center">İŞLEM</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="display:flex;justify-content:center;align-items:center;">
+                <button class="btn btn-primary" id="BarkodNoAktarButton" type="button" onclick="SecilenBarkodlariAktar()" disabled="disabled">TABLOYA AKTAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var SeciliBarkodNo = [];
+
+    function SeriNoListesi()
+    {
+        SeciliBarkodNo = [];
+
+        $('#BarkodNoAktarButton').prop('disabled', true);
+        $('#SevkFormBelgeTableRow').hide();
+        $('#SevkFormSeriTableProgress').show();
+
+        if ($('#STOK_SECIM').val() !== '')
+        {
+            var ProcUrl = "http://192.168.2.13:83/api/seri/rehber/" + $('#STOK_SECIM').val();
+
+            var BarkodNoListesi = [];
+
+            $.ajax({
+                url: ProcUrl,
+                type: 'GET',
+                success: function (result) {
+                    for (let i = 0; i < result.length; i++) {
+                        BarkodNoListesi.push(result[i]);
+                    }
+                }
+            }).then(() => {
+                var result = BarkodNoListesi.filter(x => {
+                    return !Kayitlar.some(t => t.SERI_NO === x.SERI_NO)
+                });
+
+                $('#SevkFormSeriTable').bootstrapTable("destroy");
+                $('#SevkFormSeriTable').bootstrapTable({ data: result, paginationPagesBySide: 0, paginationSuccessivelySize: 2 });
+
+                $('#SevkFormSeriTableProgress').hide();
+            });
+        }
+
+        $('#SevkFormSeri').modal('show');
+    }
+
+    function BarkodSecimFormatter(value, index, row)
+    {
+        if (SeciliBarkodNo.indexOf(index.SERI_NO) > -1)
+        {
+            return `<div onclick="BarkodSec('${index.SERI_NO}', ${row})"><i class="bi bi-check-circle-fill"  style="color:#71dd37;font-size:x-large;"></i></div>`;
+        }
+        else
+        {
+            return `<div onclick="BarkodSec('${index.SERI_NO}', ${row})"><i class="bi bi-check-circle"  style="color:red;font-size:x-large;"></i></div>`;
+        }
+    }
+
+    function BarkodSec(BarkodNo, Satir)
+    {
+        var EkranGenisligi = window.matchMedia("(max-width: 562px)");
+        var ButtonDiv;
+
+        if (EkranGenisligi.matches)
+        {
+            ButtonDiv = document.getElementById("SevkFormSeriTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[0].getElementsByClassName("card-views")[0].getElementsByClassName("card-view")[10].getElementsByClassName("card-view-value")[0];
+        }
+        else {
+            ButtonDiv = document.getElementById("SevkFormSeriTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[10];
+        }
+
+        if (SeciliBarkodNo.indexOf(BarkodNo) > -1)
+        {
+            SeciliBarkodNo = SeciliBarkodNo.filter(item => item !== BarkodNo);
+            ButtonDiv.innerHTML = `<div onclick="BarkodSec('${BarkodNo}', ${Satir})"><i class="bi bi-check-circle"  style="color:red;font-size:x-large;"></i></div>`;
+        }
+        else
+        {
+            SeciliBarkodNo.push(BarkodNo);
+            ButtonDiv.innerHTML = `<div onclick="BarkodSec('${BarkodNo}', ${Satir})"><i class="bi bi-check-circle-fill"  style="color:#71dd37;font-size:x-large;"></i></div>`;
+        }
+
+        BarkodAktarButtonState();
+    }
+
+    function BarkodAktarButtonState()
+    {
+        if (SeciliBarkodNo.length > 0)
+        {
+            $('#BarkodNoAktarButton').prop('disabled', false);
+        }
+        else
+        {
+            $('#BarkodNoAktarButton').prop('disabled', true);
+        }
+    }
+
+    function SecilenBarkodlariAktar()
+    {
+        BarkodVerileriGetir().then(() => {
+            $('#SevkFormuTable').bootstrapTable("load", Kayitlar);
+
+            DurumAyarla(0);
+
+            $('#SevkFormSeri').modal('hide');
+        });
+    }
+
+    let BarkodVerileriGetir = async () => {
+        const result = await Promise.all(SeciliBarkodNo.map(each =>
+            $.getJSON("http://192.168.2.13:83/api/seri/bakiye/" + each, function (data) {
+                if (data.length > 0)
+                {
+                    if (!BarkodNoTablodaVarMi(each))
+                    {
+                        var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $('#SİPARİS_NO').html() && x.STOK_KODU == $('#STOK_SECIM').val());
+
+                        Kayitlar.push({
+                            "ID": Kayit_ID,
+                            "STOK_ADI": FiltreliDetay[0].STOK_ADI,
+                            "STOK_KODU": data[0].STOK_KODU,
+                            "MIKTAR": data[0].MIKTAR,
+                            "OLCU_BR1": $('#OLCU_BR1').val(),
+                            "MIKTAR2": data[0].MIKTAR2,
+                            "OLCU_BR2": $('#OLCU_BR2').val(),
+                            "SERI_NO": each,
+                            "ACIK1": data[0].ACIK1,
+                            "ACIK2": data[0].ACIK2,
+                            "ACIK3": data[0].ACIK3,
+                            "SERI_NO_3": data[0].SERI_NO_3,
+                            "SERI_NO_4": data[0].SERI_NO_4,
+                            "ACIKLAMA_4": data[0].ACIKLAMA_4,
+                            "ACIKLAMA_5": data[0].ACIKLAMA_5,
+                        });
+
+                        Kayit_ID += 1;
+                    }
+                    else {
+                        Swal.fire({
+                            title: 'Uyarı',
+                            text: "Aynı Seri No Mevcut.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            cancelButtonText: 'TAMAM',
+                            cancelButtonColor: '#3085d6',
+                            allowEnterKey: false,
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                            customClass: 'AreYouSureAlert'
+                        })
+                    }
+                }
+            })
+        ));
+
+        return result;
+    }
+</script>

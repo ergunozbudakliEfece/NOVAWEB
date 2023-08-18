@@ -1,0 +1,178 @@
+﻿<div class="modal fade" id="SeriNoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="SeriNoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header ml-auto mr-auto">
+                <h5 class="modal-title text-center w-100" id="SeriNoModalLabel">SERİ BİLGİLERİ</h5>
+                <button type="button" class="ds btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+
+
+            <div class="modal-body  py-2">
+                <div class="container-fluid">
+                    <input id="copyinput" type="text" value="" hidden/>
+                    <div class="centercontent" id="SevkMalSeriNoTableProgress" style="display:unset">
+                        <div class="heart"><img id="SevkMalSeriNoTableProgress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+                    </div>
+                    <div class="row mb-2 gy-2">
+                        <div class="col belge-bilgi">
+                            <div class="d-flex justify-content-start align-items-center gap-1">
+                                <span>İlgili Stok Kodu: <b id="STOK_KODU_BILGI"></b></span>
+                                <div onclick="StokKoduKopyala()"><i class="bi bi-files" style="color:#595cd9;font-size:large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>Stok Kodu Kopyala</span>"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2 gy-2">
+                        <div id="employeeTableWrapper" class="tableWrapper table-responsive">
+                            <table id="SevkMalSeriNoTable"
+                                   class="table-striped"
+                                   data-search="true"
+                                   data-show-refresh="false"
+                                   data-show-toggle="false"
+                                   data-show-fullscreen="false"
+                                   data-show-columns="false"
+                                   data-show-columns-toggle-all="false"
+                                   data-detail-view="false"
+                                   data-detail-view-by-click="false"
+                                   data-show-export="false"
+                                   data-click-to-select="true"
+                                   data-minimum-count-columns="2"
+                                   data-show-pagination-switch="false"
+                                   data-page-size="5"
+                                   data-pagination="true"
+                                   data-id-field="id"
+                                   data-show-footer="false"
+                                   data-mobile-responsive="true"
+                                   data-response-handler="responseHandler"
+                                   data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
+                                   data-locale="tr-TR">
+                                <thead>
+                                    <tr>
+                                        <th data-formatter="EmptyDataFormatter" data-field="STOK_ADI" data-halign="center" data-align="center">STOK ADI</th>
+                                        <th data-formatter="EmptyDataFormatter" data-field="SERI_NO" data-halign="center" data-align="center">SERİ NO</th>
+                                        <th data-formatter="MiktarFormatter" data-field="MIKTAR1" data-halign="center" data-align="center">MİKTAR 1</th>
+                                        <th data-formatter="EmptyDataFormatter" data-field="OLCU_BR1" data-halign="center" data-align="center">ÖLÇÜ BİRİM 1</th>
+                                        <th data-formatter="MiktarFormatter" data-field="MIKTAR2" data-halign="center" data-align="center">MİKTAR 2</th>
+                                        <th data-formatter="EmptyDataFormatter" data-field="OLCU_BR2" data-halign="center" data-align="center">ÖLÇÜ BİRİM 2</th>
+                                        <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-halign="center" data-align="center">KALINLIK</th>
+                                        <th data-formatter="GenislikFormatter" data-field="ACIK2" data-halign="center" data-align="center">GENİŞLİK</th>
+                                        <th data-formatter="EmptyDataFormatter" data-field="ACIK3" data-halign="center" data-align="center">ÜRÜN NO</th>
+                                        <th data-formatter="EmptyDataFormatter" data-field="SERI_NO_3" data-halign="center" data-align="center">KALİTE</th>
+                                        <th data-formatter="EmptyDataFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="display:flex;justify-content:center;align-items:center;">
+                <button class="btn btn-primary" type="button" onclick="SeriNoModalKopyala()">PANOYA KOPYALA</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var SeriNoModalList = [];
+
+    function SeriNoModal(SiparisNo, BelgeNo, StokKodu) {
+        SeriNoModalList = [];
+
+        document.getElementById("STOK_KODU_BILGI").innerHTML = StokKodu;
+
+        $("#SevkMalSeriNoTable").bootstrapTable("destroy");
+        $("#SevkMalSeriNoTable").bootstrapTable({ data: SeriNoModalList });
+
+        SeriNoModalList = Belgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo && x.STOK_KODU == StokKodu);
+
+        $("#SevkMalSeriNoTable").bootstrapTable("destroy");
+        $("#SevkMalSeriNoTable").bootstrapTable({ data: SeriNoModalList });
+
+        $('#SevkMalSeriNoTableProgress').hide();
+    }
+
+    async function SeriNoModalKopyala() {
+        if (SeriNoModalList.length > 0) {
+            var KopyaVerisi = "";
+
+            for (var i = 0; i < SeriNoModalList.length; i++) {
+                KopyaVerisi += `${SeriNoModalList[i].SERI_NO}	${GenislikKalinlikFormat(SeriNoModalList[i].ACIK1)}	${GenislikKalinlikFormat(SeriNoModalList[i].ACIK2)}	${SeriNoModalList[i].ACIK3}	${MiktarFormatla(SeriNoModalList[i].MIKTAR1)}	${MiktarFormatla(SeriNoModalList[i].MIKTAR2)}	${SeriNoModalList[i].SERI_NO_3}	${SeriNoModalList[i].SERI_NO_4}	${SeriNoModalList[i].ACIKLAMA_4}	${SeriNoModalList[i].ACIKLAMA_5}\n`;
+            }
+
+            try {
+                await copyToClipboard(KopyaVerisi);
+            } catch (error) {
+            }
+
+            Swal.fire({
+                title: "Seri bilgileri kopyalandı.",
+                showConfirmButton: false,
+                icon: "success",
+                timer: "750"
+            });
+        }
+    }
+
+    async function StokKoduKopyala()
+    {
+        try {
+            await copyToClipboard($("#STOK_KODU_BILGI").html());
+        } catch (error) {
+        }
+
+        Swal.fire({
+            title: "Stok kodu kopyalandı.",
+            showConfirmButton: false,
+            icon: "success",
+            timer: "750"
+        });
+    }
+
+    async function copyToClipboard(textToCopy) {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(textToCopy);
+        } else {
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-99999999px';
+            document.body.prepend(textarea);
+            textarea.select();
+            textarea.focus();
+
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.log(err);
+            } finally {
+                textarea.remove();
+            }
+        }
+    }
+
+    function KalinlikFormatter(value, index, row)
+    {
+        if (value?.toString().trim().length > 0)
+        {
+            return GenislikKalinlikFormat(value);
+        }
+        
+        return "-";
+    }
+
+    function GenislikFormatter(value, index, row) {
+        if (value?.toString().trim().length > 0) {
+            return GenislikKalinlikFormat(value);
+        }
+
+        return "-";
+    }
+
+    function GenislikKalinlikFormat(value)
+    {
+        return value.replace(".", ",");
+    }
+</script>

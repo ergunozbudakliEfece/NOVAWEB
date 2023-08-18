@@ -1,14 +1,15 @@
 ﻿
 @{
 
-    Layout = "~/Views/Shared/_Layout _yonetim_stok.cshtml";
+    Layout = "~/Views/Shared/_Layout_common.cshtml";
+    //Layout = "~/Views/Shared/_Layout _yonetim_stok.cshtml";
 }
 
 
 
 <link href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css" rel="stylesheet">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <link href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -16,6 +17,7 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 
     .card-view {
@@ -75,9 +77,11 @@
         input {
             width: 100% !important;
         }
-        .select2{
-            width:100% !important;
+
+        .select2 {
+            width: 100% !important;
         }
+
         .menu1 {
             display: inline-flex;
         }
@@ -125,6 +129,21 @@
 
     .detail-view td {
         padding: 3px;
+    }
+
+    .swal2-container {
+        z-index: 10000;
+    }
+
+    i:hover {
+        color: #0d5c69 !important;
+    }
+
+    .i-disabled,
+    .i-disabled[disabled] {
+        opacity: .4;
+        cursor: default !important;
+        pointer-events: none;
     }
 </style>
 <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
@@ -187,9 +206,9 @@
                     </ul>
                 </div>
             </div>
-           
-            
-           
+
+
+
         </div>
 
 
@@ -201,7 +220,7 @@
             <div class="centercontent" id="content" style="display:unset">
                 <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
             </div>
-            <div id="employeeTableWrapper" class="tableWrapper table-responsive">
+            <div>
                 <div id="toolbar">
                     <form id="form1">
                         <div class="row">
@@ -224,7 +243,7 @@
 
 
                 </div>
-              
+
                 <div class="row mt-1" onchange="datefilter()">
 
                     <div class="col-sm">
@@ -264,14 +283,14 @@
                        data-filter-control-multiple-search="true"
                        data-loading-template="loadingTemplate"
                        data-mobile-responsive="true"
-                       data-show-footer="true"
+                       data-show-footer="false"
                        data-detail-view-by-click="true"
                        data-height="680"
                        data-detail-formatter="detailFormatter"
                        data-detail-view="true"
                        data-fixed-columns="true"
                        data-fixed-number="0"
-                        data-trim-on-search="false">
+                       data-trim-on-search="false">
                     <thead>
                         <tr id="tst">
                             <th data-field="SIPARIS_NO" data-sortable="true" data-halign="center" data-formatter="sipnoFormatter">Sipariş No</th>
@@ -281,10 +300,10 @@
                             <th data-field="TESLIM_YERI" data-sortable="true" data-halign="center" data-align="center">Teslim Yeri</th>
                             <th data-field="ACIKLAMA" data-sortable="true" data-halign="center">Açıklama</th>
                             <th data-field="PLASIYER_ADI" data-sortable="true" data-halign="center" data-align="center">Plasiyer Adı</th>
+                            <th data-halign="center" data-align="center" data-formatter="islemFormatter">İşlem</th>
                         </tr>
                     </thead>
                 </table>
-
 
             </div>
 
@@ -304,7 +323,7 @@
         document.getElementById("sevkiyat1").className = "nav__link active";
         document.getElementById("mussiparisrap1").className = "nav__dropdown-item active";
     }
-   
+
 
     var tumliste2 = null;
     var tumliste = null;
@@ -381,30 +400,36 @@
             $('#filter').select2({ placeholder: "Teslim Yeri" });
             $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
             $('#dovtip').select2({ placeholder: "Döviz Tipi" });
-            
+
         }).then(function () {
             document.querySelectorAll('input[type="search"]')[0].onkeyup = function () {
-                document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.replaceAll("ı", "I").replaceAll("i","İ").toUpperCase();
+                document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.replaceAll("ı", "I").replaceAll("i", "İ").toUpperCase();
             };
         })
-        
+
 
     })
-    
+
     var type = 'fa'
 
     function loadingTemplate(message) {
 
         return '<div class="heart"><img src="/images/novasaydam.png" style="max-width:15vw"/></div>'
-
-
     }
     function sipnoFormatter(value, index, row) {
-        return value.substring(0, 1) + value.substring(3, 5) + "-" + value.substring(value.length - 5, value.length);
+        var SeriNo = '<label hidden>' + value + '</label>';
+
+        return SeriNo + value.substring(0, 1) + value.substring(3, 5) + "-" + value.substring(value.length - 5, value.length);
     }
     function tarihFormatter(value, index, row) {
         return new Date(value).toLocaleDateString();
     }
+
+    function islemFormatter(value, index, row) {
+        //return `<div onclick="SevkFormu(event, '${index.SIPARIS_NO}')" class="showmodal"><i class="bi bi-file-earmark-text-fill" style="color:#17a2b8;font-size:x-large;"></i></div>`;
+        return `<div onclick="SevkFormu(event, '${index.SIPARIS_NO}')" class="showmodal"><i class="bi bi-file-earmark-text-fill" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Sevk Formu Oluştur</span>"></i></div>`;
+    }
+
     function detailFormatter(index, row) {
 
         var detail = detayli.filter(x => x.SIPARIS_NO == row.SIPARIS_NO);
@@ -493,9 +518,9 @@
 
         return "<table class='table table-borderless'><thead><tr class'text-nowrap'><th class='text-nowrap'>Sıra No</th><th class='text-nowrap text-center' style='padding-left: 10px'>Stok Adı</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 1</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 2</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretilen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Bekleyen</th><th class='text-nowrap text-center' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Süreç</th></tr></thead><tbody>" + t + "<tr><td class='p-0'>" + m + "</td><td></td><td></td><td  class='text-center'></td></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5'></td></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td class='p-0'>" + n + "</td><td></td><td class='text-nowrap'></td><td  class='text-center'></td><td style='background-color:#f2faf5' class='text-center'><b>" + msipteslim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</b></td><td style='background-color:#f2faf5' class='text-center'><b>" + msipbekleyen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</b></td><td style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td class='p-0'>" + o + "</td><td></td><td></td><td  class='text-center'></td></td><td style='background-color:#f2faf5' class='text-center'></b></td><td style='background-color:#f2faf5' class='text-center'></td><td style='background-color:#f2faf5'></td></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr></tbody></table>";
     }
-   
 
-    
+
+
     $('#toolbar').change(function (e) {
         var filterAlgorithm = $('#filter').val()
         var plasiyerAlgorithm = $('#plasiyer').val()
@@ -504,12 +529,10 @@
             TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimfilter),
             PLASIYER_ADI: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : plasiyerFilter),
             DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovFilter),
-
         })
-
-
-
     })
+
+
     function clearfilter() {
         $("#filter").val('').trigger('change');
         $("#plasiyer").val('').trigger('change');
@@ -520,7 +543,208 @@
 </script>
 
 
+@Html.Partial("MusteriSiparisRaporuPartials/SevkFormu_Modal")
+@Html.Partial("MusteriSiparisRaporuPartials/SevkFormu_Barkod_Modal")
+@Html.Partial("MusteriSiparisRaporuPartials/SevkFormu_Belge_Modal")
+@Html.Partial("MusteriSiparisRaporuPartials/SevkFormu_Seri_Modal")
+
+@*Birden Fazla Modal*@
+<script>
+    Array.from(document.getElementsByClassName('showmodal')).forEach((e) => {
+        e.addEventListener('click', function (element) {
+            element.preventDefault();
+            if (e.hasAttribute('data-show-modal')) {
+                showModal(e.getAttribute('data-show-modal'));
+            }
+        });
+    });
+    function showModal(modal) {
+        const mid = document.getElementById(modal);
+        let myModal = new bootstrap.Modal(mid);
+        myModal.show();
+    }
+    $(document).ready(function () {
+        $(document).on('show.bs.modal', '.modal', function () {
+            const zIndex = 1040 + 10 * $('.modal:visible').length;
+            $(this).css('z-index', zIndex);
+            setTimeout(() => $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack'));
+        });
+    });
+</script>
 
 
+@*Autocomplete*@
 
+<script>
+    function autocomplete(inp, arr) {
+        var currentFocus;
 
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value.trim();
+
+            closeAllLists();
+            if (!val)
+            {
+                $('#SERI_NO').val('');
+
+                $("#MIKTAR").val(0);
+                $("#OLCU_BR1").val('-');
+                $("#MIKTAR2").val(0);
+                $("#OLCU_BR2").val('-');
+
+                $('#ACIK1').val('');
+                $('#ACIK2').val('');
+                $('#ACIK3').val('');
+                $('#SERI_NO_3').val('');
+                $('#SERI_NO_4').val('');
+
+                SeciliBarkodVar = false;
+
+                MiktarGirisKontrolu();
+
+                $('#SeriNoListeButton').prop('disabled', false);
+
+                return false;
+            }
+            currentFocus = -1;
+
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+
+            this.parentNode.appendChild(a);
+
+            var itemNumber = 0;
+
+            for (i = 0; i < arr.length; i++) {
+
+                if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase() && itemNumber < 5) {
+                    b = document.createElement("DIV");
+
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+
+                        if (inp.value.trim().length !== 0) {
+                            BarkodKontrol(inp.value);
+                        }
+
+                        closeAllLists();
+                    });
+
+                    itemNumber = itemNumber + 1;
+
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+
+                currentFocus++;
+
+                addActive(x);
+            } else if (e.keyCode == 38) {
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+</script>
+
+<style>
+    .autocomplete {
+        position: relative;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        top: 100%;
+        left: 0;
+        right: 0;
+        height: auto;
+    }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
+
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+</style>
+
+<style>
+    @@media (min-width: 768px) {
+        .modal-xl {
+            width: 90%;
+            max-width: 1500px;
+        }
+    }
+
+    @@media (max-width: 562px) {
+        #SevkFormuTable {
+            font-size: smaller;
+        }
+
+        .belge-bilgi {
+            font-size: small;
+        }
+    }
+
+    .fixed-table-toolbar .search {
+        width: 100%;
+    }
+
+    .swal-icon img {
+        width: 60px;
+        height: 60px;
+    }
+</style>

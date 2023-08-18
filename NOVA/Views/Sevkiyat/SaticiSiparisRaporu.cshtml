@@ -1,6 +1,9 @@
-﻿@{
-    Layout = "~/Views/Shared/_layout_satinalma.cshtml";
+﻿
+@{
+    //Layout = "~/Views/Shared/_layout_satinalma.cshtml";
+    Layout = "~/Views/Shared/_Layout_common.cshtml";
 }
+
 
 
 <link href="~/Content/table/bootstrap-table.min.css" rel="stylesheet" />
@@ -10,9 +13,9 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+
 <style>
     #goster {
         display: none;
@@ -21,6 +24,7 @@
     #gizle {
         display: none;
     }
+
     .group-by {
         background-color: rgba(105, 108, 255, 0.12)
     }
@@ -98,9 +102,11 @@
         select {
             width: 100% !important;
         }
-        .form-control{
-            width:100% !important;
+
+        .form-control {
+            width: 100% !important;
         }
+
         #goster {
             display: unset;
         }
@@ -109,8 +115,47 @@
             display: none;
         }
     }
-</style>
 
+    .line {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-self: center;
+    }
+
+        .line > .left {
+            width: 90%;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+        }
+
+        .line > .right {
+            width: 10%;
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+
+    .table-i {
+        color: white !important;
+    }
+
+    .swal2-container {
+        z-index: 10000;
+    }
+
+    i:hover {
+        color: #0d5c69 !important;
+    }
+
+    .i-disabled,
+    .i-disabled[disabled] {
+        opacity: .4;
+        cursor: default !important;
+        pointer-events: none;
+    }
+</style>
 <div class="jumbotron vertical-center" onclick="hideAllPop()">
     <div class="container-fluid h-100">
         <div class="card mt-2">
@@ -170,21 +215,20 @@
                         </ul>
                     </div>
                 </div>
-               
 
 
 
-               
+
+
             </div>
             <div class="card-body">
                 <div class="row">
                     <a id="goster" onclick="filtershow()" style="cursor:pointer">&#10148;Filtreleri Göster</a>
                     <a id="gizle" onclick="filterhide()" style="cursor:pointer">&#9660;Filtreleri Gizle</a>
                 </div>
-               
+
                 <div id="filters">
                     <div class="row" onchange="datefilter()">
-
                         <div class="col-sm">
                             <label for="baslagictarihi">Başlagıç Tarihi:</label>
                             <input class="form-control" style="width: 15vw;height:32px" type="date" id="baslangictarihi" name="BASLANGIC_TARIH" value=" " placeholder="Başlangıç Tarihi">
@@ -196,9 +240,7 @@
                         <div class="col">
                             <button onclick="clearfilter()" class="btn btn-secondary btn-sm mt-3"><i class="bx bxs-trash"></i></button>
                         </div>
-                        <div class="col">
-
-                        </div>
+                        <div class="col"></div>
                         <div class="col"></div>
                         <div class="col"></div>
                     </div>
@@ -227,9 +269,6 @@
                                         <label class="form-check-label  fs-tiny" for="flexSwitchCheckChecked2">Üretim</label>
 
                                         <input class="form-check-input" type="checkbox" id="uretimswitch" unchecked="" onclick="flex()" name="URETILECEKMI">
-
-
-
                                     </div>
                                 </div>
                                 <div class="col"></div>
@@ -242,14 +281,13 @@
 
                     </div>
                 </div>
-                
+
             </div>
         </div>
         <div class="card mt-1" style="font-size:14px;letter-spacing:1px">
 
 
             <div class="card-body" id="card1">
-
                 <table id="table"
                        class="table"
                        data-show-fullscreen="true"
@@ -287,36 +325,36 @@
                             <th data-field="TESLIM_MIKTARI" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter">SSIP Teslim</th>
                             <th data-field="BAKIYE_MIKTARI" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter">SSIP Bekleyen</th>
                             <th data-field="TESLIMAT_ORANI" data-halign="center" data-align="center" data-sortable="true" data-formatter="surecFormatter">SSIP Süreç</th>
+                            <th data-halign="center" data-align="center" data-formatter="islemFormatter">İşlem</th>
                         </tr>
                     </thead>
                 </table>
-
-
-
-
-
-
             </div>
-           
+
         </div>
 
     </div>
 
 </div>
 <script>
-
+    var detayli;
     var teslimyerleri = [];
     var cariisimler = [];
     var carikodlari = [];
     var stokadlari = [];
     var plasiyerler = [];
     $.getJSON("http://192.168.2.13:83/api/detayliSSIP", function (data) {
+
+        detayli = data;
+
+        var d = detayli.filter(x => x.SIPARIS_NO == 'X20230000000391');
+
         $("#table").bootstrapTable("destroy").bootstrapTable({
             url: "http://192.168.2.13:83/api/detayliSSIP", formatColumnsToggleAll: function () {
                 return "Hepsi";
-            }
+            }, groupByFormatter: (value, idx) => { return GroupFormatter(value, idx); }, paginationSuccessivelySize: 3, paginationPagesBySide: 1
         });
-       
+
         for (let i = 0; i < data.length; i++) {
             if (!teslimyerleri.includes(data[i].TESLIM_YERI)) {
                 teslimyerleri.push(data[i].TESLIM_YERI);
@@ -389,7 +427,7 @@
         document.getElementById("sevkiyat1").className = "nav__link active";
         document.getElementById("saticisiprap1").className = "nav__dropdown-item active";
     }
-   
+
     var type = 'fa'
 
     function loadingTemplate(message) {
@@ -400,9 +438,13 @@
             return '<div class="ph-item"><div class="ph-picture"></div></div>'
         }
     }
+    function islemFormatter(value, index, row) {
+        return `<div onclick="SaticiRaporModal(event, this, '${index.STOK_KODU}')"  data-bs-toggle="modal" class="showmodal" data-bs-target="#SiparisModal"><i class="bi bi-file-earmark-text-fill" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Kabul Formu Oluştur</span>"></i></div>`;
+    }
     function sipFormatter(value, index, row) {
+        var SeriNo = '<label hidden>' + value + '</label>';
 
-        return "<span class='text-nowrap'>" + (value.substring(0, 1)) + (value.substring(3, 5)) + "-" + (value.substring(value.length - 5)) + "</span>";
+        return SeriNo + "<span class='text-nowrap'>" + (value.substring(0, 1)) + (value.substring(3, 5)) + "-" + (value.substring(value.length - 5)) + "</span>";
     }
     function tarihFormatter(value, index, row) {
 
@@ -413,7 +455,6 @@
         return "<span class='text-nowrap'>" + value + "</span>";
     }
     function stokadiFormatter(value, index, row) {
-
         return value.replaceAll('Ý', 'İ');
     }
     function miktarFormatter(value, index, row) {
@@ -473,9 +514,14 @@
         return '<div class="meter" id="meter-msip" style="height:22.94px;width:100px"><span style="width:' + (parseFloat(value * 100).toFixed(0)) + '%"><span class="progress" id="progress-msip"><span class="text-nowrap" style="text-align:end;color:black">' + (parseFloat(value * 100).toFixed(0)) + '%</span></span></span></div>';
 
     }
+    function GroupFormatter(value, index) {
+        return `<div class="line"><div class="left">${value}</div><div class="right"></div></div>`;
+    }
     function datefilter() {
         var baslangic = $('#baslangictarihi').val()
         var bitis = $('#bitistarihi').val()
+
+        $('#table').bootstrapTable('showLoading');
 
         $.getJSON('http://192.168.2.13:83/api/detayliSSIP', function (data) {
 
@@ -498,12 +544,14 @@
                 var d = data;
             }
             $('#table').bootstrapTable("destroy");
-          
+
             $('#table').bootstrapTable({
                 data: d, formatColumnsToggleAll: function () {
                     return "Hepsi";
                 }
             })
+
+            $('#table').bootstrapTable('hideLoading');
         })
 
     }
@@ -515,13 +563,12 @@
         var stokAlgorithm = $('#stokadi').val()
         var uretim = document.getElementById("uretimswitch").checked;
 
-       
+
         if (uretim == true) {
 
             filterAlgorithm.push("EFECE 4");
 
         }
-      
 
         $('#table').bootstrapTable('filterBy', {
             TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimyerleri),
@@ -529,10 +576,8 @@
             PLASIYER_ADI: (dovAlgorithm.length > 0 ? dovAlgorithm : plasiyerler),
             STOK_ADI: (stokAlgorithm.length > 0 ? stokAlgorithm : stokadlari),
         })
-      
-
-
     })
+
     function clearfilter() {
         $("#teslim").val('').trigger('change');
         $("#cari").val('').trigger('change');
@@ -541,7 +586,7 @@
         $("#bitistarihi").val('').trigger('change');
     }
 
-   
+
     function filtershow() {
         $("#goster").hide();
         $("#gizle").show();
@@ -551,13 +596,61 @@
         $("#goster").show();
         $("#gizle").hide();
         $("#filters").hide();
-    }   
-   
-    
-   
-
+    }
 </script>
 
 
+@Html.Partial("SaticiSiparisRaporuPartials/SiparisRaporu_Modal")
+@Html.Partial("SaticiSiparisRaporuPartials/SiparisRaporuBelgeList_Modal")
 
+@*Birden Fazla Modal*@
+<script>
+    Array.from(document.getElementsByClassName('showmodal')).forEach((e) => {
+        e.addEventListener('click', function (element) {
+            element.preventDefault();
+            if (e.hasAttribute('data-show-modal')) {
+                showModal(e.getAttribute('data-show-modal'));
+            }
+        });
+    });
+    function showModal(modal) {
+        const mid = document.getElementById(modal);
+        let myModal = new bootstrap.Modal(mid);
+        myModal.show();
+    }
+    $(document).ready(function () {
+        $(document).on('show.bs.modal', '.modal', function () {
+            const zIndex = 1040 + 10 * $('.modal:visible').length;
+            $(this).css('z-index', zIndex);
+            setTimeout(() => $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack'));
+        });
+    });
+</script>
 
+<style>
+    @@media (min-width: 768px) {
+        .modal-xl {
+            width: 90%;
+            max-width: 1500px;
+        }
+    }
+
+    @@media (max-width: 562px) {
+        #TempTable, #SiparisNoTable, #BelgeNoTable {
+            font-size: smaller;
+        }
+
+        .belge-bilgi {
+            font-size: small;
+        }
+    }
+
+    .fixed-table-toolbar .search {
+        width: 100%;
+    }
+
+    .swal-icon img {
+        width: 60px;
+        height: 60px;
+    }
+</style>

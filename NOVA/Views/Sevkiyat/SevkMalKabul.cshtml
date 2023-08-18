@@ -1,21 +1,651 @@
-﻿
-@{
-    ViewBag.Title = "SevkMalKabul";
-    Layout = "~/Views/Shared/_Layout_sevkiyat.cshtml";
+﻿@{
+    Layout = "~/Views/Shared/_Layout_common.cshtml";
 }
 
-<h2>SevkMalKabul</h2>
-<script src="~/Scripts/jquery-3.6.1.min.js"></script>
+<link href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+<link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
+
+<div class="container-fluid d-flex flex-column h-100">
+
+    <div class="card mx-auto" style="font-size:12px;width:inherit;">
+        <div class="card-header p-0">
+            <div class="row p-0 mt-1 mb-3 mx-2">
+                <div class="col">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                        @{
+                            string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                        }
+                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                        </object>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0 me-3">
+                                        <div class="avatar avatar-online">
+                                            <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                                <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                            </object>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        @if (@Request.Cookies["Name"] != null)
+                                        {
+                                            <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                            <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="fw-semibold d-block">Test</span>
+                                            <small class="text-muted">Yetki: Test</small>
+                                        }
+
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                               data-bs-target="#cikis">
+                                <i class="bx bx-power-off me-2"></i>
+                                <span class="align-middle">Oturumu Kapat</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mx-auto mt-3" style="font-size: 12px; width: inherit; height: inherit;">
+        <div class="card-body">
+
+            <div class="row gy-3 mb-2">
+                <div class="col-sm-auto">
+                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        <input type="radio" class="btn-check" onclick="DurumVeTipSecim();" name="DocumentTypeRadio" id="SEVK_BUTTON" checked="" value="6" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="SEVK_BUTTON">SEVK</label>
+                        <input type="radio" class="btn-check" onclick="DurumVeTipSecim();" name="DocumentTypeRadio" id="MAL_KABUL_BUTTON" value="7" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="MAL_KABUL_BUTTON">KABUL</label>
+                    </div>
+                </div>
+                <div class="col-sm-auto">
+                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        <input type="radio" class="btn-check" onclick="DurumVeTipSecim();" name="DocumentStateRadio" id="ACIK_BUTTON" value="true" checked="" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="ACIK_BUTTON">AÇIK</label>
+                        <input type="radio" class="btn-check" onclick="DurumVeTipSecim();" name="DocumentStateRadio" id="KAPALI_BUTTON" value="false" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="KAPALI_BUTTON">KAPALI</label>
+                        <input type="radio" class="btn-check" onclick="DurumVeTipSecim();" name="DocumentStateRadio" id="TUMU_BUTTON" value="all" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="TUMU_BUTTON">TÜMÜ</label>
+                    </div>
+                </div>
+                <div class="col-sm-auto">
+                    <button type="button" id="refreshButton" class="btn btn-icon btn-outline-primary" onclick="Yenile()" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>Yenile</span>">
+                        <span class="tf-icons bx bx-refresh" style="font-size:x-large;"></span>
+                    </button>
+                </div>
+                <div class="col d-flex justify-content-end gap-2">
+                    <div class="d-flex justify-content-center align-items-center mx-2"><div style="width: 1.25rem; height: 1.25rem; background-color: #e9ebff; margin-right: 0.2rem; "></div>AÇIK</div>
+                    <div class="d-flex justify-content-center align-items-center"><div style="width: 1.25rem; height: 1.25rem; background-color: #FAEAEA; margin-right: 0.2rem; "></div>KAPALI</div>
+                </div>
+            </div>
+
+            <div class="row gy-3">
+                <div class="centercontent d-flex justify-content-center align-items-center" id="content">
+                    <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+                </div>
+
+                <table id="SevkMalKabulTable"
+                       class="table"
+                       data-show-fullscreen="false"
+                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                       data-toggle="table"
+                       data-show-export="false"
+                       data-export-data-type="all"
+                       data-export-types="['excel', 'pdf']"
+                       data-pagination="true"
+                       data-search="true"
+                       data-show-columns="false"
+                       data-show-columns-toggle-all="false"
+                       data-locale="tr-TR"
+                       data-filter-control="true"
+                       data-filter-control-multiple-search="true"
+                       data-loading-template="loadingTemplate"
+                       data-mobile-responsive="true"
+                       data-show-footer="false"
+                       data-detail-view-by-click="true"
+                       data-detail-view="true"
+                       data-fixed-columns="true"
+                       data-fixed-number="0"
+                       data-trim-on-search="false"
+                       data-row-style="SatirStil">
+                    <thead>
+                        <tr id="tst">
+                            <th data-formatter="tarihFormatter" data-field="INS_DATE" data-sortable="true" data-halign="center" data-align="center">TARİH</th>
+                            <th data-formatter="EmptyDataFormatter" data-field="CARI_ISIM" data-sortable="true" data-halign="center" data-align="center">CARİ İSİM</th>
+                            <th data-visible="false" data-formatter="EmptyDataFormatter" data-field="IRS_NO" data-sortable="true" data-halign="center" data-align="center">İRSALİYE NO</th>
+                            <th data-formatter="sipnoFormatter" data-field="SIPARIS_NO" data-sortable="true" data-halign="center" data-align="center">SİPARİŞ NO</th>
+                            <th data-formatter="EmptyDataFormatter" data-field="BELGE_NO" data-sortable="true" data-halign="center" data-align="center">BELGE NO</th>
+                            <th data-formatter="EmptyDataFormatter" data-field="INS_USER_NAME" data-sortable="true" data-halign="center" data-align="center">KAYIT YAPAN</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@Html.Partial("SevkMalKabulPartials/SevMalKabulSeriNo_Modal")
+
+<script>
+    var Belgeler = [];
+
+    $(document).ready(function () {
+        $.getJSON("http://192.168.2.13:83/api/shipping", function (data) {
+            Belgeler = data;
+        }).done(function () {
+            $('#progress').hide();
+
+            TabloYenile();
+        }).then(function () {
+            document.querySelectorAll('input[type="search"]')[0].onkeyup = function () {
+                document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.replaceAll("ı", "I").replaceAll("i", "İ").toUpperCase();
+            };
+        });
+    });
+
+    function TabloYenile() {
+        var DocumentTypeVal = $('input[name="DocumentTypeRadio"]:checked').val();
+        var DocumentStateVal = $('input[name="DocumentStateRadio"]:checked').val();
+
+        var DocType = parseInt(DocumentTypeVal);
+        var DocState = DocumentStateVal == "all" ? "all" : (DocumentStateVal === 'true');
+
+        var AyniNoFiltered = Belgeler.filter(
+            (obj, index) =>
+                Belgeler.findIndex((item) => item.BELGE_NO === obj.BELGE_NO && item.SIPARIS_NO === obj.SIPARIS_NO) === index
+        );
+
+        var FilteredData = AyniNoFiltered.filter(x => x.TYPE == DocType);
+
+        if (DocState != "all") {
+            var Acik = [];
+            var Kapali = [];
+
+            for (var i = 0; i < AyniNoFiltered.length; i++) {
+                var Kayitlar = Belgeler.filter(x => x.BELGE_NO == AyniNoFiltered[i].BELGE_NO && x.SIPARIS_NO == AyniNoFiltered[i].SIPARIS_NO && x.TYPE == DocType);
+
+                if (Kayitlar.length > 0) {
+                    var AcikOlanVarMi = false;
+
+                    for (var j = 0; j < Kayitlar.length; j++) {
+                        if (Kayitlar[j].ACTIVE) {
+                            AcikOlanVarMi = true;
+                            Acik.push(...Kayitlar);
+                            break;
+                        }
+                    }
+
+                    if (!AcikOlanVarMi) {
+                        Kapali.push(...Kayitlar);
+                    }
+                }
+            }
+
+            if (DocState) {
+                FilteredData = Acik.filter(
+                    (obj, index) =>
+                        Acik.findIndex((item) => item.BELGE_NO === obj.BELGE_NO && item.SIPARIS_NO === obj.SIPARIS_NO) === index
+                );
+            } else {
+                FilteredData = Kapali.filter(
+                    (obj, index) =>
+                        Kapali.findIndex((item) => item.BELGE_NO === obj.BELGE_NO && item.SIPARIS_NO === obj.SIPARIS_NO) === index
+                );
+            }
+        }
+
+        if (DocType == 7) {
+            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'IRS_NO');
+        }
+        else
+        {
+            $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'IRS_NO');
+        }
+
+        $("#SevkMalKabulTable").bootstrapTable("load", FilteredData);
+    }
+
+    function DurumVeTipSecim() {
+        TabloYenile();
+    }
+
+    function Yenile() {
+
+        $('#progress').show();
+
+        $("#SevkMalKabulTable").bootstrapTable("load", []);
+
+        document.getElementById("refreshButton").blur();
+
+        $.getJSON("http://192.168.2.13:83/api/shipping", function (data) {
+            Belgeler = data;
+        }).done(function () {
+            $('#progress').hide();
+            TabloYenile();
+        }).then(function () {
+            document.querySelectorAll('input[type="search"]')[0].onkeyup = function () {
+                document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.replaceAll("ı", "I").replaceAll("i", "İ").toUpperCase();
+            };
+        });
+
+    }
+</script>
+
 <script>
     if ($(window).width() < 600) {
         $("#divPartial2").show();
         document.getElementById("sevkiyat").className = "menu-item open active";
-        document.getElementById("mussiparisrap").className = "menu-item active";
+        document.getElementById("sevkmalkabul").className = "menu-item active";
     }
     else {
         $("#divPartial").show();
 
         document.getElementById("sevkiyat1").className = "nav__link active";
-        document.getElementById("mussiparisrap1").className = "nav__dropdown-item active";
+        document.getElementById("sevkmalkabul1").className = "nav__dropdown-item active";
+    }
+
+    var type = 'fa';
+
+    function loadingTemplate(message) {
+
+        return '<div class="heart"><img src="/images/novasaydam.png" style="max-width:15vw"/></div>'
+    }
+
+    function sipnoFormatter(value, index, row) {
+        var SeriNo = '<label hidden>' + value + '</label>';
+        return SeriNo + value.substring(0, 1) + value.substring(3, 5) + "-" + value.substring(value.length - 5, value.length);
+    }
+
+    function tarihFormatter(value, index, row) {
+        return new Date(value).toLocaleDateString();
+    }
+    function SatirStil(row, index) {
+        var Kayitlar = Belgeler.filter(x => x.BELGE_NO == row.BELGE_NO && x.SIPARIS_NO == row.SIPARIS_NO);
+
+        if (Kayitlar.length > 0) {
+            for (var j = 0; j < Kayitlar.length; j++) {
+                if (Kayitlar[j].ACTIVE) {
+                    return {
+                        css: {
+                            "background-color": '#e9ebff'
+                        }
+                    }
+                }
+            }
+
+            return {
+                css: {
+                    "background-color": '#FAEAEA'
+                }
+            }
+        }
+    }
+    function IslemFormatter(value, index, row) {
+        return `<div class="d-flex justify-content-center align-items-center" style="gap:1rem;">
+            <div onclick="Kopyala('${index.SIPARIS_NO}', '${index.BELGE_NO}', '${index.STOK_KODU}')"><i class="bi bi-clipboard2-check-fill" style="color:#595cd9;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Panoya Kopyala</span>"></i></div>
+             <div onclick="SeriNoModal('${index.SIPARIS_NO}', '${index.BELGE_NO}', '${index.STOK_KODU}')"  class="showmodal"  data-bs-toggle="modal" data-bs-target="#SeriNoModal"><i class="bi bi-file-earmark-binary-fill" style="color:#595cd9;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>Seri Bilgileri</span>"></i></div>
+        </div>`;
+    }
+
+    function EmptyDataFormatter(value, index, row) {
+        return value?.toString().trim().length > 0 ? value : '-';
+    }
+
+    function MiktarFormatter(value, index, row) {
+        return value?.toString().trim().length > 0 ? parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-';
+    }
+
+    var DurumTooltip = "";
+
+    function DurumDetailFormatter(value, index, row) {
+        var checkState = index.ACTIVE ? "checked" : "";
+
+        DurumTooltip = index.ACTIVE ? "AÇIK" : "KAPALI";
+
+        return `<div class="form-check form-switch" style=" display: flex; justify-content: center; gap: 0.25rem; align-items: center;" > <input class="form-check-input" type="checkbox" id="durum${index.INCKEY}Check" ${checkState} style="transform:Scale(1.5);" onclick="BelgeDurumDetailDegistir(event, '${index.BELGE_NO}', '${index.SIPARIS_NO}', '${index.STOK_KODU}' , '${index.INCKEY}', '${index.STOK_ADI}')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>${DurumTooltip}</span>"> </div>`;
+    }
+
+    function StokKoduFormatter(value, index, row) {
+        return `<div class="d-flex justify-content-center align-items-center gap-1"><span>${value}</span><div onclick="StokKopyala('${value}')"><i class="bi bi-files" style="color:#595cd9;font-size:large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>Stok Kodu Kopyala</span>"></i></div></div>`;
+    }
+
+    function DetailSatirStili(row, index)
+    {
+        if (row.ACTIVE)
+        {
+            return {
+                css: {
+                    "background-color": '#f6f7ff'
+                }
+            }
+        }
+
+        return {
+            css: {
+                "background-color": '#fdf8f8'
+            }
+        }
+    }
+
+    $('#SevkMalKabulTable').on('expand-row.bs.table', function (e, index, row, $detail) {
+        $detail.html(`<div class="card-body p-2" style="background-color:mintcream;"> <div id="employeeTableWrapper" class="tableWrapper table-responsive"> <table id="SevkMalKabulDetail${row.INCKEY}Table" class="belgedetailtbl table-hover table-sm" data-search="false" data-show-refresh="false" data-show-toggle="false" data-show-fullscreen="false" data-show-columns="false" data-show-columns-toggle-all="false" data-detail-view="false" data-show-export="false" data-click-to-select="true" data-minimum-count-columns="2" data-show-pagination-switch="false" data-page-size="4" data-page-list="[5,20,50,100]" data-pagination-parts="['pageInfo','pageList']" data-pagination="false" data-id-field="id" data-show-footer="false" data-mobile-responsive="true" data-Filtered-handler="FilteredHandler" data-locale="tr-TR" data-row-style="DetailSatirStili"> <thead> <tr> <th data-field="STOK_ADI" data-halign="center" data-align="center">STOK ADI</th> <th data-formatter="StokKoduFormatter" data-field="STOK_KODU" data-halign="center" data-align="center">STOK KODU</th> <th data-field="MIKTAR1" data-formatter="MiktarFormatter" data-halign="center" data-align="center">MİKTAR 1</th> <th data-field="MIKTAR2" data-formatter="MiktarFormatter" data-halign="center" data-align="center">MİKTAR 2</th> <th data-formatter="IslemFormatter" data-halign="center" data-align="center">İŞLEM</th> <th data-formatter="DurumDetailFormatter" data-field="INS_USER_NAME" data-sortable="true" data-halign="center" data-align="center">Durum</th> </tr> </thead> </table> </div></div>`);
+
+        var DetailData = [];
+
+        var FilteredData = Belgeler.filter(x => x.BELGE_NO == row.BELGE_NO);
+
+        FilteredData.forEach(function (a) {
+            if (!this[a.STOK_KODU]) {
+                this[a.STOK_KODU] = { ACTIVE: a.ACTIVE, INCKEY: a.INCKEY, STOK_ADI: a.STOK_ADI, SIPARIS_NO: a.SIPARIS_NO, BELGE_NO: a.BELGE_NO, STOK_KODU: a.STOK_KODU, MIKTAR1: 0.00, MIKTAR2: 0.00 };
+                DetailData.push(this[a.STOK_KODU]);
+            }
+            this[a.STOK_KODU].MIKTAR1 += parseFloat(a.MIKTAR1);
+            this[a.STOK_KODU].MIKTAR2 += parseFloat(a.MIKTAR2);
+        }, Object.create(null));
+
+        $(`#SevkMalKabulDetail${row.INCKEY}Table`).bootstrapTable({ data: DetailData });
+    });
+
+    function BelgeDurumDetailDegistir(e, belgeNo, siparisNo, stokKodu, inckey, stokAdi) {
+        e.stopPropagation();
+
+        var DegisimTipi = "Açık";
+
+        var DocumentTypeText = $('input[name="DocumentTypeRadio"]:checked').next('label').text().toLowerCase();
+
+        if ($(`#durum${inckey}Check`).is(':checked')) {
+            DegisimTipi = "Açık";
+        }
+        else {
+            DegisimTipi = "Kapalı";
+        }
+
+        Swal.fire({
+            html: `<b>${belgeNo}</b><br /> <div class="text-left">no'lu ${DocumentTypeText} formunda yer alan <br /><b>${stokAdi}</b> <br /> kalemin durumu '<b>${DegisimTipi}</b>' olarak değiştirilecektir,<br /></div>onaylıyor musunuz?`,
+            icon: 'warning',
+            showCancelButton: true,
+            allowEnterKey: false,
+            cancelButtonText: 'HAYIR',
+            cancelButtonColor: '#d33',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'EVET',
+            allowOutsideClick: false,
+            customClass: 'AreYouSureAlert'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var Filtered = Belgeler.filter(x => x.BELGE_NO == belgeNo && x.SIPARIS_NO == siparisNo && x.STOK_KODU == stokKodu);
+                var Durum = $(`#durum${inckey}Check`).is(':checked');
+
+                var DurumUrls = [];
+
+                for (var i = 0; i < Filtered.length; i++) {
+                    DurumUrls.push(`http://192.168.2.13:83/api/shipping/durum/${Durum}/${Filtered[i].INCKEY}`);
+                }
+
+                DurumDegistir(DurumUrls).then(() => {
+                    BelgeleriYenile(Filtered, Durum);
+                });
+            } else {
+                var Durum = $(`#durum${inckey}Check`).is(':checked');
+                $(`#durum${inckey}Check`).prop("checked", !Durum);
+                $(`#durum${inckey}Check`).focusout();
+            }
+        });
+    }
+
+    let DurumDegistir = async (DurumUrls) => {
+        const result = await Promise.all(DurumUrls.map(each =>
+            $.ajax({
+                url: each,
+                type: 'PUT',
+                success: (data) => { }
+            })
+        ));
+
+        return result;
+    }
+
+    function MiktarFormatla(value)
+    {
+        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function DecimalFormatter(value) {
+        return value?.toString().trim().length > 0 ? parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-";
+    }
+
+    function BelgeleriYenile(Docs, Durum) {
+
+        for (var i = 0; i < Belgeler.length; i++) {
+            for (var j = 0; j < Docs.length; j++) {
+                if (Belgeler[i].STOK_KODU == Docs[j].STOK_KODU && Belgeler[i].SIPARIS_NO == Docs[j].SIPARIS_NO && Belgeler[i].BELGE_NO == Docs[j].BELGE_NO) {
+                    Belgeler[i].ACTIVE = Durum;
+                }
+            }
+        }
     }
 </script>
+
+<script>
+    async function Kopyala(SiparisNo, BelgeNo, StokKodu) {
+        var Filtered = Belgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo && x.STOK_KODU == StokKodu);
+        var KopyaVerisi = "";
+
+        for (var i = 0; i < Filtered.length; i++) {
+            KopyaVerisi += `${Filtered[i].SERI_NO}	${GenislikKalinlikFormat(Filtered[i].ACIK1)}	${GenislikKalinlikFormat(Filtered[i].ACIK2)}	${Filtered[i].ACIK3}	${MiktarFormatla(Filtered[i].MIKTAR1)}	${MiktarFormatla(Filtered[i].MIKTAR2)}	${Filtered[i].SERI_NO_3}	${Filtered[i].SERI_NO_4}	${Filtered[i].ACIKLAMA_4}	${Filtered[i].ACIKLAMA_5}\n`;
+        }
+
+        try {
+            await copyToClipboard(KopyaVerisi);
+        } catch (error) {
+        }
+
+        Swal.fire({
+            title: "Seri bilgileri kopyalandı.",
+            showConfirmButton: false,
+            icon: "success",
+            timer: "750"
+        });
+    }
+
+    async function StokKopyala(StokKodu)
+    {
+        try {
+            await copyToClipboard(StokKodu);
+        } catch (error) {
+        }
+
+        Swal.fire({
+            title: "Stok kodu kopyalandı.",
+            showConfirmButton: false,
+            icon: "success",
+            timer: "750"
+        });
+    }
+</script>
+
+
+
+@*Birden Fazla Modal*@
+<script>
+    Array.from(document.getElementsByClassName('showmodal')).forEach((e) => {
+        e.addEventListener('click', function (element) {
+            element.preventDefault();
+            if (e.hasAttribute('data-show-modal')) {
+                showModal(e.getAttribute('data-show-modal'));
+            }
+        });
+    });
+    function showModal(modal) {
+        const mid = document.getElementById(modal);
+        let myModal = new bootstrap.Modal(mid);
+        myModal.show();
+    }
+    $(document).ready(function () {
+
+        $(document).on('show.bs.modal', '.modal', function () {
+            const zIndex = 1040 + 10 * $('.modal:visible').length;
+            $(this).css('z-index', zIndex);
+            setTimeout(() => $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack'));
+        });
+    });
+</script>
+
+<style>
+    @@media (min-width: 768px) {
+        .modal-xl {
+            width: 90%;
+            max-width: 1600px;
+        }
+    }
+
+    @@media (max-width: 562px) {
+        #SevkMalKabulTable, #SevkMalSeriNoTable {
+            font-size: smaller;
+        }
+
+        .belge-bilgi {
+            font-size: smaller;
+        }
+    }
+
+    .detail-view td {
+        padding: 0 !important;
+    }
+</style>
+
+<style>
+
+    .card-view {
+        border-bottom: 1px dashed gray;
+        margin-top: 2px;
+    }
+
+    .card-view-value {
+        margin-left: 5px;
+        white-space: normal;
+    }
+
+    .card-view-title {
+        min-width: 40% !important;
+    }
+
+    .select2-container {
+        width: 100%;
+    }
+
+    .search {
+        width: 100%;
+    }
+
+    #filter {
+        width: 98%;
+    }
+
+    .menu1 {
+        display: none;
+    }
+
+    @@media screen and (max-width: 600px) {
+        input {
+            width: 100% !important;
+        }
+
+        .select2 {
+            width: 100% !important;
+        }
+
+        .menu1 {
+            display: inline-flex;
+        }
+
+        .menu2 {
+            display: none;
+        }
+        /* .btn-group {
+            display: none;
+        }*/
+    }
+</style>
+<style>
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+
+
+    .icon-info-sign:hover {
+        opacity: .8;
+        cursor: pointer;
+    }
+
+    .detail-view td {
+        padding: 3px;
+    }
+
+    .swal2-container {
+        z-index: 10000;
+    }
+
+    i:hover {
+        color: #0d5c69 !important;
+    }
+
+    .AreYouSureAlert {
+        width: 30%;
+    }
+</style>
