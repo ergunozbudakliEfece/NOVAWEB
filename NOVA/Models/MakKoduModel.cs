@@ -7,8 +7,7 @@ namespace NOVA.Models
 {
     public class MakKoduModel
     {
-        public string MACHINE_CODE{ get; set; }
-        public string MACHINE_NAME { get; set; }
+        public string HAT_KODU{ get; set; }
         
     }
 }

@@ -320,7 +320,7 @@
 
                                             @foreach (var item in ViewBag.Makine)
                                             {
-                                                <option>@item.MACHINE_CODE</option>
+                                                <option>@item.HAT_KODU</option>
                                             }
 
                                         </select>
@@ -429,7 +429,7 @@
 
                                                     @foreach (var item in ViewBag.Makine)
                                                     {
-                                                        <option>@item.MACHINE_CODE</option>
+                                                        <option>@item.HAT_KODU</option>
                                                     }
 
                                                 </select>
@@ -701,7 +701,6 @@
 
                                 document.getElementById("agirlikhesap").value = thousands_separators(Math.round(parseFloat((parseInt(document.getElementById("2input").value) * parseInt(document.getElementById("3input").value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(document.getElementById("oran1").value)).toFixed(2)));
 
-
                                 document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
 
                                 document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
@@ -799,6 +798,9 @@
                                         var list3 = [];
                                         var old = null;
                                         var old2 = null;
+                                        var serilist = [];
+                                        var isemrilist = [];
+                                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
                                         if (localStorage.list != null) {
                                             old = JSON.parse(localStorage.list);
                                             old2 = JSON.parse(localStorage.list2);
@@ -807,9 +809,10 @@
                                         var say = 0;
                                         var sonSeri = null;
 
-                                        $.getJSON("http://192.168.2.13:83/api/exec/seri/1", function (data) {
+                                        $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
                                             sonSeri = data;
                                         }).done(function () {
+
                                             for (var i = 1; i < rows1.length; i++) {
 
                                             var val = rows1[i].getElementsByTagName("input")[1].value;
@@ -903,7 +906,7 @@
                                             var refadet = rows1[i].getElementsByTagName("input")[5].value;
                                             var refagirlik = rows1[i].getElementsByTagName("input")[6].value;
                                                 var adet = rows1[i].getElementsByTagName("input")[3].value;
-                                                var num = parseInt(oncekiadet)  + sonSeri[0].SONNUMARA;
+                                                var num = parseInt(oncekiadet) + parseInt(sonSeri[0].SERI_NO.substring(12, 15));
                                                 oncekiadet = parseInt(oncekiadet) + parseInt(adet);
                                             var siparisno = rows1[i].getElementsByTagName("select")[4].name.split(" ")[1];
                                             var agirlik =null;
@@ -936,37 +939,41 @@
                                                     list2 = old;
                                                     list3 = old2;
                                                 for (let b = 0; b < adet; b++) {
-                                                    var s = sonSeri[0].BASLANGICKARAKTER + (b + num).toString().padStart(11, '0');
-                                                    var s1 = isno.substring(0, 13).replaceAll('.', '') + (b + parseInt(isno.substring(13, isno.length))).toString().padStart(3, '0');
-                                                    s1 = s1.substring(0, 6) + "0" + s1.substring(6, s1.length);
+                                                    var girdi2 = sonSeri[0].SERI_NO;
 
-                                                    var s2 = refisemri.substring(0, 13).replaceAll('.', '') + (b + parseInt(refisemri.substring(13, refisemri.length))).toString().padStart(3, '0');
-                                                    s2 = s2.substring(0, 6) + "0" + s2.substring(6, s2.length);
-                                                    var e = urunkodunew.substring(8, urunkodunew.length);
                                                     list2.push({
-                                                        GIRDI1: urunkodu, GIRDI2: s, ISEMRINO: s1, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO:s2 , REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
-                                                });
-
+                                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: "-", STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO:"-" , REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam});
+                                                    serilist.push(girdi2);
                                                     say++;
                                                     }
 
-                                                 list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKOLCULERI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: agirlik/adet });
-
+                                                list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKOLCULERI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: agirlik / adet });
                                             }
                                             else {
                                                 for (let b = 0; b < adet; b++) {
-                                                    var s = sonSeri[0].BASLANGICKARAKTER + (b + num).toString().padStart(11, '0');
-                                                    var s1 = isno.substring(0, 13).replaceAll('.', '') + (b + parseInt(isno.substring(13, isno.length))).toString().padStart(3, '0');
-                                                    var s2 = refisemri.substring(0, 13).replaceAll('.', '') + (b + parseInt(refisemri.substring(13, refisemri.length))).toString().padStart(3, '0');
-                                                    s1 = s1.substring(0, 6) + "0" + s1.substring(6, s1.length);
-                                                    s2 = s2.substring(0, 6) + "0" + s2.substring(6, s2.length);
-                                                    var e = urunkodunew.substring(8, urunkodunew.length);
-                                                    list2.push({ GIRDI1: urunkodu, GIRDI2: s, ISEMRINO: s1, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: s2, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString() , SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam });
-                                                    say++;
-
+                                                    var girdi2 = sonSeri[0].SERI_NO;
+                                                    var s = jsonObj.filter(x => x.MAK_KODU == makine);
+                                                    var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
+                                                    var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+                                                    var sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+                                                    if (isemrilist.includes(sonisemri)) {
+                                                        sonisemri = makine + "23" + ((s[s.length - 1].MAX_ISEMRINO) + 1).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
                                                     }
+                                                    if (isemrilist.includes(sonrefisemri)) {
+                                                        sonrefisemri = makineref + "23" + ((s1[s1.length - 1].MAX_ISEMRINO) + 1).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+                                                    }
+                                                    if (serilist.includes(girdi2)) {
+                                                        girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                                    }
+                                                    list2.push({
+                                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+                                                    });
+                                                    serilist.push(girdi2);
+                                                    isemrilist.push(sonisemri);
+                                                    isemrilist.push(sonrefisemri);
+                                                    say++;
+                                                }
                                                     list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKOLCULERI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: agirlik/adet });
-
                                                 }
 
 
@@ -994,12 +1001,17 @@
 
 
                                             }
-                                            var uu = "http://192.168.2.13:83/api/exec/seri/1";
-                                            var rowNumber = document.getElementsByTagName("table")[1].getElementsByTagName("tr").length - 1;
-                                            for (let e = 0; e < rowNumber; e++) {
-                                                $.getJSON(uu, function (data) { });
+                                            var number = 0;
+
+                                            var rowNumber = (document.getElementsByTagName("table")[1].getElementsByTagName("tr").length);
+                                            for (let e = 1; e < rowNumber; e++) {
+                                                var adet = document.getElementsByTagName("table")[1].getElementsByTagName("tr")[e].getElementsByTagName("input")[3].value
+                                                number = parseInt(number) + parseInt(adet);
+
                                             }
-                                            
+                                            var uu = "http://192.168.2.13:83/api/seri/1/" + number;
+                                            $.getJSON(uu, function (data) { });
+
                                         var ta = document.getElementById("test");
                                         var ro = ta.getElementsByTagName("tr");
                                         var tp = 0;
@@ -1875,12 +1887,13 @@
                                 oraninput.max = "1.00";
                                 oraninput.min = "0.00";
                                 oraninput.value = "1.00";
-                                oraninput.onkeyup = function () {
+                                oraninput.onkeyup = function (e) {
                                     if (this.value > 1) {
                                         this.value = "1.00";
                                     } else if (this.value < 0) {
                                         this.value = "0.00";
                                     }
+                                    document.getElementsByTagName("table")[1].getElementsByTagName("tr")[e.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("input")[3].onkeyup();
                                 };
                                 cell.appendChild(oraninput);
                             }
@@ -2602,7 +2615,8 @@
                                     var m = document.getElementById("metraj").value;
                                     var adt = onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[3].value;
                                     var upt = m.split('/')[0];
-                                    onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[5].value = Math.round((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000));
+                                    var o = parseFloat(onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[0].value)
+                                    onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[5].value = Math.round(((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000))*o);
 
 
                                     $(document).ready(function () {
@@ -4033,7 +4047,8 @@
                                      var m = document.getElementById("metraj").value;
                                      var adt = t[i].getElementsByTagName("input")[3].value;
                                      var upt = m.split('/')[0];
-                                     t[i].getElementsByTagName("input")[5].value = Math.round((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000));
+                                     var o = parseFloat(t[i].getElementsByTagName("input")[0].value);
+                                     t[i].getElementsByTagName("input")[5].value = Math.round(((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000))*o);
 
                                  }
                                  sl.name = "state";

@@ -1,4 +1,5 @@
-﻿using NOVA.Models;
+﻿using NetOpenX50;
+using NOVA.Models;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
@@ -10,16 +11,19 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using static NOVA.Controllers.IsEmriController;
 
 namespace NOVA.Controllers
 {
     public class UretimController : Controller
     {
+        Kernel kernel = new Kernel();
+        IsEmri Isemri = default(IsEmri);
+        IsEmri Isemri1 = default(IsEmri);
+        Sirket sirket = default(Sirket);
         // GET: Uretim
         public ActionResult Index()
         {
-
-
             ViewBag.Makine = GetMak();
             ViewBag.Girdi = GetGirdi();
             ViewBag.Cikti = GetCikti();
@@ -273,6 +277,239 @@ namespace NOVA.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public ActionResult Post(List<IsEmriModel2> isemri)
+        {
+            List<SeriModel> createdlog1 = null;
+            var apiUrl2 = "http://192.168.2.13:83/api/seri/1";
+            Uri url2 = new Uri(apiUrl2);
+            WebClient client2 = new WebClient();
+            client2.Encoding = System.Text.Encoding.UTF8;
+
+            var json2 = client2.DownloadString(url2);
+            JavaScriptSerializer ser2 = new JavaScriptSerializer();
+            createdlog1 = ser2.Deserialize<List<SeriModel>>(json2);
+
+            try
+            {
+                var stokadlari = GetStokAdlari();
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                             "TEST2022",
+                                             "TEMELSET",
+                                             "",
+                                             "nova",
+                                             "Efc@+180", 0);
+
+                for (int i = 0; i < isemri.Count(); i++)
+                {
+
+                    if (isemri[i].REF_ISEMRINO != "-")
+                    {
+                        var stokkodu = stokadlari.Where(x => x.STOK_ADI == isemri[i].REF_STOKADI);
+
+
+                        Isemri = kernel.yeniIsEmri(sirket);
+                        Isemri.IsEmriNo = isemri[i].REF_ISEMRINO;
+                        Isemri.StokKodu = stokkodu.First().STOK_KODU;
+                        Isemri.Kapali = false;
+                        Isemri.ReceteSaklansin = true;
+                        Isemri.ProjeKodu = "1";
+                        Isemri.Oncelik = 0;
+                        Isemri.Aciklama = isemri[i].REF_ADET;
+                        Isemri.DepoKodu = 45;
+                        Isemri.CikisDepoKodu = 45;
+                        Isemri.SeriNo = null;
+                        Isemri.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                        Isemri.TeslimTarihi = Convert.ToDateTime("2023-12-31");
+
+                        double m2 = 0;
+                        if (isemri[i].AGIRLIK.Contains('.'))
+                        {
+                            m2 = Double.Parse(isemri[i].AGIRLIK.Split('.')[0] + isemri[i].AGIRLIK.Split('.')[1]);
+                        }
+                        else
+                        {
+                            m2 = Double.Parse(isemri[i].AGIRLIK);
+                        }
+                        Isemri.Miktar = m2;
+                        Isemri.kayitYeni();
+                        NetRS netRS = kernel.yeniNetRS(sirket);
+                        if (isemri[i].GİRDİ2 != "-")
+                        {
+                            netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemri[i].GİRDİ2 + "',DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemri[i].REF_ISEMRINO + "'");
+                        }
+                        
+
+                    }
+
+
+
+                    var stokkodu1 = stokadlari.Where(x => x.STOK_ADI == isemri[i].STOKADI);
+
+                    Isemri1 = kernel.yeniIsEmri(sirket);
+                    Isemri1.IsEmriNo = isemri[i].ISEMRINO;
+                    Isemri1.StokKodu = stokkodu1.First().STOK_KODU;
+                    Isemri1.Aciklama = isemri[i].ADET;
+                    Isemri1.Kapali = false;
+                    Isemri1.ReceteSaklansin = true;
+                    Isemri1.ProjeKodu = "1";
+                    Isemri1.Oncelik = 0;
+                    if (isemri[i].REF_ISEMRINO != "-")
+                    {
+                        Isemri1.RefIsEmriNo = isemri[i].REF_ISEMRINO;
+                    }
+                    Isemri1.DepoKodu = 45;
+                    Isemri1.CikisDepoKodu = 45;
+                    if (isemri[i].GİRDİ2 != "-")
+                    {
+                        Isemri1.SeriNo = isemri[i].GİRDİ2;
+                    }
+                    double mik = 0;
+                    if (isemri[i].AGIRLIK.Contains('.'))
+                    {
+                        mik = Double.Parse(isemri[i].AGIRLIK.Split('.')[0] + isemri[i].AGIRLIK.Split('.')[1]);
+                    }
+                    else
+                    {
+                        mik = Double.Parse(isemri[i].AGIRLIK);
+                    }
+                    Isemri1.Miktar = mik;
+                    Isemri1.TeslimTarihi = Convert.ToDateTime("2023-12-31");
+                    Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                    Isemri1.kayitYeni();
+                    NetRS netRS2 = kernel.yeniNetRS(sirket);
+                    netRS2.Ac("UPDATE TBLISEMRIREC SET MIKTAR=1,MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemri[i].ISEMRINO + "'");
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                TempData["Hata"] = "HATA";
+                var msg = ex.Message;
+                return View("Index");
+            }
+
+
+
+
+
+
+            return RedirectToAction("Index");
+        }
+        public class IsEmriModel2
+        {
+           
+            public string GİRDİ2 { get; set; }
+            public string ISEMRINO { get; set; }
+            public string STOKADI { get; set; }
+            public string AGIRLIK { get; set; }
+            public string ADET { get; set; }
+            public string REF_ADET { get; set; }
+            public string REF_ISEMRINO { get; set; }
+            public string REF_STOKADI { get; set; }
+
+
+        }
+        public List<StokKartlari> GetStokAdlari()
+        {
+            var apiUrl = "http://192.168.2.13:83/api/stokkartlari";
+
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+
+            string json = client.DownloadString(url);
+            //END
+
+            //JSON Parse START
+            JavaScriptSerializer ser = new JavaScriptSerializer();
+            List<StokKartlari> jsonList = ser.Deserialize<List<StokKartlari>>(json);
+
+            //END
+
+            return jsonList;
+        }
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult IsEmirleriniKapat(List<IsEmriMod> isemrimod)
+        {
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                                 "TEST2022",
+                                                 "TEMELSET",
+                                                 "",
+                                                 "nova",
+                                                 "Efc@+180", 0);
+                NetRS netRS = kernel.yeniNetRS(sirket);
+                for (var i = 0; i < isemrimod.Count; i++)
+                {
+                    netRS.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + isemrimod[i].ISEMRINO + "'");
+                }
+            }
+            catch (Exception)
+            {
+
+                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+            }
+
+
+            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+
+        }
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult IsEmirleriniAc(List<IsEmriMod> isemrimod)
+        {
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                                 "TEST2022",
+                                                 "TEMELSET",
+                                                 "",
+                                                 "nova",
+                                                 "Efc@+180", 0);
+                NetRS netRS = kernel.yeniNetRS(sirket);
+                for (var i = 0; i < isemrimod.Count; i++)
+                {
+                    netRS.Ac("UPDATE TBLISEMRI SET KAPALI='H' WHERE ISEMRINO='" + isemrimod[i].ISEMRINO + "'");
+                }
+            }
+            catch (Exception)
+            {
+
+                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+            }
+
+
+            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+
+        }
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult EksikGuncelle(string seri,int miktar)
+        {
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                                 "TEST2022",
+                                                 "TEMELSET",
+                                                 "",
+                                                 "nova",
+                                                 "Efc@+180", 0);
+                NetRS netRS = kernel.yeniNetRS(sirket);
+                var list = GetSarfs(seri, miktar);
+                for (var i = 0; i < list.Count; i++)
+                {
+                    netRS.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + list[i].SARF+" WHERE ISEMRINO='" + list[i].ISEMRINO + "'");
+                }
+            }
+            catch (Exception)
+            {
+
+                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+            }
+
+
+            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+
+        }
         public List<MakKoduModel> GetMak()
         {
             var apiUrl = "http://192.168.2.13:83/api/makine";
@@ -345,6 +582,26 @@ namespace NOVA.Controllers
             //JSON Parse START
             JavaScriptSerializer ser = new JavaScriptSerializer();
             List<User> jsonList = ser.Deserialize<List<User>>(json);
+            return jsonList;
+        }
+        public List<SarfModel> GetSarfs(string seri,int miktar)
+        {
+            var apiUrl = "http://192.168.2.13:83/api/ie/SARF/"+seri+"/"+miktar;
+
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+
+            string json = client.DownloadString(url);
+            //END
+
+            //JSON Parse START
+            JavaScriptSerializer ser = new JavaScriptSerializer();
+            List<SarfModel> jsonList = ser.Deserialize<List<SarfModel>>(json);
+
+            //END
+
             return jsonList;
         }
 
@@ -478,6 +735,12 @@ namespace NOVA.Controllers
 
             return jsonList;
 
+        }
+        public class SarfModel
+        {
+            public string ISEMRINO { get; set; }
+            public string SARF { get; set; }
+            public string HES_SARF { get; set; }
         }
 
     }

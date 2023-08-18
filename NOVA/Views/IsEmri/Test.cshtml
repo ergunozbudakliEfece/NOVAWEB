@@ -1,106 +1,1714 @@
 ﻿
+@{
+    Layout = "/Views/Shared/_Layout_isemri.cshtml";
+}
+
+@model NOVA.Models.MSIPAcik
+
 
 <!DOCTYPE html>
 
 
-@model NOVA.Models.MSIPAcik
 
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-   
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 
+    <!-- PivotTable.js libs from ../dist -->
+    <link rel="stylesheet" type="text/css" href="../dist/pivot.css">
+    <script type="text/javascript" src="../dist/pivot.js"></script>
+    <script src="~/lib/pivot/multifact-pivottable.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://lipis.github.io/bootstrap-sweetalert/lib/sweet-alert.css">
 
+    <style>
+        .pvtTable{
+            text-align:center !important;
+        }
 
+        .myInput {
+            box-sizing: border-box;
+            background-image: url('https://www.w3schools.com/howto/searchicon.png');
+            background-position: 5px;
+            background-repeat: no-repeat;
+            font-size: 12px;
+            padding: 8px 20px 7px 45px;
+            border: none;
+            z-index: 5;
+        }
 
+            .myInput:focus {
+                outline: 3px solid #ddd;
+            }
 
+        .dropdown {
+            position: fixed;
+            display: inline-block;
+        }
 
-    <script src="~/lib/jquery/jquery.js"></script>
-    <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
-    <link href="~/lib/pivot/pivot.min.css" rel="stylesheet" />
-    <script src="~/lib/pivot/pivot.min.js"></script>
-    
+        .dropdown-content2 {
+            position: fixed;
+            background-color: #f6f6f6;
+            margin-left: -100px;
+            min-width: 100px;
+            max-height: 300px;
+            overflow: auto;
+            border: 1px solid;
+            display: none;
+            z-index: 10;
+        }
 
+            .dropdown-content2 a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                width: auto;
+                display: none;
+                cursor: pointer;
+                z-index: 5;
+                border-bottom: 1px solid;
+            }
 
+        .dropdown-content {
+            position: relative;
+            background-color: #f6f6f6;
+            min-width: 130px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            z-index: 10;
+        }
+
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: none;
+                cursor: pointer;
+                z-index: 5;
+            }
+
+        .dropdown a:hover {
+            background-color: #ddd;
+        }
+
+        .show {
+            display: flex;
+        }
+
+        .pvtAxisContainer {
+            display: none;
+        }
+
+        .pvtRenderer {
+            display: none;
+        }
+
+        .pvtVals {
+            display: none;
+        }
+
+         .pvtTotalLabel {
+            display: none;
+        }
+
+         .pvtTotal {
+            display: none;
+        }
+
+        .pvtGrandTotal {
+            display: none;
+        }
+        .pvtTable thead tr{
+            background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%) !important;
+        }
+        table.pvtTable thead tr th, table.pvtTable tbody tr th {
+            background-color: transparent;
+            border: 1px solid #CDCDCD;
+            font-size: 8pt;
+            padding: 5px;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        var sag = 0;
+    </script>
+    <style>
+        .centercontent {
+            position: absolute;
+            max-width: 100%;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            
+        }
+
+        .heart {
+            animation: heartbeat 1s infinite alternate;
+        }
+
+        @@keyframes heartbeat {
+            from {
+                opacity: 0.3;
+                transform: scale(0.32);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(0.40);
+            }
+        }
+    </style>
 </head>
 <body style="background-color: #f5f5f9 !important;font-size:10px !important;">
-    <div class="container" sstyle="max-height:200px;">
-        
-                <table class="table table-responsive" style="overflow-y:scroll">
-                    <thead>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(m => Model.CARI_ISIM)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(m => Model.STOK_ADI)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(m => Model.FISNO) 
-                            </th>
-
-                        </tr>
-
-                    </thead>
-                    <tbody>
-                        @foreach (var item in ViewBag.Cariler as List<NOVA.Models.MSIPAcik>)
-                        {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(m => item.CARI_ISIM)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(m => item.STOK_ADI)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(m => item.FISNO)
-                            </td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-       
-    <div class="container">
-        <div id="pivotoutput"></div>
-    </div>
+    @if (ViewBag.Hata != null)
+    {
+        <div class="row"><div class="col">@ViewBag.Hata</div></div>
+    }
     <script>
-        var takiplist = [];
+        if (localStorage.list != null && localStorage.list != "null") {
+            document.body.style.cursor = 'wait';
+        } else {
+            document.body.style.cursor = 'default';
+        }
 
-        function drawPivot(){
-            $(function () {
-                $("#pivotoutput").pivotUI(
-                    takiplist,
-                    {
-                        rows: ["CARI_ISIM"],
-                        cols: [""],
-                        vals: ["FISNO"],
-                        aggregatorName: "Sum"
-                    })
+       @*var userData = [];
+       userData.push({ USERID: "@Request.Cookies["UserId"].Value", USERNAME: "@Request.Cookies["UserName"].Value", PLATFORM: "@Request.Cookies["Platform"].Value", LASTACTIVETIME: "@DateTime.Now.ToString()" });
+       localStorage.userlist = JSON.stringify(userData[0]);*@
+
+    </script>
+    @{ var seriler = ViewBag.Seriler;}
+    <div id="divPartial" style="display:none">
+        @Html.Partial("_Layout_menu")
+    </div>
+    <div id="divPartial2" style="display:none">
+        @Html.Partial("_Layout_menu2")
+    </div>
+    <div class="authentication-wrapper authentication-basic container-fluid">
+        <div class="centercontent" id="content" style="display:unset">
+            <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+        </div>
+        <div class="authentication-inner" id="body">
+            <button class="btn btn-outline-danger d-none" onclick="testFunction()">SERİTRA</button>
+
+           
+
+            <div class="card mt-2">
+
+                <div class="card-body">
+                    <div class="table-responsive text-nowrap" style="overflow-y: hidden;">
+                        <div class="row me-1">
+                            <div class="col">
+                                <button class="float-end mb-1" onclick="addCell()" id="addcll" style="cursor: pointer; background-color: transparent; background-repeat: no-repeat; border: none;"><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC" /></button>
+                                <button class="float-end" onclick="removeCell()" id="rmvcll" style="cursor: pointer; background-color: transparent; background-repeat: no-repeat; border: none;"><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC" /></button>
+                            </div>
+
+                        </div>
+                        <div class="row me-1">
+                            <div class="col-2">
+                                <table class="table table-bordered border-dark" id="test">
+
+
+
+                                    <tbody>
+                                        <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
+                                            <th class="p-1"></th>
+                                            <th class="p-1 text-center" style="font-size: 11px;">ORAN</th>
+                                            <th class="p-1 text-center" style="font-size: 11px;">MAKİNE</th>
+                                            <th class="p-1 text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
+                                            <th class="p-1 text-center" style="font-size: 11px;">PAKET MİKTARI</th>
+                                            <th class="p-1 text-center" style="font-size: 11px;">PAKET ADETİ</th>
+                                            <th class="p-1 text-center" style="font-size: 11px">AĞIRLIK</th>
+                                            <th class="p-1 text-center" style="font-size: 11px">MÜŞTERİ</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center p-1">1</td>
+                                            <td class="p-1">
+                                                <input class="border-0  text-center" type="number" value="1.00" max="1.00" min="0.00" />
+                                                <script>
+
+                                                    var oraninput = document.getElementById("oran1");
+                                                    oraninput.oninput = function () {
+                                                        if (this.value >= 1) {
+                                                            this.value = "1.00";
+                                                        } else if (this.value < 0) {
+                                                            this.value = "0.00";
+                                                        }
+
+                                                    };
+
+
+                                                </script>
+
+                                            </td>
+                                            <td class="border-0 text-center p-1">
+
+                                                <select class="js-example-basic-single " style="width:120px" id="machinenames" onchange="makinechange(this)">
+
+                                                    <option selected disabled>MAKİNE SEÇİN</option>
+
+                                                    @foreach (var item in ViewBag.Makine)
+                                                    {
+                                                        if ((item.HAT_KODU).Contains("BK")|| (item.HAT_KODU).Contains("TP")|| (item.HAT_KODU).Contains("MH"))
+                                                        {
+<option>@item.HAT_KODU</option>
+                }
+                                                        
+                                                    }
+
+                                                </select>
+                                                <script>
+                                                    function makinechange(value) {
+                                                        var rownumber = value.parentNode.parentNode.rowIndex;
+                                                        var stokadi = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("select")[1];
+                                                        var paketadedi = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[2];
+                                                        var miktar2input = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[3];
+                                                        if (x == 1) {
+                                                            $.getJSON("http://192.168.2.13:83/api/ie/besleme", function (data) {
+                                                                var d = data.filter(x => x.HAT_KODU == value.value);
+                                                                $(".selectmakina2").select2('destroy');
+                                                                var $sel2 = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("select")[2];
+                                                                $sel2.replaceChildren();
+                                                                var opt = document.createElement("option");
+                                                                opt.value = "MAKİNE SEÇİN";
+                                                                opt.text = "MAKİNE SEÇİN";
+                                                                opt.setAttribute("selected", "");
+                                                                opt.setAttribute("disabled", "");
+                                                                $sel2.appendChild(opt);
+                                                                for (let i = 0; i < d.length; i++) {
+                                                                    var opt1 = document.createElement("option");
+                                                                    opt1.value = d[i].HAT_KODU2;
+                                                                    opt1.text = d[i].HAT_KODU2;
+                                                                    $sel2.appendChild(opt1);
+                                                                }
+                                                                $(".selectmakina2").select2();
+                                                            })
+                                                        }
+                                                        stokadi.removeAttribute("disabled")
+                                                        miktar2input.removeAttribute("disabled")
+                                                    }
+                                                </script>
+
+                                                <input class="border-0 text-center" id="1input" readonly style="display:none" />
+
+                                              
+                                            </td>
+
+                                            <td class="p-1 text-center">
+                                                <select class="js-example-basic-single" style="width:120px" onchange="sc(this)" disabled>
+                                                    <option selected disabled>STOK SEÇİN</option>
+                                                    @foreach (var item in ViewBag.Stok_Adlari)
+                                                    {
+                                                        <option value="@item.STOK_KODU">@item.STOK_ADI</option>
+                                                    }
+                                                </select>
+                                                <script>
+                                                    function sc(value) {
+                                                        var kod = value.value;
+                                                        var rownumber = value.parentNode.parentNode.rowIndex;
+                                                        var miktar2input = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[3];
+                                                        var paketadedi = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[2];
+                                                        paketadedi.removeAttribute("disabled")
+                                                        if (paketadedi.value.length>0) {
+                                                            paketadedi.onkeyup();
+                                                        }
+                                                    }
+
+                                                </script>
+
+                                            </td>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width:80px" onkeyup="keyupadet(this)" disabled />
+                                                <script>
+                                                    function keyupadet(v) {
+                                                        var rownumber = v.parentNode.parentNode.rowIndex;
+                                                        var con = 0;
+                                                        if (rownumber === 1) {
+                                                            con = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[2].value;
+                                                        } else {
+                                                            con = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[1].value;
+                                                        }
+                                                        
+                                                        var kod = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("select")[1].value;
+                                                        var miktar2input = 0;
+                                                        if (rownumber === 1) {
+                                                            miktar2input = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[3].value;
+                                                        } else {
+                                                           miktar2input = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[2].value;
+                                                        }
+                                                        $.getJSON("http://192.168.2.13:83/api/stok/miktar/" + kod, function (data) {
+                                                            var miktar2 = data[0].PAY_1;
+                                                            var mik1 = data[0].PAYDA_1
+                                                            if (con.length > 0) {
+                                                                if (x == 0) {
+                                                                    if (miktar2input.length > 0) {
+                                                                        if (rownumber === 1) {
+                                                                            document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = Math.round(((con / miktar2) * mik1) * miktar2input)
+                                                                        } else {
+                                                                            document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[3].value = Math.round(((con / miktar2) * mik1) * miktar2input)
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    
+                                                                    if (miktar2input.length > 0) {
+                                                                        if (rownumber === 1) {
+                                                                            document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[6].value = Math.round(((con / miktar2) * mik1) * miktar2input)
+                                                                        } else {
+                                                                            var l = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input").length
+                                                                            document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[l - 1].value = Math.round(((con / miktar2) * mik1) * miktar2input)
+                                                                        }
+                                                                        
+                                                                    }
+                                                                }
+                                                            } else {
+                                                               
+                                                                if (x == 0) {
+                                                                    document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = null
+                                                                } else {
+                                                                    document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[6].value = null
+                                                                }
+                                                            }
+
+
+                                                        })
+                                                    }
+                                                </script>
+                                            </td>
+                                           
+                                            <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" onkeyup="keyupadet(this)" disabled />
+                                                                       
+                                            </td>
+                                            <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" readonly /></td>
+                                            <td class="text-center p-1" id="deneme">
+                                                <select class="select2-single1" style="width:120px">
+                                                    <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
+                                                </select>
+                                            </td>
+
+                                        </tr>
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+
+
+
+                        <script>
+                            function changeadet() {
+                                var top1 = 0;
+                                var rows = document.getElementById("test").getElementsByTagName("tr");
+                                for (let i = 1; i < rows.length; i++) {
+                                    if (rows[i].getElementsByTagName("input")[3].value != "") {
+                                        top1 = top1 + (parseInt(rows[i].getElementsByTagName("input")[2].value) * parseInt(rows[i].getElementsByTagName("input")[3].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
+                                    }
+                                    if (x > 0) {
+                                        if ((rows[i].getElementsByTagName("input")[4].value != "") && (rows[i].getElementsByTagName("select")[3].value == "STOK SEÇİN")) {
+                                            const Toast = Swal.mixin({
+                                                toast: true,
+                                                position: 'top-end',
+                                                showConfirmButton: false,
+                                                timer: 3000,
+                                                timerProgressBar: true,
+                                                didOpen: (toast) => {
+                                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                                }
+                                            })
+
+                                            Toast.fire({
+                                                icon: 'info',
+                                                title: 'Hesaplamaların doğru çalışabilmesi için Makine seçtiğiniz satırdaki Stok Ölçüsü alanını seçmeniz gerekmektedir!'
+                                            });
+                                        }
+                                        rows[i].getElementsByTagName("select")[3].onchange();
+                                        rows[i].getElementsByTagName("input")[3].onkeyup();
+                                    }
+
+                                }
+                                var d = parseInt(((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) - top1);
+                                document.getElementById("fireagir").value = d;
+                                if (d < 0) {
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                        }
+                                    })
+
+                                    Toast.fire({
+                                        icon: 'error',
+                                        title: 'Fire eksi olamaz!'
+                                    });
+                                }
+
+                                document.getElementById("agirlikhesap").value = thousands_separators(Math.round(parseFloat((parseInt(document.getElementById("2input").value) * parseInt(document.getElementById("3input").value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(document.getElementById("oran1").value)).toFixed(2)));
+
+
+                                document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
+
+                                document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
+                            }
+                            function thousands_separators(nu) {
+                                var nu_parts = nu.toString().split(".");
+                                nu_parts[0] = nu_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                return nu_parts.join(",");
+                            }
+
+                        </script>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <div class="table-responsive text-nowrap">
+                                <table class="table table-bordered" style="border-color:black;">
+                                    <tbody>
+
+                                        <tr style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
+                                            <th class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
+
+                                            </th>
+                                            <td class="text-center p-1" style="font-size: 11px;font-weight:bold;width:20px">
+                                                FİRE YÜZDESİ
+                                            </td>
+                                            <td class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
+                                                FİRE GENİŞLİĞİ (mm)
+                                            </td>
+                                            <td class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
+                                                FİRE AĞIRLIĞI (kg)
+                                            </td>
+
+                                        </tr>
+                                        <tr style="background-color: #edf0f5 ">
+                                            <th class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
+                                                FİRE
+                                            </th>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width:80px;background-color:transparent" id="fireyuzde" keyup="updateinput(this.value)" readonly />
+                                            </td>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width: 80px; background-color: transparent" id="fireagir" readonly />
+                                            </td>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width: 80px; background-color: transparent" id="fireagirligi" readonly />
+                                            </td>
+
+                                        </tr>
+                                        <tr style="background-color: #e8ebeb ">
+
+                                            <th class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
+                                                GENEL FİRE
+                                            </th>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width:80px;background-color:transparent" id="fireyuzde1" readonly />
+                                            </td>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width: 80px; background-color: transparent" id="fireagir1" readonly />
+                                            </td>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width: 80px; background-color: transparent" id="fireagirligi1" readonly />
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row me-1">
+                                <div class="col">
+                                    <button class="float-end" onclick="addRow()" id="addRw" style="cursor: pointer; background-color: transparent; background-repeat: no-repeat; border: none;"><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC" /></button>
+                                    <button class="float-end" onclick="removeRow()" id="removeRw" style="cursor: pointer; background-color: transparent; background-repeat: no-repeat; border: none;"><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC" /></button>
+                                </div>
+                            </div>
+                            <div class="row mt-3 me-1">
+                                <div class="col">
+                                    <button class="btn btn-info float-end" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="kaydet()" id="kaydet">KAYDET</button>
+                                </div>
+                                <script>
+                                    var oncekiadet = 0;
+                                    function kaydet() {
+                                        oncekiadet = 0;
+                                        document.body.style.cursor = 'wait';
+                                        var rows = document.getElementsByTagName("table")[0].getElementsByTagName("tr");
+                                        var list2 = [];
+                                        if (localStorage.list2 != "null" && localStorage.list2!=null) {
+                                            list2 = JSON.parse(localStorage.list2);
+                                            list2.splice(list2.length-1,1)
+                                        }
+                                        var takiplist = [];
+                                        function drawPivot() {
+
+                                            $(function () {
+
+                                                $("#pivotoutput").pivot(
+                                                    takiplist,
+                                                    {
+                                                        rows: ["SIRA", "GİRDİ2", "ISEMRINO", "STOKADI", "REF_ISEMRINO", "REF_STOKADI", "ADET", "AGIRLIK"],
+                                                        cols: []
+
+                                                    }, false, "tr")
+                                            })
+                                        }
+                                        function getPivot() {
+                                            return fetch('./Index?handler=PivotData',
+                                                {
+                                                    method: 'get',
+                                                    headers: {
+                                                        'Content-Type': 'application/json;charset=UTF-8'
+                                                    }
+                                                }).then(function (response) {
+                                                    if (response.ok) { return response.text(); } else { throw Error("Hata"); }
+                                                }).then(function (text) {
+                                                    try {
+                                                        return JSON.parse(text);
+                                                    } catch (e) {
+
+                                                    }
+                                                }).then(function (responseJSON) {
+                                                    document.body.style.cursor = 'default';
+                                                    takiplist = JSON.parse(localStorage.list2)
+                                                    drawPivot();
+                                                });
+
+
+
+                                        }
+
+                                        var takiplist2 = [];
+
+
+                                        var sonsayi = 1;
+                                        var sonsayiref = 1;
+                                        var serison = 1;
+                                        var sonSeri = "";
+                                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+                                        
+                                       
+                                        var seri = "-"
+                                        $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
+                                        }).done(function (data) {
+                                            for (let i = 1; i < rows.length; i++) {
+                                                var stokadi = rows[i].getElementsByTagName("select")[1].options[rows[i].getElementsByTagName("select")[1].selectedIndex].text;
+                                                var makkodu = rows[i].getElementsByTagName("select")[0].value;
+                                                var makkodu2 = "";
+                                                var paketadeti = 0;
+                                                var adet = 0;
+                                                var refadet = 0;
+                                                var agirlik = 0;
+                                                var refstok = "-";
+                                                var refis = "-";
+                                                var isemri = "";
+                                                if (makkodu.substring(0, 2) != "MH") {
+                                                    seri = "-"
+                                                } else {
+                                                    seri = data[0].SERI_NO;
+                                                }
+                                                var b = parseInt(jsonObj.find(x => x.MAK_KODU === makkodu).MAX_ISEMRINO);
+                                                
+                                                if (i == 1) {
+                                                    adet = rows[i].getElementsByTagName("input")[2].value;
+                                                    paketadeti = rows[i].getElementsByTagName("input")[3].value;
+                                                    if (x == 0) {
+                                                        agirlik = parseFloat(rows[i].getElementsByTagName("input")[4].value);
+                                                    } else {
+                                                        agirlik = parseFloat(rows[i].getElementsByTagName("input")[6].value);
+                                                        refstok = rows[i].getElementsByTagName("select")[rows[i].getElementsByTagName("select").length - 2].value;
+                                                        refstok = refstok != "STOK SEÇİN" ? refstok : "-";
+                                                        makkodu2 = rows[i].getElementsByTagName("select")[rows[i].getElementsByTagName("select").length - 3].options[rows[i].getElementsByTagName("select")[rows[i].getElementsByTagName("select").length - 3].selectedIndex].text;
+                                                    }
+                                                   
+                                                } else {
+                                                    paketadeti = rows[i].getElementsByTagName("input")[2].value;
+                                                    adet = rows[i].getElementsByTagName("input")[1].value;
+                                                    if (x == 0) {
+                                                        agirlik = parseFloat(rows[i].getElementsByTagName("input")[3].value);
+                                                    } else {
+                                                        agirlik = parseFloat(rows[i].getElementsByTagName("input")[rows[i].getElementsByTagName("input").length - 1].value);
+                                                        refstok = rows[i].getElementsByTagName("select")[rows[i].getElementsByTagName("select").length - 2].value;
+                                                        refstok = refstok != "STOK SEÇİN" ? refstok : "-";
+                                                        makkodu2 = rows[i].getElementsByTagName("select")[rows[i].getElementsByTagName("select").length - 3].options[rows[i].getElementsByTagName("select")[rows[i].getElementsByTagName("select").length - 3].selectedIndex].text;
+                                                    }
+                                                }
+                                                for (let a = 0; a < paketadeti; a++) {
+                                                    if (isemirleri.includes(makkodu + "23" + b.toString().padStart(6, '0') + sonsayi.toString().padStart(3, '0'))) {
+                                                        var is = isemirleri.filter(x => x.substring(0, 4) == makkodu);
+                                                        sonsayi = parseInt(is[is.length - 1].substring(12, 15)) + 1
+                                                        isemri = makkodu + "23" + b.toString().padStart(6, '0') + sonsayi.toString().padStart(3, '0');
+                                                    } else {
+                                                        isemri=makkodu + "23" + b.toString().padStart(6, '0') + sonsayi.toString().padStart(3, '0')
+                                                    }
+                                                    if (seri != "-" && serilist.includes(seri)) {
+                                                        seri = serilist[serilist.length - 1].substring(0, 12) +(parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0')
+                                                    }
+                                                    if (makkodu2 != "" && makkodu2!="MAKİNE SEÇİN") {
+                                                        var b2 = parseInt(jsonObj.find(x => x.MAK_KODU === makkodu2).MAX_ISEMRINO);
+                                                        if (isemirleri.includes(makkodu2 + "23" + b2.toString().padStart(6, '0') + sonsayiref.toString().padStart(3, '0'))) {
+                                                            var is2 = isemirleri.filter(x => x.substring(0, 4) == makkodu2);
+                                                            sonsayiref = parseInt(is2[is2.length - 1].substring(12, 15)) + 1
+                                                            refis = makkodu2 + "23" + b2.toString().padStart(6, '0') + sonsayiref.toString().padStart(3, '0')
+                                                        } else {
+                                                            refis = makkodu2 + "23" + b2.toString().padStart(6, '0') + sonsayiref.toString().padStart(3, '0')
+                                                        }
+                                                        if (makkodu2.substring(0, 2) != "MH") {
+                                                            seri = "-"
+                                                        } else {
+                                                            seri = data[0].SERI_NO;
+                                                        }
+                                                        if (seri != "-" && serilist.includes(seri)) {
+                                                            seri = serilist[serilist.length - 1].substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0')
+                                                        }
+                                                        refadet = adet;
+                                                    }
+
+                                                    list2.push({
+                                                        SIRA: sayi, GİRDİ2: seri, ISEMRINO: isemri, STOKADI: stokadi, ADET: adet, AGIRLIK: Math.round(agirlik / paketadeti), REF_ISEMRINO: refis, REF_STOKADI: refstok, REF_ADET: refadet == 0 ? "-" : refadet
+                                                    })
+                                                    isemirleri.push(isemri);
+                                                    isemirleri.push(refis);
+                                                    if (seri != "-") {
+                                                        serilist.push(seri);
+                                                    }
+                                                    sayi++;
+                                                    sonsayi++;
+                                                    sonsayiref++;
+
+                                                }
+                                                sonsayi = 1;
+                                                sonsayiref = 1;
+
+                                            }
+                                           toplamadet = 0;
+                                           toplamrefadet = 0;
+                                           toplamagirlik = 0;
+                                            for (let i = 0; i < list2.length; i++) {
+                                                if (list2[i].ADET != "-") {
+                                                    toplamadet = toplamadet + parseInt(list2[i].ADET);
+                                                }
+                                                if (list2[i].REF_ADET != "-") {
+                                                    toplamrefadet = toplamrefadet + parseInt(list2[i].REF_ADET);
+                                                }
+                                                toplamagirlik = toplamagirlik + parseInt(list2[i].AGIRLIK);
+                                            }
+                                            list2.push({ SIRA: "TOPLAM", GİRDİ2: "-", ISEMRINO: "-", STOKADI: "-", ADET: "-", AGIRLIK: toplamagirlik.toLocaleString(), REF_ISEMRINO: "-", REF_STOKADI: "-", REF_ADET: "-" });
+                                            localStorage.list2 = JSON.stringify(list2);
+                                            getPivot();
+                                            function drawPivot2() {
+
+                                                $(function () {
+
+                                                    $("#pivotoutput2").pivot(
+                                                        takiplist2,
+                                                        {
+                                                            rows: ["TOPLAM", "STOKADI", "TOPLAM_AGIRLIK"]
+
+
+                                                        }, false, "tr")
+                                                })
+                                            }
+                                            function getPivot2() {
+                                                return fetch('./Index?handler=PivotData',
+                                                    {
+                                                        method: 'get',
+                                                        headers: {
+                                                            'Content-Type': 'application/json;charset=UTF-8'
+                                                        }
+                                                    }).then(function (response) {
+                                                        if (response.ok) { return response.text(); } else { throw Error("Hata"); }
+                                                    }).then(function (text) {
+                                                        try {
+                                                            return JSON.parse(text);
+                                                        } catch (e) {
+
+                                                        }
+                                                    }).then(function (responseJSON) {
+
+                                                        drawPivot2();
+                                                        document.body.style.cursor = 'default';
+                                                    });
+
+
+
+                                            }
+                                            var takiplist2 = [];
+                                            var sira2 = 1;
+                                            for (let i = 0; i < list2.length; i++) {
+                                                if (list2[i].STOKADI != "-") {
+                                                    var l = list2.filter(x => x.STOKADI == list2[i].STOKADI);
+                                                    var toplam = 0;
+                                                    for (let a = 0; a < l.length; a++) {
+                                                        toplam = toplam + parseInt(l[a].AGIRLIK)
+                                                    }
+                                                    takiplist2.push({ TOPLAM: l.length, STOKADI: list2[i].STOKADI, TOPLAM_AGIRLIK:toplam.toLocaleString() })
+                                                    if (list2[i].REF_STOKADI != "-") {
+                                                        var l2 = list2.filter(x => x.REF_STOKADI == list2[i].REF_STOKADI);
+                                                        var toplam2 = 0;
+                                                        for (let a = 0; a < l2.length; a++) {
+                                                            toplam2 = toplam2 + parseInt(l2[a].AGIRLIK)
+                                                        }
+                                                        takiplist2.push({ TOPLAM: l2.length, STOKADI: list2[i].REF_STOKADI, TOPLAM_AGIRLIK: toplam2.toLocaleString() })
+                                                    }
+                                                }
+
+                                            }
+                                            getPivot2()
+                                        })
+                                           
+                                        
+                                        
+
+                                    }
+                                </script>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card mt-2" id="card">
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-10 text-end">
+                            <button class="btn btn-info" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="sil()" id="sil"><i class='bx bx-trash'> SİL</i></button>
+                        </div>
+                        <div class="col-2 text-end">
+                            <button class="btn btn-info text-nowrap" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="netsisaktar()"><i class='bx bx-transfer'></i> NETSİSE AKTAR</button>
+
+                        </div>
+
+                    </div>
+                    <div class="table-responsive">
+                       
+
+
+                        <div class="row mb-2 me-0">
+
+
+                            <div class="col">
+
+                                <div class="text-center mt-3" id="pivotoutput"></div>
+
+
+                            </div>
+
+                            <div class="col">
+
+                                <div class="text-center mt-3" id="pivotoutput2"></div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testFunction() {
+             $.ajax({
+                url: '@Url.Action("Post1","IsEmri")',
+                type: 'POST',
+            })
+        }
+        function sil() {
+            document.body.style.cursor = 'wait';
+            sayi = 1;
+            sonsayi = 1;
+            sonsayiref = 1;
+            isemirleri = [];
+            
+            serilist = [];
+            
+            load();
+        }
+        function load() {
+
+            localStorage.list = null;
+            localStorage.list2 = null;
+            localStorage.list3 = null;
+                $('#card').load(document.URL + ' #card');
+                document.body.style.cursor = 'default';
+            };
+
+
+
+
+
+
+
+
+        function netsisaktar() {
+            $("#progress").show();
+            document.body.style.cursor = 'wait';
+            var lis = [];
+            lis = JSON.parse(localStorage.list2);
+            lis = list.splice(list.length - 1, 1);
+            $.ajax({
+                url: '@Url.Action("PostTRPZ","IsEmri")',
+                type: 'POST',
+                data: { isemri: lis}
+            }).success(function () {
+                $("#progress").hide();
+                mail();
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Veriler başarılı bir şekilde Netsis\'e aktarıldı.'
+                });
+                load();
+            }).done(function ()
+          {
+                localStorage.list = null;
+                localStorage.list2 = null;
+                localStorage.list3 = null;
+                document.body.style.cursor = 'default';
+
+            }).error(function () {
+                document.body.style.cursor = 'default';
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Veriler Netsis\'e aktarılamadı!'
+                });
             });
         }
-        function getPivot() {
-            return fetch('./Index?handler=PivotData',
-                {
-                    method: 'get',
-                    headers: {
-                        'Content-Type': 'application/json;charset=UTF-8'
+         function mail() {
+            document.body.style.cursor = 'wait';
+            var lis1 = [];
+            lis1 = JSON.parse(localStorage.list2);
+            $.ajax({
+                url: '@Url.Action("Mail")',
+                type: 'POST',
+                data: { mail:lis1 }
+          }).done(function ()
+          {
+
+          document.body.style.cursor = 'default';
+
+          });
+        }
+
+    </script>
+
+
+
+
+
+    <script type="text/javascript" src="/assets/vendor/libs/popper/popper.js"></script>
+    <script type="text/javascript" src="/assets/vendor/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script type="text/javascript" src="/assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script type="text/javascript" src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script type="text/javascript" src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script type="text/javascript" src="/assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+
+
+    <script type="text/javascript" async defer src="/Scripts/buttons.js"></script>
+    <script type="text/javascript" src="/Scripts/boxicons.js"></script>
+
+
+
+
+    <script>
+        document.body.style.zoom = "100%";
+        document.getElementById("uretim").className = "menu-item open active";
+        document.getElementById("isemri").className = "menu-item active";
+    </script>
+
+
+
+
+
+    <script>
+        var rownum = 2;
+        var tablealtrow = 0;
+        var id = 0;
+        var x = 0;
+
+        var selectindex = 0;
+        var sayac = 0;
+        var fireagirlik = 0;
+        var fire = 0;
+        var fireyuzde = 0;
+        function changemakine2(e) {
+            var rownumber = e.parentNode.parentNode.rowIndex;
+            document.getElementsByTagName("table")[0].getElementsByTagName("tr")[rownumber].getElementsByTagName("select")[3].removeAttribute("disabled");
+            
+        }
+        function addRow() {
+            var table = document.getElementsByTagName("table")[0]
+            var totaltr = document.getElementsByTagName("table")[0].getElementsByTagName("tr");
+            var tr = document.createElement("tr");
+            var totaltd = totaltr[1].getElementsByTagName("td").length;
+            for (let i = 0; i < totaltd; i++) {
+                var td = document.createElement("td");
+                td.style=table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].getAttribute("style");
+                td.className = table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].className;
+                if (i != 0) {
+                    if (i == 2 || i == 3 || i == 7 || i == 8 || i == 12) {
+                        if (i == 8 || i == 3) {
+                            if (i == 3) {
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 120px' disabled onchange=sc(this)>" + table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].getElementsByTagName("select")[0].innerHTML + "</select>"
+                            } else {
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 120px' disabled>" + table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].getElementsByTagName("select")[0].innerHTML + "</select>"
+                            }
+                            
+                        } else if (i == 7) {
+                            if (x != 0) {
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 120px' onchange='changemakine2(this)'> <option disabled selected value='MAKİNE SEÇİN'>MAKİNE SEÇİN</option></select>"
+                            } else {
+                               
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 120px'>" + table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].getElementsByTagName("select")[0].innerHTML + "</select>"
+                            }
+                           
+                        }
+                        else {
+                            td.innerHTML = "<select class='js-example-basic-single' style='width: 120px' onchange='makinechange(this)'>" + table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].getElementsByTagName("select")[0].innerHTML + "</select>"
+                        }
+                    } else {
+                        td.innerHTML = table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].innerHTML;
                     }
-                }).then(function (response) {
-                    if (response.ok) { return response.text(); } else { throw Error("Hata"); }
-                }).then(function (text) {
-                    try {
-                        return JSON.parse(text);
-                    } catch (e) {
+                    
+
+                } else {
+
+                    td.innerHTML = parseInt(table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].innerHTML) + 1;
+
+                }
+                
+                
+                
+                tr.appendChild(td);
+            }
+            table.getElementsByTagName("tbody")[0].appendChild(tr);
+            $('.js-example-basic-single').select2();
+        }
+
+
+        var isemirleri = [];
+        var serilist = [];
+        var sayi = 1;
+        $(document).ready(function () {
+            var tp = 0;
+    var fireag = document.getElementById("fireagirligi1");
+    var fireyuz = document.getElementById("fireyuzde1");
+    $("#makkodlari").select2();
+            var takiplist = [];
+            var p = [];
+            if (localStorage.list2 != "null" && localStorage.list2!=null) {
+                p = JSON.parse(localStorage.list2);
+                
+                for (let i = 0; i < p.length; i++) {
+                    isemirleri.push(p[i].ISEMRINO)
+                    if (p[i].REF_ISEMRINO != "-") {
+                        isemirleri.push(p[i].REF_ISEMRINO)
+                    }
+                    if (p[i].GİRDİ2 != "-") {
+                        serilist.push(p[i].GİRDİ2)
+                    }
+                }
+                sayi = p.length + 1;
+                //p.splice(p.length - 1, 1);
+            }
+    function drawPivot() {
+
+        $(function () {
+
+            $("#pivotoutput").pivot(
+                takiplist,
+                {
+                    rows: ["SIRA", "GİRDİ2", "ISEMRINO", "STOKADI", "REF_ISEMRINO", "REF_STOKADI", "ADET", "AGIRLIK"]
+
+
+                }, false, "tr")
+        })
+    }
+    function getPivot() {
+        return fetch('./Index?handler=PivotData',
+            {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8'
+                }
+            }).then(function (response) {
+                if (response.ok) { return response.text(); } else { throw Error("Hata"); }
+            }).then(function (text) {
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+
+                }
+            }).then(function (responseJSON) {
+
+                takiplist = p;
+                var girdi1 = [];
+
+               
+                localStorage.list4 = JSON.stringify(takiplist);
+                drawPivot();
+                document.body.style.cursor = 'default';
+            });
+
+
+
+    }
+            var takiplist2 = [];
+            var sira2 = 1;
+            
+            if (p.length > 0) {
+
+                getPivot();
+                for (let i = 0; i < p.length; i++) {
+                    if (p[i].STOKADI != "-") {
+                        var l = p.filter(x => x.STOKADI == p[i].STOKADI);
+                        var toplam = 0;
+                        for (let a = 0; a < l.length; a++) {
+                            toplam = toplam + parseInt(l[a].AGIRLIK)
+                        }
+
+                        takiplist2.push({ TOPLAM: l.length, STOKADI: p[i].STOKADI, TOPLAM_AGIRLIK: toplam.toLocaleString() })
+                        if (p[i].REF_STOKADI != "-") {
+                            var l2 = p.filter(x => x.REF_STOKADI == p[i].REF_STOKADI);
+                            var toplam2 = 0;
+                            for (let a = 0; a < l2.length; a++) {
+                                toplam2 = toplam2 + parseInt(l2[a].AGIRLIK)
+                            }
+                            takiplist2.push({ TOPLAM: l2.length, STOKADI: p[i].REF_STOKADI, TOPLAM_AGIRLIK: toplam2.toLocaleString() })
+                        }
+                    }
+
+                }
+                if (takiplist2.length > 0) {
+                    getPivot2();
+                }
+            }
+            function drawPivot2() {
+
+                $(function () {
+
+                    $("#pivotoutput2").pivot(
+                        takiplist2,
+                        {
+                            rows: ["TOPLAM", "STOKADI", "TOPLAM_AGIRLIK"]
+
+
+                        }, false, "tr")
+                })
+            }
+            function getPivot2() {
+                return fetch('./Index?handler=PivotData',
+                    {
+                        method: 'get',
+                        headers: {
+                            'Content-Type': 'application/json;charset=UTF-8'
+                        }
+                    }).then(function (response) {
+                        if (response.ok) { return response.text(); } else { throw Error("Hata"); }
+                    }).then(function (text) {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+
+                        }
+                    }).then(function (responseJSON) {
+
+                        drawPivot2();
+                        document.body.style.cursor = 'default';
+                    });
+
+
+
+            }
+            
+           
+           
+})
+
+        function removeRow() {
+
+            var table = document.getElementById("test");
+            var rows = table.getElementsByTagName("tr");
+                rows[1].getElementsByTagName("select")[0].removeAttribute("disabled");
+
+            if (table.getElementsByTagName("tr").length > 2) {
+
+
+                 table.deleteRow(table.getElementsByTagName("tr").length - 1);
+                rownum--;
+                selectindex--;
+            }
+        }
+    </script>
+    <script>
+        var jsonObj = @Html.Raw(Json.Encode(ViewBag.UretimTakip));
+        const seri = document.getElementById('seri');
+        const genislik = document.getElementById('genislik');
+        const genislikarti = document.getElementById('genislikalti');
+        const kalinlik = document.getElementById('kalinlik');
+        const agirlik = document.getElementById('agirlik');
+        const marka = document.getElementById('marka');
+        const adet = document.getElementById('adet');
+        const kaplama = document.getElementById('kaplama');
+        const stokAdi = document.getElementById('stokadi');
+        const kalite = document.getElementById('kalite');
+        const hamoran = document.getElementById('hamoran');
+
+        const inputHandler = function (e) {
+
+            //result.innerHTML = e.target.value;
+            var b = jsonObj.find(x => x.SERI_NO === e.target.value);
+
+            var top = 0;
+
+            if (localStorage.list != "null" && localStorage.list!=null ) {
+                var j = JSON.parse(localStorage.list);
+                var son = j.filter(x => x.GIRDI1 == seri.value);
+                if (son.length > 0) {
+                    var s = [];
+                    for (let i = 0; i < son.length; i++) {
+                        if (!s.includes(son[i].HAMORAN)) {
+                            s.push(son[i].HAMORAN)
+                        }
+                    }
+                    if (s.length > 1) {
+                        top = eval(s.join('+'));
+                    } else {
+                        top = s[0];
+                    }
+
+
+                }
+
+            }
+
+            hamoran.value = (1 - top).toFixed(4);
+            ham.oninput = function () {
+                if (this.value >= 1 - top) {
+                    this.value = ((1 - top).toFixed(4)).toString();
+                } else if (this.value < 0) {
+                    this.value = 0;
+                }
+            };
+
+            if (b != null) {
+                kalinlik.value = b.KALINLIK;
+                genislik.value = b.GENISLIK;
+                agirlik.value = (b.MIKTAR * hamoran.value).toLocaleString('tr-TR') + " / " + (b.MIKTAR).toLocaleString('tr-TR');
+                marka.innerHTML = b.MENSEI;
+                adet.value = b.MIKTAR2;
+                kaplama.value = b.KAPLAMA_KALINLIK;
+                kalite.value = b.KALITE;
+                stokAdi.value = b.STOK_ADI;
+                metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2);
+
+            } else {
+                genislik.value = "";
+                kalinlik.value = "";
+                agirlik.value = "";
+                marka.innerHTML = "";
+                adet.value = "";
+                kaplama.value = "";
+                stokAdi.value = "";
+                kalite.value = "";
+            }
+
+
+
+            if (top != 0) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+                if ((1 - top) == 0) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Ürün kullanılabilir değil!'
+                    });
+                    document.getElementById("kaydet").disabled = true;
+                } else {
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Ürün maksimum %' + (((1 - top).toFixed(4)) * 100) + ' oranında kullanılabilir!'
+                    });
+                    if (document.getElementById("kaydet").disabled == true) {
+                        document.getElementById("kaydet").disabled = false;
+                    }
+
+                }
+
+            } else {
+                if (document.getElementById("kaydet").disabled == true) {
+                    document.getElementById("kaydet").disabled = false;
+                }
+            }
+
+
+        }
+        const inputHandler2 = function (e) {
+            //result.innerHTML = e.target.value;
+
+            if (seri.value != "") {
+                var b = jsonObj.find(x => x.SERI_NO === seri.value);
+                agirlik.value = (b.MIKTAR * hamoran.value).toLocaleString('tr-TR') + " / " + (b.MIKTAR).toLocaleString('tr-TR');
+            }
+
+            metraj.value = parseFloat(parseInt(((agirlik.value).split('/')[0].split('.')[0] + (agirlik.value).split('/')[0].split('.')[1])) / parseFloat((parseInt(genislik.value) + parseInt(e.target.value)) * parseFloat((kalinlik.value).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt(((agirlik.value).split('/')[1].split('.')[0] + (agirlik.value).split('/')[1].split('.')[1])) / parseFloat((parseInt(genislik.value) + parseInt(e.target.value)) * parseFloat((kalinlik.value).replace(",", ".")) * (0.00786))).toFixed(2)
+
+
+            var ta = document.getElementById("test");
+            var ro = ta.getElementsByTagName("tr");
+
+            for (let i = 1; i < ro.length; i++) {
+
+                ro[i].getElementsByTagName("input")[3].onkeyup();
+            }
+            changeadet();
+
+        }
+        const inputHandler1 = function (e) {
+            //result.innerHTML = e.target.value;
+            if (seri.value != "") {
+                var b = jsonObj.find(x => x.SERI_NO === seri.value);
+                agirlik.value = (b.MIKTAR * hamoran.value).toLocaleString('tr-TR') + " / " + (b.MIKTAR).toLocaleString('tr-TR');
+                metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2);
+
+                changeadet();
+
+
+            }
+
+
+
+        }
+        var oran1 = document.getElementById("oran1");
+        hamoran.addEventListener('input', inputHandler1);
+        hamoran.addEventListener('propertychange', inputHandler1);
+        oran1.addEventListener('input', inputHandler1);
+        oran1.addEventListener('propertychange', inputHandler1);
+
+        seri.addEventListener('input', inputHandler);
+        seri.addEventListener('propertychange', inputHandler);
+
+        genislikarti.addEventListener('input', inputHandler2);
+        genislikarti.addEventListener('propertychange', inputHandler2);
+
+
+    </script>
+    <script>
+        function change(name) {
+
+            var today = new Date();
+            var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+            var b = jsonObj.find(x => x.MAK_KODU === name.substring(0, value));
+            var x = "";
+            if (b.MAX_ISEMRINO.toString().length == 1) {
+                x = "0000" + b.MAX_ISEMRINO;
+            } else if (b.MAX_ISEMRINO.toString().length == 2) {
+                x = "000" + b.MAX_ISEMRINO;
+            }
+            else if (b.MAX_ISEMRINO.toString().length == 3) {
+                x = "00" + b.MAX_ISEMRINO;
+            }
+            else if (b.MAX_ISEMRINO.toString().length == 4) {
+                x = "0" + b.MAX_ISEMRINO;
+            } else {
+                x = "00000";
+            }
+            document.getElementById("ieno").value = name + today.getFullYear().toString().substring(2) + "."  + x;
+        }
+
+
+        function kaydet1() {
+            if (x == 1) {
+                var tab = document.getElementById("test");
+                var c = document.getElementById("cid");
+
+                var rows = tab.getElementsByTagName("tr");
+                if (c.getElementsByClassName("row").length > 0) {
+                    for (let i = 1; i < c.getElementsByClassName("row").length-1; i++) {
+
+                        c.getElementsByClassName("row")[i].remove();
 
                     }
-                }).then(function (responseJSON) {
-                    takiplist = @Html.Raw(Json.Encode(ViewBag.Cariler));
-                    drawPivot();
-                });
+                }
+
+                for (let i = 1; i < rows.length; i++) {
+
+                    var row = document.createElement("div");
+                    var col = document.createElement("div");
+                    row.className = "row";
+                    col.className = "col text-center";
+                    var musteri = "";
+                    var kalinlik = "";
+                    var adet = "";
+                    var agirlik = "";
+
+
+                    kalinlik = document.getElementById("kalinlik").value;
+                    musteri = rows[i].getElementsByTagName("input")[9].value;
+                    agirlik = rows[i].getElementsByTagName("input")[8].value;
+                    var label = document.createElement("label");
+                    label.innerHTML = musteri;
+                    col.appendChild(label);
+                    row.appendChild(col);
+                    var colkal = document.createElement("div");
+                    colkal.className = "col text-center";
+                    var labelkal = document.createElement("label");
+                    labelkal.innerHTML = kalinlik;
+                    colkal.appendChild(labelkal);
+
+                    row.appendChild(colkal);
+                    var col2 = document.createElement("div");
+                    col2.className = "col text-center";
+
+                    adet = rows[i].getElementsByTagName("input")[7].value;
+                    var labelad = document.createElement("label");
+                    labelad.innerHTML = adet;
+                    col2.appendChild(labelad);
+                    row.appendChild(col2);
+                    var col3 = document.createElement("div");
+                    col3.className = "col text-center";
+                    var labelag = document.createElement("label");
+                    labelag.innerHTML = agirlik;
+                    col3.appendChild(labelag);
+                    row.appendChild(col3);
+                    c.appendChild(row);
+                }
+            }
+
+
+
+
         }
-        getPivot();
+
+         function addCell() {
+             var th = document.getElementById("th");
+             var table = document.getElementsByTagName("table")[0];
+
+                var t = table.getElementsByTagName("tr");
+
+
+            table.style = "border-spacing:10px";
+            var cells = document.getElementById("th").getElementsByTagName("th").length;
+
+
+             var bb = true;
+             var bb1 = true;
+             if (t.length > 0) {
+                 for (let i = 1; i < t.length; i++) {
+                     if (t[i].getElementsByTagName("select")[0].value == "MAKİNE SEÇİN") {
+                         bb = false;
+                         break;
+                     }
+                     if (t[i].getElementsByTagName("select")[1].value == "STOK SEÇİN") {
+                         bb1 = false;
+                         break;
+                     }
+                 }
+             }
+
+             if (x == 0) {
+                 if (bb) {
+                     if (bb1) {
+                         for (let i = 0; i < t.length; i++) {
+                             if (i == 0) {
+                                 var cell = th.insertCell(cells - 2);
+                                 cell.outerHTML = "<th style='background-color:white;border-bottom:hidden;border-top:hidden;width:1px'></th>";
+
+                                 var cell3 = th.insertCell(cells - 2);
+                                 cell3.outerHTML = "<th class='text-center p-1 d-none'>ADET</th>";
+
+                                 var cell2 = th.insertCell(cells - 2);
+                                 cell2.outerHTML = "<th class='text-center p-1'>STOK ÖLÇÜLERİ</th>";
+
+                                 var cell = th.insertCell(cells - 2);
+                                 cell.outerHTML = "<th class='text-center p-1'>MAKİNE" + (x + 1) + "</th>";
+
+                                 var cell = th.insertCell(cells - 2);
+                                 cell.outerHTML = "<th style='background-color:white;border-bottom:hidden;border-top:hidden;width:1px'></th>";
+                             }
+                             else {
+
+
+
+
+                                 //t[i].getElementsByTagName("input")[3].removeAttribute("onkeyup");
+                                 
+                                 var g1 = t[i].insertCell(cells - 2);
+                                 g1.style = "border-bottom:hidden;border-top:hidden;width:1px";
+                                 var g3 = t[i].insertCell(cells - 2);
+                                 var inp = document.createElement("input");
+                                 inp.className = "text-center border-0";
+                                 inp.readOnly = true;
+                                 g3.appendChild(inp);
+                                 g3.display = "flex";
+                                 g3.className = "text-center border-0 p-1 d-none";
+                                 var g4 = t[i].insertCell(cells - 2);
+                                 g4.className = "text-center p-1";
+                                 var g2 = t[i].insertCell(cells - 2);
+
+                                 var g = t[i].insertCell(cells - 2);
+                                 g.style = "border-bottom:hidden;border-top:hidden;width:1px ";
+
+                                 var input1 = document.createElement("input");
+                                 var select = document.createElement("select");
+                                 select.className = "selectmakina2 w-px-150";
+                                 var option;
+                                 var grup = document.getElementById("machinenames");
+                                 option = document.createElement('option');
+                                 option.innerHTML = "MAKİNE SEÇİN";
+                                 option.setAttribute("selected", "");
+                                 option.disabled = true;
+                                 select.appendChild(option);
+                                 for (let a = 0; a < grup.length; a++) {
+                                     option = document.createElement('option');
+                                     option.innerHTML = grup.options[a].text;
+                                     option.value = grup.options[a].text;
+                                     if (option.value != "BK01" && option.value != "MAKİNE SEÇİN") {
+
+                                         select.appendChild(option);
+                                     }
+                                     
+                                 }
+
+                                 input1.className = "border-0 ms-1 text-center d-none";
+
+                                 g2.appendChild(select);
+
+
+                                 g2.appendChild(input1);
+                                 g2.className = "text-center border-0 p-1";
+                                 select.setAttribute("onchange", "changemakine2(this)");
+                                 select.style = "width: 120px";
+                                 var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+                                 var sl = document.createElement("select");
+                                 sl.className = "js-example-basic-single";
+                                 sl.style = "width: 120px";
+                                 sl.name = "state";
+                                 var op = document.createElement("option");
+                                 op.innerHTML = "STOK SEÇİN";
+                                 op.setAttribute("selected", "");
+                                 op.disabled = true;
+                                 sl.appendChild(op);
+                                 for (let i = 0; i < jsonObj.length; i++) {
+                                     op = document.createElement("option");
+                                     op.innerHTML = jsonObj[i].STOK_ADI;
+                                     op.value = jsonObj[i].STOK_ADI;
+                                     sl.appendChild(op);
+
+                                 }
+                                 sl.disabled = true;
+
+
+
+                                 g4.appendChild(sl);
+
+
+
+
+
+
+
+
+                                 t[i].getElementsByTagName("select")[4].replaceChildren();
+                                 var opt1 = document.createElement("option");
+                                 opt1.innerHTML = "EFECE GALVANİZ";
+                                 opt1.setAttribute("selected","");
+                                 opt1.selected = true;
+                                 t[i].getElementsByTagName("select")[4].appendChild(opt1);
+
+
+                             }
+
+
+                         }
+                         $(document).ready(function () {
+                             $('.selectmakina2').select2();
+                             $('.js-example-basic-single').select2();
+
+                         });
+                         x++;
+                         for (let i = 1; i < t.length; i++) {
+                             t[i].getElementsByTagName("select")[0].onchange();
+                         }
+                        
+                         sag++;
+                     }
+                     else {
+                         const Toast = Swal.mixin({
+                             toast: true,
+                             position: 'top-end',
+                             showConfirmButton: false,
+                             timer: 3000,
+                             timerProgressBar: true,
+                             didOpen: (toast) => {
+                                 toast.addEventListener('mouseenter', Swal.stopTimer)
+                                 toast.addEventListener('mouseleave', Swal.resumeTimer)
+                             }
+                         })
+
+                         Toast.fire({
+                             icon: 'error',
+                             title: 'Stok ölçüsü seçmediniz!'
+                         })
+                     }
+
+
+                 }
+                 else {
+                     const Toast = Swal.mixin({
+                         toast: true,
+                         position: 'top-end',
+                         showConfirmButton: false,
+                         timer: 3000,
+                         timerProgressBar: true,
+                         didOpen: (toast) => {
+                             toast.addEventListener('mouseenter', Swal.stopTimer)
+                             toast.addEventListener('mouseleave', Swal.resumeTimer)
+                         }
+                     })
+
+                     Toast.fire({
+                         icon: 'error',
+                         title: 'Makine seçmediniz!'
+                     })
+                 }
+             }
+             else {
+                 const Toast = Swal.mixin({
+                     toast: true,
+                     position: 'top-end',
+                     showConfirmButton: false,
+                     timer: 3000,
+                     timerProgressBar: true,
+                     didOpen: (toast) => {
+                         toast.addEventListener('mouseenter', Swal.stopTimer)
+                         toast.addEventListener('mouseleave', Swal.resumeTimer)
+                     }
+                 })
+
+                 Toast.fire({
+                     icon: 'info',
+                     title: 'En çok 1 defa açılabilir!'
+                 })
+            }
+
+
+
+
+
+
+
+
+
+
+        }
+
+        function removeCell() {
+            var table = document.getElementsByTagName("table")[0];
+            var totaltr = table.getElementsByTagName("tr");
+            if (totaltr[1].getElementsByTagName("td").length == 13) {
+                for (let i = 0; i < totaltr.length; i++) {
+
+                    totaltr[i].deleteCell(10);
+                    totaltr[i].deleteCell(9);
+                    totaltr[i].deleteCell(8);
+                    totaltr[i].deleteCell(7);
+                    totaltr[i].deleteCell(6);
+                }
+                x = 0;
+            }
+        }
+        
+        $(document).ready(function () {
+            if ($(window).width() < 600) {
+                $("#divPartial2").show();
+            }
+            else {
+                $("#divPartial").show();
+            }
+            $('.js-example-basic-single').select2({
+                tags: true
+            }
+            );
+            $("#progress").hide();
+        });
+        $(document).ready(function () {
+            $('.select2-single1').select2({
+                tags: true
+            }
+            );
+        });
+
     </script>
+
+    <div class="layout-overlay layout-menu-toggle"></div>
+
 </body>
 
 </html>
+
+
+
+
+
+
