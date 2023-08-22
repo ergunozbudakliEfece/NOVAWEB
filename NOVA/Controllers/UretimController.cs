@@ -1,4 +1,4 @@
-﻿//using NetOpenX50;
+﻿using NetOpenX50;
 using NOVA.Models;
 using ServiceStack;
 using System;
@@ -17,10 +17,10 @@ namespace NOVA.Controllers
 {
     public class UretimController : Controller
     {
-        //Kernel kernel = new Kernel();
-        //IsEmri Isemri = default(IsEmri);
-        //IsEmri Isemri1 = default(IsEmri);
-        //Sirket sirket = default(Sirket);
+        Kernel kernel = new Kernel();
+        IsEmri Isemri = default(IsEmri);
+        IsEmri Isemri1 = default(IsEmri);
+        Sirket sirket = default(Sirket);
         // GET: Uretim
         public ActionResult Index()
         {
