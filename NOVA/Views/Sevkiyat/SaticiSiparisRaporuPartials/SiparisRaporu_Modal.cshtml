@@ -187,12 +187,12 @@
                                         <tr>
                                             <th data-field="SERI_NO" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">BARKOD NO</th>
                                             <th data-field="STOK_ADI" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">STOK ADI</th>
-                                            <th data-field="MIKTAR" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">MİKTAR 1</th>
+                                            <th data-field="MIKTAR" data-formatter="MiktarFormatla" data-sortable="true" data-halign="center" data-align="center">MİKTAR 1</th>
                                             <th data-field="OLCU_BR1" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">BİRİM 1</th>
-                                            <th data-field="MIKTAR2" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">MİKTAR 2</th>
+                                            <th data-field="MIKTAR2" data-formatter="MiktarFormatla" data-sortable="true" data-halign="center" data-align="center">MİKTAR 2</th>
                                             <th data-field="OLCU_BR2" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">BİRİM 2</th>
-                                            <th data-field="ACIK1" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
-                                            <th data-field="ACIK2" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
+                                            <th data-field="ACIK1" data-formatter="KalinlikFormatter" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
+                                            <th data-field="ACIK2" data-formatter="GenislikFormatter" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
                                             <th data-field="ACIK3" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">ÜRÜN NO</th>
                                             <th data-field="SERI_NO_3" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">KALİTE</th>
                                             <th data-field="SERI_NO_4" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
@@ -247,6 +247,10 @@
 
         $("#TempTable").bootstrapTable("destroy");
         $("#TempTable").bootstrapTable({ data: Kalemler });
+
+        history.pushState(null, null, window.location.href);
+        history.back();
+        window.onpopstate = function () { history.forward(); };
     }
 
     function GetSiparisDetailsWithStockCode(StokKodu) {
@@ -533,18 +537,16 @@
         var detail = GetSiparisDetailsWithStockCode(document.getElementById("StokAdlari").value);
 
         var StokAdi = detail[0].STOK_ADI;
-        var Miktar1 = document.getElementById("Miktar1").value;
+        var Miktar1 = $('#Miktar1').val();
         var OlcuBr1 = document.getElementById("Olcubr1").value;
-        var Miktar2 = document.getElementById("Miktar2").value;
+        var Miktar2 = $('#Miktar2').val();
         var OlcuBr2 = document.getElementById("Olcubr2").value;
         var SeriNo = document.getElementById("SERİ_NO").value;
-        var Acik1 = document.getElementById("ACIK1").value;
-        var Acik2 = document.getElementById("ACIK2").value;
+        var Acik1 = $('#ACIK1').val()
+        var Acik2 = $('#ACIK2').val()
         var Acik3 = document.getElementById("ACIK3").value;
         var SeriNo3 = document.getElementById("SERİ_NO_3").value;
         var SeriNo4 = document.getElementById("SERİ_NO_4").value;
-        //var Aciklama4 = document.getElementById("ACIKLAMA_4").value;
-        //var Aciklama5 = document.getElementById("ACIKLAMA_5").value;
         var Aciklama4 = null;
         var Aciklama5 = null;
 
@@ -577,8 +579,8 @@
         document.getElementById("Miktar2").value = value.MIKTAR2;
         document.getElementById("Olcubr2").value = value.OLCU_BR2;
         document.getElementById("SERİ_NO").value = value.SERI_NO;
-        document.getElementById("ACIK1").value = value.ACIK1;
-        document.getElementById("ACIK2").value = value.ACIK2;
+        $('#ACIK1').val(parseFloat(value.ACIK1).toString())
+        $('#ACIK2').val(parseFloat(value.ACIK2).toString())
         document.getElementById("ACIK3").value = value.ACIK3;
         document.getElementById("SERİ_NO_3").value = value.SERI_NO_3;
         document.getElementById("SERİ_NO_4").value = value.SERI_NO_4;
@@ -972,9 +974,11 @@
                             else {
                                 if (SaveType == 0) {
                                     KalemleriEkle();
+                                    window.onpopstate = function () { history.back(); };
                                 }
                                 else if (SaveType == 1) {
                                     KalemleriGuncelle();
+                                    window.onpopstate = function () { history.back(); };
                                 }
                             }
                         });
@@ -1030,10 +1034,9 @@
                     type: 'DELETE',
                     success: function (result) {
                         SiparisNo = -1;
-
+                        window.onpopstate = function () { history.back(); };
                         $('#TempTable').bootstrapTable("destroy");
                         $('#SiparisModal').modal('hide');
-
                         Swal.fire({
                             text: "İşlem başarılı.",
                             icon: "success",
@@ -1065,13 +1068,14 @@
                 if (result.isConfirmed) {
                     Kalemler = [];
                     SiparisNo = -1;
-
+                    window.onpopstate = function () { history.back(); };
                     $('#TempTable').bootstrapTable("destroy");
                     $('#SiparisModal').modal('hide');
                 }
             });
         }
         else {
+            window.onpopstate = function () { history.back(); };
             EkranAcilisi();
             $('#SiparisModal').modal('hide');
         }
@@ -1515,13 +1519,13 @@
                 "BARKOD_NO": Kayit[0].SERI_NO,
                 "STOK_KODU": Kayit[0].STOK_KODU,
                 "STOK_ADI": Kayit[0].STOK_ADI,
-                "MIKTAR": `${parseFloat(Kayit[0].MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                "MIKTAR": `${parseFloat(Kayit[0].MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
                 "OLCU_BR1": `${Kayit[0].OLCU_BR1}`,
-                "MIKTAR2": `${parseFloat(Kayit[0].MIKTAR2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                "MIKTAR2": `${parseFloat(Kayit[0].MIKTAR2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
                 "OLCU_BR2": `${Kayit[0].OLCU_BR2}`,
                 "BIRIM_MIKTAR": `${(parseFloat(Kayit[0].MIKTAR) / parseFloat(Kayit[0].MIKTAR2)).toFixed(2).toString()}`,
-                "KALINLIK": Kayit[0].ACIK1,
-                "GENISLIK": Kayit[0].ACIK2,
+                "KALINLIK": Kayit[0].ACIK1.toString().replace('.',','),
+                "GENISLIK": Kayit[0].ACIK2.toString().replace('.', ','),
                 "KALITE": Kayit[0].SERI_NO_3,
                 "KAPLAMA": Kayit[0].SERI_NO_4,
                 "TARIH": Kayit[0].TARIH,

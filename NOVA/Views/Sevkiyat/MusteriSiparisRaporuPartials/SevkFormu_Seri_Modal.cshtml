@@ -3,7 +3,7 @@
         <div class="modal-content modal-belge" style="box-shadow: inset 0 0 15px #dbdbdb;">
 
             <div class="modal-header ml-auto mr-auto">
-                <h5 class="modal-title text-center w-100" id="SevkFormSeriLabel">SERİ NO LİSTESİ</h5>
+                <h5 class="modal-title text-center w-100" id="SevkFormSeriLabel">BARKOD NO LİSTESİ</h5>
                 <button type="button" class="ds btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -29,7 +29,7 @@
                                    data-click-to-select="true"
                                    data-minimum-count-columns="2"
                                    data-show-pagination-switch="false"
-                                   data-page-size="6"
+                                   data-page-size="5"
                                    data-pagination="true"
                                    data-id-field="id"
                                    data-show-footer="false"
@@ -39,16 +39,14 @@
                                    data-locale="tr-TR">
                                 <thead>
                                     <tr>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO" data-halign="center" data-align="center">SERİ NO</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="MIKTAR" data-halign="center" data-align="center">MİKTAR 1</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="MIKTAR2" data-halign="center" data-align="center">MİKTAR 2</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIK1" data-halign="center" data-align="center">AÇIK 1</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIK2" data-halign="center" data-align="center">AÇIK 2</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIK3" data-halign="center" data-align="center">AÇIK 3</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIKLAMA_4" data-halign="center" data-align="center">AÇIKLAMA 3</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIKLAMA_5" data-halign="center" data-align="center">AÇIKLAMA 3</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_3" data-halign="center" data-align="center">SERİ NO 3</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center">SERİ NO 4</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO" data-halign="center" data-align="center">BARKOD NO</th>
+                                        <th data-formatter="MiktarFormatla" data-field="MIKTAR" data-halign="center" data-align="center">MİKTAR 1</th>
+                                        <th data-formatter="MiktarFormatla" data-field="MIKTAR2" data-halign="center" data-align="center">MİKTAR 2</th>
+                                        <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-halign="center" data-align="center">KALINLIK</th>
+                                        <th data-formatter="GenislikFormatter" data-field="ACIK2" data-halign="center" data-align="center">GENİŞLİK</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIK3" data-halign="center" data-align="center">ÜRÜN NO</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_3" data-halign="center" data-align="center">KALİTE</th>
+                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
                                         <th data-formatter="BarkodSecimFormatter" data-halign="center" data-align="center">İŞLEM</th>
                                     </tr>
                                 </thead>
@@ -117,7 +115,32 @@
             return `<div onclick="BarkodSec('${index.SERI_NO}', ${row})"><i class="bi bi-check-circle"  style="color:red;font-size:x-large;"></i></div>`;
         }
     }
+    function MiktarFormatla(value) {
+        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function DecimalFormatter(value) {
+        return value?.toString().trim().length > 0 ? parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-";
+    }
 
+    function KalinlikFormatter(value, index, row) {
+        if (value?.toString().trim().length > 0) {
+            return GenislikKalinlikFormat(parseFloat(value.toString().replace(',','.')).toFixed(2).toString());
+        }
+
+        return "-";
+    }
+
+    function GenislikFormatter(value, index, row) {
+        if (value?.toString().trim().length > 0) {
+            return GenislikKalinlikFormat(parseFloat(value.toString().replace(',', '.')).toFixed(1).toString());
+        }
+
+        return "-";
+    }
+
+    function GenislikKalinlikFormat(value) {
+        return value.replace(".", ",");
+    }
     function BarkodSec(BarkodNo, Satir)
     {
         var EkranGenisligi = window.matchMedia("(max-width: 562px)");
@@ -125,10 +148,10 @@
 
         if (EkranGenisligi.matches)
         {
-            ButtonDiv = document.getElementById("SevkFormSeriTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[0].getElementsByClassName("card-views")[0].getElementsByClassName("card-view")[10].getElementsByClassName("card-view-value")[0];
+            ButtonDiv = document.getElementById("SevkFormSeriTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[0].getElementsByClassName("card-views")[0].getElementsByClassName("card-view")[8].getElementsByClassName("card-view-value")[0];
         }
         else {
-            ButtonDiv = document.getElementById("SevkFormSeriTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[10];
+            ButtonDiv = document.getElementById("SevkFormSeriTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[8];
         }
 
         if (SeciliBarkodNo.indexOf(BarkodNo) > -1)
@@ -181,13 +204,13 @@
                             "ID": Kayit_ID,
                             "STOK_ADI": FiltreliDetay[0].STOK_ADI,
                             "STOK_KODU": data[0].STOK_KODU,
-                            "MIKTAR": data[0].MIKTAR,
+                            "MIKTAR": data[0].MIKTAR.toFixed(2),
                             "OLCU_BR1": $('#OLCU_BR1').val(),
-                            "MIKTAR2": data[0].MIKTAR2,
+                            "MIKTAR2": data[0].MIKTAR2.toFixed(2),
                             "OLCU_BR2": $('#OLCU_BR2').val(),
                             "SERI_NO": each,
-                            "ACIK1": data[0].ACIK1,
-                            "ACIK2": data[0].ACIK2,
+                            "ACIK1": parseFloat(data[0].ACIK1.replace(",", ".")).toFixed(2).toString().replace(".", ","),
+                            "ACIK2": parseFloat(data[0].ACIK2.replace(",", ".")).toFixed(1).toString().replace(".", ","),
                             "ACIK3": data[0].ACIK3,
                             "SERI_NO_3": data[0].SERI_NO_3,
                             "SERI_NO_4": data[0].SERI_NO_4,

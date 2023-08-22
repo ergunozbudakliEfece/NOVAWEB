@@ -55,7 +55,7 @@
                     <div class="row gx-2 gy-2 mt-3">
                         <div class="col-sm-3 col-6 m-auto">
                             <div class="form-label-group outline m-0">
-                                <input type="number" id="MIKTAR" class="form-control" placeholder="MİKTAR 1" min="0" />
+                                <input type="number" id="MIKTAR" class="form-control" step="0.01" placeholder="MİKTAR 1" min="0.00" />
                                 <span><label for="MIKTAR">MİKTAR 1</label></span>
                             </div>
                         </div>
@@ -67,7 +67,7 @@
                         </div>
                         <div class="col-sm-3 col-6 m-auto miktarbirim">
                             <div class="form-label-group outline m-0">
-                                <input type="number" id="MIKTAR2" class="form-control" placeholder="MİKTAR 2" min="0" />
+                                <input type="number" id="MIKTAR2" class="form-control" step="0.01" placeholder="MİKTAR 2" min="0.00" />
                                 <span><label for="MIKTAR2">MİKTAR 2</label></span>
                             </div>
                         </div>
@@ -179,12 +179,12 @@
                                         <tr>
                                             <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO" data-sortable="true" data-halign="center" data-align="center">BARKOD NO</th>
                                             <th data-formatter="SevkFormuCellFormatter" data-field="STOK_ADI" data-sortable="true" data-halign="center" data-align="center">STOK ADI</th>
-                                            <th data-formatter="SevkFormuCellFormatter" data-field="MIKTAR" data-sortable="true" data-halign="center" data-align="center">MİKTAR 1</th>
+                                            <th data-formatter="MiktarFormatla" data-field="MIKTAR" data-sortable="true" data-halign="center" data-align="center">MİKTAR 1</th>
                                             <th data-formatter="SevkFormuCellFormatter" data-field="OLCU_BR1" data-sortable="true" data-halign="center" data-align="center">BİRİM 1</th>
-                                            <th data-formatter="SevkFormuCellFormatter" data-field="MIKTAR2" data-sortable="true" data-halign="center" data-align="center">MİKTAR 2</th>
+                                            <th data-formatter="MiktarFormatla" data-field="MIKTAR2" data-sortable="true" data-halign="center" data-align="center">MİKTAR 2</th>
                                             <th data-formatter="SevkFormuCellFormatter" data-field="OLCU_BR2" data-sortable="true" data-halign="center" data-align="center">BİRİM 2</th>
-                                            <th data-formatter="SevkFormuCellFormatter" data-field="ACIK1" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
-                                            <th data-formatter="SevkFormuCellFormatter" data-field="ACIK2" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
+                                            <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
+                                            <th data-formatter="GenislikFormatter" data-field="ACIK2" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
                                             <th data-formatter="SevkFormuCellFormatter" data-field="ACIK3" data-sortable="true" data-halign="center" data-align="center">ÜRÜN NO</th>
                                             <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_3" data-sortable="true" data-halign="center" data-align="center">KALİTE</th>
                                             <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_4" data-sortable="true" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
@@ -285,7 +285,13 @@
         $("#OLCU_BR1").val(FiltreliDetay[0].OLCU_BR1);
         $("#OLCU_BR2").val(FiltreliDetay[0].OLCU_BR2);
 
-        $('#SIPARIS_BAKIYE').val(FiltreliDetay[0].BAKIYE_MIKTARI);
+        if ($('#STOK_SECIM').val() == "") {
+            $("#SIPARIS_BAKIYE").val("-");
+        }
+        else {
+            var BakiyeMiktar = parseFloat(FiltreliDetay[0].BAKIYE_MIKTARI).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            $("#SIPARIS_BAKIYE").val(BakiyeMiktar);
+        }
     }
 
     function StokRehberBilgisi(STOK_KODU) {
@@ -316,11 +322,11 @@
         $('#MIKTAR2').prop('disabled', Durum);
         $('#OLCU_BR2').prop('disabled', true);
 
-        $('#ACIK1').prop('disabled', Durum);
-        $('#ACIK2').prop('disabled', Durum);
-        $('#ACIK3').prop('disabled', Durum);
-        $('#SERI_NO_3').prop('disabled', Durum);
-        $('#SERI_NO_4').prop('disabled', Durum);
+        $('#ACIK1').prop('disabled', true);
+        $('#ACIK2').prop('disabled', true);
+        $('#ACIK3').prop('disabled', true);
+        $('#SERI_NO_3').prop('disabled', true);
+        $('#SERI_NO_4').prop('disabled', true);
     }
 
     function GirisleriSifirla() {
@@ -418,19 +424,17 @@
     }
 </script>
 <script>
-    //window.onbeforeunload = function () { return "Your work will be lost."; };
-
     function BilgileriGetir() {
         var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $('#SİPARİS_NO').html() && x.STOK_KODU == $('#STOK_SECIM').val());
-
+        
         var STOK_ADI = FiltreliDetay[0].STOK_ADI;
         var MIKTAR = $('#MIKTAR').val()
         var OLCU_BR1 = $('#OLCU_BR1').val()
         var MIKTAR2 = $('#MIKTAR2').val()
         var OLCU_BR2 = $('#OLCU_BR2').val()
         var SERI_NO = $('#SERI_NO').val()
-        var ACIK1 = $('#ACIK1').val()
-        var ACIK2 = $('#ACIK2').val()
+        var ACIK1 = parseFloat($('#ACIK1').val().replace(',', '.'))
+        var ACIK2 = parseFloat($('#ACIK2').val().replace(',', '.'))
         var ACIK3 = $('#ACIK3').val()
         var SERI_NO_3 = $('#SERI_NO_3').val()
         var SERI_NO_4 = $('#SERI_NO_4').val()
@@ -465,8 +469,8 @@
         $('#MIKTAR2').val(Kayit.MIKTAR2)
         $('#OLCU_BR2').val(Kayit.OLCU_BR2)
         $('#SERI_NO').val(Kayit.SERI_NO)
-        $('#ACIK1').val(Kayit.ACIK1)
-        $('#ACIK2').val(Kayit.ACIK2)
+        $('#ACIK1').val(parseFloat(Kayit.ACIK1.toString().replace(',', '.')).toFixed(2).toString().replace('.', ','))
+        $('#ACIK2').val(parseFloat(Kayit.ACIK2.toString().replace(',', '.')).toFixed(1).toString().replace('.', ','))
         $('#ACIK3').val(Kayit.ACIK3)
         $('#SERI_NO_3').val(Kayit.SERI_NO_3)
         $('#SERI_NO_4').val(Kayit.SERI_NO_4)
@@ -639,9 +643,11 @@
                             switch (KayitTipi) {
                                 case 0:
                                     Kaydet();
+                                    window.onpopstate = function () { history.back(); };
                                     break;
                                 case 1:
                                     Guncelle();
+                                    window.onpopstate = function () { history.back(); };
                                     break;
                             }
                         }
@@ -681,7 +687,7 @@
                     success: function (result) {
                         $('#SevkFormuTable').bootstrapTable("destroy");
                         $('#SevkFormu').modal('hide');
-
+                        window.onpopstate = function () { history.back(); };
                         Swal.fire({
                             text: "İşlem başarılı.",
                             icon: "success",
@@ -711,15 +717,15 @@
                 customClass: 'AreYouSureAlert'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    window.onpopstate = function () { history.back(); };
                     $("#SevkFormu").modal('hide');
                 }
             });
         }
         else {
+            window.onpopstate = function () { history.back(); };
             $("#SevkFormu").modal('hide');
         }
-
-        window.onpopstate = function() { history.back(); };
     }
 </script>
 
@@ -917,42 +923,57 @@
         return Kayit.length > 0 ? true : false;
     }
 
-    $("#MIKTAR").on('change paste input', function (e) {
-        e.currentTarget.value = parseFloat(e.currentTarget.value);
+    $('#MIKTAR').on('change paste input', (e) => { LimitedDecimal(e, 2); MiktarGirisKontrolu(); });
+    $('#MIKTAR').on('blur', (e) => { FormatDecimal(e, 2, true); });
 
-        if (parseFloat(e.currentTarget.value) < parseFloat(e.currentTarget.min) || e.currentTarget.value == 0) {
-            e.currentTarget.value = parseFloat(e.currentTarget.min);
-        }
-
-        if (parseFloat(e.currentTarget.value) > parseFloat(e.currentTarget.max)) {
-            e.currentTarget.value = parseFloat(e.currentTarget.max);
-        }
-
-        MiktarGirisKontrolu();
-    });
-
-    $("#MIKTAR2").on('change paste input', function (e) {
-        e.currentTarget.value = parseFloat(e.currentTarget.value);
-
-        if (parseFloat(e.currentTarget.value) < parseFloat(e.currentTarget.min) || e.currentTarget.value == 0) {
-            e.currentTarget.value = parseFloat(e.currentTarget.min);
-        }
-
-        if (parseFloat(e.currentTarget.value) > parseFloat(e.currentTarget.max)) {
-            e.currentTarget.value = parseFloat(e.currentTarget.max);
-        }
-
-        MiktarGirisKontrolu();
-    });
+    $('#MIKTAR2').on('change paste input', (e) => { LimitedDecimal(e, 2, true); MiktarGirisKontrolu(); });
+    $('#MIKTAR2').on('blur', (e) => { FormatDecimal(e, 2, true); });
 
     function MiktarGirisKontrolu() {
-        if ($("#MIKTAR").val() == 0 || $("#MIKTAR2").val() == 0 || !SeciliBarkodVar) {
-            $('#eklebutton').prop('disabled', true);
-            $('#guncellebutton').prop('disabled', true);
+        var Durum = $("#MIKTAR").val() == 0 || $("#MIKTAR2").val() == 0;
+
+        $('#eklebutton').prop('disabled', Durum);
+        $('#guncellebutton').prop('disabled', Durum);
+    }
+
+    function LimitedDecimal(e, Limit, StartWithZero = false) {
+        if (!StartWithZero && e.currentTarget.value.at(0) == "0") {
+            e.currentTarget.value = e.currentTarget.value.slice(-1, e.currentTarget.value.length);
+        }
+
+        if (!isNaN(parseFloat(e.currentTarget.value))) {
+            var point = e.currentTarget.value.toString().indexOf('.');
+            var decimalLimit = e.currentTarget.value.length > point + (Limit + 1);
+
+            if (point >= 0 && decimalLimit) {
+                e.currentTarget.value = e.currentTarget.value.slice(0, -1);
+            }
+
+            if (parseFloat(e.currentTarget.value) < parseFloat(e.currentTarget.min))
+            {
+                e.currentTarget.value = e.currentTarget.min;
+            }
+            else if (parseFloat(e.currentTarget.value) > parseFloat(e.currentTarget.max))
+            {
+                e.currentTarget.value = e.currentTarget.max;
+            }
         }
         else {
-            $('#eklebutton').prop('disabled', false);
-            $('#guncellebutton').prop('disabled', false);
+            e.currentTarget.value = null;
+        }
+    }
+
+    function FormatDecimal(e, Fixed, SetMin = false) {
+        if (!isNaN(parseFloat(e.currentTarget.value))) {
+            e.currentTarget.value = parseFloat(e.currentTarget.value).toFixed(Fixed);
+        }
+        else {
+            if (SetMin) {
+                e.currentTarget.value = e.currentTarget.min;
+            }
+            else {
+                e.currentTarget.value = null;
+            }
         }
     }
 

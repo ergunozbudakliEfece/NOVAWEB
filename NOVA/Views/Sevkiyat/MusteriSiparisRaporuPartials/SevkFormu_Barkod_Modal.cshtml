@@ -17,7 +17,8 @@
 
 <script>
     var html5QrcodeScanner;
-    
+    var BarkodKameraAcik = false;
+
     function BarkodModal() {
 
         docReady(function () {
@@ -31,7 +32,7 @@
                     BarkodKontrol(decodedText);
                 }
             }
-
+            BarkodKameraAcik = true;
             html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 800 });
             html5QrcodeScanner.render(onScanSuccess);
         });
@@ -63,17 +64,17 @@
                         if (data[0].MIKTAR > 0 || data[0].MIKTAR2 > 0) {
                             StokAdiSec(data[0].STOK_KODU);
 
-                            $('#MIKTAR').val(data[0].MIKTAR <= Siparis[0].BAKIYE_MIKTARI ? data[0].MIKTAR : Siparis[0].BAKIYE_MIKTARI);
-                            $('#MIKTAR2').val(data[0].MIKTAR2);
+                            $('#MIKTAR').val(data[0].MIKTAR.toFixed(2) <= Siparis[0].BAKIYE_MIKTARI.toFixed(2) ? (data[0].MIKTAR).toFixed(2) : (Siparis[0].BAKIYE_MIKTARI).toFixed(2));
+                            $('#MIKTAR2').val(data[0].MIKTAR2.toFixed(2));
                             $('#SERI_NO').val(BarkodNo);
-                            $('#ACIK1').val(data[0].ACIK1);
-                            $('#ACIK2').val(data[0].ACIK2);
+                            $('#ACIK1').val(parseFloat(data[0].ACIK1.replace(",", ".")).toFixed(2).toString().replace(".", ","));
+                            $('#ACIK2').val(parseFloat(data[0].ACIK2.replace(",", ".")).toFixed(1).toString().replace(".", ","));
                             $('#ACIK3').val(data[0].ACIK3);
                             $('#SERI_NO_3').val(data[0].SERI_NO_3);
                             $('#SERI_NO_4').val(data[0].SERI_NO_4);
 
-                            $('#MIKTAR').prop('max', data[0].MIKTAR <= Siparis[0].BAKIYE_MIKTARI ? data[0].MIKTAR : Siparis[0].BAKIYE_MIKTARI);
-                            $('#MIKTAR2').prop('max', data[0].MIKTAR2);
+                            $('#MIKTAR').prop('max', data[0].MIKTAR.toFixed(2) <= Siparis[0].BAKIYE_MIKTARI.toFixed(2) ? (data[0].MIKTAR).toFixed(2) : (Siparis[0].BAKIYE_MIKTARI).toFixed(2));
+                            $('#MIKTAR2').prop('max', data[0].MIKTAR2.toFixed(2));
 
                             SeciliBarkodVar = true;
 
@@ -83,7 +84,10 @@
 
                             $('#SeriNoListeButton').prop('disabled', true);
 
-                            BarkodKameraKapat();
+                            if (BarkodKameraAcik)
+                            {
+                                BarkodKameraKapat(); 
+                            }
 
                             $('#BarkodModal').modal('hide');
                         }
@@ -116,6 +120,7 @@
 
     function BarkodKameraKapat()
     {
+        BarkodKameraAcik = false;
         html5QrcodeScanner.clear().then(_ => {}).catch(error => {});
     }
 </script>
