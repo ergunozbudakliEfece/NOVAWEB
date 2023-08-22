@@ -43,8 +43,8 @@ using System.Net.Http.Headers;
 using iTextSharp.text.html.simpleparser;
 using Microsoft.AspNetCore.Html;
 using DocumentFormat.OpenXml.Bibliography;
-using System.Globalization;
-using NetOpenX50;
+//using System.Globalization;
+//using NetOpenX50;
 using System.Runtime.InteropServices;
 
 namespace NOVA.Controllers
@@ -2624,133 +2624,133 @@ namespace NOVA.Controllers
 
             return Convert.ToBase64String(bytes);
         }
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult TeklifOlustur(TeklifUstModel ust)
-        {
-            Kernel kernel = new Kernel();
-            Sirket sirket = default(Sirket);
-            Fatura fatura = default(Fatura);
-            FatUst fatUst = default(FatUst);
-            FatKalem fatKalem = default(FatKalem);
-            try
-            {
-                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                "TEST2022",
-                                                "TEMELSET",
-                                                "",
-                                                "nova",
-                                                "Efc@+180", 0);
-                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftSatTeklif);
-                fatUst = fatura.Ust();
-                fatUst.FATIRS_NO = ust.FATIRS_NO;
-                fatUst.CariKod = ust.CARI_KODU;
-                fatUst.Tarih = DateTime.Now;
-                fatUst.TIPI = TFaturaTipi.ft_YurtIci;
-                fatUst.PLA_KODU = ust.PLA_KODU;
-                fatUst.Proje_Kodu = ust.PROJE_KODU;
-                fatUst.KDV_DAHILMI = false;
-                fatUst.KOD1 = ust.KOD1;
-                fatUst.KOD2 = ust.KOD2;
-                fatUst.SIPARIS_TEST = DateTime.Now.AddMonths(1);
-                for (var i = 0; i < ust.KALEM.Count; i++)
-                {
-                    fatKalem = fatura.kalemYeni(ust.KALEM[i].STOK_KODU);
-                    fatKalem.DEPO_KODU = int.Parse(ust.KALEM[i].DEPO_KODU);
-                    fatKalem.STra_GCMIK = double.Parse(ust.KALEM[i].MIKTAR1);
-                    fatKalem.STra_GCMIK2 = double.Parse(ust.KALEM[i].MIKTAR2);
-                    fatKalem.STra_NF = double.Parse(ust.KALEM[i].NF);
-                    fatKalem.STra_BF = double.Parse(ust.KALEM[i].BF);
-                    fatKalem.STra_SatIsk = double.Parse(ust.KALEM[i].ISKONTO);
-                    fatKalem.ProjeKodu = ust.PROJE_KODU;
-                    fatKalem.STra_DOVTIP = int.Parse(ust.KALEM[i].DOVTIP);
-                    fatKalem.SatirBaziAcik[1] = ust.KALEM[i].KUR;
-                    fatKalem.STra_testar = DateTime.Now.AddMonths(1);
-                }
+        //public Microsoft.AspNetCore.Mvc.StatusCodeResult TeklifOlustur(TeklifUstModel ust)
+        //{
+        //    Kernel kernel = new Kernel();
+        //    Sirket sirket = default(Sirket);
+        //    Fatura fatura = default(Fatura);
+        //    FatUst fatUst = default(FatUst);
+        //    FatKalem fatKalem = default(FatKalem);
+        //    try
+        //    {
+        //        sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+        //                                        "TEST2022",
+        //                                        "TEMELSET",
+        //                                        "",
+        //                                        "nova",
+        //                                        "Efc@+180", 0);
+        //        fatura = kernel.yeniFatura(sirket, TFaturaTip.ftSatTeklif);
+        //        fatUst = fatura.Ust();
+        //        fatUst.FATIRS_NO = ust.FATIRS_NO;
+        //        fatUst.CariKod = ust.CARI_KODU;
+        //        fatUst.Tarih = DateTime.Now;
+        //        fatUst.TIPI = TFaturaTipi.ft_YurtIci;
+        //        fatUst.PLA_KODU = ust.PLA_KODU;
+        //        fatUst.Proje_Kodu = ust.PROJE_KODU;
+        //        fatUst.KDV_DAHILMI = false;
+        //        fatUst.KOD1 = ust.KOD1;
+        //        fatUst.KOD2 = ust.KOD2;
+        //        fatUst.SIPARIS_TEST = DateTime.Now.AddMonths(1);
+        //        for (var i = 0; i < ust.KALEM.Count; i++)
+        //        {
+        //            fatKalem = fatura.kalemYeni(ust.KALEM[i].STOK_KODU);
+        //            fatKalem.DEPO_KODU = int.Parse(ust.KALEM[i].DEPO_KODU);
+        //            fatKalem.STra_GCMIK = double.Parse(ust.KALEM[i].MIKTAR1);
+        //            fatKalem.STra_GCMIK2 = double.Parse(ust.KALEM[i].MIKTAR2);
+        //            fatKalem.STra_NF = double.Parse(ust.KALEM[i].NF);
+        //            fatKalem.STra_BF = double.Parse(ust.KALEM[i].BF);
+        //            fatKalem.STra_SatIsk = double.Parse(ust.KALEM[i].ISKONTO);
+        //            fatKalem.ProjeKodu = ust.PROJE_KODU;
+        //            fatKalem.STra_DOVTIP = int.Parse(ust.KALEM[i].DOVTIP);
+        //            fatKalem.SatirBaziAcik[1] = ust.KALEM[i].KUR;
+        //            fatKalem.STra_testar = DateTime.Now.AddMonths(1);
+        //        }
 
-                fatura.kayitYeni();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                Marshal.ReleaseComObject(fatKalem);
-                Marshal.ReleaseComObject(fatUst);
-                Marshal.ReleaseComObject(fatura);
-                Marshal.ReleaseComObject(sirket);
-                kernel.FreeNetsisLibrary();
-                Marshal.ReleaseComObject(kernel);
-            }
+        //        fatura.kayitYeni();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //    }
+        //    finally
+        //    {
+        //        Marshal.ReleaseComObject(fatKalem);
+        //        Marshal.ReleaseComObject(fatUst);
+        //        Marshal.ReleaseComObject(fatura);
+        //        Marshal.ReleaseComObject(sirket);
+        //        kernel.FreeNetsisLibrary();
+        //        Marshal.ReleaseComObject(kernel);
+        //    }
 
-            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
-        }
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult TeklifDuzelt(TeklifUstModel ust)
-        {
+        //    return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+        //}
+        //public Microsoft.AspNetCore.Mvc.StatusCodeResult TeklifDuzelt(TeklifUstModel ust)
+        //{
 
 
-            Kernel kernel = new Kernel();
-            Sirket sirket = default(Sirket);
-            Fatura fatura = default(Fatura);
-            FatUst fatUst = default(FatUst);
-            FatKalem fatKalem = default(FatKalem);
-            try
-            {
-                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                 "TEST2022",
-                                                 "TEMELSET",
-                                                 "",
-                                                 "nova",
-                                                 "Efc@+180", 0);
-                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftSatTeklif);
-                fatura.OkuUst(ust.FATIRS_NO, ust.CARI_KODU);
-                fatura.kayitSil();
-                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftSatTeklif);
-                fatUst = fatura.Ust();
-                fatUst.FATIRS_NO = ust.FATIRS_NO;
-                fatUst.CariKod = ust.CARI_KODU;
-                fatUst.Tarih = DateTime.Now;
-                fatUst.TIPI = TFaturaTipi.ft_YurtIci;
-                fatUst.PLA_KODU = ust.PLA_KODU;
-                fatUst.Proje_Kodu = ust.PROJE_KODU;
-                fatUst.KDV_DAHILMI = false;
-                fatUst.KOD1 = ust.KOD1;
-                fatUst.KOD2 = ust.KOD2;
-                fatUst.SIPARIS_TEST = DateTime.Now.AddMonths(1);
-                for (var i = 0; i < ust.KALEM.Count; i++)
-                {
-                    fatKalem = fatura.kalemYeni(ust.KALEM[i].STOK_KODU);
-                    fatKalem.DEPO_KODU = int.Parse(ust.KALEM[i].DEPO_KODU);
-                    fatKalem.STra_GCMIK = double.Parse(ust.KALEM[i].MIKTAR1);
-                    fatKalem.STra_GCMIK2 = double.Parse(ust.KALEM[i].MIKTAR2);
-                    fatKalem.STra_NF = double.Parse(ust.KALEM[i].NF);
-                    fatKalem.STra_BF = double.Parse(ust.KALEM[i].BF);
-                    fatKalem.STra_SatIsk = double.Parse(ust.KALEM[i].ISKONTO);
-                    fatKalem.ProjeKodu = ust.PROJE_KODU;
-                    fatKalem.OBR1 = ust.KALEM[i].OLCUBR1;
-                    fatKalem.OBR2 = ust.KALEM[i].OLCUBR2;
-                    fatKalem.STra_DOVTIP = int.Parse(ust.KALEM[i].DOVTIP);
-                    fatKalem.SatirBaziAcik[1] = ust.KALEM[i].KUR;
-                    fatKalem.STra_testar = DateTime.Now.AddMonths(1);
-                }
+        //    Kernel kernel = new Kernel();
+        //    Sirket sirket = default(Sirket);
+        //    Fatura fatura = default(Fatura);
+        //    FatUst fatUst = default(FatUst);
+        //    FatKalem fatKalem = default(FatKalem);
+        //    try
+        //    {
+        //        sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+        //                                         "TEST2022",
+        //                                         "TEMELSET",
+        //                                         "",
+        //                                         "nova",
+        //                                         "Efc@+180", 0);
+        //        fatura = kernel.yeniFatura(sirket, TFaturaTip.ftSatTeklif);
+        //        fatura.OkuUst(ust.FATIRS_NO, ust.CARI_KODU);
+        //        fatura.kayitSil();
+        //        fatura = kernel.yeniFatura(sirket, TFaturaTip.ftSatTeklif);
+        //        fatUst = fatura.Ust();
+        //        fatUst.FATIRS_NO = ust.FATIRS_NO;
+        //        fatUst.CariKod = ust.CARI_KODU;
+        //        fatUst.Tarih = DateTime.Now;
+        //        fatUst.TIPI = TFaturaTipi.ft_YurtIci;
+        //        fatUst.PLA_KODU = ust.PLA_KODU;
+        //        fatUst.Proje_Kodu = ust.PROJE_KODU;
+        //        fatUst.KDV_DAHILMI = false;
+        //        fatUst.KOD1 = ust.KOD1;
+        //        fatUst.KOD2 = ust.KOD2;
+        //        fatUst.SIPARIS_TEST = DateTime.Now.AddMonths(1);
+        //        for (var i = 0; i < ust.KALEM.Count; i++)
+        //        {
+        //            fatKalem = fatura.kalemYeni(ust.KALEM[i].STOK_KODU);
+        //            fatKalem.DEPO_KODU = int.Parse(ust.KALEM[i].DEPO_KODU);
+        //            fatKalem.STra_GCMIK = double.Parse(ust.KALEM[i].MIKTAR1);
+        //            fatKalem.STra_GCMIK2 = double.Parse(ust.KALEM[i].MIKTAR2);
+        //            fatKalem.STra_NF = double.Parse(ust.KALEM[i].NF);
+        //            fatKalem.STra_BF = double.Parse(ust.KALEM[i].BF);
+        //            fatKalem.STra_SatIsk = double.Parse(ust.KALEM[i].ISKONTO);
+        //            fatKalem.ProjeKodu = ust.PROJE_KODU;
+        //            fatKalem.OBR1 = ust.KALEM[i].OLCUBR1;
+        //            fatKalem.OBR2 = ust.KALEM[i].OLCUBR2;
+        //            fatKalem.STra_DOVTIP = int.Parse(ust.KALEM[i].DOVTIP);
+        //            fatKalem.SatirBaziAcik[1] = ust.KALEM[i].KUR;
+        //            fatKalem.STra_testar = DateTime.Now.AddMonths(1);
+        //        }
 
-                fatura.kayitYeni();
-            }
-            catch (Exception e)
-            {
-                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
-            }
-            finally
-            {
-                Marshal.ReleaseComObject(fatKalem);
-                Marshal.ReleaseComObject(fatUst);
-                Marshal.ReleaseComObject(fatura);
-                Marshal.ReleaseComObject(sirket);
-                kernel.FreeNetsisLibrary();
-                Marshal.ReleaseComObject(kernel);
-            }
+        //        fatura.kayitYeni();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+        //    }
+        //    finally
+        //    {
+        //        Marshal.ReleaseComObject(fatKalem);
+        //        Marshal.ReleaseComObject(fatUst);
+        //        Marshal.ReleaseComObject(fatura);
+        //        Marshal.ReleaseComObject(sirket);
+        //        kernel.FreeNetsisLibrary();
+        //        Marshal.ReleaseComObject(kernel);
+        //    }
 
-            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
-        }
+        //    return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+        //}
         public class TeklifUstModel
         {
             public string FATIRS_NO { get; set; }

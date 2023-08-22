@@ -1,4 +1,4 @@
-﻿using NetOpenX50;
+﻿//using NetOpenX50;
 using NOVA.Models;
 using ServiceStack;
 using System;
@@ -17,10 +17,10 @@ namespace NOVA.Controllers
 {
     public class UretimController : Controller
     {
-        Kernel kernel = new Kernel();
-        IsEmri Isemri = default(IsEmri);
-        IsEmri Isemri1 = default(IsEmri);
-        Sirket sirket = default(Sirket);
+        //Kernel kernel = new Kernel();
+        //IsEmri Isemri = default(IsEmri);
+        //IsEmri Isemri1 = default(IsEmri);
+        //Sirket sirket = default(Sirket);
         // GET: Uretim
         public ActionResult Index()
         {
@@ -338,7 +338,7 @@ namespace NOVA.Controllers
                         {
                             netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemri[i].GİRDİ2 + "',DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemri[i].REF_ISEMRINO + "'");
                         }
-                        
+
 
                     }
 
@@ -399,7 +399,7 @@ namespace NOVA.Controllers
         }
         public class IsEmriModel2
         {
-           
+
             public string GİRDİ2 { get; set; }
             public string ISEMRINO { get; set; }
             public string STOKADI { get; set; }
@@ -483,7 +483,7 @@ namespace NOVA.Controllers
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
 
         }
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult EksikGuncelle(string seri,int miktar)
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult EksikGuncelle(string seri, int miktar)
         {
             try
             {
@@ -497,7 +497,7 @@ namespace NOVA.Controllers
                 var list = GetSarfs(seri, miktar);
                 for (var i = 0; i < list.Count; i++)
                 {
-                    netRS.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + list[i].SARF+" WHERE ISEMRINO='" + list[i].ISEMRINO + "'");
+                    netRS.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + list[i].SARF + " WHERE ISEMRINO='" + list[i].ISEMRINO + "'");
                 }
             }
             catch (Exception)
@@ -584,9 +584,9 @@ namespace NOVA.Controllers
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             return jsonList;
         }
-        public List<SarfModel> GetSarfs(string seri,int miktar)
+        public List<SarfModel> GetSarfs(string seri, int miktar)
         {
-            var apiUrl = "http://192.168.2.13:83/api/ie/SARF/"+seri+"/"+miktar;
+            var apiUrl = "http://192.168.2.13:83/api/ie/SARF/" + seri + "/" + miktar;
 
             //Connect API
             Uri url = new Uri(apiUrl);
@@ -631,26 +631,26 @@ namespace NOVA.Controllers
         public async Task<ActionResult> UretGirPost([Bind(Prefix = "Item1")] UretGir user)
         {
             string x = "";
-            
-                string apiUrl;
-                var httpClient = new HttpClient();
-                HttpRequestMessage request;
-                HttpResponseMessage response;
-                string apiResponse;
+
+            string apiUrl;
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+            string apiResponse;
 
 
-                apiUrl = "http://192.168.2.13:83/api/uretimgirdi/" + user.INCKEY;
+            apiUrl = "http://192.168.2.13:83/api/uretimgirdi/" + user.INCKEY;
 
 
 
-                request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
-                {
-                    Content = new StringContent(new JavaScriptSerializer().Serialize(user), Encoding.UTF8, "application/json")
-                };
+            request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(user), Encoding.UTF8, "application/json")
+            };
 
-                response = await httpClient.SendAsync(request);
+            response = await httpClient.SendAsync(request);
 
-                apiResponse = await response.Content.ReadAsStringAsync();
+            apiResponse = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
                 x = "Başarılı";
@@ -674,38 +674,38 @@ namespace NOVA.Controllers
         public async Task<ActionResult> UretCiktiPost([Bind(Prefix = "Item2")] UretCikti user)
         {
             string x = "";
-            
-                string apiUrl;
-                var httpClient = new HttpClient();
-                HttpRequestMessage request;
-                HttpResponseMessage response;
-                string apiResponse;
+
+            string apiUrl;
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+            string apiResponse;
 
 
-                apiUrl = "http://192.168.2.13:83/api/uretimcikti/" + user.INCKEY;
+            apiUrl = "http://192.168.2.13:83/api/uretimcikti/" + user.INCKEY;
 
 
 
-                request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
-                {
-                    Content = new StringContent(new JavaScriptSerializer().Serialize(user), Encoding.UTF8, "application/json")
-                };
+            request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(user), Encoding.UTF8, "application/json")
+            };
 
-                response = await httpClient.SendAsync(request);
+            response = await httpClient.SendAsync(request);
 
-                apiResponse = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    x = "Başarılı";
-                }
-                else
-                {
-                    x = "Başarısız";
-                }
-                
-            
-            
-            
+            apiResponse = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                x = "Başarılı";
+            }
+            else
+            {
+                x = "Başarısız";
+            }
+
+
+
+
             ViewBag.Makine = GetMak();
             ViewBag.Girdi = GetGirdi();
             ViewBag.Cikti = GetCikti();

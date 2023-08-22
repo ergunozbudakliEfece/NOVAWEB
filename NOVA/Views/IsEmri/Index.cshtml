@@ -35,7 +35,9 @@
     <link rel="stylesheet" href="https://lipis.github.io/bootstrap-sweetalert/lib/sweet-alert.css">
 
     <style>
-
+        input{
+            background-color:transparent !important;
+        }
 
         .myInput {
             box-sizing: border-box;
@@ -159,6 +161,19 @@
                 opacity: 1;
                 transform: scale(0.40);
             }
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        img{
+            cursor:pointer
         }
     </style>
 </head>
@@ -404,7 +419,11 @@
                                         <tr>
                                             <td class="text-center p-1">1</td>
                                             <td class="p-1">
-                                                <input class="border-0  text-center" type="number" value="1.00" max="1.00" min="0.00" id="oran1" />
+
+                                                <input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00" id="oran1" />
+                                                <div class="text-center">
+                                                    <img onclick="addRow1(this)" style="width:18px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC">
+                                                </div>
                                                 <script>
 
                                                     var oraninput = document.getElementById("oran1");
@@ -421,26 +440,31 @@
                                                 </script>
 
                                             </td>
-                                            <td class="border-0 text-center p-1">
+                                            <td class="border-0 text-center p-1 w-auto">
+                                                
+                                                        <select class="js-example-basic-single " style="width:120px" id="machinenames" onchange="selectChange(this.value)">
 
-                                                <select class="js-example-basic-single " style="width:120px" id="machinenames" onchange="selectChange(this.value)">
+                                                            <option selected disabled>MAKİNE SEÇİN</option>
 
-                                                    <option selected disabled>MAKİNE SEÇİN</option>
+                                                            @foreach (var item in ViewBag.Makine)
+                                                            {
+                                                                <option>@item.HAT_KODU</option>
+                                                            }
 
-                                                    @foreach (var item in ViewBag.Makine)
-                                                    {
-                                                        <option>@item.HAT_KODU</option>
-                                                    }
-
-                                                </select>
+                                                        </select>
+                                                   
+                                                    
+                                               
+                                               
 
 
                                                 <input class="border-0 text-center" id="1input" readonly style="display:none" />
-
+                                                
+                                               
                                                 <script>
 
                                                     function selectChange(value) {
-                                                        var tb = document.getElementById("test");
+                                                        var tb = document.getElementsByClassName("table")[1];
                                                         var tbrows = tb.getElementsByTagName("tr");
                                                         tbrows[1].getElementsByTagName("select")[1].removeAttribute("disabled");
                                                     document.getElementById("1input").name = value;
@@ -543,7 +567,7 @@
                                             </td>
 
                                             <td class="p-1 text-center">
-                                                <select class="js-example-basic-single" style="width:120px" onchange="sc(this.value)" disabled>
+                                                <select class="js-example-basic-single" style="width:200px" onchange="sc(this.value)" disabled>
                                                     <option selected disabled>STOK SEÇİN</option>
                                                     @foreach (var item in ViewBag.Stok_Adlari)
                                                     {
@@ -647,6 +671,19 @@
 
 
                         <script>
+                            function changeadet1(value) {
+                                var t = document.getElementsByTagName("table")[1];
+                                var tr = t.getElementsByTagName("tr")[value.parentNode.parentNode.rowIndex];
+                                var genislik = parseInt(tr.getElementsByTagName("input")[1].value)
+                                var adet = parseInt(tr.getElementsByTagName("input")[2].value)
+                                if (x == 0) {
+                                    tr.getElementsByTagName("input")[3].value = (Math.round(parseFloat(genislik * adet) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(tr.getElementsByTagName("input")[0].value))).toLocaleString()
+                                } else {
+                                    tr.getElementsByTagName("input")[4].value = (Math.round(parseFloat(genislik * adet) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(tr.getElementsByTagName("input")[0].value))).toLocaleString()
+                                }
+                               
+                                
+                            }
                             function changeadet() {
                                 var top1 = 0;
                                 var rows = document.getElementById("test").getElementsByTagName("tr");
@@ -800,6 +837,7 @@
                                         var old2 = null;
                                         var serilist = [];
                                         var isemrilist = [];
+                                        var siralist = [];
                                         var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
                                         if (localStorage.list != null) {
                                             old = JSON.parse(localStorage.list);
@@ -808,120 +846,55 @@
                                         }
                                         var say = 0;
                                         var sonSeri = null;
-
+                                        
                                         $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
                                             sonSeri = data;
                                         }).done(function () {
-
                                             for (var i = 1; i < rows1.length; i++) {
-
-                                            var val = rows1[i].getElementsByTagName("input")[1].value;
-                                            var val2 = rows1[i].getElementsByTagName("input")[4].value;
-                                            var ilk = val.split('.')[0];
-                                            var or = val.split('.')[1];
-                                            var so = val.split('.')[2];
-                                            var ilk2 = "";
-                                            var or2 = "";
-                                            var so2 = "";
-
-
-                                            if (((parseInt(or) + 1).toString()).length == 1) {
-                                                or = "0000" + (parseInt(or)+1);
-                                            } else if (((parseInt(or) + 1).toString()).length == 2) {
-                                                or = "000" + (parseInt(or)+1);
-                                            }
-                                            else if (((parseInt(or) + 1).toString()).length == 3) {
-                                                or = "00" + (parseInt(or) + 1);
-                                            }
-                                            else if (((parseInt(or) + 1).toString()).length == 4) {
-                                                or = "0" + (parseInt(or) + 1);
-                                            }else {
-                                                or = (parseInt(or) + 1).toString();
-                                            }
-
                                             var jsonObjSeri = @Html.Raw(Json.Encode(ViewBag.Seriler));
                                             var jsonObjSip = @Html.Raw(Json.Encode(ViewBag.Cariler));
-                                            var isno = rows1[i].getElementsByTagName("input")[1].value;
+                                                var isno = rows1[i].getElementsByTagName("input")[1].value;
+                                              
                                             var stokadi = rows1[i].getElementsByTagName("select")[1].value;
                                             var urunkodu = document.getElementById("seri").value;
-
-                                            var newser = null
-                                            if (old == null) {
-
-                                                newser = (((jsonObjSeri.filter(x => x.SERI_NO == (document.getElementById("seri").value).substring(8)))[0].SERI_SIRA) + 1 - 1).toString();
-                                                if (newser.length == 1) {
-                                                    newser = "00" + newser;
-                                                } else if (newser.length == 2) {
-                                                    newser = "0" + newser;
-                                                }
-                                            } else {
-                                                newser = (((jsonObjSeri.filter(x => x.SERI_NO == (document.getElementById("seri").value).substring(8)))[0].SERI_SIRA)).toString();
-                                                if (newser.length == 1) {
-                                                    newser = "00" + newser;
-                                                } else if (newser.length == 2) {
-                                                    newser = "0" + newser;
-                                                }
-                                            }
-
-                                            if (old != null) {
-                                                var fil = old.filter(x => x.GIRDI2.substring(8) == (document.getElementById("seri").value).substring(8));
-                                                if (fil.length > 0) {
-                                                    if ((parseInt(newser) + fil.length).toString().length == 1) {
-                                                        newser = "00" + (parseInt(newser) + fil.length).toString();
-                                                    } else if ((parseInt(newser) + fil.length).toString().length == 2) {
-                                                        newser = "0" + (parseInt(newser) + fil.length).toString();
-                                                    } else {
-                                                        newser = (parseInt(newser) + fil.length).toString();
-                                                    }
-                                                } else {
-                                                    if (parseInt(newser).toString().length == 1) {
-                                                        newser = "00" + parseInt(newser).toString();
-                                                    } else if (parseInt(newser).toString().length == 2) {
-                                                        newser = "0" + parseInt(newser).toString();
-                                                    } else {
-                                                        newser = parseInt(newser).toString();
-                                                    }
-                                                }
-                                            }
-
-
-
-                                            var urunkodunew = "EFC22" + newser + (document.getElementById("seri").value).substring(8);
-
                                             var kalinlik = document.getElementById("kalinlik").value;
-                                            var ham_genislik = parseInt(document.getElementById("genislik").value) + parseInt(document.getElementById("genislikalti").value);
                                             var kaplama = document.getElementById("kaplama").value;
                                             var kalite = document.getElementById("kalite").value;
-                                            var genislik = rows1[i].getElementsByTagName("input")[2].value;
-                                            var refisemri = rows1[i].getElementsByTagName("input")[4].value;
-                                            var makineref = "";
-                                            if (rows1[i].getElementsByTagName("input")[4].value != "") {
-                                                makineref = rows1[i].getElementsByTagName("input")[4].value.split('.')[0].substring(0, 4);
-                                            }
-
-                                            var refstokolcusu = rows1[i].getElementsByTagName("select")[3].value;
-                                            if (rows1[i].getElementsByTagName("select")[3].value == 'STOK SEÇİN') {
-                                                refstokolcusu = "";
-                                            }
-                                            var refadet = rows1[i].getElementsByTagName("input")[5].value;
-                                            var refagirlik = rows1[i].getElementsByTagName("input")[6].value;
-                                                var adet = rows1[i].getElementsByTagName("input")[3].value;
-                                                var num = parseInt(oncekiadet) + parseInt(sonSeri[0].SERI_NO.substring(12, 15));
-                                                oncekiadet = parseInt(oncekiadet) + parseInt(adet);
-                                            var siparisno = rows1[i].getElementsByTagName("select")[4].name.split(" ")[1];
-                                            var agirlik =null;
-                                            if (rows1[i].getElementsByTagName("input")[6]) {
-
-                                                if (rows1[i].getElementsByTagName("input")[6].value.split('.').length > 1) {
-                                                    agirlik = rows1[i].getElementsByTagName("input")[6].value.split('.')[0] + rows1[i].getElementsByTagName("input")[6].value.split('.')[1];
-                                                } else {
-                                                    agirlik = rows1[i].getElementsByTagName("input")[6].value;
+                                                var genislik = rows1[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value;
+                                                
+                                                var adet = rows1[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
+                                               
+                                                var makineref = "";
+                                                var refstokolcusu = ""
+                                                var refadet = ""
+                                                var refagirlik = "";
+                                               
+                                                if (x == 1) {
+                                                    makineref = rows1[i].getElementsByTagName("select")[2].value;
+                                                    refstokolcusu = rows1[i].getElementsByTagName("select")[3].value;
+                                                    refadet = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value;
+                                                    refagirlik = rows1[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value;
                                                 }
+                                                oncekiadet = parseInt(oncekiadet) + parseInt(adet);
+                                                var siparisno = rows1[i].getElementsByTagName("select")[4].name.split(" ")[1];
+                                                var agirlik = null;
+                                                if (x == 1) {
 
-                                            }
+                                                    if (rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value.split('.').length > 1) {
+                                                        agirlik = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("input")[0].value.split('.')[1];
+                                                    } else {
+                                                        agirlik = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value;
+                                                    }
 
+                                                } else {
+                                                    if (rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value.split('.').length > 1) {
+                                                        agirlik = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("input")[0].value.split('.')[1];
+                                                    } else {
+                                                        agirlik = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value;
+                                                    }
+                                                }
                                             var musteri = rows1[i].getElementsByTagName("select")[rows1[i].getElementsByTagName("select").length-1].value;
-                                            var stokolcu = null;
+                                                var stokolcu = null;
                                             if (rows1[i].getElementsByTagName("select")[3]) {
                                                 if (rows1[i].getElementsByTagName("select")[3].value != 'STOK SEÇİN') {
                                                     stokolcu = rows1[i].getElementsByTagName("select")[3].value;
@@ -931,25 +904,13 @@
                                             } else {
                                                 stokolcu = rows1[i].getElementsByTagName("select")[1].value;
                                             }
-                                            var makine = rows1[i].getElementsByTagName("input")[1].value.split('.')[0].substring(0,4);
-                                            var sipkont = parseInt(rows1[i].getElementsByTagName("select")[4].name.split(" ")[0]);
+                                            var makine = rows1[i].getElementsByTagName("select")[0].value;
+                                                var sipkont = parseInt(rows1[i].getElementsByTagName("select")[4].name.split(" ")[0]);
+                                                var sirano = parseInt(rows1[i].getElementsByTagName("td")[0].innerHTML);
                                             //WARNING:Değişen bölge
-
                                             if (old != null) {
                                                     list2 = old;
                                                     list3 = old2;
-                                                for (let b = 0; b < adet; b++) {
-                                                    var girdi2 = sonSeri[0].SERI_NO;
-
-                                                    list2.push({
-                                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: "-", STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO:"-" , REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam});
-                                                    serilist.push(girdi2);
-                                                    say++;
-                                                    }
-
-                                                list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKOLCULERI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: agirlik / adet });
-                                            }
-                                            else {
                                                 for (let b = 0; b < adet; b++) {
                                                     var girdi2 = sonSeri[0].SERI_NO;
                                                     var s = jsonObj.filter(x => x.MAK_KODU == makine);
@@ -957,14 +918,17 @@
                                                     var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
                                                     var sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
                                                     if (isemrilist.includes(sonisemri)) {
-                                                        sonisemri = makine + "23" + ((s[s.length - 1].MAX_ISEMRINO) + 1).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+                                                        var is = isemrilist.filter(x => x.includes(makine));
+                                                        sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                                     }
                                                     if (isemrilist.includes(sonrefisemri)) {
-                                                        sonrefisemri = makineref + "23" + ((s1[s1.length - 1].MAX_ISEMRINO) + 1).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+                                                        var is1 = isemrilist.filter(x => x.includes(makineref));
+                                                        sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                                     }
                                                     if (serilist.includes(girdi2)) {
                                                         girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                                     }
+
                                                     list2.push({
                                                         GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
                                                     });
@@ -972,33 +936,51 @@
                                                     isemrilist.push(sonisemri);
                                                     isemrilist.push(sonrefisemri);
                                                     say++;
+                                                    }
+
+                                                list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKOLCULERI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: agirlik / adet });
+                                            }
+                                            else {
+                                               
+                                                for (let b = 0; b < adet; b++) {
+                                                    var girdi2 = sonSeri[0].SERI_NO;
+                                                    var s = jsonObj.filter(x => x.MAK_KODU == makine);
+                                                    var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
+                                                    var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+                                                    var sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+                                                    if (isemrilist.includes(sonisemri)) {
+                                                        var is = isemrilist.filter(x => x.includes(makine));
+                                                        sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15))+1).toString().padStart(3, '0');
+                                                    }
+                                                    if (isemrilist.includes(sonrefisemri)) {
+                                                        var is1 = isemrilist.filter(x => x.includes(makineref));
+                                                        sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15))+1).toString().padStart(3, '0');
+                                                    }
+                                                    if (serilist.includes(girdi2)) {
+                                                        if (siralist.includes(sirano) && adet==1) {
+                                                            girdi2 = serilist[serilist.length - 1];
+                                                        } else {
+                                                            girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                                        }
+                                                        
+                                                    }
+                                                    list2.push({
+                                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+                                                    });
+                                                    if (!serilist.includes(girdi2)) {
+
+                                                        serilist.push(girdi2);
+                                                    }
+                                                    if (!siralist.includes(sirano)) {
+
+                                                        siralist.push(sirano);
+                                                    }
+                                                    isemrilist.push(sonisemri);
+                                                    isemrilist.push(sonrefisemri);
+                                                    say++;
                                                 }
                                                     list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKOLCULERI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: agirlik/adet });
                                                 }
-
-
-                                                rows1[i].getElementsByTagName("input")[1].value = ilk + '.' + or + '.' + so;
-                                                if (val2 != "") {
-                                                    ilk2 = val2.split('.')[0];
-                                                    or2 = val2.split('.')[1];
-                                                    so2 = val2.split('.')[2];
-                                                    if (((parseInt(or2) + 1).toString()).length == 1) {
-                                                        or2 = "0000" + (parseInt(or2) + 1);
-                                                    } else if (((parseInt(or2) + 1).toString()).length == 2) {
-                                                        or2 = "000" + (parseInt(or2) + 1);
-                                                    }
-                                                    else if (((parseInt(or2) + 1).toString()).length == 3) {
-                                                        or2 = "00" + (parseInt(or2) + 1);
-                                                    }
-                                                    else if (((parseInt(or2) + 1).toString()).length == 4) {
-                                                        or2 = "0" + (parseInt(or2) + 1);
-                                                    } else {
-                                                        or2 = (parseInt(or2) + 1).toString();
-                                                    }
-                                                    rows1[i].getElementsByTagName("input")[4].value = ilk2 + '.' + or2 + '.' + so2;
-                                                }
-
-
 
                                             }
                                             var number = 0;
@@ -1011,16 +993,15 @@
                                             }
                                             var uu = "http://192.168.2.13:83/api/seri/1/" + number;
                                             $.getJSON(uu, function (data) { });
-
                                         var ta = document.getElementById("test");
                                         var ro = ta.getElementsByTagName("tr");
                                         var tp = 0;
                                         var fireag = document.getElementById("fireagirligi1");
-                                        var fireyuz = document.getElementById("fireyuzde1");
-                                        for (let i = 1; i < ro.length; i++) {
+                                            var fireyuz = document.getElementById("fireyuzde1");
 
-                                            ro[i].getElementsByTagName("input")[3].onkeyup();
-                                        }
+                                            
+                                        
+                                            alert(JSON.stringify(list2));
                                         var tpl = $.pivotUtilities.aggregatorTemplates;
                                         var takiplist = [];
 
@@ -1164,72 +1145,35 @@
 
 
 
-                                        function drawpivot2() {
-                                            $("#pivotoutput2").pivotUI(
-                                                takiplist2,
-                                                config);
-                                        }
-
-
-
-                                        function getPivot2() {
-                                            return fetch('./Index?handler=PivotData',
-                                                {
-                                                    method: 'get',
-                                                    headers: {
-                                                        'Content-Type': 'application/json;charset=UTF-8'
-                                                    }
-                                                }).then(function (response) {
-
-                                                    if (response.ok) { return response.text(); } else { throw Error("Hata"); }
-                                                }).then(function (text) {
-                                                    try {
-                                                        return JSON.parse(text);
-                                                    } catch (e) {
-                                                        document.getElementById("addcll").removeAttribute("disabled");
-                                                        document.getElementById("rmvcll").removeAttribute("disabled");
-                                                        document.getElementById("addRw").removeAttribute("disabled");
-                                                        document.getElementById("removeRw").removeAttribute("disabled");
-                                                    }
-                                                }).then(function (responseJSON) {
-                                                    list3.sort((a, b) => a.GIRDI2.localeCompare(b.GIRDI2))
-                                                    takiplist2 = list3;
-                                                    drawpivot2();
-                                                    $('.js-example-basic-single').select2();
-                                                    $('.select2-single1').select2();
-                                                }).then(function () {
-                                                    document.body.style.cursor = 'default';
-                                                });
-                                        }
+                                       
                                         var boo=true;
                                         for (let i = 1; i < rows1.length; i++) {
                                             if (rows1[i].getElementsByTagName("select")[1].value == "STOK SEÇİN") {
+                                                alert("false");
                                                 boo = false;
                                                 break;
                                             }
                                         }
-                                        if (boo == true) {
-                                            localStorage.list = JSON.stringify(list2);
-                                            localStorage.list2 = JSON.stringify(list3);
+                                            if (boo == true) {
 
-                                            document.getElementById("seri").value = "";
-                                            document.getElementById("stokadi").value = "";
-                                            document.getElementById("marka").innerHTML = "";
-                                            document.getElementById("adet").value = "";
-                                            document.getElementById("kalinlik").value = "";
-                                            document.getElementById("genislik").value = "";
-                                            document.getElementById("genislikalti").value = "0";
-                                            document.getElementById("kaplama").value = "";
-                                            document.getElementById("kalite").value = "";
-                                            document.getElementById("metraj").value = "";
-                                            document.getElementById("agirlik").value = "";
-                                            document.getElementById("hamoran").value = "1.0000";
-                                            document.getElementById("addcll").setAttribute("disabled","");
-                                            document.getElementById("rmvcll").setAttribute("disabled", "");
-                                            document.getElementById("addRw").setAttribute("disabled", "");
-                                            document.getElementById("removeRw").setAttribute("disabled", "");
+                                            localStorage.list = JSON.stringify(list2);
+                                            //document.getElementById("seri").value = "";
+                                            //document.getElementById("stokadi").value = "";
+                                            //document.getElementById("marka").innerHTML = "";
+                                            //document.getElementById("adet").value = "";
+                                            //document.getElementById("kalinlik").value = "";
+                                            //document.getElementById("genislik").value = "";
+                                            //document.getElementById("genislikalti").value = "0";
+                                            //document.getElementById("kaplama").value = "";
+                                            //document.getElementById("kalite").value = "";
+                                            //document.getElementById("metraj").value = "";
+                                            //document.getElementById("agirlik").value = "";
+                                            //document.getElementById("hamoran").value = "1.0000";
+                                            //document.getElementById("addcll").setAttribute("disabled","");
+                                            //document.getElementById("rmvcll").setAttribute("disabled", "");
+                                            //document.getElementById("addRw").setAttribute("disabled", "");
+                                            //document.getElementById("removeRw").setAttribute("disabled", "");
                                             getPivot();
-                                            getPivot2();
                                         } else {
                                             const Toast = Swal.mixin({
                                                 toast: true,
@@ -1478,7 +1422,7 @@
             var table = document.getElementById("test");
             var onceki = table.getElementsByTagName("tr");
             if (onceki[1].getElementsByTagName("input")[1].name == "DL01") {
-                if (onceki[onceki.length - 1].getElementsByTagName("input")[1].value.length > 0) {
+                if (onceki[onceki.length - 1].getElementsByTagName("select")[0].value!="MAKİNE SEÇİN") {
                     const idIndex = [];
                     // (B1) GET TABLE
 
@@ -1490,7 +1434,7 @@
 
                     // (B3) INSERT CELLS
                     var cell = row.insertCell();
-                    cell.innerHTML = cell.parentNode.rowIndex;
+                    cell.innerHTML = parseInt(onceki[cell.parentNode.rowIndex - 1].getElementsByTagName("td")[0].innerHTML)+1
                     cell.className = "text-center p-1";
                     cell.style = "width:20px";
                     for (let i = 0; i < th.length - 1; i++) {
@@ -1504,11 +1448,20 @@
                         cell.className = "text-center p-1"
                         if (x == 0) {
                             if (i == 0) {
-                                cell.className = "text-center p-1"
+                              
+                                var div = document.createElement("div");
+                                div.className = "text-center";
+                                var img = document.createElement("img");
+                                img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC";
+                                img.setAttribute("onclick", "addRow1(this)")
+                                img.setAttribute("style", "width:18px");
+                                div.appendChild(img);
+                                cell.className = "text-center p-1";
                                 var rows = table.getElementsByTagName("tr");
                                 var c = 0;
                                 var oraninput = document.createElement("input");
                                 oraninput.className = "border-0 text-center";
+                                oraninput.style ="font-size: small"
                                 oraninput.type = "number";
                                 oraninput.max = "1.00";
                                 oraninput.min = "0.00";
@@ -1531,6 +1484,7 @@
                                     row.getElementsByTagName("input")[5].value = thousands_separators(parseFloat((parseInt(row.getElementsByTagName("input")[4].value) * parseInt(row.getElementsByTagName("input")[3].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value)).toFixed(2));
                                 };
                                 cell.appendChild(oraninput);
+                                cell.appendChild(div);
                             }
                             else if (i == 1) {
                                 cell.className = "text-center border-0 p-1";
@@ -1741,7 +1695,7 @@
 
                                 var sl1 = document.createElement("select");
                                 sl1.className = "selectchild";
-                                sl1.style = "width: 120px";
+                                sl1.style = "width: 200px";
                                 sl1.disabled = true;
                                 var opt = document.createElement("option");
                                 opt.innerHTML = "STOK SEÇİN";
@@ -1850,7 +1804,7 @@
 
                                         document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
 
-                                        row.getElementsByTagName("input")[4].value = thousands_separators(parseFloat((parseInt(row.getElementsByTagName("input")[3].value) * parseInt(row.getElementsByTagName("input")[2].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value)).toFixed(2));
+                                        row.getElementsByTagName("input")[4].value = Math.round(parseFloat((parseInt(row.getElementsByTagName("input")[3].value) * parseInt(row.getElementsByTagName("input")[2].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value)));
                                     };
                                 }
 
@@ -1880,9 +1834,17 @@
                         }
                         else if (x == 1) {
                             if (i == 0) {
+                                var div = document.createElement("div");
+                                div.className = "text-center";
+                                var img = document.createElement("img");
+                                img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC";
+                                img.setAttribute("onclick", "addRow1(this)")
+                                img.setAttribute("style", "width:18px");
+                                div.appendChild(img);
                                 cell.className = " p-1"
                                 var oraninput = document.createElement("input");
                                 oraninput.className = "border-0 text-center";
+                                oraninput.style = "font-size: small"
                                 oraninput.type = "number";
                                 oraninput.max = "1.00";
                                 oraninput.min = "0.00";
@@ -1896,6 +1858,7 @@
                                     document.getElementsByTagName("table")[1].getElementsByTagName("tr")[e.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("input")[3].onkeyup();
                                 };
                                 cell.appendChild(oraninput);
+                                cell.appendChild(div);
                             }
                             else if (i == 1) {
                                 var rows = table.getElementsByTagName("tr");
@@ -2142,7 +2105,7 @@
 
                                 var sl1 = document.createElement("select");
                                 sl1.className = "selectchild";
-                                sl1.style = "width:120px";
+                                sl1.style = "width:200px";
                                 if (rows[1].getElementsByTagName("input")[1].name == "DL01") {
                                     sl1.disabled = false;
                                 } else {
@@ -2241,76 +2204,9 @@
                                     idIndex.push(input.id);
                                 }
                                 if (i == 4 || i == 3) {
-                                    input.onkeyup = function () {
-                                        var rows = table.getElementsByTagName("tr");
-                                        var top = 0;
-
-                                        for (let i = 1; i < rows.length; i++) {
-                                            if (rows[i].getElementsByTagName("input")[3].value != "") {
-                                                top = top + (parseInt(rows[i].getElementsByTagName("input")[2].value) * parseInt(rows[i].getElementsByTagName("input")[3].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
-                                            }
-                                            if (x > 0) {
-                                                if ((rows[i].getElementsByTagName("input")[4].value != "") && (rows[i].getElementsByTagName("select")[3].value == "STOK SEÇİN")) {
-                                                    const Toast = Swal.mixin({
-                                                        toast: true,
-                                                        position: 'top-end',
-                                                        showConfirmButton: false,
-                                                        timer: 3000,
-                                                        timerProgressBar: true,
-                                                        didOpen: (toast) => {
-                                                            toast.addEventListener('mouseenter', Swal.stopTimer)
-                                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                                        }
-                                                    })
-
-                                                    Toast.fire({
-                                                        icon: 'info',
-                                                        title: 'Hesaplamaların doğru çalışabilmesi için Makine seçtiğiniz satırdaki Stok Ölçüsü alanını seçmeniz gerekmektedir!'
-                                                    });
-                                                }
-                                                if (rows[i].getElementsByTagName("select")[3].disabled != true) {
-                                                    rows[i].getElementsByTagName("select")[3].onchange();
-                                                }
-
-                                            }
-
-                                        }
-                                        var d = parseInt(((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) - top);
-                                        document.getElementById("fireagir").value = d;
-                                        if (d < 0) {
-
-                                            const Toast = Swal.mixin({
-                                                toast: true,
-                                                position: 'top-end',
-                                                showConfirmButton: false,
-                                                timer: 3000,
-                                                timerProgressBar: true,
-                                                didOpen: (toast) => {
-                                                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                                }
-                                            })
-
-                                            Toast.fire({
-                                                icon: 'error',
-                                                title: 'Fire eksi olamaz!'
-                                            });
-
-                                        }
-                                        if (fireyuzde == 0) {
-                                            document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
-                                        } else {
-                                            document.getElementById("fireyuzde").value = ((fireagirlik / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
-
-                                        }
+                                    input.onkeyup = function (e) { keyupadet1(e.currentTarget.parentNode.parentNode.rowIndex) };
 
 
-                                        document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
-
-                                        row.getElementsByTagName("input")[6].value = thousands_separators(parseFloat((parseInt(row.getElementsByTagName("input")[3].value) * parseInt(row.getElementsByTagName("input")[2].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value)).toFixed(0));
-
-
-                                    }
 
                                 }
                             }
@@ -2528,15 +2424,13 @@
 
 
 
-                                                onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[4].name = this.value + 2;
-                                                onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[4].value = this.value + today.getFullYear().toString().substring(2) + x;
+                                                
 
 
 
                                             }
-
-                                            onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[4].value = this.value + today.getFullYear().toString().substring(2) + x;
-                                            onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[4].name = this.value + 2;
+                                            
+                                            
 
 
                                             for (let a = cell.parentNode.rowIndex + 1; a < onceki.length; a++) {
@@ -2643,7 +2537,7 @@
                                 }
 
                                 sl.disabled = true;
-                                sl.style = "width:120px";
+                                sl.style = "width:200px";
                                 cell.appendChild(sl);
                                 $('.js-example-basic-single').select2();
 
@@ -3686,7 +3580,7 @@
              var bb1 = true;
              if (t.length > 0) {
                  for (let i = 1; i < t.length; i++) {
-                     if (t[i].getElementsByTagName("input")[1].value == "") {
+                     if (t[i].getElementsByTagName("select")[0].value == "MAKİNE SEÇİN") {
                          bb = false;
                          break;
                      }
@@ -3853,7 +3747,7 @@
                                          if (m != null) {
                                              var f = m.filter(x => x.REF_ISEMRINO.substring(0, 4) == this.value);
                                              if (f.length > 0) {
-                                                 
+
                                                  orta = (parseInt(f[f.length - 1].REF_ISEMRINO.substring(6, 11))) + 1;
                                              }
                                          }
@@ -3951,7 +3845,6 @@
                                              }
 
 
-                                             t[i].getElementsByTagName("input")[4].value = this.value + today.getFullYear().toString().substring(2) + x;
                                              t[i].getElementsByTagName("input")[4].name = this.value + 2;
 
 
@@ -3976,7 +3869,7 @@
                                  var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
                                  var sl = document.createElement("select");
                                  sl.className = "js-example-basic-single";
-                                 sl.style = "width: 120px";
+                                 sl.style = "width: 200px";
                                  sl.onchange = function () {
                                      var ss = t[i].getElementsByTagName("select")[4];
                                      ss.replaceChildren();
@@ -4043,12 +3936,15 @@
                                          }
                                          );
                                      });
+
                                      var oo = jsonObj.find(x => x.STOK_ADI == this.value);
                                      var m = document.getElementById("metraj").value;
-                                     var adt = t[i].getElementsByTagName("input")[3].value;
+                                     var adt = "";
                                      var upt = m.split('/')[0];
                                      var o = parseFloat(t[i].getElementsByTagName("input")[0].value);
-                                     t[i].getElementsByTagName("input")[5].value = Math.round(((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000))*o);
+                                     adt = t[i].getElementsByTagName("input")[3].value;
+                                     t[i].getElementsByTagName("input")[5].value = Math.round(((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000)) * o);
+
 
                                  }
                                  sl.name = "state";
@@ -4324,7 +4220,146 @@
             }
             );
         });
+        function addRow1(value) {
+            var rownum = value.parentNode.parentNode.parentNode.rowIndex;
+            var table = document.getElementsByTagName("table")[1]
+            var totaltr = table.getElementsByTagName("tr");
+            var currenttr = table.getElementsByTagName("tr")[rownum];
+            var currenttd = currenttr.getElementsByTagName("td");
+            
+            for (let i = 0; i < currenttd.length; i++) {
+                if (x == 1 && (i == 10 || i == 6)) {
 
+                } else {
+
+                    currenttd[i].style = "background-color:#edf0f5"
+                }
+            }
+            var totaltd = totaltr[1].getElementsByTagName("td").length;
+
+            var tr = table.insertRow(rownum + 1);
+            for (let i = 0; i < totaltd; i++) {
+                var td = tr.insertCell(i);
+                if ((i == 10 || i == 6) && x == 1) {
+                    td.style = table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getAttribute("style")
+                } else {
+                    td.style = "background-color:#edf0f5"
+                }
+                td.className = table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].className;
+                if (i != 0) {
+                    if (i == 2 || i == 3 || i == 7 || i == 8 || i == 12) {
+                        if (i == 8 || i == 3) {
+                            if (i == 3) {
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 200px' disabled onchange=sc(this)>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].innerHTML + "</select>"
+                            } else {
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 200px' disabled>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].innerHTML + "</select>"
+                            }
+                        } else if (i == 7) {
+                            if (x != 0) {
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 120px' onchange='changemakine2(this)'><option selected value='" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "'>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value+"</option></select>"
+                            } else {
+
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 120px'>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].innerHTML + "</select>"
+                            }
+
+                        }
+                        else if (i == 12) {
+                            td.innerHTML = "<select class='js-example-basic-single' style='width: 120px'><option selected disabled>EFECE GALVANİZ</option></select>"
+                        }
+                        else {
+                            td.innerHTML = "<select class='js-example-basic-single' style='width: 120px' onchange='makinechange(this)'><option selected value='" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "'>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value +"</option></select>"
+                        }
+                    }
+                    else if (i == 4 || i == 5) {
+                        td.innerHTML = '<input class="border-0 text-center" style="width: 80px" onkeyup="changeadet1(this)" disabled="">';
+                    } else if (i == 1) {
+                        td.innerHTML = '<input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00" id="oran1"><div class="text-center"><img onclick = "removeRow1(this)" style = "width:18px" src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC"></div>'
+                    }
+                    else {
+                        td.innerHTML = table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].innerHTML;
+                    }
+
+
+                } else {
+
+                    td.innerHTML = parseInt(table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].innerHTML);
+
+                }
+
+
+
+            }
+
+            $('.js-example-basic-single').select2();
+            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[0].onchange();
+
+            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].onkeyup = function () {
+                table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[1].onkeyup();
+            }
+            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[2].value = 1;
+            table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[3].value = 1;
+            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[2].disabled = true;
+            table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[3].disabled = true;
+            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[2].onchange();
+            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[3].onchange = function (e) {
+                 var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+                var oo = jsonObj.find(x => x.STOK_ADI == e.currentTarget.value);
+                var m = document.getElementById("metraj").value;
+                var adt = table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[2].value;
+                alert(adt);
+                var upt = m.split('/')[0];
+                var o = parseFloat(table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].value)
+
+                table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[3].value = Math.round(((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000)) * o);
+            }
+            table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[3].onkeyup();
+            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[1].value = table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[2].value;
+        }
+        function changemakine2(value) {
+            var table = document.getElementsByTagName("table")[1];
+            var tr = table.getElementsByTagName("tr")[value.parentNode.parentNode.rowIndex];
+            tr.getElementsByTagName("select")[3].disabled = false;
+        }
+        function makinechange(value) {
+            var rownumber = value.parentNode.parentNode.rowIndex;
+            var stokadi = document.getElementsByTagName("table")[1].getElementsByTagName("tr")[rownumber].getElementsByTagName("select")[1];
+            var genislik = document.getElementsByTagName("table")[1].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[1];
+            var adet = document.getElementsByTagName("table")[1].getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[2];
+            $(".selectmakina2").select2();
+            stokadi.removeAttribute("disabled")
+            if (value.value == "DL01") {
+                genislik.removeAttribute("disabled")
+                adet.removeAttribute("disabled")
+            } else {
+                genislik.setAttribute("disabled","")
+                adet.setAttribute("disabled","")
+            }
+        }
+        function removeRow1(value) {
+            var rownum = value.parentNode.parentNode.parentNode.rowIndex;
+            var table = document.getElementsByTagName("table")[1]
+            var currenttr = table.getElementsByTagName("tr")[rownum-1];
+            var currenttd = currenttr.getElementsByTagName("td");
+            for (let i = 0; i < currenttd.length; i++) {
+                if (x == 1 && (i == 10 || i == 6)) {
+
+                } else {
+
+                    currenttd[i].removeAttribute("style");
+                }
+            }
+            if (document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex - 1].getElementsByTagName("select")[0].value == "DL01") {
+                document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[3].disabled = false;
+            }
+            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[3].value = null;
+
+            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex].remove();
+
+        }
+        function keyupadet1(value) {
+            var inp = document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value].getElementsByTagName("input");
+            inp[inp.length-1].value = thousands_separators(Math.round(parseFloat((parseInt(inp[2].value) * parseInt(inp[3].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(inp[0].value)).toFixed(2)));
+        }
     </script>
 
     <div class="layout-overlay layout-menu-toggle"></div>
