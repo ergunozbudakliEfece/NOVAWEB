@@ -340,37 +340,16 @@ namespace NOVA.Controllers
 
             return View("Yetki");
         }
-        public List<User> GetYetki()
-        {
-            var apiUrl = "http://192.168.2.13:83/api/userwithroles";
-
-            //Connect API
-            Uri url = new Uri(apiUrl);
-            WebClient client = new WebClient();
-            client.Encoding = System.Text.Encoding.UTF8;
-
-            string json = client.DownloadString(url);
-            //END
-
-            //JSON Parse START
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            List<User> jsonList = ser.Deserialize<List<User>>(json);
-            return jsonList;
-        }
+      
         public List<User> GetYetki(int id)
         {
             var apiUrl = "http://192.168.2.13:83/api/userwithroles/"+id;
-
-            //Connect API
             Uri url = new Uri(apiUrl);
             WebClient client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
-
             string json = client.DownloadString(url);
-            //END
-
-            //JSON Parse START
             JavaScriptSerializer ser = new JavaScriptSerializer();
+            ser.MaxJsonLength = int.MaxValue;
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             return jsonList;
         }
@@ -780,7 +759,7 @@ namespace NOVA.Controllers
 
             ViewBag.Page = 1;
 
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 37);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -1215,6 +1194,7 @@ namespace NOVA.Controllers
 
             //JSON Parse START
             JavaScriptSerializer ser = new JavaScriptSerializer();
+            ser.MaxJsonLength = int.MaxValue;
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             //END
 
@@ -1231,6 +1211,7 @@ namespace NOVA.Controllers
             client.Encoding = System.Text.Encoding.UTF8;
             string json = client.DownloadString(url);
             JavaScriptSerializer ser = new JavaScriptSerializer();
+            ser.MaxJsonLength = int.MaxValue;
             List<Modules> jsonList = ser.Deserialize<List<Modules>>(json);
 
             //END
@@ -1253,6 +1234,7 @@ namespace NOVA.Controllers
 
             //JSON Parse START
             JavaScriptSerializer ser = new JavaScriptSerializer();
+            ser.MaxJsonLength = int.MaxValue;
             List<User> jsonList = ser.Deserialize<List<User>>(json);
 
             //END
@@ -1673,6 +1655,23 @@ namespace NOVA.Controllers
 
             return Json(response, JsonRequestBehavior.AllowGet);
         }
+        public async Task<ActionResult> SuperNovaUpdate(string QUESTION_ID, int USER_ID,bool AUTH)
+        {
+            string apiUrl;
+            var httpClient = new HttpClient();
+            HttpRequestMessage request;
+            HttpResponseMessage response;
+
+
+            apiUrl = "http://192.168.2.13:83/api/supernova/auth/update/" + QUESTION_ID + "/" + USER_ID+"/"+AUTH;
+
+
+            request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+
+            response = await httpClient.SendAsync(request);
+
+            return Json(response, JsonRequestBehavior.AllowGet);
+        }
         public async Task<ActionResult> ModuleActiveUpdate(ModuleActive mod)
         {
             string apiUrl;
@@ -1796,6 +1795,7 @@ namespace NOVA.Controllers
 
             //JSON Parse START
             JavaScriptSerializer ser = new JavaScriptSerializer();
+            ser.MaxJsonLength = int.MaxValue;
             List<User> jsonList = ser.Deserialize<List<User>>(json);
 
             //END

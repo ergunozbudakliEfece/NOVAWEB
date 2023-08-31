@@ -67,7 +67,10 @@
         }
     }
 </style>
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+<span class="iconify" data-icon="line-md:reddit-loop" data-flip="horizontal"></span>
 <div class="jumbotron vertical-center" style="overflow-y:hidden">
+    
     <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -131,26 +134,26 @@
 
                     using (Html.BeginForm("AddModul", "YonetimPaneli", FormMethod.Post, new { @id = "myFormModulAdd" }))
                     {
-                                <div class="modal-body">
-                                    <div class="form-group">
-                                        <label>MODUL ID:</label>
-                                        @Html.TextBoxFor(Model => Model.Item3.MODULE_ID, new { @class = "form-control" })
-                                    </div>
-                                    <div class="form-group">
-                                        <label>MODULE NAME:</label>
-                                        @Html.TextBoxFor(Model => Model.Item3.MODULE_NAME, new { @class = "form-control" })
-                                    </div>
-                                    <div class="form-group">
-                                        <label>PROGRAM ID:</label>
-                                        @Html.TextBoxFor(Model => Model.Item3.PROGRAM_ID, new { @class = "form-control" })
-                                    </div>
-                                    <div class="form-group">
-                                        <label>PROGRAM NAME:</label>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>MODUL ID:</label>
+                                @Html.TextBoxFor(Model => Model.Item3.MODULE_ID, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>MODULE NAME:</label>
+                                @Html.TextBoxFor(Model => Model.Item3.MODULE_NAME, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>PROGRAM ID:</label>
+                                @Html.TextBoxFor(Model => Model.Item3.PROGRAM_ID, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>PROGRAM NAME:</label>
 
-                                        @Html.TextBoxFor(Model => Model.Item3.PROGRAM_NAME, new { @class = "form-control" })
-                                    </div>
+                                @Html.TextBoxFor(Model => Model.Item3.PROGRAM_NAME, new { @class = "form-control" })
+                            </div>
 
-                                </div>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="ekle btn btn-outline-info" onclick="myEkleModulFunction()" data-bs-dismiss="modal">EKLE</button>
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">KAPAT</button>
@@ -229,6 +232,8 @@
             <label class="btn btn-outline-secondary" for="btnradio3">MODÜLLER</label>
             <input type="radio" class="btn-check" onclick="changetable(5)" name="btnradio" id="btnradio5" autocomplete="off">
             <label class="btn btn-outline-secondary" for="btnradio5">KULLANICI AKTİVİTESİ</label>
+            <input type="radio" class="btn-check" onclick="changetable(6)" name="btnradio" id="btnradio6" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio6">SÜPERNOVA YETKİLER</label>
         </div>
         <div class="btn-group menu2">
             <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
@@ -252,6 +257,10 @@
                     <hr class="dropdown-divider">
                 </li>
                 <li><a class="dropdown-item" onclick="changetable(5)">KULLANICI AKTİVİTESİ</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" onclick="changetable(6)">SÜPERNOVA YETKİLER</a></li>
             </ul>
         </div>
         <div id="employeeTableWrapper" class="tableWrapper">
@@ -921,7 +930,7 @@
                     ]
 
                 })
-            } else {
+            } else if(value==5){
                 $('#filter').select2();
                 $('#filter').select2('destroy');
                 $('#filter').hide();
@@ -972,6 +981,45 @@
 
                 })
             }
+            else if (value == 6) {
+                $('#filter').select2();
+                $('#filter').select2('destroy');
+                $('#filter').hide();
+                $('#filter2').select2();
+                $('#filter2').select2('destroy');
+                $('#filter2').hide();
+                $('#table').bootstrapTable('destroy');
+                document.getElementById("trid").replaceChildren();
+                $('#table').bootstrapTable({
+                    url: 'http://192.168.2.13:83/api/supernova/auth/0',
+                    columns: [
+                        {
+                            field: 'NAME',
+                            title: 'İSİM',
+                            formatter: 'formatterNameColumn'
+
+                        },
+                        {
+                            field: 'QUESTION_ID',
+                            title: 'SORU',
+
+                        },
+                        {
+                            field: 'EXPLANATION',
+                            title: 'AÇIKLAMA',
+
+                        },
+                        {
+                            field: 'AUTH',
+                            title: 'YETKİ',
+                            formatter: 'formatterSuperNovaAuth'
+
+                        }
+
+                    ]
+
+                })
+            }
         }
         function dataSorter(a, b) {
             if (parseInt(a) < parseInt(b)) return 1;
@@ -983,6 +1031,13 @@
                 return '<input class="form-check-input" type="checkbox" value="" onchange="changeAuth(' + index.USER_ID + ',' + index.MODULE_INCKEY +')" checked="">';
             } else {
                 return '<input class="form-check-input" type="checkbox" onchange="changeAuth(' + index.USER_ID + ',' + index.MODULE_INCKEY +')" value="" id="defaultCheck3">';
+            }
+        }
+        function formatterSuperNovaAuth(value, index, row) {
+            if (value) {
+                return '<input class="form-check-input" type="checkbox" value="" onchange="changeSuperNovaAuth(this)" checked="">';
+            } else {
+                return '<input class="form-check-input" type="checkbox" onchange="changeSuperNovaAuth(this)" value="">';
             }
         }
         function RoleformatterAuth(value, index, row) {
@@ -1065,7 +1120,34 @@
                     });
 
         }
+        function changeSuperNovaAuth(e) {
+            var t = document.getElementById("table");
+            var tr = t.getElementsByTagName("tr");
+            var u = tr[e.parentNode.parentNode.rowIndex].getElementsByTagName("td")[0].getElementsByTagName("span")[1].innerHTML;
+            var q = tr[e.parentNode.parentNode.rowIndex].getElementsByTagName("td")[1].innerHTML;
+            var durum = e.checked;
+            var json = { QUESTION_ID: q, USER_ID: u,AUTH:durum };
+                    $.ajax({
+                        url: '@Url.Action("SuperNovaUpdate", "YonetimPaneli")',
+                        type: 'POST',
+                        data: JSON.stringify(json),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.statusText);
+                        },
+                        success: function (result) {
 
+                        },
+                        async: true,
+                        processData: false
+                    });
+
+        }
+        function formatterNameColumn(value, index, row) {
+            return "<span>"+value+"</span><span style='display:none'>"+index.USER_ID+"</span>";
+
+        }
         function formatterAuth1(value, index, row) {
             var user = JSON.parse(users).filter(x => x.USER_ID == value);
             return user[0].USER_FIRSTNAME + " " + user[0].USER_LASTNAME;

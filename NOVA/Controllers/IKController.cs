@@ -426,6 +426,7 @@ namespace NOVA.Controllers
 
             //JSON Parse START
             JavaScriptSerializer ser = new JavaScriptSerializer();
+            ser.MaxJsonLength = int.MaxValue;
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             return jsonList;
         }

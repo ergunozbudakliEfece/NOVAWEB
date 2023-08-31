@@ -1,8 +1,10 @@
 ﻿
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Http;
 //using NetOpenX50;
 using NOVA.Models;
+using NOVA.Utils;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -50,69 +53,70 @@ namespace NOVA.Controllers
         public ActionResult mutluyillar()
         {
             return View();
-                }
-            public ActionResult Index()
+        }
+        public ActionResult Index()
         {
-            
-            if (Request.Cookies["Id"] == null){
+
+            if (Request.Cookies["Id"] == null)
+            {
                 FormsAuthentication.SignOut();
-                return RedirectToAction("Login","Login");
+                return RedirectToAction("Login", "Login");
             }
-           
-           
-             //Kullanıcının en son logid si bulunur
-                string json1 = null;
-                LoginModel createdlog = null;
-                var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
-                Uri url1 = new Uri(apiUrl1);
-                WebClient client1 = new WebClient();
-                client1.Encoding = System.Text.Encoding.UTF8;
-               json1 = client1.DownloadString(url1);
-               JavaScriptSerializer ser1 = new JavaScriptSerializer();
-                createdlog = ser1.Deserialize<LoginModel>(json1);
 
-              
-                
-                
-                
-                //Kullanıcının en son logid si bulunur
 
-                string json2 = null;
-                List<ExecModel> createdlog1 = null;
-                var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
-                Uri url2 = new Uri(apiUrl2);
-                WebClient client2 = new WebClient();
-                client2.Encoding = System.Text.Encoding.UTF8;
+            //Kullanıcının en son logid si bulunur
+            string json1 = null;
+            LoginModel createdlog = null;
+            var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
+            Uri url1 = new Uri(apiUrl1);
+            WebClient client1 = new WebClient();
+            client1.Encoding = System.Text.Encoding.UTF8;
+            json1 = client1.DownloadString(url1);
+            JavaScriptSerializer ser1 = new JavaScriptSerializer();
+            createdlog = ser1.Deserialize<LoginModel>(json1);
 
-                json2 = client2.DownloadString(url2);
-                JavaScriptSerializer ser2 = new JavaScriptSerializer();
-                createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
 
-                if (createdlog1[0].SITUATION != false)
+
+
+
+            //Kullanıcının en son logid si bulunur
+
+            string json2 = null;
+            List<ExecModel> createdlog1 = null;
+            var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
+            Uri url2 = new Uri(apiUrl2);
+            WebClient client2 = new WebClient();
+            client2.Encoding = System.Text.Encoding.UTF8;
+
+            json2 = client2.DownloadString(url2);
+            JavaScriptSerializer ser2 = new JavaScriptSerializer();
+            createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+
+            if (createdlog1[0].SITUATION != false)
+            {
+                LoginModel login = new LoginModel();
+                login.LOG_ID = createdlog.LOG_ID;
+                login.LAST_ACTIVITY = 0;
+                var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                var httpClientnew = new System.Net.Http.HttpClient();
+                var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
                 {
-                    LoginModel login = new LoginModel();
-                    login.LOG_ID = createdlog.LOG_ID;
-                    login.LAST_ACTIVITY = 0;
-                    var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+                    Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                };
 
-                    var httpClientnew = new System.Net.Http.HttpClient();
-                    var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
-                    {
-                        Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
-                    };
+                var responsenew = httpClientnew.SendAsync(requestnew);
+            }
+            else
+            {
+                FormsAuthentication.SignOut();
+                return RedirectToAction("Login", "Login");
+            }
 
-                    var responsenew =httpClientnew.SendAsync(requestnew);
-                }
-                else
-                {
-                    FormsAuthentication.SignOut();
-                    return RedirectToAction("Login", "Login");
-                }
 
-               
-            
-                
-            
+
+
+
 
             ViewBag.OnlineUsers = null;
             ViewBag.OfflineUsers = null;
@@ -131,7 +135,7 @@ namespace NOVA.Controllers
             ViewBag.Name = Request.Cookies["Name"].Value.ToString();
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
 
             var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
@@ -151,7 +155,7 @@ namespace NOVA.Controllers
             var yetkiKontrolIstatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 8).USER_AUTH;
             var yetkidetaylisatinalma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 19).USER_AUTH;
             var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
-            var isemrikayit= yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 27).USER_AUTH;
+            var isemrikayit = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 27).USER_AUTH;
             var yetkianlikuretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 26).USER_AUTH;
             var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
             var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
@@ -251,14 +255,14 @@ namespace NOVA.Controllers
             {
                 ViewBag.DisplayMusteriOzel = "unset";
             }
-            if ((musteriraporu == true && musteriraporuozel==false)||(Request.Cookies["Id"].Value=="10001" || Request.Cookies["Id"].Value == "10002"))
+            if ((musteriraporu == true && musteriraporuozel == false) || (Request.Cookies["Id"].Value == "10001" || Request.Cookies["Id"].Value == "10002"))
             {
                 ViewBag.DisplayMusteriRaporu = "unset";
             }
             else
             {
                 ViewBag.DisplayMusteriRaporu = "none";
-                
+
             }
             if (ziyaretkaydi != true)
             {
@@ -479,7 +483,7 @@ namespace NOVA.Controllers
 
 
 
-            
+
 
 
 
@@ -504,7 +508,7 @@ namespace NOVA.Controllers
             }
             catch (Exception ex)
             {
-                
+
                 return Json(ex.Message, JsonRequestBehavior.AllowGet);
             }
 
@@ -536,9 +540,9 @@ namespace NOVA.Controllers
             return jsonList;
         }
 
-        public List<User> GetYetki(int id, int inckey)
+        public List<User> GetYetki(int id)
         {
-            var apiUrl = "http://192.168.2.13:83/api/userwithroles/" + id + "/" + inckey;
+            var apiUrl = "http://192.168.2.13:83/api/user/auth/" + id;
 
             //Connect API
             Uri url = new Uri(apiUrl);
@@ -744,7 +748,7 @@ namespace NOVA.Controllers
         {
             string pass = GetKullaniciApiData().USER_PASSWORD;
             User user = new User();
-            if(pw.PasswordChange.NEW_PASSWORD!=null&& pw.PasswordChange.NEW_PASSWORD_REPEAT != null)
+            if (pw.PasswordChange.NEW_PASSWORD != null && pw.PasswordChange.NEW_PASSWORD_REPEAT != null)
             {
                 if (pw.PasswordChange.OLD_PASSWORD.ToString().Equals(pass))
                 {
@@ -782,7 +786,7 @@ namespace NOVA.Controllers
                     }
                 }
             }
-           
+
             else
             {
                 Session["Alert"] = "Lütfen gerekli alanları doldurduğunuzdan emin olun!";
@@ -925,8 +929,84 @@ namespace NOVA.Controllers
 
         }
 
+
+
+
+
+        #region Supernova
+        [ChildActionOnly]
+        public async Task<ActionResult> SupernovaPartial()
+        {
+            int moduleId = 43;
+
+            List<User> Users = GetYetki(Request.Cookies["Id"].Value.ToInt());
+            User UserData = Users.FirstOrDefault(t => t.MODULE_INCKEY == moduleId);
+
+            if (UserData?.USER_AUTH != true)
+            {
+                Session["SupernovaYetki"] = "false";
+            }
+            else
+            {
+                Session["SupernovaYetki"] = "true";
+            }
+
+            return PartialView("NovaAsistan/Asistan");
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> Supernova(string ProcedureName, string Variable)
+        {
+            int moduleId = 43;
+
+            User UserData = await RoleHelper.RoleControl(Request.Cookies["Id"].Value, moduleId);
+
+            if (UserData?.USER_ROLE != "101")
+            {
+                List<Modules> Modules = await AuthHelper.GetModules(moduleId);
+
+                if (Modules[0]?.ACTIVE != "1")
+                {
+                    return Json("{\"Mesaj\":\"&#128295; Size daha iyi hizmet verebilmem için bakım çalışması yapılmaktadır. Lütfen daha sonra tekrar deneyiniz. \"}", JsonRequestBehavior.AllowGet);
+                }
+
+                return await SupernovaRequest(ProcedureName, Variable);
+            }
+            else
+            {
+                return await SupernovaRequest(ProcedureName, Variable);
+            }
+        }
+
+        public async Task<JsonResult> SupernovaRequest(string ProcedureName, string Variable)
+        {
+            string Token = Request.Cookies["SupernovaToken"]?.Value;
+
+            if (string.IsNullOrEmpty(Token))
+            {
+                Token = await AuthHelper.GetToken("loginsupernova", "supernova", "sprmb2023");
+                Response.Cookies.Add(new HttpCookie("SupernovaToken", Token) { Expires = DateTime.Now.AddHours(2) });
+            }
+
+            string Data = await AuthHelper.PostWithToken($"http://192.168.2.13:83/api/supernova/request"
+                , Token
+                , new SupernovaRequestModel()
+                {
+                    PROC = ProcedureName,
+                    TEXT = Variable,
+                    USERID = Request.Cookies["UserId"].Value.ToInt()
+                });
+
+
+            return Json(Data, JsonRequestBehavior.AllowGet);
+        }
+
+        public class SupernovaRequestModel
+        {
+            public string PROC { get; set; }
+            public string TEXT { get; set; }
+            public int USERID { get; set; }
+        }
+        #endregion
     }
-
-
 }
-

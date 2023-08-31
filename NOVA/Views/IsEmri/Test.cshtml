@@ -24,6 +24,32 @@
     <link rel="stylesheet" href="https://lipis.github.io/bootstrap-sweetalert/lib/sweet-alert.css">
 
     <style>
+        ::-webkit-scrollbar {
+            width: 20px;
+        }
+        /* Track */
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey;
+            border-radius: 15px;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #e8ebeb;
+            border-radius: 15px;
+        }
+
+            /* Handle on hover */
+            ::-webkit-scrollbar-thumb:hover {
+                background: #697a8d;
+            }
+        .foot {
+            display: none;
+        }
+
+        .isimbar {
+            display: none;
+        }
         .pvtTable{
             text-align:center !important;
         }
@@ -164,7 +190,7 @@
         }
     </style>
 </head>
-<body style="background-color: #f5f5f9 !important;font-size:10px !important;">
+<body style="background-color: transparent !important;font-size:10px !important;">
     @if (ViewBag.Hata != null)
     {
         <div class="row"><div class="col">@ViewBag.Hata</div></div>
@@ -543,8 +569,8 @@
                                         document.body.style.cursor = 'wait';
                                         var rows = document.getElementsByTagName("table")[0].getElementsByTagName("tr");
                                         var list2 = [];
-                                        if (localStorage.list2 != "null" && localStorage.list2!=null) {
-                                            list2 = JSON.parse(localStorage.list2);
+                                        if (localStorage.list10 != "null" && localStorage.list10!=null) {
+                                            list2 = JSON.parse(localStorage.list10);
                                             list2.splice(list2.length-1,1)
                                         }
                                         var takiplist = [];
@@ -578,7 +604,7 @@
                                                     }
                                                 }).then(function (responseJSON) {
                                                     document.body.style.cursor = 'default';
-                                                    takiplist = JSON.parse(localStorage.list2)
+                                                    takiplist = JSON.parse(localStorage.list10)
                                                     drawPivot();
                                                 });
 
@@ -702,7 +728,7 @@
                                                 toplamagirlik = toplamagirlik + parseInt(list2[i].AGIRLIK);
                                             }
                                             list2.push({ SIRA: "TOPLAM", GİRDİ2: "-", ISEMRINO: "-", STOKADI: "-", ADET: "-", AGIRLIK: toplamagirlik.toLocaleString(), REF_ISEMRINO: "-", REF_STOKADI: "-", REF_ADET: "-" });
-                                            localStorage.list2 = JSON.stringify(list2);
+                                            localStorage.list10 = JSON.stringify(list2);
                                             getPivot();
                                             function drawPivot2() {
 
@@ -845,7 +871,7 @@
         function load() {
 
             localStorage.list = null;
-            localStorage.list2 = null;
+            localStorage.list10 = null;
             localStorage.list3 = null;
                 $('#card').load(document.URL + ' #card');
                 document.body.style.cursor = 'default';
@@ -862,7 +888,7 @@
             $("#progress").show();
             document.body.style.cursor = 'wait';
             var lis = [];
-            lis = JSON.parse(localStorage.list2);
+            lis = JSON.parse(localStorage.list10);
             lis = list.splice(list.length - 1, 1);
             $.ajax({
                 url: '@Url.Action("PostTRPZ","IsEmri")',
@@ -891,7 +917,7 @@
             }).done(function ()
           {
                 localStorage.list = null;
-                localStorage.list2 = null;
+                localStorage.list10 = null;
                 localStorage.list3 = null;
                 document.body.style.cursor = 'default';
 
@@ -918,7 +944,7 @@
          function mail() {
             document.body.style.cursor = 'wait';
             var lis1 = [];
-            lis1 = JSON.parse(localStorage.list2);
+            lis1 = JSON.parse(localStorage.list10);
             $.ajax({
                 url: '@Url.Action("Mail")',
                 type: 'POST',
@@ -1047,8 +1073,8 @@
     $("#makkodlari").select2();
             var takiplist = [];
             var p = [];
-            if (localStorage.list2 != "null" && localStorage.list2!=null) {
-                p = JSON.parse(localStorage.list2);
+            if (localStorage.list10 != "null" && localStorage.list10!=null) {
+                p = JSON.parse(localStorage.list10);
                 
                 for (let i = 0; i < p.length; i++) {
                     isemirleri.push(p[i].ISEMRINO)
@@ -1096,7 +1122,7 @@
                 var girdi1 = [];
 
                
-                localStorage.list4 = JSON.stringify(takiplist);
+                localStorage.list10 = JSON.stringify(takiplist);
                 drawPivot();
                 document.body.style.cursor = 'default';
             });
@@ -1171,7 +1197,7 @@
 
 
             }
-            
+            document.body.style.cursor = 'default';      
            
            
 })
@@ -1680,12 +1706,7 @@
         }
         
         $(document).ready(function () {
-            if ($(window).width() < 600) {
-                $("#divPartial2").show();
-            }
-            else {
-                $("#divPartial").show();
-            }
+           
             $('.js-example-basic-single').select2({
                 tags: true
             }

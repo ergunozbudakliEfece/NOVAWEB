@@ -14,17 +14,25 @@ using Newtonsoft.Json;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Azure;
 using System.Web.UI.WebControls;
+using System.Net.Http.Headers;
+using System.Net.Mime;
+using static NOVA.Controllers.HomeController;
+using ServiceStack.Web;
+using static ServiceStack.Diagnostics.Events;
+using DocumentFormat.OpenXml.EMMA;
+using Microsoft.AspNetCore.WebUtilities;
+using Azure.Core;
 
 namespace NOVA.Utils
 {
     public static class AuthHelper
     {
-        public static async Task<bool> LoginLog(string Id, string LogId, int LAST_ACTIVITY) 
+        public static async Task<bool> LoginLog(string Id, string LogId, int LAST_ACTIVITY)
         {
             LoginModel LoginModel;
             List<ExecModel> ExecModel;
 
-            using (HttpClient Client = new HttpClient())
+            using (System.Net.Http.HttpClient Client = new System.Net.Http.HttpClient())
             {
                 string LoginResponse = await Client.GetStringAsync($"http://192.168.2.13:83/api/UserLogin/{Id.ToInt()}");
                 LoginModel = new JavaScriptSerializer().Deserialize<LoginModel>(LoginResponse);
@@ -32,7 +40,7 @@ namespace NOVA.Utils
                 string ExecResponse = await Client.GetStringAsync($"http://192.168.2.13:83/api/UserLogin/exec/{LogId}");
                 ExecModel = new JavaScriptSerializer().Deserialize<List<ExecModel>>(ExecResponse);
 
-                if (ExecModel[0].SITUATION != false) 
+                if (ExecModel[0].SITUATION != false)
                 {
                     LoginModel Login = new LoginModel();
                     Login.LOG_ID = LoginModel.LOG_ID;
@@ -95,7 +103,7 @@ namespace NOVA.Utils
 
         public static async Task<List<Modules>> GetModules(int id)
         {
-            using (HttpClient client = new HttpClient())
+            using (System.Net.Http.HttpClient client = new System.Net.Http.HttpClient())
             {
                 using (HttpResponseMessage response = await client.GetAsync("http://192.168.2.13:83/api/modules"))
                 {
@@ -118,6 +126,41 @@ namespace NOVA.Utils
             //List<Modules> jsonList = ser.Deserialize<List<Modules>>(json);
             ////END
             //return jsonList.Where(x => x.INCKEY == id).ToList();
+        }
+
+        public static async Task<string> GetToken(string Route, string Email, string Password)
+        {
+            string URI = $"http://192.168.2.13:83/api/login/{Route}";
+            string myParameters = $"Email={Email}&Password={Password}";
+            using (System.Net.Http.HttpClient Client = new System.Net.Http.HttpClient())
+            {
+                HttpResponseMessage Response = await Client.PostAsync(URI, new StringContent(myParameters, Encoding.UTF8, "application/x-www-form-urlencoded"));
+
+                return await Response.Content.ReadAsStringAsync();
+            }
+        }
+
+        public static async Task<string> GetUrlWithToken(string Url, string Token)
+        {
+            Uri url = new Uri(Url);
+            WebClient client = new WebClient();
+            client.Encoding = Encoding.UTF8;
+            client.Headers.Add("Authorization", "Bearer " + Token);
+            string json = client.DownloadString(url);
+
+            return json;
+        }
+
+        public static async Task<string> PostWithToken(string Url, string Token, SupernovaRequestModel Model)
+        {
+            using (System.Net.Http.HttpClient Client = new System.Net.Http.HttpClient())
+            {
+                Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+                var Response = await Client.PostAsJsonAsync(Url, Model);
+                var StringResult = await Response.Content.ReadAsStringAsync();
+
+                return StringResult;
+            }
         }
 
     }

@@ -37,7 +37,7 @@ namespace NOVA.Controllers
             }
            
            
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 19);
             if (yetkiKontrol.SELECT_AUTH != true)
@@ -420,9 +420,9 @@ namespace NOVA.Controllers
            
             return View();
         }
-        public List<User> GetYetki()
+        public List<User> GetYetki(int id)
         {
-            var apiUrl = "http://192.168.2.13:83/api/userwithroles";
+            var apiUrl = "http://192.168.2.13:83/api/user/auth/" + id;
 
             //Connect API
             Uri url = new Uri(apiUrl);
@@ -434,6 +434,7 @@ namespace NOVA.Controllers
 
             //JSON Parse START
             JavaScriptSerializer ser = new JavaScriptSerializer();
+            ser.MaxJsonLength = int.MaxValue;
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             return jsonList;
         }

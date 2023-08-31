@@ -86,7 +86,7 @@ namespace NOVA.Controllers
             return null;
         }
         // GET: NetOpenx
-        public ActionResult Index()
+        public ActionResult Is()
         {
             if (TempData["Hata"] != null)
             {
@@ -115,7 +115,10 @@ namespace NOVA.Controllers
 
             return View();
         }
-
+        public ActionResult Index()
+        {
+            return View();
+        }
         public ActionResult Test()
         {
             if (TempData["Hata"] != null)
@@ -651,10 +654,10 @@ namespace NOVA.Controllers
 
         }
         [HttpPost]
-        public ActionResult Post(List<IsEmriModel> isemri)
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult Post(List<IsEmriModel> isemri)
         {
 
-            var isemridis = isemri.GroupBy(x => x.GIRDI2).Select(y => y.First()).ToList();
+            var isemridis = isemri.GroupBy(x => x.ISEMRINO).Select(x=>x.First()).ToList();
             List<SeriModel> createdlog1 = null;
             var apiUrl2 = "http://192.168.2.13:83/api/seri/1";
             Uri url2 = new Uri(apiUrl2);
@@ -755,8 +758,8 @@ namespace NOVA.Controllers
             catch (Exception ex)
             {
 
-                TempData["Hata"] = "HATA";
-                return View("Index");
+                TempData["Hata"] = ex.Message;
+                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
             }
 
 
@@ -764,7 +767,7 @@ namespace NOVA.Controllers
 
 
 
-            return RedirectToAction("Index");
+            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
         }
         [HttpPost]
         public ActionResult Post1()
@@ -805,25 +808,25 @@ namespace NOVA.Controllers
         [HttpPost]
         public ActionResult Mail(List<MailModel> mail)
         {
-            var m = mail.GroupBy(x => new { x.MUSTERI, x.STOKOLCULERI, x.KALINLIK, x.KALITE, x.KAPLAMA }).Select(grp => new { MUSTERI = grp.First().MUSTERI, STOKOLCULERI = grp.First().STOKOLCULERI, KALINLIK = grp.First().KALINLIK, KALITE = grp.First().KALITE, KAPLAMA = grp.First().KAPLAMA, ADET = grp.Sum(s => int.Parse(s.ADET)), AGIRLIK = grp.Sum(s => int.Parse(s.AGIRLIK)) }).ToList();
+            
             string subject = "";
             List<string> makineler = new List<string>();
             List<string> makinelerref = new List<string>();
             for (int i = 0; i < mail.Count; i++)
             {
-                if (!makineler.Contains(mail[i].MAKINE))
+                if (!makineler.Contains(mail[i].ISEMRINO.Substring(0,4)))
                 {
-                    if (mail[i].MAKINE != "")
+                    if (mail[i].ISEMRINO != "")
                     {
-                        makineler.Add(mail[i].MAKINE);
+                        makineler.Add(mail[i].ISEMRINO.Substring(0, 4));
                     }
 
                 }
-                if (!makinelerref.Contains(mail[i].MAKINEREF))
+                if (!makinelerref.Contains(mail[i].REF_ISEMRINO.Substring(0,4)))
                 {
-                    if (mail[i].MAKINEREF != "")
+                    if (mail[i].REF_ISEMRINO != "")
                     {
-                        makinelerref.Add(mail[i].MAKINEREF);
+                        makinelerref.Add(mail[i].REF_ISEMRINO.Substring(0,4));
                     }
 
                 }
@@ -852,9 +855,9 @@ namespace NOVA.Controllers
 
             var subject2 = upt.Substring(0, upt.Length - 1) + " İŞ EMRİ - " + Request.Cookies["UserName"].Value;
             string body = "<tr style='outline: thin solid;margin-bottom:15px'><th style='margin-right:10px'>MUSTERI</th><th style='margin-right:10px'>STOKOLCULERI</th><th style='margin-right:10px'>KALINLIK</th><th style='margin-right:10px'>KALITE</th><th style='margin-right:10px'>KAPLAMA</th><th style='margin-right:10px'>ADET</th><th style='margin-right:10px'>AĞIRLIK</th></tr>";
-            for (int i = 0; i < m.Count; i++)
+            for (int i = 0; i < mail.Count; i++)
             {
-                body = body + "<tr style='outline: thin solid;margin-bottom:10px'>" + "<td style='border-collapse: collapse;margin-right:10px' >" + m[i].MUSTERI + "</td>" + "<td style='border-collapse: collapse;margin-right:10px'' >" + m[i].STOKOLCULERI + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + m[i].KALINLIK + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + m[i].KALITE + "</td>" + "<td style='border-collapse: collapse' style='text-align: center;margin-right:10px'' >" + m[i].KAPLAMA + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + String.Format("{0:n0}", m[i].ADET) + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px'' >" + String.Format("{0:n0}", m[i].AGIRLIK) + "</td>" + "</tr>";
+                body = body + "<tr style='outline: thin solid;margin-bottom:10px'>" + "<td style='border-collapse: collapse;margin-right:10px' >" + mail[i].MUSTERI + "</td>" + "<td style='border-collapse: collapse;margin-right:10px'' >" + mail[i].STOKADI + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + mail[i].KALINLIK + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + mail[i].KALITE + "</td>" + "<td style='border-collapse: collapse' style='text-align: center;margin-right:10px'' >" + mail[i].KAPLAMA + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + String.Format("{0:n0}", mail[i].ADET) + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px'' >" + String.Format("{0:n0}", mail[i].AGIRLIK) + "</td>" + "</tr>";
             }
 
 
@@ -882,10 +885,10 @@ namespace NOVA.Controllers
         public class MailModel
         {
 
-            public string MAKINE { get; set; }
-            public string MAKINEREF { get; set; }
+            public string ISEMRINO { get; set; }
+            public string REF_ISEMRINO { get; set; }
             public string MUSTERI { get; set; }
-            public string STOKOLCULERI { get; set; }
+            public string STOKADI { get; set; }
             public string KALINLIK { get; set; }
             public string KAPLAMA { get; set; }
             public string KALITE { get; set; }

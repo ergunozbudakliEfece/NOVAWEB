@@ -1,0 +1,830 @@
+﻿<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+@if (Session["SupernovaYetki"] == "true")
+{
+    <div id="body" style="z-index: 200;font-size:small;position:sticky;top:0;">
+        <div id="chat-circle" class="btn btn-raised p-0" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Supernova'ya Sor</span>">
+            <div id="chat-overlay"></div>
+            <img src="~/Content/Images/Asistan.png" class="rounded-circle" style="height:3.7rem;" />
+        </div>
+
+        <div class="chat-box">
+            <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: stretch; height: 100%;">
+                <div class="chat-box-header px-2">
+                    <div id="chat-box-title" class="d-flex justify-content-start align-items-center gap-1">
+                        <div style="position:relative;">
+                            <img src="~/Content/Images/Asistan.png" class="rounded-circle" style="background-color: #6373b7; height: 37px; width: 40px;" />
+                            <div id="SupernovaStatusIcon"></div>
+                        </div>
+                        <div class="d-flex flex-column justify-content-center align-items-start ms-1" style="line-height: normal;">
+                            <span>Supernova</span>
+                            <span id="SupernovaStatus" style="font-size: x-small;">Çevrimiçi</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="chat-box-toggle me-2 chat-icon" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Sohbeti Kapat</span>"><i class="bi bi-x-lg" style="font-size:larger;"></i></span>
+                        <span class="chat-box-trash me-3 chat-icon" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Sohbeti Temizle</span>"><i class="bi bi-trash3-fill" style="font-size:larger;"></i></span>
+                    </div>
+                </div>
+                <div class="chat-box-body">
+                    <div class="chat-scroll" onclick="ChatScroll()"><i class="bi bi-chevron-down" style="font-size:larger;"></i></div>
+                    <div class="chat-box-overlay">
+                    </div>
+                    <div class="chat-logs"></div>
+                </div>
+                <div class="chat-input">
+                    <form>
+                        <input type="text" id="chat-input" placeholder="Bir mesaj yazınız..." autocomplete="off" />
+                        <button type="submit" class="chat-submit d-flex flex-column justify-content-center align-items-center" id="chat-submit">
+                            <i class="bi bi-send-fill"></i>
+                            <span id="KarakterSayiBilgisi" style="font-size:smaller"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var Mesajlar = [];
+        var MesajId = 0;
+        var KarakterLimiti = 250;
+
+        var Yazilabilir = false;
+
+        var ScrollGoster = false;
+
+        $(document).ready(() =>
+        {
+            $('#chat-input').val('');
+            $('.chat-scroll').hide();
+
+            $('#chat-input').prop('disabled', true);
+
+            KarakterBilgisiGuncelle();
+
+            MesajOlustur("Hoşgeldin.<br />Benim adım Supernova.<br />", "user");
+        });
+
+        $('#chat-submit').on('click', (e) =>
+        {
+            e.preventDefault();
+
+            var GelenMesaj = $("#chat-input").val();
+
+            if(GelenMesaj.trim() == '')
+                return false;
+
+            MesajOlustur(GelenMesaj, "self");
+
+            KarakterBilgisiGuncelle();
+
+
+            if (CevapBekleniyor) {
+
+                if (CevapKaydet) {
+                    var Cevap = KaydedilenCevaplar.filter(x => x.ID == (MesajId - 2))[0];
+
+                    Cevap.ANSWER = GelenMesaj;
+
+                    CevapKaydet = false;
+                }
+
+                if (BeklenenSoruId != "")
+                {
+                    GelenMesaj = BeklenenSoruId;
+                    BeklenenSoruId = "";
+                }
+
+                GetResponse(BeklenenProc, GelenMesaj).then((data) => {
+                    if (data.length > 0) {
+
+                        if (BeklenenBaslik !== "")
+                        {
+                            MesajOlustur(BeklenenBaslik, "user");
+                            BeklenenBaslik = "";
+                        }
+
+                        CevapOlustur(data);
+
+                        if (data[0].ANSWER != 2)
+                        {
+                            BeklenenProc = "";
+                            CevapBekleniyor = false;
+                        }
+                    }
+                    else {
+                        MesajOlustur("Ne demek istediğinizi anlayamadım, lütfen tekrar yazabilir misiniz?", 'user');
+                        $('#SupernovaStatus').html('Çevrimiçi');
+                    }
+                });
+            }
+            else
+            {
+                $('#SupernovaStatus').html('Yazıyor...');
+
+                GetResponse("SP_SUPERNOVA_REQUEST", "0").then((data) =>
+                {
+                    CevapOlustur(data);
+                });
+            }
+        });
+
+        $('#chat-input').on('input paste change', (e) =>
+        {
+            var GirilenKarakterSayisi = e.currentTarget.value.length;
+
+
+            if(GirilenKarakterSayisi <= KarakterLimiti)
+            {
+                KarakterBilgisiGuncelle();
+            }
+            else
+            {
+                e.currentTarget.value = e.currentTarget.value.substr(0, KarakterLimiti);
+            }
+        });
+
+        $("#chat-circle").click(function() {
+            $("#chat-circle").toggle('scale');
+            $(".chat-box").toggle('scale');
+
+            $('body').css('overflow-y', 'hidden');
+
+            $('#SupernovaStatus').html('Yazıyor...');
+
+            setTimeout(() =>
+            {
+                GetResponse("SP_SUPERNOVA_REQUEST", "0").then((data) => {
+                    CevapOlustur(data);
+                });
+            }, 750);
+        })
+
+        $(".chat-box-toggle").click(function() {
+            $("#chat-circle").toggle('scale');
+            $(".chat-box").toggle('scale');
+
+            $('body').css('overflow-y', 'auto');
+
+            $('.chat-logs').html('');
+            $('#chat-input').val('');
+
+            CevapBekleniyor = false;
+            BeklenenProc = "";
+            BeklenenBaslik = "";
+        })
+
+        $(".chat-box-trash").click(function() {
+            MesajlariSil();
+        })
+
+        function KarakterBilgisiGuncelle()
+        {
+            $('#KarakterSayiBilgisi').html(`${$('#chat-input').val().length}/${KarakterLimiti}`);
+        }
+
+        function MesajOlustur(GelenMesaj, Gonderen)
+        {
+            MesajId += 1;
+
+            var kullaniciProfil = `<img src="/assets/img/avatars/${@Html.Raw(Json.Encode(Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString()))}" />`;
+
+            var Mesaj = `<div id="cm-msg-${MesajId}" class="chat-msg ${Gonderen}">
+                            <span class="msg-avatar">
+                                ${Gonderen == 'self' ? kullaniciProfil : '<img src="/Content/Images/Asistan.png" />'}
+                            </span>
+                            <div class="cm-msg-text px-4">
+                                ${GelenMesaj}
+                            </div>
+                        </div>`;
+
+            $(".chat-logs").append(Mesaj);
+            $("#cm-msg-"+MesajId).hide().fadeIn(300);
+
+            Mesajlar.push(Mesaj);
+
+            if(Gonderen == 'self')
+            {
+                $("#chat-input").val('');
+            }
+
+            ScrollGoster = false;
+            $(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight }, 1000, function () { ScrollGoster = true; });
+        }
+
+        function MesajlariSil() {
+            $('.chat-logs').html('');
+            $('#chat-input').val('');
+
+            CevapBekleniyor = false;
+            BeklenenProc = "";
+            BeklenenBaslik = "";
+            BeklenenOnBaslik = "";
+            BeklenenSoruId = "";
+
+            CevapKaydet = false;
+            ButonCevapKaydet = false;
+            KaydedilenCevaplar = [];
+
+            $('.chat-scroll').hide();
+
+            $('#SupernovaStatus').html('Yazıyor...');
+
+            GetResponse("SP_SUPERNOVA_REQUEST", "0").then((data) => {
+                CevapOlustur(data);
+            });
+
+            KarakterBilgisiGuncelle();
+            }
+
+        function ChatScroll()
+        {
+            ScrollGoster = false;
+
+            $(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight }, 1000, function () { ScrollGoster = true; });
+        }
+
+        $('.chat-logs').on("scroll", () =>
+        {
+            var ScrollHeight = $(".chat-logs").prop("scrollHeight");
+            var ScrollTop = $(".chat-logs").prop("scrollTop");
+
+            if ((ScrollHeight - (450 + ScrollTop) > 50) && ScrollGoster)
+            {
+                $('.chat-scroll').fadeIn(150);
+            }
+            else
+            {
+                $('.chat-scroll').fadeOut(150);
+            }
+        });
+    </script>
+
+    <script>
+        var CevapBekleniyor = false;
+        var BeklenenProc = "";
+        var BeklenenBaslik = "";
+        var BeklenenOnBaslik = "";
+        var BeklenenSoruId = "";
+
+        var CevapKaydet = false;
+        var ButonCevapKaydet = false;
+        var KaydedilenCevaplar = [];
+
+        var GosterilecekElemanSayisi = 4;
+
+        function CevapOlustur(data)
+        {
+            var Mesaj = '<div style="display: flex; justify-content: center; flex-direction: column; gap: 0.4rem;">';
+            var Gizli = `<div id="${MesajId}GizliListe" hidden>`;
+
+            if (data.length != undefined) {
+                if ("QUESTION_ID" in data[0]) {
+                    if (data[0].NEXT_HEADER !== null)
+                    {
+                        BeklenenBaslik = data[0].NEXT_HEADER;
+                    }
+
+                    if (data[0].CACHE) {
+
+                        if (data[0].PRE_HEADER != null) {
+                            ButonCevapKaydet = true;
+                            KaydedilenCevaplar.push({ ID: MesajId, QUESTION: data[0].PRE_HEADER, ANSWER: "ans." });
+                        }
+                        else {
+                            CevapKaydet = true;
+                            KaydedilenCevaplar.push({ ID: MesajId, QUESTION: data[0].QUESTION, ANSWER: "ans." });
+                        }
+                    }
+
+                    if (data[0].PRE_HEADER)
+                    {
+                        BeklenenOnBaslik = data[0].PRE_HEADER;
+                    }
+
+                    if (data[0].QUESTION_TYPE == 'message')
+                    {
+                        MesajOlustur(data[0].QUESTION, 'user');
+
+                        if (data[0].ANSWER == 0)
+                        {
+                            GetResponse(data[0].QUERY, data[0].QUESTION_ID).then((data) => { CevapOlustur(data); });
+                        }
+                        else if (data[0].ANSWER == 1)
+                        {
+                                BeklenenSoruId = "";
+                                BeklenenProc = data[0].QUERY;
+                                CevapBekleniyor = true;
+                        }
+                        else
+                        {
+                                BeklenenSoruId = data[0].QUESTION_ID;
+                                BeklenenProc = data[0].QUERY;
+                                CevapBekleniyor = true;
+                        }
+
+                        Yazilabilir = true;
+
+                        $('#chat-input').attr('placeholder', 'Bir mesaj yazınız...');
+                    }
+                    else
+                    {
+                        if (data[0].GET_CACHE)
+                        {
+                            Mesaj += `<div class="row"><button type="button" class="btn btn-sm rounded-pill btn-primary" onclick="MailAt('${data[0].QUERY}', this)">${data[0].QUESTION}</button></div>`;
+                        }
+                        else
+                        {
+                            for (var i = 0; i < data.length; i++) {
+                                if (data[i].QUESTION_TYPE == 'button') {
+
+                                    if (i <= GosterilecekElemanSayisi) {
+                                        Mesaj += `<div class="row"><button type="button" class="btn btn-sm rounded-pill btn-primary" onclick="IslemSec('${data[i].QUERY}', '${data[i].QUESTION_ID}', this)">${data[i].QUESTION}</button></div>`;
+                                    }
+                                    else {
+                                        Gizli += `<div class="row mb-2"><button type="button" onclick="IslemSec('${data[i].QUERY}', '${data[i].QUESTION_ID}', this)" class="btn btn-sm rounded-pill btn-primary">${data[i].QUESTION}</button></div>`;
+                                    }
+
+                                    Yazilabilir = false;
+                                }
+                            }
+
+                            if ((data.length - 1) > GosterilecekElemanSayisi) {
+                                Mesaj += Gizli + '</div>';
+                                Mesaj += `<div class="row" onclick="SorguDevamiToggle(${MesajId})" style="cursor: pointer;"><div id="${MesajId}ListeGoster" style="
+                        display: flex;
+                        justify-content: center;
+                        flex-direction: column;
+                        align-items: center;
+                        ">Gösterilecek ${data.length - GosterilecekElemanSayisi} kayıt daha var <i class="bi bi-chevron-down" style=" display: flex; justify-content: center;  align-items: center; font-size: x-large; "></i> </div><div id="${MesajId}ListeGizle" style="
+                        display: flex;
+                        justify-content: center;
+                        flex-direction: column;
+                        align-items: center;
+                        " hidden>Kayıtları gizle <i class="bi bi-chevron-up" style=" display: flex; justify-content: center;  align-items: center; font-size: x-large; "></i> </div></div>`;
+                            }
+                        }
+
+                        if (BeklenenOnBaslik !== "")
+                        {
+                            MesajOlustur(BeklenenOnBaslik, 'user');
+
+                            BeklenenOnBaslik = "";
+                        }
+
+                        MesajOlustur(`${Mesaj}</div>`, 'user');
+
+                        $('#chat-input').attr('placeholder', 'Lütfen butonları kullanarak yanıtlayınız...');
+                    }
+                }
+                else {
+                    SorguCevabiOlustur(data[0]);
+                }
+            }
+            else
+            {
+                MesajOlustur(`${data["Mesaj"]}`, 'user');
+            }
+
+            $('#chat-input').prop('disabled', !Yazilabilir);
+            $('#SupernovaStatus').html('Çevrimiçi');
+        }
+
+        function IslemSec(QUERY, ID, BTN)
+        {
+            $('#SupernovaStatus').html('Yazıyor...');
+
+            var Butonlar = $('.chat-logs').find(':button');
+
+            for (var i = 0; i < Butonlar.length; i++)
+            {
+                Butonlar[i].disabled = true;
+            }
+
+            if (ButonCevapKaydet)
+            {
+                var Cevap = KaydedilenCevaplar.filter(x => x.ID == (MesajId - 2))[0];
+
+                Cevap.ANSWER = $(BTN).html();
+
+                ButonCevapKaydet = false;
+            }
+
+            if (BeklenenBaslik !== "") {
+                MesajOlustur(BeklenenBaslik, "user");
+                BeklenenBaslik = "";
+            }
+
+            GetResponse(QUERY, ID).then((data) =>
+            {
+                if (data.length > 0)
+                {
+                    CevapOlustur(data);
+
+                    BeklenenProc = data[0].QUERY;
+                    CevapBekleniyor = data[0].QUESTION_TYPE == "message";
+                }
+                else
+                {
+                    MesajOlustur("Bilgisini almak istediğiniz veride değişiklikler olmuş olabilir, lütfen tekrar deneyiniz.", 'user');
+                    $('#SupernovaStatus').html('Çevrimiçi');
+                }
+            });
+        }
+
+        function SorguCevabiOlustur(data)
+        {
+            var Basliklar = Object.keys(data);
+            var SorguSonucu = "";
+
+            for (var i = 0; i < Basliklar.length; i++)
+            {
+                var Baslik = Basliklar[i];
+                var Deger = data[Basliklar[i]] != null ? data[Basliklar[i]] : "-";
+
+                SorguSonucu += `<b>${Basliklar[i]}:</b> ${Deger}<br />`;
+            }
+
+            MesajOlustur(`${SorguSonucu}`, 'user');
+            SorguBitisMesaji();
+
+            Yazilabilir = true;
+        }
+
+        function SorguDevamiToggle(Id)
+        {
+            if ($(`#${Id}GizliListe`).attr('hidden') == undefined)
+            {
+                $(`#${Id}GizliListe`).attr('hidden', true);
+                $(`#${Id}ListeGoster`).removeAttr('hidden');
+                $(`#${Id}ListeGizle`).attr('hidden', true);
+            }
+            else
+            {
+                $(`#${Id}GizliListe`).removeAttr('hidden');
+                $(`#${Id}ListeGoster`).attr('hidden', true);
+                $(`#${Id}ListeGizle`).removeAttr('hidden');
+            }
+        }
+
+        function SorguBitisMesaji()
+        {
+            var Mesaj = `<div class="row">Başka bir konuda yardımcı olmamı ister misiniz?</div>
+                        <div class="row>
+                            <button
+                        </div>"`;
+
+            CevapBekleniyor = false;
+            BeklenenProc = "";
+            BeklenenBaslik = "";
+            BeklenenSoruId = "";
+            CevapKaydet = false;
+
+            MesajOlustur(Mesaj, "user");
+
+            $('#chat-input').attr('placeholder', 'Bir mesaj yazınız...');
+        }
+
+        function MailAt(QUERY, BTN)
+        {
+            $(BTN).html('Talep oluşturuluyor...');
+            $(BTN).removeAttr('onclick');
+            $(BTN).prop('disabled', true);
+
+            var MailBody = "<table><tbody>";
+
+            for (var i = 0; i < KaydedilenCevaplar.length; i++)
+            {
+                MailBody += `<tr><td><b>${removeLineBreak(KaydedilenCevaplar[i].QUESTION)}</b></td><td> : ${removeLineBreak(KaydedilenCevaplar[i].ANSWER)}</td></tr>`;
+            }
+
+            KaydedilenCevaplar = [];
+
+            //console.log(MailBody + );
+
+            GetResponse(QUERY, (MailBody + "</tbody></table>")).then((data) =>
+            {
+                $(BTN).html('İşlem tamamlandı');
+                $('#chat-input').attr('placeholder', 'Bir mesaj yazınız...');
+            });
+        }
+
+        function removeLineBreak(str)
+        {
+            return str.replace(/(\r\n|\n|\r)/gm, "");
+        }
+
+        function GetResponse(ProcedureName, Variable) {
+
+            var JsonObject = {
+                "ProcedureName": ProcedureName,
+                "Variable": Variable
+            };
+
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '@Url.Action("Supernova", "Home")',
+                    type: 'POST',
+                    data: JSON.stringify(JsonObject),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    success: function (data) {
+                        var ParsedData = JSON.parse(data)
+                        resolve(ParsedData);
+                    },
+                    error: function (error) {
+                        MesajOlustur(`Sunucuda bir hata oluştuğundan şu anda size hizmet veremiyorum. Lütfen daha sonra tekrar deneyin.`, 'user');
+                        $('#SupernovaStatus').html('Çevrimiçi');
+                        reject(error)
+                    },
+                })
+            });
+        }
+    </script>
+
+    <style>
+        #chat-circle {
+            position: fixed;
+            bottom: 50px;
+            right: 50px;
+            background: #f3f5f7;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 16px 0px rgb(0 0 0 / 43%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn#my-btn {
+            background: white;
+            padding-top: 13px;
+            padding-bottom: 12px;
+            border-radius: 45px;
+            padding-right: 40px;
+            padding-left: 40px;
+            color: #5865C3;
+        }
+
+        #chat-overlay {
+            background: rgba(255,255,255,0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: none;
+        }
+
+
+        .chat-box {
+            display: none;
+            background-image: url('../../../Content/Images/NovalogBg.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: whitesmoke;
+            position: fixed;
+            right: 30px;
+            bottom: 50px;
+            width: 430px;
+            max-width: 85vw;
+            max-height: 100vh;
+            border-radius: 5px;
+            box-shadow: 0px 5px 35px 9px #ccc;
+        }
+
+        .chat-box-toggle {
+            float: right;
+            cursor: pointer;
+        }
+
+        .chat-box-trash {
+            cursor: pointer;
+        }
+
+        .chat-box-header {
+            background: #223487;
+            height: 50px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-box-body {
+            position: relative;
+            height: 450px;
+            height: auto;
+            border: 1px solid #ccc;
+            overflow: hidden;
+        }
+
+            .chat-box-body:after {
+                content: "";
+                background-color: whitesmoke;
+                opacity: 0.1;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                height: 100%;
+                position: absolute;
+                z-index: -1;
+            }
+
+        #chat-input {
+            background: #f4f7f9;
+            width: 100%;
+            position: relative;
+            height: 47px;
+            padding-top: 10px;
+            padding-right: 50px;
+            padding-bottom: 10px;
+            padding-left: 15px;
+            border: none;
+            resize: none;
+            outline: none;
+            border: 1px solid #ccc;
+            color: #888;
+            border-top: none;
+            border-bottom-right-radius: 5px;
+            border-bottom-left-radius: 5px;
+            overflow: hidden;
+        }
+
+        .chat-input > form {
+            margin-bottom: 0;
+        }
+
+        #chat-input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+            color: #ccc;
+        }
+
+        #chat-input::-moz-placeholder { /* Firefox 19+ */
+            color: #ccc;
+        }
+
+        #chat-input:-ms-input-placeholder { /* IE 10+ */
+            color: #ccc;
+        }
+
+        #chat-input:-moz-placeholder { /* Firefox 18- */
+            color: #ccc;
+        }
+
+        .chat-submit {
+            position: absolute;
+            bottom: 3px;
+            right: 10px;
+            background: transparent;
+            box-shadow: none;
+            border: none;
+            border-radius: 50%;
+            color: #4E5D9F;
+            width: 35px;
+            height: 35px;
+        }
+
+        .chat-logs {
+            display: grid;
+            grid-auto-rows: min-content;
+            padding: 0 10px;
+            padding-top: 10px;
+            height: 450px;
+            overflow-y: auto;
+            line-height: normal;
+        }
+
+            .chat-logs::-webkit-scrollbar-track {
+                -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+                background-color: #F5F5F5;
+            }
+
+            .chat-logs::-webkit-scrollbar {
+                width: 5px;
+                background-color: #F5F5F5;
+            }
+
+            .chat-logs::-webkit-scrollbar-thumb {
+                background-color: #5A5EB9;
+            }
+
+
+
+        @@media only screen and (max-width: 500px) {
+            .chat-logs {
+                height: 100%;
+            }
+
+            .chat-box {
+                bottom: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                max-height: 100%;
+                max-width: 100%;
+            }
+
+            .chat-box-body {
+                height: 100%;
+            }
+        }
+
+        .chat-msg.user > .msg-avatar img {
+            width: 35px;
+            height: 30px;
+            border-radius: 50%;
+            float: left;
+        }
+
+        .chat-msg.self > .msg-avatar img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            float: right;
+        }
+
+        .cm-msg-text {
+            background: white;
+            padding: 10px 15px 10px 15px;
+            color: #666;
+            max-width: 75%;
+            float: left;
+            margin-left: 10px;
+            position: relative;
+            margin-bottom: 10px;
+            border-radius: 30px;
+            word-wrap: break-word;
+        }
+
+        .chat-msg {
+            clear: both;
+        }
+
+            .chat-msg.self > .cm-msg-text {
+                float: right;
+                margin-right: 10px;
+                background: #4E5D9F;
+                color: white;
+                word-wrap: break-word;
+            }
+
+        .cm-msg-button > ul > li {
+            list-style: none;
+            float: left;
+            width: 50%;
+        }
+
+        .cm-msg-button {
+            clear: both;
+            margin-bottom: 70px;
+        }
+
+        .chat-icon {
+            opacity: 0.6;
+        }
+
+            .chat-icon:hover {
+                opacity: 1;
+            }
+
+        #SupernovaStatusIcon {
+            height: 10px;
+            width: 10px;
+            background-color: #7bdd47;
+            border-radius: 50%;
+            border: 1px solid;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+        .chat-scroll {
+            background: #243685;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 3rem;
+            right: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px #00000091;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+
+}

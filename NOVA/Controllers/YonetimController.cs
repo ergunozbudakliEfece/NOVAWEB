@@ -21,7 +21,7 @@ namespace NOVA.Controllers
         {
             ViewBag.RoleName = Request.Cookies["RoleName"].Value;
             ViewBag.Id = Request.Cookies["Id"].Value;
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 8);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -334,9 +334,9 @@ namespace NOVA.Controllers
             }
             return View();
         }
-        public List<User> GetYetki()
+        public List<User> GetYetki(int id)
         {
-            var apiUrl = "http://192.168.2.13:83/api/userwithroles";
+            var apiUrl = "http://192.168.2.13:83/api/user/auth/" + id;
 
             //Connect API
             Uri url = new Uri(apiUrl);
@@ -358,7 +358,7 @@ namespace NOVA.Controllers
             {
                 return RedirectToAction("Maintenance", "Home");
             }
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 33);
             if (yetkiKontrol.SELECT_AUTH != true)
             {

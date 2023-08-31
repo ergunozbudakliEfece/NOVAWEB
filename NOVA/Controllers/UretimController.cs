@@ -1,4 +1,5 @@
-﻿using NetOpenX50;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using NetOpenX50;
 using NOVA.Models;
 using ServiceStack;
 using System;
@@ -39,7 +40,7 @@ namespace NOVA.Controllers
             ViewBag.Name = Session["Name"];
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 26);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -567,9 +568,9 @@ namespace NOVA.Controllers
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             return jsonList;
         }
-        public List<User> GetYetki()
+        public List<User> GetYetki(int id)
         {
-            var apiUrl = "http://192.168.2.13:83/api/userwithroles";
+            var apiUrl = "http://192.168.2.13:83/api/user/auth/" + id;
 
             //Connect API
             Uri url = new Uri(apiUrl);

@@ -449,7 +449,7 @@
         renderers: renderers,
         localeStrings: {
           renderError: "An error occurred rendering the PivotTable results.",
-          computeError: "Gösterilecek bir veri kaydý bulunamadý.",
+          computeError: "GÃ¶sterilecek bir veri kaydÄ± bulunamadÄ±.",
           uiRenderError: "An error occurred rendering the PivotTable UI.",
           selectAll: "Select All",
           selectNone: "Select None",
