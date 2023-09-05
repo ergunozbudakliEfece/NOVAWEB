@@ -223,6 +223,8 @@
                                     getRandevuAsync()
                                     .then(function (result) {
                                         var musteriler = JSON.parse(data).filter(x => x.PLASIYER == value);
+                                        let events = [];
+
                                         calendar.removeAllEvents();
                                         var d = JSON.parse(result).filter(x => x.KAYIT_YAPAN_KULLANICI_ID === id);
                                         for (let i = 0; i < musteriler.length; i++) {
@@ -243,7 +245,7 @@
                                                     if (musid[a].GERCEKLESEN_TARIH != null) {
 
                                                         color = "#CC0000";
-                                                        calendar.addEvent({
+                                                        events.push({
                                                             id: musid[a].MUSTERI_ID,
                                                             title: musadi[0].MUSTERI_ADI,
                                                             start: new Date(musid[a].GERCEKLESEN_TARIH),
@@ -252,7 +254,7 @@
                                                             backgroundColor: color
                                                         });
                                                     } else {
-                                                        calendar.addEvent({
+                                                        events.push({
                                                             id: musid[a].MUSTERI_ID,
                                                             title: musadi[0].MUSTERI_ADI,
                                                             start: new Date(musid[a].PLANLANAN_TARIH),
@@ -270,6 +272,7 @@
 
                                         }
 
+                                        calendar.addEventSource(events);
                                     }).then(function () {
                                         $('#editbutton').show();
                                         $('#deletebutton').show();
@@ -465,6 +468,7 @@
                                 getRandevuAsync()
                                     .then(function (result) {
                                         var musteriler = JSON.parse(data).filter(x => x.PLASIYER == value);
+                                        let events = [];
                                         calendar.removeAllEvents();
                                         var d = JSON.parse(result);
                                         for (let i = 0; i < musteriler.length; i++) {
@@ -484,7 +488,7 @@
                                                     }
                                                     if (musid[a].GERCEKLESEN_TARIH != null) {
                                                         color = "#CC0000";
-                                                        calendar.addEvent({
+                                                        events.push({
                                                             id: musid[a].MUSTERI_ID,
                                                             title: musadi[0].MUSTERI_ADI,
                                                             description: randevunotu,
@@ -493,7 +497,7 @@
                                                             backgroundColor: color
                                                         });
                                                     } else {
-                                                        calendar.addEvent({
+                                                        events.push({
                                                             id: musid[a].MUSTERI_ID,
                                                             title: musadi[0].MUSTERI_ADI,
                                                             start: new Date(musid[a].PLANLANAN_TARIH),
@@ -514,7 +518,7 @@
 
 
 
-
+                                        calendar.addEventSource(events);
                                     }).then(function () {
                                         $('#editbutton').show();
                                         $('#deletebutton').show();
@@ -1072,6 +1076,8 @@
                     getRandevuAsync()
                         .then(function (result) {
                             var d = JSON.parse(result);
+                            let events = [];
+
                             for (let i = 0; i < musteriler.length; i++) {
                                 var musid = d.filter(x => x.MUSTERI_ID == musteriler[i].MUSTERI_ID);
                                 if (musid.length > 0) {
@@ -1091,7 +1097,7 @@
                                         }
                                         if (musid[a].GERCEKLESEN_TARIH != null) {
                                             color = "#CC0000";
-                                            calendar.addEvent({
+                                            events.push({
                                                 id: musid[a].MUSTERI_ID,
                                                 title: musadi[0].MUSTERI_ADI,
                                                 description: randevunotu,
@@ -1100,7 +1106,7 @@
                                                 backgroundColor: color
                                             });
                                         } else {
-                                            calendar.addEvent({
+                                            events.push({
                                                 id: musid[a].MUSTERI_ID,
                                                 title: musadi[0].MUSTERI_ADI,
                                                 start: new Date(musid[a].PLANLANAN_TARIH),
@@ -1120,7 +1126,7 @@
                             }
 
                             calendar.render();
-
+                            calendar.addEventSource(events);
 
                         })
 

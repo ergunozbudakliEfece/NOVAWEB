@@ -21,6 +21,8 @@ using static NOVA.Controllers.IsEmriController;
 using System.Runtime.ConstrainedExecution;
 using ServiceStack;
 using DocumentFormat.OpenXml.Wordprocessing;
+using NOVA.Utils;
+using System.Threading.Tasks;
 
 namespace NOVA.Controllers
 {
@@ -115,10 +117,42 @@ namespace NOVA.Controllers
 
             return View();
         }
-        public ActionResult Index()
+
+        //27
+        public async Task<ActionResult> Index()
         {
+            int moduleId = 27;
+
+            List<Modules> Modules = await AuthHelper.GetModules(moduleId);
+
+            if (Modules[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
+
+            User UserData = await RoleHelper.RoleControl(Request.Cookies["Id"].Value, moduleId);
+
+            if (UserData.SELECT_AUTH != true)
+            {
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                bool Logged = await AuthHelper.LoginLog(Request.Cookies["Id"].Value, Request.Cookies["LogId"].Value, moduleId);
+
+                if (!Logged)
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+            }
+
+            await RoleHelper.CheckRoles(this);
+
             return View();
         }
+
         public ActionResult Test()
         {
             if (TempData["Hata"] != null)
