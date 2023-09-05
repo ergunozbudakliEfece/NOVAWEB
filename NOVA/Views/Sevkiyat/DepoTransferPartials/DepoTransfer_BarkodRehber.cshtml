@@ -10,12 +10,12 @@
             <div class="modal-body  py-2">
                 <div class="container-fluid">
                     <div class="centercontent" id="content" style="display:flex;justify-content:center;">
-                        <div class="heart"><img id="SevkFormSeriTableProgress" src="~/images/novasaydam.png" style="max-width:10vw" /></div>
+                        <div class="heart"><img id="BarkodRehberTableProgress" src="~/images/novasaydam.png" style="max-width:10vw" /></div>
                     </div>
 
-                    <div id="SevkFormBelgeTableRow" class="row mb-2 gy-2">
+                    <div id="BarkodRehberTableRow" class="row mb-2 gy-2">
                         <div class="table-responsive">
-                            <table id="SevkFormSeriTable"
+                            <table id="BarkodRehberTable"
                                    class="table-striped"
                                    data-search="true"
                                    data-show-refresh="false"
@@ -39,14 +39,14 @@
                                    data-locale="tr-TR">
                                 <thead>
                                     <tr>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO" data-halign="center" data-align="center">BARKOD NO</th>
+                                        <th data-formatter="NullCheck" data-field="SERI_NO" data-halign="center" data-align="center">BARKOD NO</th>
                                         <th data-formatter="MiktarFormatla" data-field="MIKTAR" data-halign="center" data-align="center">MİKTAR 1</th>
                                         <th data-formatter="MiktarFormatla" data-field="MIKTAR2" data-halign="center" data-align="center">MİKTAR 2</th>
                                         <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-halign="center" data-align="center">KALINLIK</th>
                                         <th data-formatter="GenislikFormatter" data-field="ACIK2" data-halign="center" data-align="center">GENİŞLİK</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="ACIK3" data-halign="center" data-align="center">ÜRÜN NO</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_3" data-halign="center" data-align="center">KALİTE</th>
-                                        <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
+                                        <th data-formatter="NullCheck" data-field="ACIK3" data-halign="center" data-align="center">ÜRÜN NO</th>
+                                        <th data-formatter="NullCheck" data-field="SERI_NO_3" data-halign="center" data-align="center">KALİTE</th>
+                                        <th data-formatter="NullCheck" data-field="SERI_NO_4" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
                                         <th data-formatter="BarkodSecimFormatter" data-halign="center" data-align="center">İŞLEM</th>
                                     </tr>
                                 </thead>
@@ -72,12 +72,11 @@
         SeciliBarkodNo = [];
 
         $('#BarkodNoAktarButton').prop('disabled', true);
-        $('#SevkFormBelgeTableRow').hide();
-        $('#SevkFormSeriTableProgress').show();
+        $('#BarkodRehberTableRow').hide();
+        $('#BarkodRehberTableProgress').show();
 
-        if ($('#STOK_SECIM').val() !== '')
-        {
-            var ProcUrl = "http://192.168.2.13:83/api/seri/rehber/" + $('#STOK_SECIM').val();
+        if (SeciliStokKodu != "") {
+            var ProcUrl = "http://192.168.2.13:83/api/seri/rehber/" + SeciliStokKodu;
 
             var BarkodNoListesi = [];
 
@@ -94,10 +93,11 @@
                     return !Kayitlar.some(t => t.SERI_NO === x.SERI_NO)
                 });
 
-                $('#SevkFormSeriTable').bootstrapTable("destroy");
-                $('#SevkFormSeriTable').bootstrapTable({ data: result, paginationPagesBySide: 0, paginationSuccessivelySize: 2 });
+                $('#BarkodRehberTable').bootstrapTable("destroy");
+                $('#BarkodRehberTable').bootstrapTable({ data: result, paginationPagesBySide: 0, paginationSuccessivelySize: 2 });
 
-                $('#SevkFormSeriTableProgress').hide();
+                $('#BarkodRehberTableProgress').hide();
+                $('#BarkodRehberTableRow').show();
             });
         }
 
@@ -115,32 +115,7 @@
             return `<div onclick="BarkodSec('${index.SERI_NO}', ${row})"><i class="bi bi-check-circle"  style="color:red;font-size:x-large;"></i></div>`;
         }
     }
-    function MiktarFormatla(value) {
-        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-    function DecimalFormatter(value) {
-        return value?.toString().trim().length > 0 ? parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-";
-    }
-
-    function KalinlikFormatter(value, index, row) {
-        if (value?.toString().trim().length > 0) {
-            return GenislikKalinlikFormat(parseFloat(value.toString().replace(',','.')).toFixed(2).toString());
-        }
-
-        return "-";
-    }
-
-    function GenislikFormatter(value, index, row) {
-        if (value?.toString().trim().length > 0) {
-            return GenislikKalinlikFormat(parseFloat(value.toString().replace(',', '.')).toFixed(1).toString());
-        }
-
-        return "-";
-    }
-
-    function GenislikKalinlikFormat(value) {
-        return value.replace(".", ",");
-    }
+    
     function BarkodSec(BarkodNo, Satir)
     {
         var EkranGenisligi = window.matchMedia("(max-width: 562px)");
@@ -148,10 +123,10 @@
 
         if (EkranGenisligi.matches)
         {
-            ButtonDiv = document.getElementById("SevkFormSeriTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[0].getElementsByClassName("card-views")[0].getElementsByClassName("card-view")[8].getElementsByClassName("card-view-value")[0];
+            ButtonDiv = document.getElementById("BarkodRehberTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[0].getElementsByClassName("card-views")[0].getElementsByClassName("card-view")[8].getElementsByClassName("card-view-value")[0];
         }
         else {
-            ButtonDiv = document.getElementById("SevkFormSeriTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[8];
+            ButtonDiv = document.getElementById("BarkodRehberTable").getElementsByTagName("tbody")[0].querySelector(`[data-index="${Satir}"]`).getElementsByTagName("td")[8];
         }
 
         if (SeciliBarkodNo.indexOf(BarkodNo) > -1)
@@ -183,9 +158,9 @@
     function SecilenBarkodlariAktar()
     {
         BarkodVerileriGetir().then(() => {
-            $('#SevkFormuTable').bootstrapTable("load", Kayitlar);
+            $('#DepoTransferTable').bootstrapTable("load", Kayitlar);
 
-            DurumAyarla(0);
+            DurumDegisikligi(0);
 
             $('#SevkFormSeri').modal('hide');
         });
@@ -198,11 +173,10 @@
                 {
                     if (!BarkodNoTablodaVarMi(each))
                     {
-                        var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $('#SİPARİS_NO').html() && x.STOK_KODU == $('#STOK_SECIM').val());
-
                         Kayitlar.push({
-                            "ID": Kayit_ID,
-                            "STOK_ADI": FiltreliDetay[0].STOK_ADI,
+                            "ID": KayitId,
+                            "ACTIVE": true,
+                            "STOK_ADI": $('#STOK_ADLARI').val(),
                             "STOK_KODU": data[0].STOK_KODU,
                             "MIKTAR": data[0].MIKTAR.toFixed(2),
                             "OLCU_BR1": $('#OLCU_BR1').val(),
@@ -216,10 +190,11 @@
                             "SERI_NO_4": data[0].SERI_NO_4,
                             "ACIKLAMA_4": data[0].ACIKLAMA_4,
                             "ACIKLAMA_5": data[0].ACIKLAMA_5,
+                            "GIRIS_DEPO": GirisDepo,
                             "CIKIS_DEPO": CikisDepo
                         });
 
-                        Kayit_ID += 1;
+                        KayitId += 1;
                     }
                     else {
                         Swal.fire({

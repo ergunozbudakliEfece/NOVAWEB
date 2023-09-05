@@ -1,18 +1,212 @@
-﻿
-@{
-    //Layout = "~/Views/Shared/_layout_satinalma.cshtml";
+﻿@{
     Layout = "~/Views/Shared/_Layout_common.cshtml";
 }
 
-<!DOCTYPE html>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>DepoTransfer</title>
-</head>
-<body>
-    <div>
+<div class="container-fluid">
+
+    <div class="card mx-auto" style="font-size:12px;width:inherit;">
+        <div class="card-header p-0">
+            <div class="row p-0 mt-1 mb-3 mx-2">
+                <div class="col">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
+                        @{
+                            string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                        }
+                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                        </object>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0 me-3">
+                                        <div class="avatar avatar-online">
+                                            <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                                <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                            </object>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        @if (@Request.Cookies["Name"] != null)
+                                        {
+                                            <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                            <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="fw-semibold d-block">Test</span>
+                                            <small class="text-muted">Yetki: Test</small>
+                                        }
+
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                               data-bs-target="#cikis">
+                                <i class="bx bx-power-off me-2"></i>
+                                <span class="align-middle">Oturumu Kapat</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+
+    <div class="card mx-auto mt-3" style="font-size: 12px; width: inherit; height: inherit;">
+        <div class="card-body">
+            @Html.Partial("DepoTransferPartials/DepoTransfer_Partial")
+        </div>
+    </div>
+</div>
+
+@Html.Partial("DepoTransferPartials/DepoTransfer_Barcode")
+@Html.Partial("DepoTransferPartials/DepoTransfer_Belge")
+@Html.Partial("DepoTransferPartials/DepoTransfer_BarkodRehber")
+
+
+<script>
+    if ($(window).width() < 600) {
+        $("#divPartial2").show();
+        document.getElementById("sevkiyat").className = "menu-item open active";
+        document.getElementById("depotransfer1").className = "menu-item active";
+    }
+    else {
+        $("#divPartial").show();
+
+        document.getElementById("sevkiyat1").className = "nav__link active";
+        document.getElementById("depotransfer1").className = "nav__dropdown-item active";
+    }
+</script>
+
+<style>
+
+    .card-view {
+        border-bottom: 1px dashed gray;
+    }
+
+    .card-view-value {
+        white-space: normal;
+    }
+
+    .card-view-title {
+        min-width: 40% !important;
+    }
+
+    .select2-container {
+        width: 100%;
+    }
+
+    .search {
+        width: 100%;
+    }
+
+    #filter {
+        width: 98%;
+    }
+
+    .menu1 {
+        display: none;
+    }
+
+    .no, .detail-view {
+        --bs-table-bg: white;
+        --bs-table-accent-bg: white;
+        --bs-table-striped-color: white;
+        --bs-table-striped-bg: white;
+        --bs-table-active-color: white;
+        --bs-table-active-bg: white;
+        --bs-table-hover-color: white;
+        --bs-table-hover-bg: white;
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #697a8d;
+        vertical-align: middle;
+        border-color: #d9dee3;
+    }
+
+
+    @@media screen and (max-width: 600px) {
+        input {
+            width: 100% !important;
+        }
+
+        .select2 {
+            width: 100% !important;
+        }
+
+        .menu1 {
+            display: inline-flex;
+        }
+
+        .menu2 {
+            display: none;
+        }
+        /* .btn-group {
+            display: none;
+        }*/
+    }
+</style>
+<style>
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+
+
+    .icon-info-sign:hover {
+        opacity: .8;
+        cursor: pointer;
+    }
+
+
+    .swal2-container {
+        z-index: 10000;
+    }
+
+    i:hover {
+        color: #0d5c69 !important;
+        cursor: pointer !important;
+    }
+
+    .i-disabled,
+    .i-disabled[disabled] {
+        opacity: .4;
+        cursor: default !important;
+        pointer-events: none;
+    }
+</style>
+

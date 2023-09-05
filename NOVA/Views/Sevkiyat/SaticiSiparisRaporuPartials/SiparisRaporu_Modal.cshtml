@@ -2,32 +2,41 @@
     <div id="ModalAyar" class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 90% !important;">
         <div id="SiparisModalContent" class="modal-content" style="height:90vh;box-shadow: inset 0 0 15px #dbdbdb;">
 
-            <div class="modal-header" style="display: flex; flex-direction: column; padding-left: 2.4rem; padding-right: 2.4rem;">
+            <div class="modal-header" style="display: flex; flex-direction: column;">
                 <div class="row" style="display:flex;justify-content:center;align-items:center;">
                     <h5 class="modal-title" id="SiparisModalLabel">KABUL FORMU</h5>
                 </div>
-                <div class="row mb-0 gy-2" style="display:flex;justify-content:start;width:100%;">
-                    <div class="col belge-bilgi">
-                        <div class="row gy-3 mb-2 d-flex justify-content-start align-items-center">
-                            <div class="col-sm-auto" style="padding-right: 0.5rem;">
-                                <span style="font-size: 0.85rem;">SSIP NO: <b id="SiparisNo"></b></span>
-                            </div>
-                            <div class="col-sm-auto" style="padding-left: 0;">
-                                <div class="form-label-group outline autocomplete m-0">
-                                    <input type="text" id="IRS_NO" class="form-control" style="height: 2rem; padding: 0.3rem; width: 12rem;" placeholder="İRSALİYE NO" autocomplete="off" />
-                                    <span><label for="IRS_NO">İRSALİYE NO</label></span>
-                                </div>
+                <div class="row w-100 d-flex justify-content-start belge-bilgi" style="row-gap:0.5rem;">
+
+                    <div class="row d-flex justify-content-start align-items-center" style="row-gap:0.5rem;">
+                        <div class="col-sm-auto" style="padding-right: 0;">
+                            <span style="font-size: 0.85rem;">SSIP NO: <b id="SiparisNo"></b></span>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-label-group outline m-0">
+                                <input type="text" id="IRS_NO" class="form-control" placeholder="İRSALİYE NO" autocomplete="off" />
+                                <span><label for="IRS_NO">İRSALİYE NO</label></span>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-start align-items-center">
-                            <span style="font-size: 0.85rem;">Belge Numarası: <b id="BelgeNo"></b></span>
+                    </div>
 
+                    <div class="row d-flex justify-content-start align-items-center" style="row-gap:0.5rem;">
+                        <div class="col-sm-auto" style="padding-right: 0;">
+                            <span style="font-size: 0.85rem;">Belge Numarası: <b id="BelgeNo"></b></span>
+                        </div>
+                        <div class="col-sm-auto d-flex justify-content-start align-items-center" style="line-height: normal;">
                             <div class="form-check form-switch mx-2" style=" display: flex; justify-content: center; gap: 0.25rem; align-items: center;">
                                 <input class="form-check-input" type="checkbox" id="BelgeDurumu" style="transform:Scale(1.25);" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Belge Durumu</span>" disabled>
                             </div>
 
                             <i data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Belgeleri Getir</span>" onclick="BelgeNoModal()" data-show-modal="BelgeNoModal" class="bi bi-file-earmark-ruled-fill showmodal" style="color:#203289; font-size: x-large;margin-right:0.5rem;"></i>
                             <i data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Yeni Belge Oluştur</span>" onclick="YeniBelgeOlustur()" id="YeniBelgeOlusturButton" class="bi bi-file-earmark-plus-fill i-disabled" style="color:#203289; font-size: x-large;"></i>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-label-group outline m-0">
+                                <input type="text" id="GIRIS_DEPO" class="form-control" placeholder="GİRİŞ DEPO" autocomplete="off" />
+                                <span><label for="GIRIS_DEPO">GİRİŞ DEPO</label></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -237,13 +246,19 @@
         StokAdlariAyarla();
         AlanlarıTemizle();
         StokDegistir(stokKodu);
-        ButonAyarla(1);
+        ButonAyarla(0);
         GuncelSiparisBakiye();
         ModalKaydetButtonState();
         FullscreenModal();
         YazdirSwitch();
+        DepoGetir();
 
         AcilisStok = stokKodu;
+
+        $('#StokAdlari').prop('disabled', true);
+
+        $('#GIRIS_DEPO').val("");
+        GirisDepo = -1;
 
         $("#TempTable").bootstrapTable("destroy");
         $("#TempTable").bootstrapTable({ data: Kalemler });
@@ -408,6 +423,9 @@
         Yazdir = true;
         BelgedenGelenKayitlar = [];
 
+        $('#GIRIS_DEPO').val("");
+        GirisDepo = -1;
+
         $("#TempTable").bootstrapTable("destroy");
         $("#TempTable").bootstrapTable({ data: Kalemler });
 
@@ -418,7 +436,6 @@
 
         $('#IRS_NO').val('');
         $("#IRS_NO").prop("disabled", false);
-        $("#StokAdlari").prop("disabled", false);
         $("#ModalSaveButton").prop("disabled", true);
         $("#kalemkaydetbtn").prop("disabled", true);
         $("#DeleteDocumentButton").hide();
@@ -431,6 +448,8 @@
         GuncelSeriNoGetir();
         GuncelSiparisBakiye();
         YazdirSwitch();
+
+        $("#StokAdlari").prop("disabled", true);
     }
 
     function EkranAcilisi() {
@@ -567,7 +586,9 @@
             "SERI_NO_4": SeriNo4,
             "ACIKLAMA_4": Aciklama4,
             "ACIKLAMA_5": Aciklama5,
-            "TARIH": (new Date()).toLocaleDateString()
+            "TARIH": (new Date()).toLocaleDateString(),
+            "GIRIS_DEPO": GirisDepo,
+            "CIKIS_DEPO": null
         };
     }
 
@@ -586,6 +607,12 @@
         document.getElementById("SERİ_NO_4").value = value.SERI_NO_4;
         //document.getElementById("ACIKLAMA_4").value = value.ACIKLAMA_4;
         //document.getElementById("ACIKLAMA_5").value = value.ACIKLAMA_5;
+
+        var Depo = Depolar.filter(x => x.DEPO_KODU == value.GIRIS_DEPO);
+
+        $('#GIRIS_DEPO').val(Depo[0].DEPO_ISMI);
+
+        GirisDepo = Depo[0].DEPO_KODU;
     }
 
     function YeniKalem() {
@@ -668,6 +695,11 @@
 
         GuncelSiparisBakiye();
         ModalKaydetButtonState();
+
+        if (GirisDepo != -1 )
+        {
+            $("#StokAdlari").prop("disabled", false);
+        }
     }
 
     function KalemBilgisiGoster(KalemId) {
@@ -722,6 +754,10 @@
 
         GuncelSiparisBakiye();
         ModalKaydetButtonState();
+
+        if (GirisDepo != -1 && SaveType == 0) {
+            $("#StokAdlari").prop("disabled", false);
+        }
     }
 
     function KalemSil(Id, SeriNo) {
@@ -782,6 +818,10 @@
 
         GuncelSiparisBakiye();
         ModalKaydetButtonState();
+
+        if (GirisDepo != -1 && SaveType == 0) {
+            $("#StokAdlari").prop("disabled", false);
+        }
     }
 
     function SeriNoOzgunMu(SeriNo) {
@@ -934,81 +974,89 @@
         $("#IRS_NO").prop("disabled", true);
 
         if (Kalemler.length > 0) {
-            if ($('#IRS_NO').val().trim().length > 0) {
-                BelgeDurumKontrol().then((Durum) => {
-                    if (Durum) {
-                        KalemleriSil().then(() => { SilinecekKalemler = []; });
+            if (GirisDepo != -1) {
+                if ($('#IRS_NO').val().trim().length > 0) {
+                    BelgeDurumKontrol().then((Durum) => {
+                        if (Durum) {
+                            KalemleriSil().then(() => { SilinecekKalemler = []; });
 
-                        var HataListesi = [];
-                        var StokToplamlari = [];
+                            var HataListesi = [];
+                            var StokToplamlari = [];
 
-                        Kalemler.forEach(function (a) {
-                            if (!this[a.STOK_KODU]) {
-                                this[a.STOK_KODU] = { STOK_ADI: a.STOK_ADI, STOK_KODU: a.STOK_KODU, MIKTAR: 0 };
+                            Kalemler.forEach(function (a) {
+                                if (!this[a.STOK_KODU]) {
+                                    this[a.STOK_KODU] = { STOK_ADI: a.STOK_ADI, STOK_KODU: a.STOK_KODU, MIKTAR: 0 };
 
-                                StokToplamlari.push(this[a.STOK_KODU]);
-                            }
-
-                            this[a.STOK_KODU].MIKTAR += parseInt(a.MIKTAR);
-
-                        }, Object.create(null));
-
-                        MiktarKontrol(StokToplamlari, HataListesi).then(() => {
-                            if (HataListesi.length > 0) {
-                                var HataMesaji = '<div style="overflow-y:auto;height:150px;font-size:smaller;margin-bottom:1rem;">';
-
-                                for (var i = 0; i < HataListesi.length; i++) {
-                                    var Filtered = detayli.filter(x => x.SIPARIS_NO == SiparisNo && x.STOK_KODU == HataListesi[i].STOK_KODU);
-                                    HataMesaji = HataMesaji + `<b>${HataListesi[i].STOK_ADI}</b> kalemine girilebilecek maksimum miktar <b>${parseFloat(Filtered[0].BAKIYE_MIKTARI).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${Filtered[0].OLCU_BR1}</b>'dir.<br/>`;
+                                    StokToplamlari.push(this[a.STOK_KODU]);
                                 }
 
-                                Swal.fire({
-                                    title: "UYARI",
-                                    icon: 'error',
-                                    html: HataMesaji + "</div><div>Lütfen girilen miktarları düzeltiniz.</div>",
-                                    showConfirmButton: true,
-                                    allowEnterKey: false,
-                                    confirmButtonText: 'TAMAM', focusConfirm: true,
-                                });
-                            }
-                            else {
-                                if (SaveType == 0) {
-                                    KalemleriEkle();
-                                    window.onpopstate = function () { history.back(); };
-                                }
-                                else if (SaveType == 1) {
-                                    KalemleriGuncelle();
-                                    window.onpopstate = function () { history.back(); };
-                                }
-                            }
-                        });
-                    }
-                    else {
-                        Swal.fire({
-                            text: "Belge kapalıyken işlem yapamazsınız.",
-                            icon: "error",
-                            showConfirmButton: true, allowEnterKey: false, focusConfirm: true,
-                            confirmButtonText: 'TAMAM',
-                            confirmButtonColor: '#d33',
-                        });
-                    }
+                                this[a.STOK_KODU].MIKTAR += parseInt(a.MIKTAR);
 
-                });
+                            }, Object.create(null));
+
+                            MiktarKontrol(StokToplamlari, HataListesi).then(() => {
+                                if (HataListesi.length > 0) {
+                                    var HataMesaji = '<div style="overflow-y:auto;height:150px;font-size:smaller;margin-bottom:1rem;">';
+
+                                    for (var i = 0; i < HataListesi.length; i++) {
+                                        var Filtered = detayli.filter(x => x.SIPARIS_NO == SiparisNo && x.STOK_KODU == HataListesi[i].STOK_KODU);
+                                        HataMesaji = HataMesaji + `<b>${HataListesi[i].STOK_ADI}</b> kalemine girilebilecek maksimum miktar <b>${parseFloat(Filtered[0].BAKIYE_MIKTARI).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${Filtered[0].OLCU_BR1}</b>'dir.<br/>`;
+                                    }
+
+                                    Swal.fire({
+                                        title: "UYARI",
+                                        icon: 'error',
+                                        html: HataMesaji + "</div><div>Lütfen girilen miktarları düzeltiniz.</div>",
+                                        showConfirmButton: true,
+                                        allowEnterKey: false,
+                                        confirmButtonText: 'TAMAM', focusConfirm: true,
+                                    });
+                                }
+                                else {
+                                    if (SaveType == 0) {
+                                        KalemleriEkle();
+                                        window.onpopstate = function () { history.back(); };
+                                    }
+                                    else if (SaveType == 1) {
+                                        KalemleriGuncelle();
+                                        window.onpopstate = function () { history.back(); };
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            Swal.fire({
+                                text: "Belge kapalıyken işlem yapamazsınız.",
+                                icon: "error",
+                                showConfirmButton: true, allowEnterKey: false, focusConfirm: true,
+                                confirmButtonText: 'TAMAM',
+                                confirmButtonColor: '#d33',
+                            });
+                        }
+
+                    });
+                }
+                else {
+                    Swal.fire({
+                        text: "İrsaliye numarasını girmeden işlem yapamazsınız.",
+                        icon: "error",
+                        showConfirmButton: true,
+                        confirmButtonText: 'TAMAM', allowEnterKey: false, focusConfirm: true, allowOutsideClick: false,
+                        confirmButtonColor: '#d33',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $("#IRS_NO").prop("disabled", false);
+                        }
+                    });
+                }
             }
             else
             {
                 Swal.fire({
-                    text: "İrsaliye numarasını girmeden işlem yapamazsınız.",
+                    text: "Depo seçimi tamamlanmadan kayıt işlemi yapılamaz",
                     icon: "error",
-                    showConfirmButton: true,
-                    confirmButtonText: 'TAMAM', allowEnterKey: false, focusConfirm: true, allowOutsideClick: false,
-                    confirmButtonColor: '#d33',
-                }).then((result) =>
-                {
-                    if (result.isConfirmed)
-                    {
-                        $("#IRS_NO").prop("disabled", false);
-                    }
+                    showConfirmButton: false,
+                    timer: '1500'
                 });
             }
         }
@@ -1145,6 +1193,8 @@
                 "EXP_1": null,
                 "EXP_2": null,
                 "EXP_3": null,
+                "GIRIS_DEPO": Kalemler[i].GIRIS_DEPO,
+                "CIKIS_DEPO": null
             };
 
             $.ajax({
@@ -1213,6 +1263,8 @@
                 "EXP_1": null,
                 "EXP_2": null,
                 "EXP_3": null,
+                "GIRIS_DEPO": Kalemler[i].GIRIS_DEPO,
+                "CIKIS_DEPO": null
             };
 
             $.ajax({
@@ -1559,6 +1611,202 @@
                     }
                 }
             });
+        }
+    }
+</script>
+
+<script>
+    var GirisDepo = -1;
+    var Depolar = [];
+
+    function DepoGetir() {
+        $.ajax({
+            url: "http://192.168.2.13:83/api/stok/depo",
+            type: 'GET',
+            success: function (result) {
+                if (result.length > 0) {
+                    Depolar = result;
+                    DepoOtomatikTamamlama('GIRIS_DEPO', result);
+                }
+            }
+        });
+    }
+
+    function DepoOtomatikTamamlama(id, arr) {
+        var currentFocus;
+
+        var inp = document.getElementById(id);
+
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value.trimLeft();
+
+            this.value = val.toUpperCase();
+
+            closeAllLists();
+
+            if (!val) {
+                AlanlarıTemizle();
+                ButonAyarla(0);
+
+                $('#StokAdlari').prop("disabled", true);
+
+                if (id == 'GIRIS_DEPO') {
+                    GirisDepo = -1;
+                }
+                else if (id == 'CIKIS_DEPO') {
+                    CikisDepo = -1;
+                }
+
+                return false;
+            }
+
+            currentFocus = -1;
+
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+
+            this.parentNode.appendChild(a);
+
+            var itemNumber = 0;
+
+            for (let i = 0; i < arr.length; i++) {
+
+                if ((arr[i].DEPO_ISMI.substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1 || arr[i].DEPO_KODU.toString().substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1) && itemNumber < 5) {
+                    b = document.createElement("DIV");
+
+                    b.innerHTML = "<strong>" + arr[i].DEPO_ISMI.substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].DEPO_ISMI.substr(val.length);
+
+                    b.innerHTML += "<input type='hidden' kod='" + arr[i].DEPO_KODU + "' value='" + arr[i].DEPO_ISMI + "'>";
+
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+
+                        if (inp.value.trim().length !== 0) {
+                            if (id == 'GIRIS_DEPO') {
+                                GirisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
+                            }
+                            else if (id == 'CIKIS_DEPO') {
+                                CikisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
+                            }
+
+                            if (GirisDepo != -1) {
+                                if (SaveType == 0) {
+                                    $('#StokAdlari').prop("disabled", false);
+
+                                    if ($('#StokAdlari').val() !== null) {
+                                        MiktarGirisKontrolu();
+                                        ButonAyarla(1);
+                                    }
+                                }
+                                else
+                                {
+                                    $('#StokAdlari').prop("disabled", true);
+                                    $("#ModalSaveButton").prop("disabled", false);
+                                }
+                            }
+
+                            KayitDepolariDegistir();
+                        }
+
+                        closeAllLists();
+                    });
+
+                    itemNumber = itemNumber + 1;
+
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+
+                currentFocus++;
+
+                addActive(x);
+            } else if (e.keyCode == 38) {
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+
+    $('#GIRIS_DEPO').on("blur", (e) => {
+        setTimeout(() => {
+            var val = e.target.value.trimRight();
+
+            if (val) {
+                var FiltreliDepolar = Depolar.filter(x => x.DEPO_ISMI == val.toUpperCase());
+
+                if (FiltreliDepolar.length > 0) {
+                    GirisDepo = FiltreliDepolar[0].DEPO_KODU;
+
+                    if (GirisDepo != -1)
+                    {
+                        KayitDepolariDegistir();
+
+                        if (SaveType == 0) {
+                            $('#StokAdlari').prop("disabled", false);
+
+                            if ($('#StokAdlari').val() !== null) {
+                                MiktarGirisKontrolu();
+                                ButonAyarla(1);
+                            }
+                        }
+                        else {
+                            $('#StokAdlari').prop("disabled", true);
+                            $("#ModalSaveButton").prop("disabled", false);
+                        }
+                    }
+                }
+                else {
+                    e.target.value = null;
+                    GirisDepo = -1;
+                    ButonAyarla(0);
+
+                    $('#StokAdlari').prop("disabled", true);
+                }
+            }
+
+            $('#GIRIS_DEPOautocomplete-list').html('');
+        }, 100);
+    });
+
+    function KayitDepolariDegistir() {
+        for (var i = 0; i < Kalemler.length; i++) {
+            Kalemler[i].GIRIS_DEPO = GirisDepo;
         }
     }
 </script>

@@ -85,6 +85,8 @@
                     <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                         <input type="radio" class="btn-check" onclick="DurumVeTipSecim();" name="DocumentTypeRadio" id="SEVK_BUTTON" checked="" value="6" autocomplete="off">
                         <label class="btn btn-outline-primary" for="SEVK_BUTTON">SEVK</label>
+                        <input type="radio" class="btn-check" onclick="DurumVeTipSecim();" name="DocumentTypeRadio" id="DEPO_BUTTON" value="9" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="DEPO_BUTTON">D.A.T.</label>
                         <input type="radio" class="btn-check" onclick="DurumVeTipSecim();" name="DocumentTypeRadio" id="MAL_KABUL_BUTTON" value="7" autocomplete="off">
                         <label class="btn btn-outline-primary" for="MAL_KABUL_BUTTON">KABUL</label>
                     </div>
@@ -124,11 +126,11 @@
                        data-export-data-type="all"
                        data-export-types="['excel', 'pdf']"
                        data-pagination="true"
-                       data-search="true"
+                       data-search="false"
+                       data-filter-control="true"
                        data-show-columns="false"
                        data-show-columns-toggle-all="false"
                        data-locale="tr-TR"
-                       data-filter-control="true"
                        data-filter-control-multiple-search="true"
                        data-loading-template="loadingTemplate"
                        data-mobile-responsive="true"
@@ -141,12 +143,14 @@
                        data-row-style="SatirStil">
                     <thead>
                         <tr id="tst">
-                            <th data-formatter="tarihFormatter" data-field="INS_DATE" data-sortable="true" data-halign="center" data-align="center">TARİH</th>
-                            <th data-formatter="EmptyDataFormatter" data-field="CARI_ISIM" data-sortable="true" data-halign="center" data-align="center">CARİ İSİM</th>
-                            <th data-visible="false" data-formatter="EmptyDataFormatter" data-field="IRS_NO" data-sortable="true" data-halign="center" data-align="center">İRSALİYE NO</th>
-                            <th data-formatter="sipnoFormatter" data-field="SIPARIS_NO" data-sortable="true" data-halign="center" data-align="center">SİPARİŞ NO</th>
-                            <th data-formatter="EmptyDataFormatter" data-field="BELGE_NO" data-sortable="true" data-halign="center" data-align="center">BELGE NO</th>
-                            <th data-formatter="EmptyDataFormatter" data-field="INS_USER_NAME" data-sortable="true" data-halign="center" data-align="center">KAYIT YAPAN</th>
+                            <th data-formatter="tarihFormatter" data-field="INS_DATE" data-sortable="true" data-halign="center" data-align="center" data-valign="middle" data-filter-control="input">TARİH</th>
+                            <th data-formatter="EmptyDataFormatter" data-field="CARI_ISIM" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">CARİ İSİM</th>
+                            <th data-visible="false" data-formatter="EmptyDataFormatter" data-field="IRS_NO" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">İRSALİYE NO</th>
+                            <th data-visible="false" data-formatter="DepoFormatter" data-field="GIRIS_DEPO" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">GİRİŞ DEPO</th>
+                            <th data-visible="false" data-formatter="DepoFormatter" data-field="CIKIS_DEPO" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">ÇIKIŞ DEPO</th>
+                            <th data-formatter="sipnoFormatter" data-field="SIPARIS_NO" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">SİPARİŞ NO</th>
+                            <th data-formatter="EmptyDataFormatter" data-field="BELGE_NO" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">BELGE NO</th>
+                            <th data-formatter="EmptyDataFormatter" data-field="INS_USER_NAME" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">KAYIT YAPAN</th>
                         </tr>
                     </thead>
                 </table>
@@ -161,8 +165,19 @@
 
 <script>
     var Belgeler = [];
+    var Depolar = [];
 
     $(document).ready(function () {
+        $.ajax({
+            url: "http://192.168.2.13:83/api/stok/depo",
+            type: 'GET',
+            success: function (result) {
+                if (result.length > 0) {
+                    Depolar = result;
+                }
+            }
+        });
+
         $.getJSON("http://192.168.2.13:83/api/shipping", function (data) {
             Belgeler = data;
         }).done(function () {
@@ -229,10 +244,29 @@
 
         if (DocType == 7) {
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'IRS_NO');
+            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'CARI_ISIM');
+            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'SIPARIS_NO');
+
+            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'GIRIS_DEPO');
+            $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'CIKIS_DEPO');
+        }
+        else if (DocType == 9)
+        {
+            $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'IRS_NO');
+            $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'CARI_ISIM');
+            $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'SIPARIS_NO');
+
+            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'GIRIS_DEPO');
+            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'CIKIS_DEPO');
         }
         else
         {
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'IRS_NO');
+            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'CARI_ISIM');
+            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'SIPARIS_NO');
+
+            $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'GIRIS_DEPO');
+            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'CIKIS_DEPO');
         }
 
         $("#SevkMalKabulTable").bootstrapTable("load", FilteredData);
@@ -282,6 +316,18 @@
     function loadingTemplate(message) {
 
         return '<div class="heart"><img src="/images/novasaydam.png" style="max-width:15vw"/></div>'
+    }
+
+    function DepoFormatter(value, index, row)
+    {
+        var Depo = Depolar.filter(x => x.DEPO_KODU == value);
+
+        if (Depo.length > 0)
+        {
+            return Depo[0].DEPO_ISMI;
+        }
+
+        return "-";
     }
 
     function sipnoFormatter(value, index, row) {

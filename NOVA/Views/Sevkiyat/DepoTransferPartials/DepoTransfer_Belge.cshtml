@@ -10,10 +10,10 @@
             <div class="modal-body  py-2">
                 <div class="container-fluid">
                     <div class="centercontent" id="content" style="display:flex;justify-content:center;">
-                        <div class="heart"><img id="SevkFormBelgeTableProgress" src="~/images/novasaydam.png" style="max-width:10vw" /></div>
+                        <div class="heart"><img id="DepoTransferBelgeTableProgress" src="~/images/novasaydam.png" style="max-width:10vw" /></div>
                     </div>
 
-                    <div class="row gy-3 my-2" id="SevkFormBelgeTableToolbar">
+                    <div class="row gy-3 my-2" id="DepoTransferBelgeTableToolbar">
                         <div class="row mb-2 gy-2">
                             <div class="col-sm-auto">
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
@@ -37,9 +37,9 @@
                         </div>
                     </div>
 
-                    <div id="SevkFormBelgeTableRow" class="row mb-2 gy-2">
+                    <div id="DepoTransferBelgeTableRow" class="row mb-2 gy-2">
                         <div class="table-responsive">
-                            <table id="SevkFormBelgeTable"
+                            <table id="DepoTransferBelgeTable"
                                    data-search="true"
                                    data-show-refresh="false"
                                    data-show-toggle="false"
@@ -63,8 +63,6 @@
                                    data-row-style="DetailSatirStili">
                                 <thead>
                                     <tr>
-                                        <th data-field="CARI_ISIM" data-halign="center" data-align="center">CARİ İSİM</th>
-                                        <th data-field="SIPARIS_NO" data-sortable="true" data-halign="center" data-align="center">SİPARİŞ NO</th>
                                         <th data-field="BELGE_NO" data-sortable="true" data-halign="center" data-align="center">BELGE NO</th>
                                         <th data-formatter="BelgeDurumuFormatter" data-sortable="true" data-field="ACTIVE" data-halign="center" data-align="center">BELGE DURUMU</th>
                                         <th data-formatter="BelgeListIslemFormatter" data-halign="center" data-align="center">İŞLEM</th>
@@ -83,27 +81,25 @@
     var DuzenlenmemisBelgeler = [];
     var DuzenlenmisBelgeler = [];
 
-    function BelgeListesi()
-    {
+    function BelgeListesi() {
         DuzenlenmemisBelgeler = [];
         DuzenlenmisBelgeler = [];
 
         VerileriGetir();
 
-        $('#SevkFormBelgeTable').bootstrapTable('destroy');
-        $('#SevkFormBelgeTable').bootstrapTable({ data: [] });
+        $('#DepoTransferBelgeTable').bootstrapTable('destroy');
+        $('#DepoTransferBelgeTable').bootstrapTable({ data: [] });
 
         $('#SevkFormBelge').modal('show');
     }
 
-    function VerileriGetir()
-    {
-        $("#SevkFormBelgeTableProgress").show();
-        $("#SevkFormBelgeTableRow").hide();
-        $("#SevkFormBelgeTableToolbar").hide();
+    function VerileriGetir() {
+        $("#DepoTransferBelgeTableProgress").show();
+        $("#DepoTransferBelgeTableRow").hide();
+        $("#DepoTransferBelgeTableToolbar").hide();
 
         $('#ACIK_BUTTON').prop('checked', true);
-        var ProcUrl = "http://192.168.2.13:83/api/shipping/sip/" + $('#SİPARİS_NO').html();
+        var ProcUrl = "http://192.168.2.13:83/api/shipping/sip/0";
 
         $.getJSON(ProcUrl, function (data) {
             if (data.length > 0) {
@@ -156,13 +152,13 @@
                 });
 
 
-                $("#SevkFormBelgeTable").bootstrapTable("destroy");
-                $('#SevkFormBelgeTable').bootstrapTable({ data: DuzenlenmisBelgeler.filter(x => x.ACTIVE) });
+                $("#DepoTransferBelgeTable").bootstrapTable("destroy");
+                $('#DepoTransferBelgeTable').bootstrapTable({ data: DuzenlenmisBelgeler.filter(x => x.ACTIVE) });
             }
         }).done(function () {
-            $("#SevkFormBelgeTableProgress").hide();
-            $("#SevkFormBelgeTableRow").show();
-            $("#SevkFormBelgeTableToolbar").show();
+            $("#DepoTransferBelgeTableProgress").hide();
+            $("#DepoTransferBelgeTableRow").show();
+            $("#DepoTransferBelgeTableToolbar").show();
         });
 
     }
@@ -183,37 +179,34 @@
         }
     }
 
-    $('#SevkFormBelgeTable').on('expand-row.bs.table', function (e, index, row, $detail) {
-        $detail.html(`<div class="card-body p-0" style="background-color:mintcream;"> <div class="table-responsive"> <table id="SevkFormBelgeDetay${row.BELGE_NO}Table" class="belgedetailtbl table-sm" data-search="false" data-show-refresh="false" data-show-toggle="false" data-show-fullscreen="false" data-show-columns="false" data-show-columns-toggle-all="false" data-detail-view="false" data-show-export="false" data-click-to-select="true" data-minimum-count-columns="2" data-show-pagination-switch="false" data-page-size="4" data-page-list="[5,20,50,100]" data-pagination-parts="['pageInfo','pageList']" data-pagination="true" data-id-field="id" data-show-footer="false" data-mobile-responsive="true" data-response-handler="responseHandler" data-locale="tr-TR" data-row-style="DetailSatirStili"> <thead> <tr> <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO" data-halign="center" data-align="center"  >SERİ NO</th> <th data-formatter="SevkFormuCellFormatter" data-field="STOK_ADI" data-halign="center" data-align="center"  >STOK ADI</th>  <th data-formatter="MiktarFormatla" data-field="MIKTAR1" data-halign="center" data-align="center"  >MİKTAR 1</th> <th data-formatter="SevkFormuCellFormatter" data-field="OLCU_BR1" data-halign="center" data-align="center"  >ÖLÇÜ BİRİMİ 1</th> <th data-formatter="MiktarFormatla" data-field="MIKTAR2" data-halign="center" data-align="center"  >MİKTAR 2</th> <th data-formatter="SevkFormuCellFormatter" data-field="OLCU_BR2" data-halign="center" data-align="center"  >ÖLÇÜ BİRİMİ 2</th> <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-halign="center" data-align="center"  >KALINLIK</th> <th data-formatter="GenislikFormatter" data-field="ACIK2" data-halign="center" data-align="center"  >GENİŞLİK</th> <th data-formatter="SevkFormuCellFormatter" data-field="ACIK3" data-halign="center" data-align="center"  >ÜRÜN NO</th> <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_3" data-halign="center" data-align="center"  >KALİTE</th> <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center"  >KAPLAMA KALINLIĞI</th> <th data-formatter="BelgeDurumuFormatter" data-field="ACTIVE" data-halign="center" data-align="center"  >Durum</th> </tr></thead> </table> </div></div>`);
+    $('#DepoTransferBelgeTable').on('expand-row.bs.table', function (e, index, row, $detail) {
+        $detail.html(`<div class="card-body" style="background-color:mintcream;"> <div class="table-responsive"> <table id="SevkFormBelgeDetay${row.BELGE_NO}Table" class="belgedetailtbl table-sm" data-search="false" data-show-refresh="false" data-show-toggle="false" data-show-fullscreen="false" data-show-columns="false" data-show-columns-toggle-all="false" data-detail-view="false" data-show-export="false" data-click-to-select="true" data-minimum-count-columns="2" data-show-pagination-switch="false" data-page-size="4" data-page-list="[5,20,50,100]" data-pagination-parts="['pageInfo','pageList']" data-pagination="true" data-id-field="id" data-show-footer="false" data-mobile-responsive="true" data-response-handler="responseHandler" data-locale="tr-TR" data-row-style="DetailSatirStili"> <thead> <tr> <th data-formatter="NullCheck" data-field="SERI_NO" data-halign="center" data-align="center"  >SERİ NO</th> <th data-formatter="NullCheck" data-field="STOK_ADI" data-halign="center" data-align="center"  >STOK ADI</th>  <th data-formatter="MiktarFormatla" data-field="MIKTAR1" data-halign="center" data-align="center"  >MİKTAR 1</th> <th data-formatter="NullCheck" data-field="OLCU_BR1" data-halign="center" data-align="center"  >ÖLÇÜ BİRİMİ 1</th> <th data-formatter="MiktarFormatla" data-field="MIKTAR2" data-halign="center" data-align="center"  >MİKTAR 2</th> <th data-formatter="NullCheck" data-field="OLCU_BR2" data-halign="center" data-align="center"  >ÖLÇÜ BİRİMİ 2</th> <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-halign="center" data-align="center"  >KALINLIK</th> <th data-formatter="GenislikFormatter" data-field="ACIK2" data-halign="center" data-align="center"  >GENİŞLİK</th> <th data-formatter="NullCheck" data-field="ACIK3" data-halign="center" data-align="center"  >ÜRÜN NO</th> <th data-formatter="NullCheck" data-field="SERI_NO_3" data-halign="center" data-align="center"  >KALİTE</th> <th data-formatter="NullCheck" data-field="SERI_NO_4" data-halign="center" data-align="center"  >KAPLAMA KALINLIĞI</th> <th data-formatter="BelgeDurumuFormatter" data-field="ACTIVE" data-halign="center" data-align="center"  >Durum</th> </tr></thead> </table> </div></div>`);
 
         var FiltreliBelgeler = DuzenlenmemisBelgeler.filter(x => x.SIPARIS_NO == row.SIPARIS_NO && x.BELGE_NO == row.BELGE_NO);
 
         var DuzenlenmisKayitlar = [];
 
-        for (var i = 0; i < FiltreliBelgeler.length; i++) {
-
-            var StokDetay = detayli.filter(d => d.STOK_KODU == FiltreliBelgeler[i].STOK_KODU);
-
-            if (StokDetay.length > 0)
-            {
-                DuzenlenmisKayitlar.push({
-                    "ACTIVE": FiltreliBelgeler[i].ACTIVE,
-                    "STOK_KODU": FiltreliBelgeler[i].STOK_KODU,
-                    "STOK_ADI": StokDetay[0].STOK_ADI,
-                    "SERI_NO": FiltreliBelgeler[i].SERI_NO,
-                    "MIKTAR1": parseFloat(FiltreliBelgeler[i].MIKTAR1).toFixed(2),
-                    "OLCU_BR1": FiltreliBelgeler[i].OLCU_BR1,
-                    "MIKTAR2": parseFloat(FiltreliBelgeler[i].MIKTAR2).toFixed(2),
-                    "OLCU_BR2": FiltreliBelgeler[i].OLCU_BR2,
-                    "ACIK1": FiltreliBelgeler[i].ACIK1,
-                    "ACIK2": FiltreliBelgeler[i].ACIK2,
-                    "ACIK3": FiltreliBelgeler[i].ACIK3,
-                    "ACIKLAMA_4": FiltreliBelgeler[i].ACIKLAMA_4,
-                    "ACIKLAMA_5": FiltreliBelgeler[i].ACIKLAMA_5,
-                    "SERI_NO_3": FiltreliBelgeler[i].SERI_NO_3,
-                    "SERI_NO_4": FiltreliBelgeler[i].SERI_NO_4,
-                });
-            }
+        for (var i = 0; i < FiltreliBelgeler.length; i++)
+        {
+            DuzenlenmisKayitlar.push({
+                "ACTIVE": FiltreliBelgeler[i].ACTIVE,
+                "STOK_KODU": FiltreliBelgeler[i].STOK_KODU,
+                "STOK_ADI": FiltreliBelgeler[i].STOK_ADI,
+                "SERI_NO": FiltreliBelgeler[i].SERI_NO,
+                "MIKTAR1": parseFloat(FiltreliBelgeler[i].MIKTAR1).toFixed(2),
+                "OLCU_BR1": FiltreliBelgeler[i].OLCU_BR1,
+                "MIKTAR2": parseFloat(FiltreliBelgeler[i].MIKTAR2).toFixed(2),
+                "OLCU_BR2": FiltreliBelgeler[i].OLCU_BR2,
+                "ACIK1": FiltreliBelgeler[i].ACIK1,
+                "ACIK2": FiltreliBelgeler[i].ACIK2,
+                "ACIK3": FiltreliBelgeler[i].ACIK3,
+                "ACIKLAMA_4": FiltreliBelgeler[i].ACIKLAMA_4,
+                "ACIKLAMA_5": FiltreliBelgeler[i].ACIKLAMA_5,
+                "SERI_NO_3": FiltreliBelgeler[i].SERI_NO_3,
+                "SERI_NO_4": FiltreliBelgeler[i].SERI_NO_4,
+                "GIRIS_DEPO": FiltreliBelgeler[i].GIRIS_DEPO,
+                "CIKIS_DEPO": FiltreliBelgeler[i].CIKIS_DEPO
+            });
         }
 
         DuzenlenmisKayitlar.sort((a, b) => {
@@ -268,26 +261,27 @@
             BelgeGoster(DuzenlenmemisBelgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo));
         }
     }
-    function BelgeGoster(data)
-    {
-        Kayitlar = [];
-        Kayit_ID = 0;
+    function BelgeGoster(data) {
         KayitTipi = 1;
-        Guncellenen_ID = -1;
+        SayfaTipi = 9;
 
-        SeciliBarkodVar = false;
+        Kayitlar = [];
+        KayitId = 0;
+
+        GuncellenenId = -1;
+
+        SeciliStokKodu = "";
 
         $("#SevkFormBelge").modal("hide");
 
         $("#SİPARİS_NO").html(data[0].SIPARIS_NO);
         $("#BELGE_NO").html(data[0].BELGE_NO);
 
-        for (var i = 0; i < data.length; i++)
-        {
+        for (var i = 0; i < data.length; i++) {
             Kayitlar.push({
                 "INC_KEY": data[i].INCKEY,
                 "ACTIVE": data[i].ACTIVE,
-                "ID": Kayit_ID,
+                "ID": KayitId,
                 "CARI_ISIM": data[i].CARI_ISIM,
                 "STOK_ADI": data[i].STOK_ADI,
                 "STOK_KODU": data[i].STOK_KODU,
@@ -305,19 +299,21 @@
                 "ACIKLAMA_5": data[i].ACIKLAMA_5,
                 "ESKI_MIKTAR": data[i].MIKTAR1,
                 "ESKI_MIKTAR2": data[i].MIKTAR2,
+                "GIRIS_DEPO": data[i].GIRIS_DEPO,
                 "CIKIS_DEPO": data[i].CIKIS_DEPO
             });
 
-            Kayit_ID += 1;
+            KayitId += 1;
         }
 
-        var Depo = Depolar.filter(x => x.DEPO_KODU == Kayitlar[0].CIKIS_DEPO);
+        var GirisDep = Depolar.filter(x => x.DEPO_KODU == Kayitlar[0].GIRIS_DEPO)[0];
+        var CikisDep = Depolar.filter(x => x.DEPO_KODU == Kayitlar[0].CIKIS_DEPO)[0];
 
-        if (Depo.length > 0) {
-            $('#CIKIS_DEPO').val(Depo[0].DEPO_ISMI);
+        GirisDepo = GirisDep.DEPO_KODU;
+        CikisDepo = CikisDep.DEPO_KODU;
 
-            CikisDepo = Depo[0].DEPO_KODU;
-        }
+        $('#GIRIS_DEPO').val(GirisDep.DEPO_ISMI);
+        $('#CIKIS_DEPO').val(CikisDep.DEPO_ISMI);
 
         Kayitlar.sort((a, b) => {
             const nameA = a.STOK_ADI.toUpperCase();
@@ -333,37 +329,16 @@
 
         $("#BELGE_DURUMU").prop('checked', false);
         $('#YeniBelgeOlusturButton').removeClass('i-disabled');
-        $('#SevkFormSilButton').show();
+        $('#belgesilbtn').show();
 
-        if (Kayitlar.filter(x => x.ACTIVE === true).length > 0)
-        {
+        if (Kayitlar.filter(x => x.ACTIVE === true).length > 0) {
             $("#BELGE_DURUMU").prop('checked', true);
         }
 
-        $('#SevkFormuTable').bootstrapTable('load', Kayitlar);
+        $('#DepoTransferTable').bootstrapTable('load', Kayitlar);
 
-        DurumAyarla(0);
+        DurumDegisikligi(0);
     }
-</script>
-
-<script>
-    function GuncelBelgeNoGetir() {
-        var ProcUrl = "http://192.168.2.13:83/api/shipping/" + SayfaTipi;
-
-        var BelgeNo = "";
-
-        $.ajax({
-            url: ProcUrl,
-            type: 'GET',
-            success: (result) => {
-                BelgeNo = result[0].SIRADAKI_BELGE_NO;
-                $('#BELGE_NO').html(result[0].SIRADAKI_BELGE_NO);
-            }
-        }).then(() => {
-            $('#BELGE_NO').html(BelgeNo);
-        });
-    }
-
     function DurumSecim() {
         var DocumentStateVal = $('input[name="DocumentStateRadio"]:checked').val();
         var DocState = DocumentStateVal == "all" ? "all" : (DocumentStateVal === 'true');
@@ -378,144 +353,26 @@
             Belge = DuzenlenmisBelgeler.filter(x => !x.ACTIVE);
         }
 
-        $("#SevkFormBelgeTable").bootstrapTable("destroy");
-        $('#SevkFormBelgeTable').bootstrapTable({ data: Belge });
+        $("#DepoTransferBelgeTable").bootstrapTable("destroy");
+        $('#DepoTransferBelgeTable').bootstrapTable({ data: Belge });
     }
+</script>
 
-    function YeniBelgeOlustur()
-    {
-        Swal.fire({
-            html: `Yeni belge oluşturulacak, emin misiniz?`,
-            icon: 'warning',
-            showCancelButton: true,
-            cancelButtonText: 'HAYIR',
-            cancelButtonColor: '#d33',
-            confirmButtonColor: '#3085d6',
-            allowEnterKey: false,
-            confirmButtonText: 'EVET',
-            allowOutsideClick: false
-        }).then((result) => {
-            if (result.isConfirmed)
-            {
-                BelgeOlustur();
-            }
-        });
-    }
-
-    function BelgeOlustur()
-    {
-        Kayitlar = [];
-        Silinecek_Kayitlar = [];
-
-        Kayit_ID = 0;
-        Guncellenen_ID = -1;
-        KayitTipi = 0;
-
-        SeciliBarkodVar = false;
-
-        $('#SevkFormSilButton').hide();
-
-        $("#BELGE_DURUMU").prop('checked', true);
-
-        $('#SevkFormuTable').bootstrapTable('destroy');
-        $('#SevkFormuTable').bootstrapTable({ data: Kayitlar });
-
-        $('#YeniBelgeOlusturButton').addClass('i-disabled');
-
-        GuncelBelgeNoGetir();
-        StokAdlariniAyarla();
-        DurumAyarla(0);
-
-        $('#BarkodButton').prop("disabled", true);
-        $('#STOK_SECIM').prop("disabled", true);
-        $('#CIKIS_DEPO').val('');
-        CikisDepo = -1;
-    }
-
-    function BelgeDurumKontrol() {
+<script>
+    function BelgeNoGetir() {
         return new Promise((resolve, reject) => {
-            var SiparisNo = $('#SİPARİS_NO').html();
-            var BelgeNo = $('#BELGE_NO').html();
-
-            var ProcUrl = "http://192.168.2.13:83/api/shipping/sip/" + SiparisNo;
-
             $.ajax({
-                url: ProcUrl,
+                url: "http://192.168.2.13:83/api/shipping/" + SayfaTipi,
                 type: 'GET',
                 success: function (data) {
                     if (data.length > 0) {
-                        BelgeList = data;
-
-                        var AynıBelgeNoFilter = BelgeList.filter(
-                            (obj, index) =>
-                                BelgeList.findIndex((item) => item.BELGE_NO === obj.BELGE_NO) === index
-                        );
-
-                        Belgeler = [];
-
-                        for (var i = 0; i < AynıBelgeNoFilter.length; i++) {
-                            var Filtered = BelgeList.filter(x => x.BELGE_NO == AynıBelgeNoFilter[i].BELGE_NO);
-                            var AcikMi = false;
-
-                            for (var j = 0; j < Filtered.length; j++) {
-                                if (Filtered[j].ACTIVE) {
-                                    Belgeler.push({
-                                        "CARI_ISIM": AynıBelgeNoFilter[i].CARI_ISIM,
-                                        "SIPARIS_NO": AynıBelgeNoFilter[i].SIPARIS_NO,
-                                        "BELGE_NO": AynıBelgeNoFilter[i].BELGE_NO,
-                                        "ACTIVE": true,
-                                    });
-                                    AcikMi = true;
-                                    break;
-                                }
-                            }
-
-                            if (!AcikMi) {
-                                Belgeler.push({
-                                    "CARI_ISIM": AynıBelgeNoFilter[i].CARI_ISIM,
-                                    "SIPARIS_NO": AynıBelgeNoFilter[i].SIPARIS_NO,
-                                    "BELGE_NO": AynıBelgeNoFilter[i].BELGE_NO,
-                                    "ACTIVE": false,
-                                });
-                            }
-                        }
-
-                        if (Belgeler.filter(x => x.BELGE_NO == BelgeNo).length > 0) {
-                            var Durum = Belgeler.filter(x => x.BELGE_NO == BelgeNo)[0].ACTIVE;
-                            resolve(Durum);
-                        }
+                        resolve(data[0].SIRADAKI_BELGE_NO);
                     }
-
-                    resolve(true);
                 },
                 error: function (error) {
                     reject(error)
                 },
             })
-        })
-    }
-
-    function BelgeNoGuncelMi() {
-        return new Promise((resolve, reject) => {
-            var ProcUrl = "http://192.168.2.13:83/api/shipping/" + SayfaTipi;
-
-            $.ajax({
-                type: 'GET',
-                url: ProcUrl,
-                success: function (response) {
-                    if (response.length > 0) {
-                        if (response[0].SIRADAKI_BELGE_NO == $('#BELGE_NO').html()) {
-                            resolve(true);
-                        }
-                        else {
-                            resolve(false);
-                        }
-                    }
-                },
-                error: function () {
-                    reject("some errors");
-                }
-            });
         });
     }
 
@@ -535,50 +392,63 @@
                 allowOutsideClick: false,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    SevkFormuKaydet();
+                    BelgeKaydet();
                 }
             })
         });
     }
+
+    function YeniBelgeOlustur() {
+
+        Swal.fire({
+            html: `Yeni belge oluşturulacak, emin misiniz?`,
+            icon: 'warning',
+            showCancelButton: true,
+            cancelButtonText: 'HAYIR',
+            cancelButtonColor: '#d33',
+            confirmButtonColor: '#3085d6',
+            allowEnterKey: false,
+            confirmButtonText: 'EVET',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed)
+            {
+                YeniBelge();
+            }
+        });
+        
+    }
+    
+    function YeniBelge()
+    {
+        $('#YeniBelgeOlusturButton').addClass('i-disabled');
+        $('#belgesilbtn').hide();
+        $('#BELGE_DURUMU').prop("checked", true);
+
+        BelgeNoGetir().then((data) => {
+            $('#BELGE_NO').html(data);
+        });
+
+        KayitTipi = 0;
+        SayfaTipi = 9;
+
+        Kayitlar = [];
+        KayitId = 0;
+
+        GuncellenenId = -1;
+        Silinecek_Kayitlar = [];
+        GirisDepo = -1;
+        CikisDepo = -1;
+
+        SeciliStokKodu = "";
+
+        $('#DepoTransferTable').bootstrapTable('destroy');
+        $('#DepoTransferTable').bootstrapTable({ data: [] });
+
+        $('#GIRIS_DEPO').val("");
+        $('#CIKIS_DEPO').val("");
+
+        AlanlariTemizle();
+        DurumDegisikligi(0);
+    }
 </script>
-
-<style>
-    .belgedetailtbl tr > th:nth-child(2), tr > td:nth-child(2) {
-        background: var(--bs-table-bg);
-    }
-
-    tr > th:nth-child(2), tr > td:nth-child(2) {
-        position: unset;
-    }
-
-    .no, .detail-view {
-        --bs-table-bg: transparent;
-        --bs-table-accent-bg: transparent;
-        --bs-table-striped-color: #697a8d;
-        --bs-table-striped-bg: rgba(105, 108, 255, 0.07);
-        --bs-table-active-color: #697a8d;
-        --bs-table-active-bg: rgba(67, 89, 113, 0.1);
-        --bs-table-hover-color: #697a8d;
-        --bs-table-hover-bg: rgba(105, 108, 255, 0.03);
-    }
-
-    #SevkFormBelgeTable .card-views .card-view .card-view-value {
-        margin-left: 0 !important;
-        padding-left: 5px !important;
-        white-space: normal !important;
-    }
-
-    #SevkFormBelgeTable .card-views .card-view {
-        margin-top: 0 !important;
-    }
-
-    .belgedetailtbl .card-views .card-view .card-view-value {
-        margin-left: 0 !important;
-        padding-left: 5px !important;
-        white-space: normal !important;
-    }
-
-    .belgedetailtbl .card-views .card-view {
-        margin-top: 0 !important;
-    }
-</style>

@@ -85,6 +85,7 @@
     var Belgeler = [];
 
     function BelgeNoModal() {
+        Belgeler = [];
         VerileriGetir();
     }
 
@@ -186,7 +187,7 @@
     }
 
     $('#BelgeNoTable').on('expand-row.bs.table', function (e, index, row, $detail) {
-        $detail.html(`<div class="card-body p-0"> <div id="employeeTableWrapper" class="tableWrapper table-responsive"> <table id="BelgeNoDetail${row.BELGE_NO}Table" class="belgedetailtbl table-sm" data-search="false" data-show-refresh="false" data-show-toggle="false" data-show-fullscreen="false" data-show-columns="false" data-show-columns-toggle-all="false" data-detail-view="false" data-show-export="false" data-click-to-select="true" data-minimum-count-columns="2" data-show-pagination-switch="false" data-page-size="4" data-page-list="[5,20,50,100]" data-pagination-parts="['pageInfo','pageList']" data-pagination="true" data-id-field="id" data-show-footer="false" data-mobile-responsive="true" data-response-handler="responseHandler" data-locale="tr-TR" data-row-style="DetailSatirStili"> <thead> <tr> <th data-formatter="TempTableEmptyFormatter" data-field="SERI_NO" data-halign="center" data-align="center"  >SERİ NO</th> <th data-formatter="TempTableEmptyFormatter" data-field="STOK_ADI" data-halign="center" data-align="center"  >STOK ADI</th>  <th data-formatter="MiktarFormatla" data-field="MIKTAR1" data-halign="center" data-align="center"  >MİKTAR 1</th> <th data-formatter="TempTableEmptyFormatter" data-field="OLCU_BR1" data-halign="center" data-align="center"  >ÖLÇÜ BİRİMİ 1</th> <th data-formatter="MiktarFormatla" data-field="MIKTAR2" data-halign="center" data-align="center"  >MİKTAR 2</th> <th data-formatter="TempTableEmptyFormatter" data-field="OLCU_BR2" data-halign="center" data-align="center"  >ÖLÇÜ BİRİMİ 2</th> <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-halign="center" data-align="center"  >KALINLIK</th> <th data-formatter="GenislikFormatter" data-field="ACIK2" data-halign="center" data-align="center"  >GENİŞLİK</th> <th data-formatter="TempTableEmptyFormatter" data-field="ACIK3" data-halign="center" data-align="center"  >ÜRÜN NO</th> <th data-formatter="TempTableEmptyFormatter" data-field="SERI_NO_3" data-halign="center" data-align="center"  >KALİTE</th> <th data-formatter="TempTableEmptyFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center"  >KAPLAMA KALINLIĞI</th> <th data-formatter="BelgeDurumuFormatter" data-field="ACTIVE" data-halign="center" data-align="center"  >Durum</th> </tr></thead> </table> </div></div>`);
+        $detail.html(`<div class="card-body p-0" style="background-color:mintcream;"> <div id="employeeTableWrapper" class="tableWrapper table-responsive"> <table id="BelgeNoDetail${row.BELGE_NO}Table" class="belgedetailtbl table-sm" data-search="false" data-show-refresh="false" data-show-toggle="false" data-show-fullscreen="false" data-show-columns="false" data-show-columns-toggle-all="false" data-detail-view="false" data-show-export="false" data-click-to-select="true" data-minimum-count-columns="2" data-show-pagination-switch="false" data-page-size="4" data-page-list="[5,20,50,100]" data-pagination-parts="['pageInfo','pageList']" data-pagination="true" data-id-field="id" data-show-footer="false" data-mobile-responsive="true" data-response-handler="responseHandler" data-locale="tr-TR" data-row-style="DetailSatirStili"> <thead> <tr> <th data-formatter="TempTableEmptyFormatter" data-field="SERI_NO" data-halign="center" data-align="center"  >SERİ NO</th> <th data-formatter="TempTableEmptyFormatter" data-field="STOK_ADI" data-halign="center" data-align="center"  >STOK ADI</th>  <th data-formatter="MiktarFormatla" data-field="MIKTAR1" data-halign="center" data-align="center"  >MİKTAR 1</th> <th data-formatter="TempTableEmptyFormatter" data-field="OLCU_BR1" data-halign="center" data-align="center"  >ÖLÇÜ BİRİMİ 1</th> <th data-formatter="MiktarFormatla" data-field="MIKTAR2" data-halign="center" data-align="center"  >MİKTAR 2</th> <th data-formatter="TempTableEmptyFormatter" data-field="OLCU_BR2" data-halign="center" data-align="center"  >ÖLÇÜ BİRİMİ 2</th> <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-halign="center" data-align="center"  >KALINLIK</th> <th data-formatter="GenislikFormatter" data-field="ACIK2" data-halign="center" data-align="center"  >GENİŞLİK</th> <th data-formatter="TempTableEmptyFormatter" data-field="ACIK3" data-halign="center" data-align="center"  >ÜRÜN NO</th> <th data-formatter="TempTableEmptyFormatter" data-field="SERI_NO_3" data-halign="center" data-align="center"  >KALİTE</th> <th data-formatter="TempTableEmptyFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center"  >KAPLAMA KALINLIĞI</th> <th data-formatter="BelgeDurumuFormatter" data-field="ACTIVE" data-halign="center" data-align="center"  >Durum</th> </tr></thead> </table> </div></div>`);
 
         var SiparisNo = row.SIPARIS_NO;
         var DetailFilteredList = BelgeList.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == row.BELGE_NO);
@@ -309,12 +310,23 @@
                 "ACIKLAMA_5": data[i].ACIKLAMA_5,
                 "ESKI_MIKTAR": data[i].MIKTAR1,
                 "ESKI_MIKTAR2": data[i].MIKTAR2,
-                "TARIH": (new Date(Tarih)).toLocaleDateString()
+                "TARIH": (new Date(Tarih)).toLocaleDateString(),
+                "CIKIS_DEPO": data[i].CIKIS_DEPO,
+                "GIRIS_DEPO": data[i].GIRIS_DEPO
             };
 
             Kalemler.push(KalemData);
             BelgedenGelenKayitlar.push(KalemData.SERI_NO);
             KalemId = KalemId + 1;
+        }
+
+        var Depo = Depolar.filter(x => x.DEPO_KODU == Kalemler[0].GIRIS_DEPO);
+
+        if (Depo.length > 0)
+        {
+            $('#GIRIS_DEPO').val(Depo[0].DEPO_ISMI);
+
+            GirisDepo = Depo[0].DEPO_KODU;
         }
 
         BeforeDocument = Kalemler.length;
@@ -590,5 +602,9 @@
 
     .belgedetailtbl .card-views .card-view {
         margin-top: 0 !important;
+    }
+
+    .table:not(caption) > * > * {
+        padding: 0 !important;
     }
 </style>

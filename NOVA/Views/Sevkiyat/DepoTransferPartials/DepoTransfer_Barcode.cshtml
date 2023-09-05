@@ -1,0 +1,106 @@
+﻿<div class="modal fade" id="BarkodModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="BarkodModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="BarkodModalLabel">BARKOD OKUYUCU</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="BarkodKameraKapat()"></button>
+            </div>
+            <div class="modal-body d-flex justify-content-center align-items-center">
+                <div class="row w-100">
+                    <div id="qr-reader" style="width:100%;"></div>
+                    <div id="qr-reader-results"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var html5QrcodeScanner;
+    var BarkodKameraAcik = false;
+
+    function BarkodModal() {
+
+        docReady(function () {
+            var resultContainer = document.getElementById('qr-reader-results');
+            var lastResult, countResults = 0;
+            function onScanSuccess(decodedText, decodedResult) {
+                if (decodedText !== lastResult) {
+                    ++countResults;
+                    lastResult = decodedText;
+
+                    BarkodBakiyeGetir(decodedText);
+                }
+            }
+            BarkodKameraAcik = true;
+            html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 800 });
+            html5QrcodeScanner.render(onScanSuccess);
+        });
+
+        $('#BarkodModal').modal('show');
+    }
+
+    function docReady(fn) {
+        if (document.readyState === "complete"
+            || document.readyState === "interactive") {
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+    }
+
+    function BarkodKameraKapat() {
+        BarkodKameraAcik = false;
+        html5QrcodeScanner.clear().then(_ => { }).catch(error => { });
+    }
+</script>
+
+<script>
+    function BarkodBakiyeGetir(BarkodNo)
+    {
+        var ProcUrl = "http://192.168.2.13:83/api/seri/bakiye/" + BarkodNo;
+
+        $.getJSON(ProcUrl, function (data) {
+            if (data.length > 0) {
+                if (!BarkodNoTablodaVarMi(BarkodNo))
+                {
+                    if (data[0].MIKTAR > 0 || data[0].MIKTAR2 > 0) {
+                        $('#MIKTAR').val(data[0].MIKTAR.toFixed(2));
+                        $('#MIKTAR2').val(data[0].MIKTAR2.toFixed(2));
+                        $('#SERI_NO').val(BarkodNo);
+                        $('#ACIK1').val(parseFloat(data[0].ACIK1.replace(",", ".")).toFixed(2).toString().replace(".", ","));
+                        $('#ACIK2').val(parseFloat(data[0].ACIK2.replace(",", ".")).toFixed(1).toString().replace(".", ","));
+                        $('#ACIK3').val(data[0].ACIK3);
+                        $('#SERI_NO_3').val(data[0].SERI_NO_3);
+                        $('#SERI_NO_4').val(data[0].SERI_NO_4);
+
+                        $('#MIKTAR').prop('max', data[0].MIKTAR.toFixed(2));
+                        $('#MIKTAR2').prop('max', data[0].MIKTAR2.toFixed(2));
+
+                        MiktarGirisKontrolu();
+
+                        if (BarkodKameraAcik) {
+                            BarkodKameraKapat();
+                        }
+
+                        $('#BarkodModal').modal('hide');
+                    }
+                    else {
+                        //DEPO_UYARI: miktar uyarısı
+                    }
+                }
+                else {
+                    Swal.fire({
+                        text: "Aynı barkod no tablo üzerinde mevcut.",
+                        icon: "warning",
+                        showConfirmButton: false,
+                        timer: '1500'
+                    });
+                }
+            }
+        });
+
+        MiktarGirisKontrolu();
+    }
+
+</script>

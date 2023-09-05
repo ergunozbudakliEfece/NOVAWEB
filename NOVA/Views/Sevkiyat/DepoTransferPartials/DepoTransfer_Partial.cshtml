@@ -1,0 +1,1426 @@
+﻿<div class="flex-column px-0 pt-2">
+    <div class="row w-100 d-flex justify-content-start belge-bilgi" style="padding-left:1rem;">
+        <div class="row d-flex justify-content-start align-items-center" style="row-gap:0.5rem;">
+            <div class="col-sm-auto" style="padding-right: 0;"><span>İlgili Belge No: <b id="BELGE_NO">-</b></span></div>
+            <div class="col-sm-auto d-flex justify-content-start align-items-center" style="line-height: normal; gap: 0.5rem;">
+                <div class="form-check form-switch mx-1" style="min-height:0 !important;">
+                    <input class="form-check-input" type="checkbox" id="BELGE_DURUMU" style="transform:Scale(1.25);width:2rem !important;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Belge Durumu</span>" checked disabled>
+                </div>
+
+                <i data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Belgeleri Getir</span>" onclick="BelgeListesi()" class="bi bi-file-earmark-ruled-fill showmodal" style="color:#203289; font-size: x-large;"></i>
+                <i data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Yeni Belge Oluştur</span>" onclick="YeniBelgeOlustur()" id="YeniBelgeOlusturButton" class="bi bi-file-earmark-plus-fill i-disabled" style="color:#203289; font-size: x-large;"></i>
+            </div>
+
+            <div class="col-sm-2 col-12">
+                <div class="form-label-group outline m-0">
+                    <input type="text" id="GIRIS_DEPO" class="form-control" placeholder="GİRİŞ DEPO" autocomplete="off" />
+                    <span><label for="GIRIS_DEPO">GİRİŞ DEPO</label></span>
+                </div>
+            </div>
+            <div class="col-sm-2 col-12">
+                <div class="form-label-group outline m-0">
+                    <input type="text" id="CIKIS_DEPO" class="form-control" placeholder="ÇIKIŞ DEPO" autocomplete="off" />
+                    <span><label for="CIKIS_DEPO">ÇIKIŞ DEPO</label></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ScrollArea" class="modal-body p-0" style="overflow-x:hidden !important;">
+    <div class="container-fluid pt-2" style="overflow-x:hidden !important;">
+        <div class="row gx-2 gy-2">
+            <div class="col-md-5 ms-auto">
+                <div class="form-label-group outline autocomplete m-0">
+                    <input type="text" id="STOK_ADLARI" class="form-control" placeholder="STOK ADLARI" value="" autocomplete="off" disabled />
+                    <span><label for="STOK_ADLARI">STOK ADI</label></span>
+                </div>
+            </div>
+            <div class="col-md-4 ms-auto" style="display:flex;gap:0.5rem;">
+                <div class="col">
+                    <div class="form-label-group outline autocomplete m-0">
+                        <input type="text" id="SERI_NO" class="form-control" placeholder="BARKOD NO" value="" autocomplete="off" />
+                        <span><label for="SERI_NO">BARKOD NO</label></span>
+                    </div>
+                </div>
+                <div class="col">
+                    <button type="button" id="BarkodButton" onclick="BarkodModal()" class="btn btn-primary showmodal" style="width:100%;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Barkod</span>" disabled>
+                        <i class="bi bi-qr-code-scan"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3 ms-auto">
+                <div class="row gx-2 gy-2">
+                    <div class="col">
+                        <button type="button" id="BARKOD_LISTE_BUTTON" onclick="SeriNoListesi()" class="btn btn-primary showmodal" style="width:100%;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seri Listesi</span>" disabled><i class="bi bi-list-ul"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row gx-2 gy-2 mt-3">
+            <div class="col-sm-3 col-6 m-auto">
+                <div class="form-label-group outline m-0">
+                    <input type="number" id="MIKTAR" class="form-control" step="0.01" placeholder="MİKTAR 1" min="0.00" disabled />
+                    <span><label for="MIKTAR">MİKTAR 1</label></span>
+                </div>
+            </div>
+            <div class="col-sm-3 col-6 m-auto">
+                <div class="form-label-group outline m-0">
+                    <input type="text" id="OLCU_BR1" class="form-control" value="" placeholder="ÖLÇÜ BİRİMİ 1" disabled="disabled" />
+                    <span><label for="OLCU_BR1">ÖLÇÜ BİRİMİ 1</label></span>
+                </div>
+            </div>
+            <div class="col-sm-3 col-6 m-auto miktarbirim">
+                <div class="form-label-group outline m-0">
+                    <input type="number" id="MIKTAR2" class="form-control" step="0.01" placeholder="MİKTAR 2" min="0.00" disabled />
+                    <span><label for="MIKTAR2">MİKTAR 2</label></span>
+                </div>
+            </div>
+            <div class="col-sm-3 col-6 m-auto miktarbirim">
+                <div class="form-label-group outline m-0">
+                    <input type="text" id="OLCU_BR2" class="form-control" value="" placeholder="ÖLÇÜ BİRİMİ 2" disabled="disabled" />
+                    <span><label for="OLCU_BR2">ÖLÇÜ BİRİMİ 2</label></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-3">
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button bg-secondary collapsed" style="color:#fff" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">Ek Bilgiler</button>
+                    </h2>
+                    <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body p-3">
+
+                            <div class="row gy-3">
+                                <div class="col-sm">
+                                    <div class="form-label-group outline m-0">
+                                        <input type="text" id="ACIK1" class="form-control" autocomplete="off" value="-" disabled />
+                                        <span><label for="ACIK1">KALINLIK</label></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="form-label-group outline m-0">
+                                        <input type="text" id="ACIK2" class="form-control" autocomplete="off" value="-" disabled />
+                                        <span><label for="ACIK2">GENİŞLİK</label></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="form-label-group outline m-0">
+                                        <input type="text" id="ACIK3" class="form-control" autocomplete="off" value="-" disabled />
+                                        <span><label for="ACIK3">ÜRÜN NO</label></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="form-label-group outline m-0">
+                                        <input type="text" id="SERI_NO_3" class="form-control" autocomplete="off" value="-" disabled />
+                                        <span><label for="SERI_NO_3">KALİTE</label></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="form-label-group outline m-0">
+                                        <input type="text" id="SERI_NO_4" class="form-control" autocomplete="off" value="-" disabled />
+                                        <span><label for="SERI_NO_4">KAPLAMA KALINLIĞI</label></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 gy-2">
+            <div class="col" style="display:none;" id="ekle">
+                <button type="button" id="eklebutton" onclick="KayitEkle()" class="btn btn-primary" style="width:100%;" disabled>EKLE</button>
+            </div>
+            <div class="col" style="display:none;" id="guncelle">
+                <button type="button" id="guncellebutton" onclick="KayitGuncelle()" class="btn btn-primary" style="width: 100%;" disabled>GÜNCELLE</button>
+            </div>
+            <div class="col" style="display:none;" id="iptal">
+                <button type="button" id="iptalbutton" onclick="GuncellemeIptal()" class="btn btn-primary" style="width: 100%;">İPTAL</button>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="card-body p-0">
+                <div id="TempTableToolbar">
+                    <div class="row my-2 gap-2">
+                        <div class="col-sm-auto d-flex justify-content-start gap-2">
+                            <div class="d-flex justify-content-center align-items-center mx-2"><div style="width: 1.25rem; height: 1.25rem; background-color: #e9ebff; margin-right: 0.2rem; "></div>AÇIK</div>
+                            <div class="d-flex justify-content-center align-items-center"><div style="width: 1.25rem; height: 1.25rem; background-color: #FAEAEA; margin-right: 0.2rem; "></div>KAPALI</div>
+                        </div>
+                        <div class="col">
+                            <input class="form-control" type="text" placeholder="Ara" id="customSearchTempTable" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="DepoTransferTable"
+                           data-data="[]"
+                           data-search="true"
+                           data-search-selector="#customSearchTempTable"
+                           data-show-refresh="false"
+                           data-show-toggle="false"
+                           data-show-fullscreen="false"
+                           data-show-columns="false"
+                           data-show-columns-toggle-all="false"
+                           data-detail-view="false"
+                           data-show-export="false"
+                           data-click-to-select="true"
+                           data-minimum-count-columns="2"
+                           data-show-pagination-switch="false"
+                           data-page-size="5"
+                           data-page-list="[5,20,50,100]"
+                           data-pagination="false"
+                           data-id-field="id"
+                           data-show-footer="false"
+                           data-mobile-responsive="true"
+                           data-response-handler="responseHandler"
+                           data-locale="tr-TR"
+                           data-row-style="TabloSatirStili"
+                           data-toggle="table">
+                        <thead>
+                            <tr>
+                                <th data-formatter="NullCheck" data-field="SERI_NO" data-sortable="true" data-halign="center" data-align="center">BARKOD NO</th>
+                                <th data-formatter="NullCheck" data-field="STOK_ADI" data-sortable="true" data-halign="center" data-align="center">STOK ADI</th>
+                                <th data-formatter="MiktarFormatla" data-field="MIKTAR" data-sortable="true" data-halign="center" data-align="center">MİKTAR 1</th>
+                                <th data-formatter="NullCheck" data-field="OLCU_BR1" data-sortable="true" data-halign="center" data-align="center">BİRİM 1</th>
+                                <th data-formatter="MiktarFormatla" data-field="MIKTAR2" data-sortable="true" data-halign="center" data-align="center">MİKTAR 2</th>
+                                <th data-formatter="NullCheck" data-field="OLCU_BR2" data-sortable="true" data-halign="center" data-align="center">BİRİM 2</th>
+                                <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
+                                <th data-formatter="GenislikFormatter" data-field="ACIK2" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
+                                <th data-formatter="NullCheck" data-field="ACIK3" data-sortable="true" data-halign="center" data-align="center">ÜRÜN NO</th>
+                                <th data-formatter="NullCheck" data-field="SERI_NO_3" data-sortable="true" data-halign="center" data-align="center">KALİTE</th>
+                                <th data-formatter="NullCheck" data-field="SERI_NO_4" data-sortable="true" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
+                                <th data-formatter="DepoTransferIslemFormatter" data-halign="center" data-align="center">İŞLEM</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer d-flex justify-content-center align-items-center">
+    <button id="belgekaydetbtn" class="btn btn-primary" type="button" onclick="Kaydet()" disabled>KAYDET</button>
+    <button id="belgesilbtn" class="btn btn-warning" type="button" onclick="Sil()" style="display:none;">SİL</button>
+</div>
+
+
+<script>
+    var KayitTipi = 0;
+    var SayfaTipi = 9;
+
+    var Kayitlar = [];
+    var KayitId = 0;
+
+    var GuncellenenId = -1;
+    var Silinecek_Kayitlar = [];
+
+    var Depolar = [];
+    var GirisDepo = -1;
+    var CikisDepo = -1;
+
+    var SeciliStokKodu = "";
+
+    $(document).ready(() => {
+        DepoGetir();
+        DurumDegisikligi(0);
+        BelgeyiKaydetButonKontrol();
+        EkranBoyutDegisikligi();
+
+        $('#DepoTransferTable').bootstrapTable('destroy');
+        $('#DepoTransferTable').bootstrapTable({ data: Kayitlar });
+
+        BelgeNoGetir().then((data) => {
+            $('#BELGE_NO').html(data);
+        });
+    });
+
+    $(document).on("click", () => {
+        BelgeyiKaydetButonKontrol();
+    });
+
+    function DurumDegisikligi(Durum) {
+        switch (Durum) {
+            case 0:
+                $('#STOK_ADLARI').val('');
+                $('#STOK_ADLARI').prop("disabled", true);
+
+                $('#BarkodButton').prop("disabled", true);
+                $("#BARKOD_LISTE_BUTTON").prop("disabled", true);
+
+                $('#MIKTAR').val("");
+                $("#MIKTAR").prop("disabled", true);
+
+                $('#MIKTAR2').val("");
+                $("#MIKTAR2").prop("disabled", true);
+
+                $("#OLCU_BR1").val("");
+                $("#OLCU_BR2").val("");
+
+                $("#ACIK1").val("");
+                $("#ACIK2").val("");
+                $("#ACIK3").val("");
+
+                $("#SERI_NO_3").val("");
+                $("#SERI_NO_4").val("");
+
+                $("#SERI_NO").val("");
+                $("#SERI_NO").prop("disabled", true);
+
+                BarkodNoOtomatikTamamlama([]);
+                MiktarGirisKontrolu();
+                TabloButonAyarla(0);
+                break;
+            case 1:
+
+                $('#STOK_ADLARI').prop("disabled", true);
+
+                $('#BarkodButton').prop("disabled", true);
+                $("#BARKOD_LISTE_BUTTON").prop("disabled", true);
+
+                $("#MIKTAR").prop("disabled", false);
+                $("#MIKTAR2").prop("disabled", false);
+
+                $("#SERI_NO").prop("disabled", true);
+
+                MiktarGirisKontrolu();
+                TabloButonAyarla(2);
+                break;
+        };
+    }
+
+    function TabloButonAyarla(Durum) {
+        switch (Durum) {
+            case 0:
+                $("#ekle").hide();
+                $("#guncelle").hide();
+                $("#iptal").hide();
+                break;
+            case 1:
+                $("#ekle").show();
+                $("#guncelle").hide();
+                $("#iptal").hide();
+                break;
+            case 2:
+                $("#ekle").hide();
+                $("#guncelle").show();
+                $("#iptal").show();
+                break;
+        };
+    }
+
+    function BelgeyiKaydetButonKontrol() {
+        if (Kayitlar.length > 0) {
+            $('#belgekaydetbtn').prop("disabled", false);
+        }
+        else {
+            $('#belgekaydetbtn').prop("disabled", true);
+        }
+    }
+
+    function StokAdlariGetir() {
+        $.ajax({
+            url: "http://192.168.2.13:83/api/stok/rehber/",
+            type: 'GET',
+            success: function (result) {
+                if (result.length > 0) {
+                    StokAdlariOtomatikTamamlama(result);
+                }
+            }
+        });
+    }
+
+    function BarkodNoGetir(STOK_KODU) {
+        SeciliStokKodu = STOK_KODU;
+
+        var Liste = [];
+
+        $.ajax({
+            url: "http://192.168.2.13:83/api/seri/rehber/" + STOK_KODU,
+            type: 'GET',
+            success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    Liste.push(result[i].SERI_NO);
+                }
+            }
+        }).then(() => {
+            var result = Liste.filter(x => {
+                return !Kayitlar.some(k => k.SERI_NO === x)
+            });
+
+            BarkodNoOtomatikTamamlama(result);
+        });
+
+
+    }
+
+    function DepoGetir() {
+        $.ajax({
+            url: "http://192.168.2.13:83/api/stok/depo",
+            type: 'GET',
+            success: function (result) {
+                if (result.length > 0) {
+                    Depolar = result;
+                    DepoOtomatikTamamlama('GIRIS_DEPO', result);
+                    DepoOtomatikTamamlama('CIKIS_DEPO', result);
+                }
+            }
+        });
+    }
+
+    function BilgileriOku() {
+        return {
+            "ID": KayitId,
+            "ACTIVE": true,
+            "STOK_ADI": $('#STOK_ADLARI').val(),
+            "STOK_KODU": SeciliStokKodu,
+            "MIKTAR": LineCheck($("#MIKTAR").val()),
+            "OLCU_BR1": LineCheck($("#OLCU_BR1").val()),
+            "MIKTAR2": LineCheck($("#MIKTAR2").val()),
+            "OLCU_BR2": LineCheck($("#OLCU_BR2").val()),
+            "SERI_NO": LineCheck($("#SERI_NO").val()),
+            "ACIK1": LineCheck($("#ACIK1").val()),
+            "ACIK2": LineCheck($("#ACIK2").val()),
+            "ACIK3": LineCheck($("#ACIK3").val()),
+            "SERI_NO_3": LineCheck($("#SERI_NO_3").val()),
+            "SERI_NO_4": LineCheck($("#SERI_NO_4").val()),
+            "ACIKLAMA_4": null,
+            "ACIKLAMA_5": null,
+            "GIRIS_DEPO": GirisDepo,
+            "CIKIS_DEPO": CikisDepo
+        };
+    }
+
+    function BilgileriDoldur(Kayit) {
+        $('#STOK_ADLARI').val(Kayit.STOK_ADI);
+
+        $('#SERI_NO').val(Kayit.SERI_NO);
+
+        $("#MIKTAR").val(Kayit.MIKTAR);
+        $("#OLCU_BR1").val(Kayit.OLCU_BR1);
+        $("#MIKTAR2").val(Kayit.MIKTAR2);
+        $("#OLCU_BR2").val(Kayit.OLCU_BR2);
+
+        $("#ACIK1").val(Kayit.ACIK1);
+        $("#ACIK2").val(Kayit.ACIK2);
+        $("#ACIK3").val(Kayit.ACIK3);
+
+        $("#SERI_NO_3").val(Kayit.SERI_NO_3);
+        $("#SERI_NO_4").val(Kayit.SERI_NO_4);
+    }
+
+    function BilgileriGoster(Id) {
+        var Kayit = Kayitlar.filter(x => x.ID == Id);
+
+        if (Kayit.length > 0) {
+            BilgileriDoldur(Kayit[0]);
+            DurumDegisikligi(1);
+
+            GuncellenenId = Kayit[0].ID;
+
+            var GirisDep = Depolar.filter(x => x.DEPO_KODU == Kayit[0].GIRIS_DEPO)[0];
+            var CikisDep = Depolar.filter(x => x.DEPO_KODU == Kayit[0].CIKIS_DEPO)[0];
+
+            GirisDepo = GirisDep.DEPO_KODU;
+            CikisDepo = CikisDep.DEPO_KODU;
+
+            $('#GIRIS_DEPO').val(GirisDep.DEPO_ISMI);
+            $('#CIKIS_DEPO').val(CikisDep.DEPO_ISMI);
+
+            SeciliBarkodVar = true;
+
+            let ESKI_MIKTAR = Kayit[0].MIKTAR;
+            let ESKI_MIKTAR2 = Kayit[0].MIKTAR2;
+
+            $.ajax({
+                url: "http://192.168.2.13:83/api/seri/bakiye/" + Kayit[0].SERI_NO,
+                type: 'GET',
+                success: function (result) {
+                    switch (KayitTipi) {
+                        case 0:
+                            $('#MIKTAR').prop('max', parseInt(result[0].MIKTAR));
+                            $('#MIKTAR2').prop('max', parseInt(result[0].MIKTAR2));
+                            break;
+                        case 1:
+                            $('#MIKTAR').prop('max', parseInt(result[0].MIKTAR) + parseInt(ESKI_MIKTAR));
+                            $('#MIKTAR2').prop('max', parseInt(result[0].MIKTAR2) + parseInt(ESKI_MIKTAR2));
+                            break;
+                    }
+                }
+            });
+        }
+    }
+
+    function AlanlariTemizle()
+    {
+        $('#MIKTAR').val("");
+        $('#MIKTAR2').val("");
+
+        $('#ACIK1').val("");
+        $('#ACIK2').val("");
+        $('#ACIK3').val("");
+
+        $('#SERI_NO_3').val("");
+        $('#SERI_NO_4').val("");
+    }
+</script>
+
+<script>
+    function KayitEkle() {
+        if ($('#SERI_NO').val().trim().length != 0) {
+            Kayitlar.push(BilgileriOku());
+            KayitId += 1;
+
+            DurumDegisikligi(0);
+            $('#STOK_ADLARI').prop("disabled", false);
+
+            $('#DepoTransferTable').bootstrapTable("load", Kayitlar);
+        }
+        else {
+            Swal.fire({
+                text: "Barkod no boş geçilemez.",
+                icon: "error",
+                showConfirmButton: false,
+                timer: '1500'
+            });
+        }
+    }
+
+    function KayitGuncelle() {
+        var Bilgi = BilgileriOku();
+
+        Kayitlar[GuncellenenId].MIKTAR = Bilgi.MIKTAR;
+        Kayitlar[GuncellenenId].OLCU_BR1 = Bilgi.OLCU_BR1;
+        Kayitlar[GuncellenenId].MIKTAR2 = Bilgi.MIKTAR2;
+        Kayitlar[GuncellenenId].OLCU_BR2 = Bilgi.OLCU_BR2;
+        Kayitlar[GuncellenenId].SERI_NO = Bilgi.SERI_NO;
+        Kayitlar[GuncellenenId].ACIK1 = Bilgi.ACIK1;
+        Kayitlar[GuncellenenId].ACIK2 = Bilgi.ACIK2;
+        Kayitlar[GuncellenenId].ACIK3 = Bilgi.ACIK3;
+        Kayitlar[GuncellenenId].SERI_NO_3 = Bilgi.SERI_NO_3;
+        Kayitlar[GuncellenenId].SERI_NO_4 = Bilgi.SERI_NO_4;
+        Kayitlar[GuncellenenId].ACIKLAMA_4 = Bilgi.ACIKLAMA_4;
+        Kayitlar[GuncellenenId].ACIKLAMA_5 = Bilgi.ACIKLAMA_5;
+
+        GuncellenenId = -1;
+
+        $('#DepoTransferTable').bootstrapTable('load', Kayitlar);
+
+        DurumDegisikligi(0);
+    }
+
+    function KayitSil(Id, BarkodNo) {
+        Swal.fire({
+            html: `<b>${BarkodNo}</b><br /> no'lu barkodu silmek istediğinize emin misiniz?`,
+            icon: 'warning',
+            showCancelButton: true,
+            allowEnterKey: false,
+            cancelButtonText: 'HAYIR',
+            cancelButtonColor: '#d33',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'EVET',
+            allowOutsideClick: false,
+            customClass: 'AreYouSureAlert'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Kayitlar = Kayitlar.filter(x => x.ID != Id);
+
+                var Kayit = DuzenlenmemisBelgeler.filter(x => x.BELGE_NO == $('#BELGE_NO').html() && x.SERI_NO == BarkodNo);
+
+                if (Kayit.length > 0) {
+                    Silinecek_Kayitlar.push(BarkodNo);
+                }
+
+                if (Kayitlar.length == 0 && KayitTipi == 1) {
+                    KalemleriSil().then(() => {
+                        setTimeout("YeniBelge()", 50);
+                    });
+                }
+
+                $("#DepoTransferTable").bootstrapTable('load', Kayitlar);
+
+                DurumDegisikligi(0);
+
+                $('#STOK_ADLARI').prop("disabled", false);
+            }
+        });
+    }
+
+    function GuncellemeIptal() {
+        DurumDegisikligi(0);
+        GuncellenenId = -1;
+    }
+
+    let KalemleriSil = async () => {
+        const result = await Promise.all(Silinecek_Kayitlar.map(each => {
+            $.ajax({
+                url: `http://192.168.2.13:83/api/shipping/${$('#BELGE_NO').html()}/${each}`,
+                type: 'DELETE',
+                success: () => {
+                }
+            });
+        }));
+
+        return result;
+    }
+</script>
+
+<script>
+    function Kaydet()
+    {
+        if (GirisDepo != -1 && CikisDepo != -1)
+        {
+            if (Kayitlar.length > 0) {
+
+                KalemleriSil().then(() => {
+                    GirisDepo = -1;
+                    CikisDepo = -1;
+
+                    switch (KayitTipi) {
+                        case 0:
+                            BelgeKaydet();
+                            break;
+                        case 1:
+                            BelgeGuncelle();
+                            break;
+                    };
+                });
+
+            }
+        }
+        else
+        {
+            Swal.fire({
+                text: "Depo seçimi tamamlanmadan kayıt işlemi yapılamaz",
+                icon: "error",
+                showConfirmButton: false,
+                timer: '1500'
+            });
+        }
+    }
+
+    function BelgeKaydet()
+    {
+        var ProcUrl = "http://192.168.2.13:83/api/shipping/" + SayfaTipi;
+
+        var BelgeNoDurumu = false;
+
+        $.getJSON(ProcUrl, function (data) {
+            BelgeNoDurumu = ($('#BELGE_NO').html() == data[0].SIRADAKI_BELGE_NO);
+        }).done(() =>
+        {
+            if (BelgeNoDurumu) {
+                for (var i = 0; i < Kayitlar.length; i++) {
+                    var Item = {
+                        "TYPE": SayfaTipi,
+                        "SIPARIS_NO": 0,
+                        "BELGE_NO": $('#BELGE_NO').html(),
+                        "SERI_NO": Kayitlar[i].SERI_NO,
+                        "STOK_KODU": Kayitlar[i].STOK_KODU,
+                        "MIKTAR1": parseFloat(Kayitlar[i].MIKTAR),
+                        "OLCU_BR1": Kayitlar[i].OLCU_BR1,
+                        "MIKTAR2": parseFloat(Kayitlar[i].MIKTAR2),
+                        "OLCU_BR2": Kayitlar[i].OLCU_BR2,
+                        "ACIK1": Kayitlar[i].ACIK1,
+                        "ACIK2": Kayitlar[i].ACIK2,
+                        "ACIK3": Kayitlar[i].ACIK3,
+                        "SERI_NO_3": Kayitlar[i].SERI_NO_3,
+                        "SERI_NO_4": Kayitlar[i].SERI_NO_4,
+                        "ACIKLAMA_4": Kayitlar[i].ACIKLAMA_4,
+                        "ACIKLAMA_5": Kayitlar[i].ACIKLAMA_5,
+                        "GIRIS_DEPO": Kayitlar[i].GIRIS_DEPO,
+                        "CIKIS_DEPO": Kayitlar[i].CIKIS_DEPO,
+                        "INS_USER_ID": @Request.Cookies["UserId"].Value,
+                        "UPD_USER_ID": @Request.Cookies["UserId"].Value,
+                        "EXP_1": null,
+                        "EXP_2": null,
+                        "EXP_3": null,
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: "http://192.168.2.13:83/api/shipping",
+                        data: JSON.stringify(Item),
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        success: function () {
+                            Swal.fire(
+                                'Başarılı!',
+                                'İşlem başarılı',
+                                'success'
+                            );
+
+                            YeniBelge();
+                        },
+                        error: function (msg) {
+                            Swal.fire(
+                                'Hata Oluştu!',
+                                'Girilen Stok Miktarlarını Kontrol Ediniz.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            }
+            else
+            {
+                BelgeNoDegisti();
+            }
+        });
+    }
+
+    function BelgeGuncelle()
+    {
+        for (var i = 0; i < Kayitlar.length; i++)
+        {
+            var Item = {
+                "TYPE": SayfaTipi,
+                "SIPARIS_NO": 0,
+                "BELGE_NO": $('#BELGE_NO').html(),
+                "SERI_NO": Kayitlar[i].SERI_NO,
+                "CARI_ISIM": Kayitlar[i].CARI_ISIM,
+                "STOK_KODU": Kayitlar[i].STOK_KODU,
+                "MIKTAR1": parseFloat(Kayitlar[i].MIKTAR),
+                "OLCU_BR1": Kayitlar[i].OLCU_BR1,
+                "MIKTAR2": parseFloat(Kayitlar[i].MIKTAR2),
+                "OLCU_BR2": Kayitlar[i].OLCU_BR2,
+                "ACIK1": Kayitlar[i].ACIK1,
+                "ACIK2": Kayitlar[i].ACIK2,
+                "ACIK3": Kayitlar[i].ACIK3,
+                "SERI_NO_3": Kayitlar[i].SERI_NO_3,
+                "SERI_NO_4": Kayitlar[i].SERI_NO_4,
+                "ACIKLAMA_4": Kayitlar[i].ACIKLAMA_4,
+                "ACIKLAMA_5": Kayitlar[i].ACIKLAMA_5,
+                "UPD_USER_ID": @Request.Cookies["UserId"].Value,
+                "EXP_1": null,
+                "EXP_2": null,
+                "EXP_3": null,
+                "GIRIS_DEPO": Kayitlar[i].GIRIS_DEPO,
+                "CIKIS_DEPO": Kayitlar[i].CIKIS_DEPO
+            };
+
+            $.ajax({
+                    type: "PUT",
+                url: "http://192.168.2.13:83/api/shipping/" + Kayitlar[i].INC_KEY,
+                    data: JSON.stringify(Item),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                success: function (data) {
+                    Swal.fire({
+                        text: "İşlem başarılı.",
+                        icon: "success",
+                        showConfirmButton: true,
+                        confirmButtonText: 'TAMAM',
+                        confirmButtonColor: '#3085d6',
+                    });
+
+                    YeniBelge();
+                },
+                error: function (msg)
+                {
+                    Swal.fire({
+                        text: "Hata oluştu!<br>",
+                        icon: "error",
+                        showConfirmButton: true,
+                        confirmButtonText: 'TAMAM',
+                        confirmButtonColor: '#d33',
+                    });
+                }
+                });
+        }
+    }
+
+    function Sil()
+    {
+        Swal.fire({
+            html: `<b>${$('#BELGE_NO').html()}</b><br/> no'lu form silinecek, emin misiniz?`,
+            icon: 'warning',
+            showCancelButton: true,
+            cancelButtonText: 'HAYIR',
+            cancelButtonColor: '#d33',
+            confirmButtonColor: '#3085d6',
+            allowEnterKey: false,
+            confirmButtonText: 'EVET',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var Url = `http://192.168.2.13:83/api/shipping/${$('#BELGE_NO').html()}/0`;
+
+                $.ajax({
+                    url: Url,
+                    type: 'DELETE',
+                    success: function (result) {
+                        Swal.fire({
+                            text: "İşlem başarılı.",
+                            icon: "success",
+                            showConfirmButton: true,
+                            confirmButtonText: 'TAMAM',
+                            confirmButtonColor: '#3085d6',
+                        });
+
+                        YeniBelge();
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+<script>
+    $('#MIKTAR').on('change paste input', (e) => { LimitedDecimal(e, 2); MiktarGirisKontrolu(); });
+    $('#MIKTAR').on('blur', (e) => { FormatDecimal(e, 2, true); });
+
+    $('#MIKTAR2').on('change paste input', (e) => { LimitedDecimal(e, 2, true); MiktarGirisKontrolu(); });
+    $('#MIKTAR2').on('blur', (e) => { FormatDecimal(e, 2, true); });
+
+    function MiktarGirisKontrolu() {
+        var Durum = $("#MIKTAR").val() == 0 || $("#MIKTAR2").val() == 0;
+
+        $('#eklebutton').prop('disabled', Durum);
+        $('#guncellebutton').prop('disabled', Durum);
+    }
+
+    function LimitedDecimal(e, Limit, StartWithZero = false) {
+        if (!StartWithZero && e.currentTarget.value.at(0) == "0") {
+            e.currentTarget.value = e.currentTarget.value.slice(-1, e.currentTarget.value.length);
+        }
+
+        if (!isNaN(parseFloat(e.currentTarget.value))) {
+            var point = e.currentTarget.value.toString().indexOf('.');
+            var decimalLimit = e.currentTarget.value.length > point + (Limit + 1);
+
+            if (point >= 0 && decimalLimit) {
+                e.currentTarget.value = e.currentTarget.value.slice(0, -1);
+            }
+
+            if (parseFloat(e.currentTarget.value) < parseFloat(e.currentTarget.min)) {
+                e.currentTarget.value = e.currentTarget.min;
+            }
+            else if (parseFloat(e.currentTarget.value) > parseFloat(e.currentTarget.max)) {
+                e.currentTarget.value = e.currentTarget.max;
+            }
+        }
+        else {
+            e.currentTarget.value = null;
+        }
+    }
+
+    function FormatDecimal(e, Fixed, SetMin = false) {
+        if (!isNaN(parseFloat(e.currentTarget.value))) {
+            e.currentTarget.value = parseFloat(e.currentTarget.value).toFixed(Fixed);
+        }
+        else {
+            if (SetMin) {
+                e.currentTarget.value = e.currentTarget.min;
+            }
+            else {
+                e.currentTarget.value = null;
+            }
+        }
+    }
+
+    function LineCheck(Value) {
+        return Value == "-" ? null : Value;
+    }
+
+    function NullCheck(Value) {
+        return (Value == null) || (Value == "") ? "-" : Value;
+    }
+
+    function MiktarFormatla(value) {
+        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function KalinlikFormatter(value, index, row) {
+        if (value?.toString().trim().length > 0) {
+            return GenislikKalinlikFormat(parseFloat(value.toString().replace(',', '.')).toFixed(2).toString());
+        }
+
+        return "-";
+    }
+
+    function GenislikFormatter(value, index, row) {
+        if (value?.toString().trim().length > 0) {
+            return GenislikKalinlikFormat(parseFloat(value.toString().replace(',', '.')).toFixed(1).toString());
+        }
+
+        return "-";
+    }
+
+    function GenislikKalinlikFormat(value) {
+        return value.replace(".", ",");
+    }
+
+    function DepoTransferIslemFormatter(value, index, row) {
+        if (KayitTipi == 1) {
+            if (!index.ACTIVE) {
+                return `<div class="d-flex justify-content-center align-items-center" style="gap:0.7rem;"><div><i class="bi bi-file-earmark-x-fill i-disabled" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Sil</span>"></i></div></div>`;
+            }
+        }
+
+        return `<div class="d-flex justify-content-center align-items-center" style="gap:0.7rem;"><div onclick="KayitSil(${index.ID}, '${index.SERI_NO}')"><i class="bi bi-file-earmark-x-fill" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Sil</span>"></i></div></div>`;
+    }
+
+    function TabloSatirStili(row, index) {
+        if (row.ACTIVE) {
+            return {
+                css: {
+                    "background-color": '#e9ebff'
+                }
+            }
+        }
+
+        return {
+            css: {
+                "background-color": '#FAEAEA'
+            }
+        }
+    }
+
+    function BarkodNoTablodaVarMi(BarkodNo) {
+        var Kayit = Kayitlar.filter(x => x.SERI_NO == BarkodNo);
+
+        return Kayit.length > 0 ? true : false;
+    }
+
+    function KayitDepolariDegistir() {
+        for (var i = 0; i < Kayitlar.length; i++) {
+            Kayitlar[i].GIRIS_DEPO = GirisDepo;
+            Kayitlar[i].CIKIS_DEPO = CikisDepo;
+        }
+    }
+
+    window.addEventListener('resize', () => {
+        EkranBoyutDegisikligi();
+    });
+
+    function EkranBoyutDegisikligi() {
+        width = window.innerWidth;
+
+        if (width <= 562) {
+            $(".full-modal").removeClass("modal-xl");
+            $(".full-modal").addClass("modal-fullscreen");
+        }
+        else {
+            $(".full-modal").removeClass("modal-fullscreen");
+            $(".full-modal").addClass("modal-xl");
+        }
+    }
+</script>
+
+<script>
+    function StokAdlariOtomatikTamamlama(arr) {
+        var currentFocus;
+
+        var inp = document.getElementById('STOK_ADLARI');
+
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value.trim();
+
+            closeAllLists();
+
+            if (!val) {
+                AlanlariTemizle();
+                DurumDegisikligi(0);
+
+                $('#BarkodButton').prop("disabled", false);
+
+                return false;
+            }
+
+            currentFocus = -1;
+
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+
+            this.parentNode.appendChild(a);
+
+            var itemNumber = 0;
+
+            for (let i = 0; i < arr.length; i++) {
+
+                if ((arr[i].STOK_ADI.substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1 || arr[i].STOK_KODU.substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1) && itemNumber < 5) {
+                    b = document.createElement("DIV");
+
+                    b.innerHTML = "<strong>" + arr[i].STOK_ADI.substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].STOK_ADI.substr(val.length);
+
+                    b.innerHTML += "<input type='hidden' kod='" + arr[i].STOK_KODU + "' value='" + arr[i].STOK_ADI + "'>";
+
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+
+                        if (inp.value.trim().length !== 0) {
+                            $("#SERI_NO").prop("disabled", false);
+                            $("#BARKOD_LISTE_BUTTON").prop("disabled", false);
+                            $('#BarkodButton').prop("disabled", false);
+
+                            $("#OLCU_BR1").val(arr[i].OLCU_BR1);
+                            $("#OLCU_BR2").val(arr[i].OLCU_BR2);
+
+                            BarkodNoGetir(this.getElementsByTagName("input")[0].getAttribute("kod"));
+                        }
+
+                        closeAllLists();
+                    });
+
+                    itemNumber = itemNumber + 1;
+
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+
+                currentFocus++;
+
+                addActive(x);
+            } else if (e.keyCode == 38) {
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+
+    function BarkodNoOtomatikTamamlama(arr) {
+        var currentFocus;
+        var inp = document.getElementById('SERI_NO');
+
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value.trim();
+
+            closeAllLists();
+            if (!val) {
+                AlanlariTemizle();
+
+                $('#MIKTAR').prop("disabled", true);
+                $('#MIKTAR2').prop("disabled", true);
+
+                $('#BarkodButton').prop("disabled", false);
+                $("#BARKOD_LISTE_BUTTON").prop("disabled", false);
+
+                TabloButonAyarla(0);
+
+                return false;
+            }
+            currentFocus = -1;
+
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+
+            this.parentNode.appendChild(a);
+
+            var itemNumber = 0;
+
+            for (i = 0; i < arr.length; i++) {
+
+                if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase() && itemNumber < 5) {
+                    b = document.createElement("DIV");
+
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+
+                        if (inp.value.trim().length !== 0) {
+                            BarkodBakiyeGetir(this.getElementsByTagName("input")[0].value);
+
+                            $('#MIKTAR').prop("disabled", true);
+                            $('#MIKTAR2').prop("disabled", true);
+
+                            $('#BarkodButton').prop("disabled", true);
+                            $("#BARKOD_LISTE_BUTTON").prop("disabled", true);
+
+                            TabloButonAyarla(1);
+                        }
+
+                        closeAllLists();
+                    });
+
+                    itemNumber = itemNumber + 1;
+
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+
+                currentFocus++;
+
+                addActive(x);
+            } else if (e.keyCode == 38) {
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+
+    function DepoOtomatikTamamlama(id, arr) {
+        var currentFocus;
+
+        var inp = document.getElementById(id);
+
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value.trimLeft();
+
+            this.value = val.toUpperCase();
+
+            closeAllLists();
+
+            if (!val) {
+                AlanlariTemizle();
+                DurumDegisikligi(0);
+
+                if (id == 'GIRIS_DEPO') {
+                    GirisDepo = -1;
+                }
+                else if (id == 'CIKIS_DEPO') {
+                    CikisDepo = -1;
+                }
+
+                return false;
+            }
+
+            currentFocus = -1;
+
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+
+            this.parentNode.appendChild(a);
+
+            var itemNumber = 0;
+
+            for (let i = 0; i < arr.length; i++) {
+
+                if ((arr[i].DEPO_ISMI.substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1 || arr[i].DEPO_KODU.toString().substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1) && itemNumber < 5) {
+                    b = document.createElement("DIV");
+
+                    b.innerHTML = "<strong>" + arr[i].DEPO_ISMI.substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].DEPO_ISMI.substr(val.length);
+
+                    b.innerHTML += "<input type='hidden' kod='" + arr[i].DEPO_KODU + "' value='" + arr[i].DEPO_ISMI + "'>";
+
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+
+                        if (inp.value.trim().length !== 0) {
+                            if (id == 'GIRIS_DEPO') {
+                                GirisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
+                            }
+                            else if (id == 'CIKIS_DEPO') {
+                                StokAdlariGetir();
+                                CikisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
+                            }
+
+                            if (GirisDepo != -1 && CikisDepo != -1) {
+                                if (KayitTipi == 0) {
+                                    $('#STOK_ADLARI').prop("disabled", false);
+                                }
+                            }
+
+                            KayitDepolariDegistir();
+                        }
+
+                        closeAllLists();
+                    });
+
+                    itemNumber = itemNumber + 1;
+
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+
+                currentFocus++;
+
+                addActive(x);
+            } else if (e.keyCode == 38) {
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+
+    $('#GIRIS_DEPO').on("blur", (e) => {
+        setTimeout(() => {
+            var val = e.target.value.trimRight();
+
+            if (val) {
+                var FiltreliDepolar = Depolar.filter(x => x.DEPO_ISMI == val.toUpperCase());
+
+                if (FiltreliDepolar.length > 0) {
+                    GirisDepo = FiltreliDepolar[0].DEPO_KODU;
+
+                    if (GirisDepo != -1 && CikisDepo != -1) {
+                        if (KayitTipi == 0)
+                        {
+                            $('#STOK_ADLARI').prop("disabled", false);
+                        }
+                    }
+                }
+                else {
+                    e.target.value = null;
+                    GirisDepo = -1;
+                }
+            }
+
+            $('#GIRIS_DEPOautocomplete-list').html('');
+        }, 100);
+    });
+
+    $('#CIKIS_DEPO').on("blur", (e) => {
+        setTimeout(() => {
+            var val = e.target.value.trimRight();
+
+            if (val) {
+                var FiltreliDepolar = Depolar.filter(x => x.DEPO_ISMI == val.toUpperCase());
+
+                if (FiltreliDepolar.length > 0) {
+                    CikisDepo = FiltreliDepolar[0].DEPO_KODU;
+
+                    if (GirisDepo != -1 && CikisDepo != -1) {
+                        if (KayitTipi == 0) {
+                            $('#STOK_ADLARI').prop("disabled", false);
+                        }
+                    }
+                }
+                else {
+                    e.target.value = null;
+                    CikisDepo = -1;
+                }
+            }
+
+            $('#CIKIS_DEPOautocomplete-list').html('');
+        }, 100);
+    });
+</script>
+
+<style>
+    .autocomplete {
+        position: relative;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        top: 100%;
+        left: 0;
+        right: 0;
+        height: auto;
+    }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
+
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+</style>
+
+<style>
+    @@media (max-width: 562px) {
+        .miktarbirim {
+            margin-top: 1rem !important;
+        }
+    }
+
+    @@media (min-width: 562px) {
+        .miktarbirim {
+            margin-top: 0 !important;
+        }
+
+        .modal-ch {
+            height: 90vh !important;
+        }
+
+        .modal-belge {
+            height: 65vh !important;
+        }
+    }
+</style>
+
+<style>
+    @@media (min-width: 768px) {
+        .modal-xl {
+            width: 90%;
+            max-width: 1500px;
+        }
+    }
+
+    @@media (max-width: 562px) {
+        #DepoTransferTable, #DepoTransferBelgeTable, .belgedetailtbl {
+            font-size: small;
+        }
+
+        .belge-bilgi {
+            font-size: small;
+        }
+    }
+
+    .fixed-table-toolbar .search {
+        width: 100%;
+    }
+</style>
+
+<style>
+    .table:not(caption) > * > * {
+        padding: 0 !important;
+    }
+
+    .no, .detail-view {
+        --bs-table-bg: transparent;
+        --bs-table-accent-bg: transparent;
+        --bs-table-striped-color: #697a8d;
+        --bs-table-striped-bg: rgba(105, 108, 255, 0.07);
+        --bs-table-active-color: #697a8d;
+        --bs-table-active-bg: rgba(67, 89, 113, 0.1);
+        --bs-table-hover-color: #697a8d;
+        --bs-table-hover-bg: rgba(105, 108, 255, 0.03);
+    }
+
+    #DepoTransferBelgeTable .card-views .card-view .card-view-value {
+        margin-left: 0 !important;
+        padding-left: 5px !important;
+        white-space: normal !important;
+    }
+
+    #DepoTransferBelgeTable .card-views .card-view {
+        margin-top: 0 !important;
+    }
+
+    .belgedetailtbl .card-views .card-view .card-view-value {
+        margin-left: 0 !important;
+        padding-left: 5px !important;
+        white-space: normal !important;
+    }
+
+    .belgedetailtbl .card-views .card-view {
+        margin-top: 0 !important;
+    }
+</style>
