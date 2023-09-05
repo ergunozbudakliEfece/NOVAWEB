@@ -24,6 +24,15 @@
     <link rel="stylesheet" href="https://lipis.github.io/bootstrap-sweetalert/lib/sweet-alert.css">
 
     <style>
+        .framebody {
+            padding: 0 !important;
+        }
+        td {
+            font-size: 11px !important;
+        }
+        .container-fluid {
+            padding: 0 !important;
+        }
         ::-webkit-scrollbar {
             width: 20px;
         }
@@ -152,7 +161,7 @@
         table.pvtTable thead tr th, table.pvtTable tbody tr th {
             background-color: transparent;
             border: 1px solid #CDCDCD;
-            font-size: 8pt;
+            font-size: 11pt;
             padding: 5px;
         }
     </style>
@@ -196,7 +205,7 @@
         <div class="row"><div class="col">@ViewBag.Hata</div></div>
     }
     <script>
-        if (localStorage.list != null && localStorage.list != "null") {
+        if (localStorage.list11 != null && localStorage.list11 != "null") {
             document.body.style.cursor = 'wait';
         } else {
             document.body.style.cursor = 'default';
@@ -243,13 +252,13 @@
                                     <tbody>
                                         <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
                                             <th class="p-1"></th>
-                                            <th class="p-1 text-center" style="font-size: 11px;">ORAN</th>
-                                            <th class="p-1 text-center" style="font-size: 11px;">MAKİNE</th>
-                                            <th class="p-1 text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
-                                            <th class="p-1 text-center" style="font-size: 11px;">PAKET MİKTARI</th>
-                                            <th class="p-1 text-center" style="font-size: 11px;">PAKET ADETİ</th>
-                                            <th class="p-1 text-center" style="font-size: 11px">AĞIRLIK</th>
-                                            <th class="p-1 text-center" style="font-size: 11px">MÜŞTERİ</th>
+                                            <th class="p-1 text-center" style="font-size: 12px;">ORAN</th>
+                                            <th class="p-1 text-center" style="font-size: 12px;">MAKİNE</th>
+                                            <th class="p-1 text-center" style="font-size: 12px;">STOK ÖLÇÜLERİ</th>
+                                            <th class="p-1 text-center" style="font-size: 12px;">PAKET MİKTARI</th>
+                                            <th class="p-1 text-center" style="font-size: 12px;">PAKET ADETİ</th>
+                                            <th class="p-1 text-center" style="font-size: 12px">AĞIRLIK</th>
+                                            <th class="p-1 text-center" style="font-size: 12px">MÜŞTERİ</th>
                                         </tr>
                                         <tr>
                                             <td class="text-center p-1">1</td>
@@ -325,7 +334,7 @@
                                             </td>
 
                                             <td class="p-1 text-center">
-                                                <select class="js-example-basic-single" style="width:120px" onchange="sc(this)" disabled>
+                                                <select class="js-example-basic-single" style="width:200px" onchange="sc(this)" disabled>
                                                     <option selected disabled>STOK SEÇİN</option>
                                                     @foreach (var item in ViewBag.Stok_Adlari)
                                                     {
@@ -410,7 +419,7 @@
                                             </td>
                                             <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" readonly /></td>
                                             <td class="text-center p-1" id="deneme">
-                                                <select class="select2-single1" style="width:120px">
+                                                <select class="select2-single1" style="width:200px">
                                                     <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
                                                 </select>
                                             </td>
@@ -737,7 +746,7 @@
                                                     $("#pivotoutput2").pivot(
                                                         takiplist2,
                                                         {
-                                                            rows: ["TOPLAM", "STOKADI", "TOPLAM_AGIRLIK"]
+                                                            rows: ["TOPLAM", "STOKADI", "TOPLAM_AGIRLIK","TOPLAM_ADET"]
 
 
                                                         }, false, "tr")
@@ -773,22 +782,27 @@
                                                 if (list2[i].STOKADI != "-") {
                                                     var l = list2.filter(x => x.STOKADI == list2[i].STOKADI);
                                                     var toplam = 0;
+                                                    var toplamadet = 0;
                                                     for (let a = 0; a < l.length; a++) {
                                                         toplam = toplam + parseInt(l[a].AGIRLIK)
+                                                        toplamadet = parseInt(l[0].ADET)
                                                     }
-                                                    takiplist2.push({ TOPLAM: l.length, STOKADI: list2[i].STOKADI, TOPLAM_AGIRLIK:toplam.toLocaleString() })
+                                                    takiplist2.push({ TOPLAM: l.length, STOKADI: list2[i].STOKADI, TOPLAM_AGIRLIK: toplam.toLocaleString(), TOPLAM_ADET: (toplamadet * l.length).toLocaleString() })
                                                     if (list2[i].REF_STOKADI != "-") {
                                                         var l2 = list2.filter(x => x.REF_STOKADI == list2[i].REF_STOKADI);
                                                         var toplam2 = 0;
+                                                        var toplamadet2 = 0;
                                                         for (let a = 0; a < l2.length; a++) {
                                                             toplam2 = toplam2 + parseInt(l2[a].AGIRLIK)
+                                                            toplamadet2 = parseInt(l2[0].ADET)
                                                         }
-                                                        takiplist2.push({ TOPLAM: l2.length, STOKADI: list2[i].REF_STOKADI, TOPLAM_AGIRLIK: toplam2.toLocaleString() })
+                                                        takiplist2.push({ TOPLAM: l2.length, STOKADI: list2[i].REF_STOKADI, TOPLAM_AGIRLIK: toplam2.toLocaleString(), TOPLAM_ADET: (toplamadet2 * l2.length).toLocaleString() })
                                                     }
                                                 }
 
                                             }
                                             getPivot2()
+                                            localStorage.list11 = JSON.stringify(takiplist2);
                                         })
                                            
                                         
@@ -859,6 +873,7 @@
         }
         function sil() {
             document.body.style.cursor = 'wait';
+            load();
             sayi = 1;
             sonsayi = 1;
             sonsayiref = 1;
@@ -866,13 +881,12 @@
             
             serilist = [];
             
-            load();
+            
         }
         function load() {
 
-            localStorage.list = null;
+            localStorage.list11 = null;
             localStorage.list10 = null;
-            localStorage.list3 = null;
                 $('#card').load(document.URL + ' #card');
                 document.body.style.cursor = 'default';
             };
@@ -886,10 +900,17 @@
 
         function netsisaktar() {
             $("#progress").show();
+            var sp = JSON.parse(localStorage.list10);
+            var newsp = [];
+            for (let i = 0; i < sp.length-1; i++) {
+                newsp.push({ GİRDİ2: sp[i].GIRDI2, ISEMRINO: sp[i].ISEMRINO, STOKADI: sp[i].STOKADI, ADET: sp[i].ADET, AGIRLIK: sp[i].AGIRLIK, REF_ISEMRINO: sp[i].REF_ISEMRINO, REF_STOKADI: sp[i].REF_STOKADI, REF_ADET: sp[i].REF_ADET })
+            }
+
+            
             document.body.style.cursor = 'wait';
             var lis = [];
-            lis = JSON.parse(localStorage.list10);
-            lis = list.splice(list.length - 1, 1);
+            lis = newsp;
+            alert(JSON.stringify(lis))
             $.ajax({
                 url: '@Url.Action("PostTRPZ","IsEmri")',
                 type: 'POST',
@@ -916,9 +937,9 @@
                 load();
             }).done(function ()
           {
-                localStorage.list = null;
+                localStorage.list11 = null;
                 localStorage.list10 = null;
-                localStorage.list3 = null;
+                localstorage.list33 = null;
                 document.body.style.cursor = 'default';
 
             }).error(function () {
@@ -1129,33 +1150,14 @@
 
 
 
-    }
-            var takiplist2 = [];
+            }
+            var takiplist2 = JSON.parse(localStorage.list11);
             var sira2 = 1;
             
             if (p.length > 0) {
 
                 getPivot();
-                for (let i = 0; i < p.length; i++) {
-                    if (p[i].STOKADI != "-") {
-                        var l = p.filter(x => x.STOKADI == p[i].STOKADI);
-                        var toplam = 0;
-                        for (let a = 0; a < l.length; a++) {
-                            toplam = toplam + parseInt(l[a].AGIRLIK)
-                        }
-
-                        takiplist2.push({ TOPLAM: l.length, STOKADI: p[i].STOKADI, TOPLAM_AGIRLIK: toplam.toLocaleString() })
-                        if (p[i].REF_STOKADI != "-") {
-                            var l2 = p.filter(x => x.REF_STOKADI == p[i].REF_STOKADI);
-                            var toplam2 = 0;
-                            for (let a = 0; a < l2.length; a++) {
-                                toplam2 = toplam2 + parseInt(l2[a].AGIRLIK)
-                            }
-                            takiplist2.push({ TOPLAM: l2.length, STOKADI: p[i].REF_STOKADI, TOPLAM_AGIRLIK: toplam2.toLocaleString() })
-                        }
-                    }
-
-                }
+                
                 if (takiplist2.length > 0) {
                     getPivot2();
                 }
@@ -1167,7 +1169,7 @@
                     $("#pivotoutput2").pivot(
                         takiplist2,
                         {
-                            rows: ["TOPLAM", "STOKADI", "TOPLAM_AGIRLIK"]
+                            rows: ["TOPLAM", "STOKADI", "TOPLAM_AGIRLIK","TOPLAM_ADET"]
 
 
                         }, false, "tr")
@@ -1238,8 +1240,8 @@
 
             var top = 0;
 
-            if (localStorage.list != "null" && localStorage.list!=null ) {
-                var j = JSON.parse(localStorage.list);
+            if (localStorage.list11 != "null" && localStorage.list11!=null ) {
+                var j = JSON.parse(localStorage.list11);
                 var son = j.filter(x => x.GIRDI1 == seri.value);
                 if (son.length > 0) {
                     var s = [];
@@ -1568,7 +1570,7 @@
                                  var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
                                  var sl = document.createElement("select");
                                  sl.className = "js-example-basic-single";
-                                 sl.style = "width: 120px";
+                                 sl.style = "width: 200px";
                                  sl.name = "state";
                                  var op = document.createElement("option");
                                  op.innerHTML = "STOK SEÇİN";

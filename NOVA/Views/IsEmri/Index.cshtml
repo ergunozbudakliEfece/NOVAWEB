@@ -2,7 +2,7 @@
 
 
 @{
-    Layout = "/Views/Shared/_Layout_isemri.cshtml";
+    Layout = "/Views/Shared/_Layout_common.cshtml";
 }
 
 @model NOVA.Models.MSIPAcik
@@ -137,6 +137,16 @@
         #pivotoutput .pvtGrandTotal {
             display: none;
         }
+
+        @@media only screen and (max-width: 760px),(min-device-width: 768px) and (max-device-width: 1024px) {
+            #div1, #div3 {
+                font-size: 10px !important;
+            }
+        }
+
+        .container-fluid {
+            padding: 0 !important;
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -188,6 +198,7 @@
         .form-switch .form-check-input:checked {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%2867, 89, 113, 0.3%29'/%3e%3c/svg%3e");
         }
+
         html {
             --color: linear-gradient(to right, #a4c1f5 0%, #7fb0f5 51%, #b9d0fa 100%);
             --color3: linear-gradient(to right, #d2e0fa 0%, #c2d4ed 51%, #d0def7 100%);
@@ -196,6 +207,7 @@
             --div3color: black;
             --div1color: black;
         }
+
         #vert_menu {
             overflow: hidden;
             width: 100%;
@@ -244,7 +256,7 @@
 
 
 
-            
+
 
             #vert_menu #div2::after {
                 content: "";
@@ -269,13 +281,13 @@
                 z-index: 2;
             }
 
-           
+
 
             #vert_menu #div1:hover {
                 background: var(--div1hover);
             }
 
-               
+
 
             #vert_menu #div2:hover {
                 background: var(--div2hover);
@@ -293,15 +305,15 @@
                 background: var(--div3hover);
             }
 
-               
 
-          
+
+
 
             #vert_menu #div2::after {
                 z-index: 2;
             }
 
-           
+
 
         ul {
             list-style-type: none;
@@ -322,27 +334,83 @@
         <div class="centercontent" id="content" style="display:unset">
             <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
         </div>
-        <div class="row d-flex">
-            @*<div class="col-sm">
-            <div class="btn-group" role="group" aria-label="Basic radio toggle button group" id="grup1" style="margin-left:7%;">
-                <button type="button" id="hammaddeli" class="btn btn-outline-primary" onclick="degistir(1)">Hammaddeli İş Emri</button>
-                <button type="button" id="hammaddesiz" class="btn btn-outline-primary" onclick="degistir(2)">Hammaddesiz İş Emri</button>
-            </div>
-        </div>*@
-            <div class="row mt-1">
-                <div class="col p-0">
-                    <ul id="vert_menu" style="width: 100%; margin-left: 0; padding-left: 8%;">
-                        <li onclick="degistir(1)" style="width:33%"><a id="div1" style="width:100%" class="current">Hammaddeli İş Emri</a></li>
-                        <li onclick="degistir(2)" style="width:33%"><a id="div3" style="width:100%" class="current">Hammaddesiz İş Emri</a></li>
-                    </ul>
+
+        <div class="row">
+            <div class="col d-none" style="font-size:14px">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                    <label class="form-check-label" for="inlineRadio1">Dilme - Trapez</label>
                 </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" checked>
+                    <label class="form-check-label" for="inlineRadio2">Diğer</label>
+                </div>
+            </div>
+            <div class="col">
+                <a class="nav-link dropdown-toggle hide-arrow nav-align-right" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <div class="avatar avatar-online">
+                        @{
+                            string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                        }
+                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                        </object>
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href='@Url.Action("Index","Profil")'>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar avatar-online">
+                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
+                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
+                                        </object>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    @if (@Request.Cookies["Name"] != null)
+                                    {
+                                        <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
+                                        <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-semibold d-block">Test</span>
+                                        <small class="text-muted">Yetki: Test</small>
+                                    }
 
+                                </div>
+                            </div>
+                        </a>
+                    </li>
 
-
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                           data-bs-target="#cikis">
+                            <i class="bx bx-power-off me-2"></i>
+                            <span class="align-middle">Oturumu Kapat</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
+        <div class="row mt-1">
+            <div class="col p-0">
+                <ul id="vert_menu" style="width: 100%; margin-left: 0;padding:0 !important">
+                    <li onclick="degistir(1)" style="width:50%"><a id="div1" style="width:100%" class="current">Hammaddeli İş Emri</a></li>
+                    <li onclick="degistir(2)" style="width:50%"><a id="div3" style="width:100%" class="current">Hammaddesiz İş Emri</a></li>
+                </ul>
+            </div>
 
-        <iframe id="frame1" loading="lazy" style="width: 100%; height: 48em" src="@Url.Action("Is","IsEmri")"></iframe>
+
+
+        </div>
+        <div class="row">
+            <div class="col p-0">
+                <iframe id="frame1" loading="lazy" style="width: 100%; height: 48em" src="@Url.Action("Is","IsEmri")"></iframe>
+            </div>
+        </div>
     </div>
     <script>
         function bodyclick() {
@@ -366,11 +434,11 @@
             $("#content").show();
             var src = document.getElementById("frame1").getAttribute("src");
             if (val == 2) {
-               
+
                 document.documentElement.style.cssText = "--color: linear-gradient(to right, #d2e0fa 0%, #c2d4ed 51%, #d0def7 100%); --color3: linear-gradient(to right, #a4c1f5 0%, #7fb0f5 51%, #b9d0fa 100%);--div1hover: linear-gradient(to right, #c3d6f7 0%, #b2cbed 51%, #c4d5f5 100%); --div3hover: linear-gradient(to right, #aec7f5 0%, #8cb7f5 51%, #c3d6fa 100%); --div3color: black; --div1color: black;"
                 $('[id*=frame1]').attr('src', '@Url.Action("Test","IsEmri")');
             } else {
-                
+
                 document.documentElement.style.cssText = "--color: linear-gradient(to right, #a4c1f5 0%, #7fb0f5 51%, #b9d0fa 100%); --color3: linear-gradient(to right, #d2e0fa 0%, #c2d4ed 51%, #d0def7 100%);--div1hover: linear-gradient(to right, #aec7f5 0%, #8cb7f5 51%, #c3d6fa 100%); --div3hover: linear-gradient(to right, #c3d6f7 0%, #b2cbed 51%, #c4d5f5 100%); --div3color: black; --div1color: black;"
                 $('[id*=frame1]').attr('src', '@Url.Action("Is","IsEmri")');
             }
@@ -378,7 +446,7 @@
         }
     </script>
 
-   
+
 </body>
 
 </html>
