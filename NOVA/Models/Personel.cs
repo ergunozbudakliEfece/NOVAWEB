@@ -40,6 +40,14 @@ namespace NOVA.Models
         public DateTime? MEVCUT_IS_ILK_TARIH { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? IS_CIKIS_TARIH { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? MEVCUT_IS_ILK_TARIH2 { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? IS_CIKIS_TARIH2 { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? MEVCUT_IS_ILK_TARIH3 { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? IS_CIKIS_TARIH3 { get; set; }
         public string CALISILAN_BIRIM { get; set; } = null;
         public string GOREV { get; set; }
         [Column(TypeName = "datetime")]

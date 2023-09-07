@@ -768,7 +768,7 @@ namespace NOVA.Controllers
                     Isemri1.RefIsEmriNo = isemridis[i].REF_ISEMRINO;
                     Isemri1.DepoKodu = 45;
                     Isemri1.CikisDepoKodu = 45;
-                    Isemri1.SeriNo = isemri[i].GIRDI2;
+                    Isemri1.SeriNo = isemridis[i].GIRDI2;
                     Isemri1.SeriNo2 = isemridis[i].GENISLIK;
                     double mik = 0;
                     if (isemridis[i].AGIRLIK.Contains('.'))

@@ -703,11 +703,11 @@
                                                 <script>
 
                                                     var oraninput = document.getElementById("oran1");
-                                                    oraninput.oninput = function () {
+                                                    oraninput.onblur = function () {
                                                         if (this.value >= 1) {
                                                             this.value = "1.00";
-                                                        } else if (this.value < 0) {
-                                                            this.value = "0.00";
+                                                        } else if (this.value <= 0) {
+                                                            this.value = "0.01";
                                                         }
 
                                                     };
@@ -1028,453 +1028,481 @@
                                 <script>
                                     var oncekiadet = 0;
                                     function kaydet() {
-                                        oncekiadet = 0;
-                                        document.body.style.cursor = 'wait';
+                                        var ser = $("#stokadi").val();
                                         
-                                        var tam = document.getElementById("agirlik").value.split("/")[0].split('.').join('');
-
-                                        var isemrinput = document.getElementById("1input").value;
-                                        var sackod = document.getElementById("seri").value;
-                                        var hamor = document.getElementById("hamoran").value;
-                                        var t = document.getElementById("test");
-                                        var rows1 = t.getElementsByTagName("tr");
-                                        var list2 = [];
-                                        var list3 = [];
-                                        var old = null;
-                                        var old2 = null;
-                                        var serilist = [];
-                                        var isemrilist = [];
-                                        var siralist = [];
-                                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
-                                        if (localStorage.list != null) {
-                                            old = JSON.parse(localStorage.list);
-                                            old2 = JSON.parse(localStorage.list2);
-
-                                        }
-                                        var say = 0;
-                                        var sonSeri = null;
-                                        var oldnum = 0;
-                                        $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
-                                            sonSeri = data;
-                                        }).done(function () {
-                                            for (var i = 1; i < rows1.length; i++) {
-                                            var jsonObjSeri = @Html.Raw(Json.Encode(ViewBag.Seriler));
-                                            var jsonObjSip = @Html.Raw(Json.Encode(ViewBag.Cariler));
-                                                var isno = rows1[i].getElementsByTagName("input")[1].value;
-
-                                            var stokadi = rows1[i].getElementsByTagName("select")[1].value;
-                                            var urunkodu = document.getElementById("seri").value;
-                                            var kalinlik = document.getElementById("kalinlik").value;
-                                            var kaplama = document.getElementById("kaplama").value;
-                                            var kalite = document.getElementById("kalite").value;
-                                                var genislik = rows1[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value;
-
-                                                var adet = rows1[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
-
-                                                var makineref = "";
-                                                var refstokolcusu = ""
-                                                var refadet = ""
-                                                var refagirlik = "";
-
-                                                if (x == 1) {
-                                                    makineref = rows1[i].getElementsByTagName("select")[2].value;
-                                                    refstokolcusu = rows1[i].getElementsByTagName("select")[3].value;
-                                                    refadet = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value;
-                                                    refagirlik = rows1[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value;
-                                                }
-                                                oncekiadet = parseInt(oncekiadet) + parseInt(adet);
-                                                var siparisno = rows1[i].getElementsByTagName("select")[4].name.split(" ")[1];
-                                                var agirlik = null;
-                                                if (x == 1) {
-
-                                                    if (rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value.split('.').length > 1) {
-                                                        agirlik = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("input")[0].value.split('.')[1];
-                                                    } else {
-                                                        agirlik = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value;
-                                                    }
-
-                                                } else {
-                                                    if (rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value.split('.').length > 1) {
-                                                        agirlik = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("input")[0].value.split('.')[1];
-                                                    } else {
-                                                        agirlik = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value;
-                                                    }
-                                                }
-                                            var musteri = rows1[i].getElementsByTagName("select")[rows1[i].getElementsByTagName("select").length-1].value;
-                                                var stokolcu = null;
-                                            if (rows1[i].getElementsByTagName("select")[3]) {
-                                                if (rows1[i].getElementsByTagName("select")[3].value != 'STOK SEÇİN') {
-                                                    stokolcu = rows1[i].getElementsByTagName("select")[3].value;
-                                                } else {
-                                                    stokolcu = rows1[i].getElementsByTagName("select")[1].value;
-                                                }
-                                            } else {
-                                                stokolcu = rows1[i].getElementsByTagName("select")[1].value;
-                                            }
-                                            var makine = rows1[i].getElementsByTagName("select")[0].value;
-                                                var sipkont = parseInt(rows1[i].getElementsByTagName("select")[4].name.split(" ")[0]);
-                                                var sirano = parseInt(rows1[i].getElementsByTagName("td")[0].innerHTML);
-                                            //WARNING:Değişen bölge
-                                            if (old != null) {
-                                                    oldnum = old.length;
-                                                    list2 = old;
-                                                list3 = old2;
-                                                for (let e = 0; e<list2.length; e++) {
-                                                    if (!serilist.includes(list2[e].GIRDI2)) {
-                                                        serilist.push(list2[e].GIRDI2);
-                                                    }
-                                                    
-                                                    if (!isemrilist.includes(list2[e].ISEMRINO)) {
-                                                        isemrilist.push(list2[e].ISEMRINO);
-                                                    }
-                                                    
-                                                    if (!isemrilist.includes(list2[e].REF_ISEMRINO)) {
-                                                        isemrilist.push(list2[e].REF_ISEMRINO);
-                                                    }
-                                                    
-                                                }
-                                                
-                                                for (let b = 0; b < adet; b++) {
-                                                    var girdi2 = sonSeri[0].SERI_NO;
-                                                    var s = jsonObj.filter(x => x.MAK_KODU == makine);
-                                                    var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
-                                                    var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
-                                                    var sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
-                                                    if (isemrilist.includes(sonisemri)) {
-                                                        var is = isemrilist.filter(x => x.includes(makine));
-                                                        sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                                                    }
-                                                    if (isemrilist.includes(sonrefisemri)) {
-                                                        var is1 = isemrilist.filter(x => x.includes(makineref));
-                                                        sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                                                    }
-                                                    if (serilist.includes(girdi2)) {
-                                                        if (siralist.includes(sirano) && adet == 1) {
-                                                            girdi2 = serilist[serilist.length - 1];
-                                                        } else {
-                                                            girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                                                        }
-
-                                                    }
-
-                                                    list2.push({
-                                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
-                                                    });
-                                                    if (!serilist.includes(girdi2)) {
-
-                                                        serilist.push(girdi2);
-                                                    }
-                                                    if (!siralist.includes(sirano)) {
-
-                                                        siralist.push(sirano);
-                                                    }
-                                                    isemrilist.push(sonisemri);
-                                                    isemrilist.push(sonrefisemri);
-                                                    say++;
-                                                    }
-
-                                                list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace('.', '')), REF_ADET: refadet });
-                                            }
-                                            else {
-
-                                                for (let b = 0; b < adet; b++) {
-                                                    var girdi2 = sonSeri[0].SERI_NO;
-                                                    var s = jsonObj.filter(x => x.MAK_KODU == makine);
-                                                    var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
-                                                    var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
-                                                    var sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
-                                                    if (isemrilist.includes(sonisemri)) {
-                                                        var is = isemrilist.filter(x => x.includes(makine));
-                                                        sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15))+1).toString().padStart(3, '0');
-                                                    }
-                                                    if (isemrilist.includes(sonrefisemri)) {
-                                                        var is1 = isemrilist.filter(x => x.includes(makineref));
-                                                        sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15))+1).toString().padStart(3, '0');
-                                                    }
-                                                    if (serilist.includes(girdi2)) {
-                                                        if (siralist.includes(sirano) && adet==1) {
-                                                            girdi2 = serilist[serilist.length - 1];
-                                                        } else {
-                                                            girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                                                        }
-
-                                                    }
-                                                    list2.push({
-                                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
-                                                    });
-                                                    if (!serilist.includes(girdi2)) {
-
-                                                        serilist.push(girdi2);
-                                                    }
-                                                    if (!siralist.includes(sirano)) {
-
-                                                        siralist.push(sirano);
-                                                    }
-                                                    isemrilist.push(sonisemri);
-                                                    isemrilist.push(sonrefisemri);
-                                                    say++;
-                                                }
-                                                list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace('.', '')), REF_ADET: refadet });
-                                                }
-
-                                            }
-                                            
-
-                                            var rowNumber = (document.getElementsByTagName("table")[1].getElementsByTagName("tr").length);
-                                            var number = serilist[serilist.length - 1].substring(serilist[serilist.length - 1].length - 2);
-                                           
-                                            var fark = parseInt(number)-parseInt(sonSeri[0].SERI_NO.substring(sonSeri[0].SERI_NO.length - 3))  + 1;
-                                            alert(fark);
-                                            var uu = "http://192.168.2.13:83/api/seri/1/" + fark;
-                                            $.getJSON(uu, function (data) { });
-                                            siralist = null;
-                                        var ta = document.getElementById("test");
-                                        var ro = ta.getElementsByTagName("tr");
-                                        var tp = 0;
-                                        var fireag = document.getElementById("fireagirligi1");
-                                            var fireyuz = document.getElementById("fireyuzde1");
-
-
-
-                                        var tpl = $.pivotUtilities.aggregatorTemplates;
-                                        takiplist = [];
-
-                                        function drawPivot() {
-
-                                            $(function () {
-
-                                                $("#pivotoutput").pivot(
-                                                    takiplist,
-                                                    {
-                                                        rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET", "AGIRLIK", "FIRE", "HAMSARF"],
-                                                        cols: [],
-                                                        aggregator: tpl.sum()(["ADET"]),
-                                                        sorters: {
-
-                                                            GIRDI1: function (a, b) { return a - b; } //sort backwards
-                                                        }
-
-
-                                                    }, false, "tr")
-                                            })
-                                        }
-                                        function getPivot() {
-                                            return fetch('./Index?handler=PivotData',
-                                                {
-                                                    method: 'get',
-                                                    headers: {
-                                                        'Content-Type': 'application/json;charset=UTF-8'
-                                                    }
-                                                }).then(function (response) {
-                                                    if (response.ok) { return response.text(); } else { throw Error("Hata"); }
-                                                }).then(function (text) {
-                                                    try {
-                                                        return JSON.parse(text);
-                                                    } catch (e) {
-
-                                                    }
-                                                }).then(function (responseJSON) {
-                                                    document.body.style.cursor = 'default';
-                                                    takiplist = JSON.parse(localStorage.list);
-                                                    var girdi1 = [];
-
-                                                    for (let i = 0; i < takiplist.length; i++) {
-
-                                                        if (!girdi1.includes(takiplist[i].GIRDI1)) {
-
-                                                            girdi1.push({ GIRDI1: takiplist[i].GIRDI1 });
-
-                                                        }
-
-                                                    }
-
-                                                    var newtakip = [];
-                                                    for (let i = 0; i < girdi1.length; i++) {
-                                                        var sum = 0;
-                                                        var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
-                                                        for (let e = 0; e < fil.length; e++) {
-                                                            sum = sum + parseFloat(fil[e].AGIRLIK.split('.').join(''));
-                                                        }
-
-                                                        for (let e = 0; e < fil.length; e++) {
-                                                            fil[e].HAMSARF = Math.round((parseFloat(fil[e].AGIRLIK.split('.').join('')) / sum) * (parseFloat(fil[e].TAMAGIRLIK)));
-                                                            fil[e].FIRE = Math.round(fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK.split('.').join(''))));
-                                                        }
-                                                        if (newtakip.length == 0) {
-                                                            newtakip = fil;
-                                                        } else {
-                                                            newtakip = newtakip.concat(fil);
-                                                        }
-
-                                                    }
-
-
-
-                                                    takiplist = newtakip;
-
-                                                    for (let i = 0; i < takiplist.length; i++) {
-                                                        tp = tp + parseInt(takiplist[i].FIRE);
-                                                    }
-
-                                                    fireyuz.value = ((fireag.value / parseFloat(takiplist[0].TAMAGIRLIK)) * 100).toFixed(2) + " %";
-                                                    localStorage.list4 = JSON.stringify(takiplist);
-                                                    drawPivot();
-                                                });
-
-
-
-                                        }
-
-                                        var takiplist2 = [];
-                                        var aggMap = {
-                                            'agg1': {
-                                                aggType: 'Sum',
-                                                arguments: ['ADET'],
-                                                name: 'ADET TOPLAM',
-                                                varName: 'a',
-                                                renderEnhancement: 'barchart'
-                                            },
-
-                                            'agg2': {
-                                                aggType: 'Sum',
-                                                arguments: ['AGIRLIK'],
-                                                name: 'AGIRLIK TOPLAM',
-                                                varName: 'b',
-                                                hidden: false,
-                                                renderEnhancement: 'none'
-                                            },
-
-                                        };
-
-
-                                        var customAggs = {};
-                                        customAggs['Multifact Aggregators'] = $.pivotUtilities.multifactAggregatorGenerator(aggMap, []);
-
-                                        var config = {
-                                            "cols": [],
-                                            "rows": ["MUSTERI", "STOKOLCULERI", "KALINLIK", "KALITE", "KAPLAMA"],
-                                            "vals": [],
-                                            "rowOrder": "key_a_to_z",
-                                            "colOrder": "key_a_to_z",
-                                            "aggregatorName": "Multifact Aggregators",
-                                            "rendererName": "GT Table Heatmap and Barchart",
-                                            "rendererOptions": {
-
-                                                aggregations: {
-                                                    defaultAggregations: aggMap,
-
-
-                                                }
-                                            }
-                                        };
-
-
-
-
-                                        $.pivotUtilities.customAggs = customAggs;
-
-                                        config.aggregators = $.extend($.pivotUtilities.aggregators, $.pivotUtilities.customAggs);
-
-                                        config.renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.gtRenderers);
-
-                                            function drawPivot2() {
-
-
-                                                $("#pivotoutput2").pivot(
-                                                    takiplist2,
-                                                    {
-                                                        rows: ["MUSTERI", "STOKADI", "KALINLIK", "KAPLAMA", "ADET", "AGIRLIK"],
-                                                        cols: [],
-                                                        aggregator: tpl.sum()(["AGIRLIK"]),
-                                                        sorters: {
-
-                                                            MUSTERI: function (a, b) { return a - b; } //sort backwards
-                                                        }
-
-
-
-                                                    }, false, "tr")
-                                            }
-                                            function getPivot2() {
-                                                return fetch('./Index?handler=PivotData',
-                                                    {
-                                                        method: 'get',
-                                                        headers: {
-                                                            'Content-Type': 'application/json;charset=UTF-8'
-                                                        }
-                                                    }).then(function (response) {
-                                                        if (response.ok) { return response.text(); } else { throw Error("Hata"); }
-                                                    }).then(function (text) {
-                                                        try {
-                                                            return JSON.parse(text);
-                                                        } catch (e) {
-                                                            document.getElementById("addcll").removeAttribute("disabled");
-                                                            document.getElementById("rmvcll").removeAttribute("disabled");
-                                                            document.getElementById("addRw").removeAttribute("disabled");
-                                                            document.getElementById("removeRw").removeAttribute("disabled");
-                                                        }
-                                                    }).then(function (responseJSON) {
-                                                        var result = groupBy(JSON.parse(localStorage.list2), 'STOKADI')
-                                                        var l = JSON.parse(localStorage.list2);
-                                                        for (let i = 0; i < l.length; i++) {
-                                                            var agirlik = 0;
-                                                            for (let a = 0; a < result[l[i].STOKADI].length; a++) {
-                                                                agirlik = agirlik + parseInt(result[l[i].STOKADI][a].AGIRLIK);
-                                                            }
-
-                                                            takiplist2.push({ STOKADI: result[l[i].STOKADI][0].STOKADI, MUSTERI: result[l[i].STOKADI][0].MUSTERI, KAPLAMA: result[l[i].STOKADI][0].KAPLAMA, KALINLIK: result[l[i].STOKADI][0].KALINLIK, AGIRLIK: agirlik, ADET: result[l[i].STOKADI][0].REF_ADET })
-
-
-                                                        }
-                                                        drawPivot2();
-                                                        maillist = takiplist2;
-                                                        $("#seri").val(null).trigger("keyup");
-                                                    }).then(function () {
-                                                        document.body.style.cursor = 'default';
-                                                        var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
-                                                        var sum = 0;
-                                                        var sum2 = 0;
-                                                        for (let i = 1; i < rr.length - 1; i++) {
-                                                            sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
-                                                            sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
-                                                        }
-                                                        document.getElementById("fireagirligi1").value = sum;
-
-                                                        document.getElementById("fireyuzde1").value = parseFloat((parseInt(document.getElementById("fireagirligi1").value) / sum2) * 100).toFixed(2) + " %";
-
-                                                    });
-                                            }
-
-
-                                        var boo=true;
-                                        for (let i = 1; i < rows1.length; i++) {
-                                            if (rows1[i].getElementsByTagName("select")[1].value == "STOK SEÇİN") {
-                                                boo = false;
-                                                break;
-                                            }
-                                        }
-                                            if (boo == true) {
-
-                                                localStorage.list = JSON.stringify(list2);
-                                                localStorage.list2 = JSON.stringify(list3);
-                                            //document.getElementById("seri").value = "";
-                                            //document.getElementById("stokadi").value = "";
-                                            //document.getElementById("marka").innerHTML = "";
-                                            //document.getElementById("adet").value = "";
-                                            //document.getElementById("kalinlik").value = "";
-                                            //document.getElementById("genislik").value = "";
-                                            //document.getElementById("genislikalti").value = "0";
-                                            //document.getElementById("kaplama").value = "";
-                                            //document.getElementById("kalite").value = "";
-                                            //document.getElementById("metraj").value = "";
-                                            //document.getElementById("agirlik").value = "";
-                                            //document.getElementById("hamoran").value = "1.0000";
-                                            //document.getElementById("addcll").setAttribute("disabled","");
-                                            //document.getElementById("rmvcll").setAttribute("disabled", "");
-                                            //document.getElementById("addRw").setAttribute("disabled", "");
-                                            //document.getElementById("removeRw").setAttribute("disabled", "");
-                                                getPivot();
-                                                getPivot2();
+                                        if (ser != null && ser != "") {
+                                            oncekiadet = 0;
+document.body.style.cursor = 'wait';
+
+var tam = document.getElementById("agirlik").value.split("/")[0].split('.').join('');
+
+var isemrinput = document.getElementById("1input").value;
+var sackod = document.getElementById("seri").value;
+var hamor = document.getElementById("hamoran").value;
+var t = document.getElementById("test");
+var rows1 = t.getElementsByTagName("tr");
+var list2 = [];
+var list3 = [];
+var old = null;
+var old2 = null;
+var serilist = [];
+var isemrilist = [];
+var siralist = [];
+var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+if (localStorage.list != null) {
+    old = JSON.parse(localStorage.list);
+    old2 = JSON.parse(localStorage.list2);
+
+}
+var say = 0;
+var sonSeri = null;
+var oldnum = 0;
+$.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
+    sonSeri = data;
+}).done(function () {
+    for (var i = 1; i < rows1.length; i++) {
+    var jsonObjSeri = @Html.Raw(Json.Encode(ViewBag.Seriler));
+    var jsonObjSip = @Html.Raw(Json.Encode(ViewBag.Cariler));
+        var isno = rows1[i].getElementsByTagName("input")[1].value;
+
+    var stokadi = rows1[i].getElementsByTagName("select")[1].value;
+    var urunkodu = document.getElementById("seri").value;
+    var kalinlik = document.getElementById("kalinlik").value;
+    var kaplama = document.getElementById("kaplama").value;
+    var kalite = document.getElementById("kalite").value;
+        var genislik = rows1[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value;
+
+        var adet = rows1[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
+
+        var makineref = "";
+        var refstokolcusu = ""
+        var refadet = ""
+        var refagirlik = "";
+
+        if (x == 1) {
+            makineref = rows1[i].getElementsByTagName("select")[2].value;
+            refstokolcusu = rows1[i].getElementsByTagName("select")[3].value;
+            refadet = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value;
+            refagirlik = rows1[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value;
+        }
+        oncekiadet = parseInt(oncekiadet) + parseInt(adet);
+        var siparisno = rows1[i].getElementsByTagName("select")[4].name.split(" ")[1];
+        var agirlik = null;
+        if (x == 1) {
+
+            if (rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value.split('.').length > 1) {
+                agirlik = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("input")[0].value.split('.')[1];
+            } else {
+                agirlik = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value;
+            }
+
+        } else {
+            if (rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value.split('.').length > 1) {
+                agirlik = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("input")[0].value.split('.')[1];
+            } else {
+                agirlik = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value;
+            }
+        }
+    var musteri = rows1[i].getElementsByTagName("select")[rows1[i].getElementsByTagName("select").length-1].value;
+        var stokolcu = null;
+    if (rows1[i].getElementsByTagName("select")[3]) {
+        if (rows1[i].getElementsByTagName("select")[3].value != 'STOK SEÇİN') {
+            stokolcu = rows1[i].getElementsByTagName("select")[3].value;
+        } else {
+            stokolcu = rows1[i].getElementsByTagName("select")[1].value;
+        }
+    } else {
+        stokolcu = rows1[i].getElementsByTagName("select")[1].value;
+    }
+    var makine = rows1[i].getElementsByTagName("select")[0].value;
+        var sipkont = parseInt(rows1[i].getElementsByTagName("select")[4].name.split(" ")[0]);
+        var sirano = parseInt(rows1[i].getElementsByTagName("td")[0].innerHTML);
+    //WARNING:Değişen bölge
+    if (old != null) {
+            oldnum = old.length;
+            list2 = old;
+        list3 = old2;
+        for (let e = 0; e<list2.length; e++) {
+            if (!serilist.includes(list2[e].GIRDI2)) {
+                serilist.push(list2[e].GIRDI2);
+            }
+
+            if (!isemrilist.includes(list2[e].ISEMRINO)) {
+                isemrilist.push(list2[e].ISEMRINO);
+            }
+
+            if (!isemrilist.includes(list2[e].REF_ISEMRINO)) {
+                isemrilist.push(list2[e].REF_ISEMRINO);
+            }
+
+        }
+
+        for (let b = 0; b < adet; b++) {
+            var girdi2 = sonSeri[0].SERI_NO;
+            var s = jsonObj.filter(x => x.MAK_KODU == makine);
+            var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
+            var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+            var sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+            if (isemrilist.includes(sonisemri)) {
+                var is = isemrilist.filter(x => x.includes(makine));
+                sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+            }
+            if (isemrilist.includes(sonrefisemri)) {
+                var is1 = isemrilist.filter(x => x.includes(makineref));
+                sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+            }
+            if (serilist.includes(girdi2)) {
+                if (siralist.includes(sirano) && adet == 1) {
+                    girdi2 = serilist[serilist.length - 1];
+                } else {
+                    girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                }
+
+            }
+
+            list2.push({
+                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+            });
+            if (!serilist.includes(girdi2)) {
+
+                serilist.push(girdi2);
+            }
+            if (!siralist.includes(sirano)) {
+
+                siralist.push(sirano);
+            }
+            isemrilist.push(sonisemri);
+            isemrilist.push(sonrefisemri);
+            say++;
+            }
+
+        list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace('.', '')), REF_ADET: refadet });
+    }
+    else {
+
+        for (let b = 0; b < adet; b++) {
+            var girdi2 = sonSeri[0].SERI_NO;
+            var s = jsonObj.filter(x => x.MAK_KODU == makine);
+            var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
+            var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+            var sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+            if (isemrilist.includes(sonisemri)) {
+                var is = isemrilist.filter(x => x.includes(makine));
+                sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15))+1).toString().padStart(3, '0');
+            }
+            if (isemrilist.includes(sonrefisemri)) {
+                var is1 = isemrilist.filter(x => x.includes(makineref));
+                sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15))+1).toString().padStart(3, '0');
+            }
+            if (serilist.includes(girdi2)) {
+                if (siralist.includes(sirano) && adet==1) {
+                    girdi2 = serilist[serilist.length - 1];
+                } else {
+                    girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                }
+
+            }
+            list2.push({
+                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+            });
+            if (!serilist.includes(girdi2)) {
+
+                serilist.push(girdi2);
+            }
+            if (!siralist.includes(sirano)) {
+
+                siralist.push(sirano);
+            }
+            isemrilist.push(sonisemri);
+            isemrilist.push(sonrefisemri);
+            say++;
+        }
+        list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace('.', '')), REF_ADET: refadet });
+        }
+
+    }
+
+
+    var rowNumber = (document.getElementsByTagName("table")[1].getElementsByTagName("tr").length);
+    var number = serilist[serilist.length - 1].substring(serilist[serilist.length - 1].length - 2);
+    var fark = list2.length;
+    if (localStorage.list != null && localStorage.list != "null") {
+
+        fark = fark - JSON.parse(localStorage.list).length;
+    }
+    var uu = "http://192.168.2.13:83/api/seri/1/" + fark;
+    $.getJSON(uu, function (data) { });
+    siralist = null;
+var ta = document.getElementById("test");
+var ro = ta.getElementsByTagName("tr");
+var tp = 0;
+var fireag = document.getElementById("fireagirligi1");
+    var fireyuz = document.getElementById("fireyuzde1");
+
+
+
+var tpl = $.pivotUtilities.aggregatorTemplates;
+takiplist = [];
+
+function drawPivot() {
+
+    $(function () {
+
+        $("#pivotoutput").pivot(
+            takiplist,
+            {
+                rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET", "AGIRLIK", "FIRE", "HAMSARF"],
+                cols: [],
+                aggregator: tpl.sum()(["ADET"]),
+                sorters: {
+
+                    GIRDI1: function (a, b) { return a - b; } //sort backwards
+                }
+
+
+            }, false, "tr")
+    })
+}
+function getPivot() {
+    return fetch('./Index?handler=PivotData',
+        {
+            method: 'get',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8'
+            }
+        }).then(function (response) {
+            if (response.ok) { return response.text(); } else { throw Error("Hata"); }
+        }).then(function (text) {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+
+            }
+        }).then(function (responseJSON) {
+            document.body.style.cursor = 'default';
+            takiplist = JSON.parse(localStorage.list);
+            var girdi1 = [];
+
+            for (let i = 0; i < takiplist.length; i++) {
+
+                if (!girdi1.includes(takiplist[i].GIRDI1)) {
+
+                    girdi1.push({ GIRDI1: takiplist[i].GIRDI1 });
+
+                }
+
+            }
+
+            var newtakip = [];
+            for (let i = 0; i < girdi1.length; i++) {
+                var sum = 0;
+                var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
+                for (let e = 0; e < fil.length; e++) {
+                    sum = sum + parseFloat(fil[e].AGIRLIK.split('.').join(''));
+                }
+
+                for (let e = 0; e < fil.length; e++) {
+                    fil[e].HAMSARF = Math.round((parseFloat(fil[e].AGIRLIK.split('.').join('')) / sum) * (parseFloat(fil[e].TAMAGIRLIK)));
+                    fil[e].FIRE = Math.round(fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK.split('.').join(''))));
+                }
+                if (newtakip.length == 0) {
+                    newtakip = fil;
+                } else {
+                    newtakip = newtakip.concat(fil);
+                }
+
+            }
+
+
+
+            takiplist = newtakip;
+
+            for (let i = 0; i < takiplist.length; i++) {
+                tp = tp + parseInt(takiplist[i].FIRE);
+            }
+
+            fireyuz.value = ((fireag.value / parseFloat(takiplist[0].TAMAGIRLIK)) * 100).toFixed(2) + " %";
+            localStorage.list4 = JSON.stringify(takiplist);
+            drawPivot();
+        });
+
+
+
+}
+
+var takiplist2 = [];
+var aggMap = {
+    'agg1': {
+        aggType: 'Sum',
+        arguments: ['ADET'],
+        name: 'ADET TOPLAM',
+        varName: 'a',
+        renderEnhancement: 'barchart'
+    },
+
+    'agg2': {
+        aggType: 'Sum',
+        arguments: ['AGIRLIK'],
+        name: 'AGIRLIK TOPLAM',
+        varName: 'b',
+        hidden: false,
+        renderEnhancement: 'none'
+    },
+
+};
+
+
+var customAggs = {};
+customAggs['Multifact Aggregators'] = $.pivotUtilities.multifactAggregatorGenerator(aggMap, []);
+
+var config = {
+    "cols": [],
+    "rows": ["MUSTERI", "STOKOLCULERI", "KALINLIK", "KALITE", "KAPLAMA"],
+    "vals": [],
+    "rowOrder": "key_a_to_z",
+    "colOrder": "key_a_to_z",
+    "aggregatorName": "Multifact Aggregators",
+    "rendererName": "GT Table Heatmap and Barchart",
+    "rendererOptions": {
+
+        aggregations: {
+            defaultAggregations: aggMap,
+
+
+        }
+    }
+};
+
+
+
+
+$.pivotUtilities.customAggs = customAggs;
+
+config.aggregators = $.extend($.pivotUtilities.aggregators, $.pivotUtilities.customAggs);
+
+config.renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.gtRenderers);
+
+    function drawPivot2() {
+
+
+        $("#pivotoutput2").pivot(
+            takiplist2,
+            {
+                rows: ["MUSTERI", "STOKADI", "KALINLIK", "KAPLAMA", "ADET", "AGIRLIK"],
+                cols: [],
+                aggregator: tpl.sum()(["AGIRLIK"]),
+                sorters: {
+
+                    MUSTERI: function (a, b) { return a - b; } //sort backwards
+                }
+
+
+
+            }, false, "tr")
+    }
+    function getPivot2() {
+        return fetch('./Index?handler=PivotData',
+            {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8'
+                }
+            }).then(function (response) {
+                if (response.ok) { return response.text(); } else { throw Error("Hata"); }
+            }).then(function (text) {
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    document.getElementById("addcll").removeAttribute("disabled");
+                    document.getElementById("rmvcll").removeAttribute("disabled");
+                    document.getElementById("addRw").removeAttribute("disabled");
+                    document.getElementById("removeRw").removeAttribute("disabled");
+                }
+            }).then(function (responseJSON) {
+                var result = groupBy(JSON.parse(localStorage.list2), 'STOKADI')
+                var l = JSON.parse(localStorage.list2);
+                for (let i = 0; i < l.length; i++) {
+                    var agirlik = 0;
+                    var adet = 0;
+                    for (let a = 0; a < result[l[i].STOKADI].length; a++) {
+                        agirlik = agirlik + parseInt(result[l[i].STOKADI][a].AGIRLIK);
+                        adet = adet + parseInt(result[l[i].STOKADI][a].REF_ADET);
+                    }
+
+                    takiplist2.push({ STOKADI: result[l[i].STOKADI][0].STOKADI, MUSTERI: result[l[i].STOKADI][0].MUSTERI, KAPLAMA: result[l[i].STOKADI][0].KAPLAMA, KALINLIK: result[l[i].STOKADI][0].KALINLIK, AGIRLIK: agirlik, ADET: adet })
+
+
+                }
+                drawPivot2();
+                maillist = takiplist2;
+                $("#seri").val(null);
+                inputHandler();
+            }).then(function () {
+                document.body.style.cursor = 'default';
+                var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
+                var sum = 0;
+                var sum2 = 0;
+                for (let i = 1; i < rr.length - 1; i++) {
+                    sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
+                    sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
+                }
+                document.getElementById("fireagirligi1").value = sum;
+
+                document.getElementById("fireyuzde1").value = parseFloat((parseInt(document.getElementById("fireagirligi1").value) / sum2) * 100).toFixed(2) + " %";
+
+            });
+    }
+
+
+var boo=true;
+for (let i = 1; i < rows1.length; i++) {
+    if (rows1[i].getElementsByTagName("select")[1].value == "STOK SEÇİN") {
+        boo = false;
+        break;
+    }
+}
+    if (boo == true) {
+
+        localStorage.list = JSON.stringify(list2);
+        localStorage.list2 = JSON.stringify(list3);
+    //document.getElementById("seri").value = "";
+    //document.getElementById("stokadi").value = "";
+    //document.getElementById("marka").innerHTML = "";
+    //document.getElementById("adet").value = "";
+    //document.getElementById("kalinlik").value = "";
+    //document.getElementById("genislik").value = "";
+    //document.getElementById("genislikalti").value = "0";
+    //document.getElementById("kaplama").value = "";
+    //document.getElementById("kalite").value = "";
+    //document.getElementById("metraj").value = "";
+    //document.getElementById("agirlik").value = "";
+    //document.getElementById("hamoran").value = "1.0000";
+    //document.getElementById("addcll").setAttribute("disabled","");
+    //document.getElementById("rmvcll").setAttribute("disabled", "");
+    //document.getElementById("addRw").setAttribute("disabled", "");
+    //document.getElementById("removeRw").setAttribute("disabled", "");
+        getPivot();
+        getPivot2();
+} else {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
+    Toast.fire({
+        icon: 'error',
+        title: 'Eksik veri girdiniz!'
+    });
+    document.body.style.cursor = 'default';
+}
+})
                                         } else {
                                             const Toast = Swal.mixin({
                                                 toast: true,
@@ -1489,14 +1517,13 @@
                                             })
 
                                             Toast.fire({
-                                                icon: 'error',
-                                                title: 'Eksik veri girdiniz!'
+                                                icon: 'warning',
+                                                title: 'Hammadde seçmediniz.'
                                             });
-                                            document.body.style.cursor = 'default';
                                         }
-                                        })
 
-                                        
+
+
 
 
 
@@ -1658,7 +1685,8 @@
                         title: 'Veriler başarılı bir şekilde Netsis\'e aktarıldı.'
                     });
                     load();
-                    $("#seri").val(null).trigger("keyup");
+                    $("#seri").val(null);
+                    inputHandler();
                 },
                 error: function () {
                     document.body.style.cursor = 'default';
@@ -1802,11 +1830,11 @@
                                 oraninput.max = "1.00";
                                 oraninput.min = "0.00";
                                 oraninput.value = "1.00";
-                                oraninput.onkeyup = function () {
+                                oraninput.onblur = function () {
                                     if (this.value >= 1) {
                                         this.value = "1.00";
-                                    } else if (this.value < 0) {
-                                        this.value = "0.00";
+                                    } else if (this.value <= 0) {
+                                        this.value = "0.01";
                                     }
 
                                     for (let i = 1; i < rows.length; i++) {
@@ -2182,11 +2210,11 @@
                                 oraninput.max = "1.00";
                                 oraninput.min = "0.00";
                                 oraninput.value = "1.00";
-                                oraninput.onkeyup = function (e) {
+                                oraninput.onblur = function (e) {
                                     if (this.value > 1) {
                                         this.value = "1.00";
-                                    } else if (this.value < 0) {
-                                        this.value = "0.00";
+                                    } else if (this.value <= 0) {
+                                        this.value = "0.01";
                                     }
                                     keyupadet1(e.currentTarget.parentNode.parentNode.rowIndex);
                                     document.getElementsByTagName("table")[1].getElementsByTagName("tr")[e.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
@@ -2728,8 +2756,8 @@
                                 oraninput.onkeyup = function () {
                                     if (this.value > 1) {
                                         this.value = "1.00";
-                                    } else if (this.value < 0) {
-                                        this.value = "0.00";
+                                    } else if (this.value <= 0) {
+                                        this.value = "0.01";
                                     }
                                 };
                                 cell.appendChild(oraninput);
@@ -3241,6 +3269,7 @@
         var maillist = [];
         var takiplist = [];
         $(document).ready(function () {
+            $("#kaydet").attr("disabled", true);
     var tp = 0;
     var fireag = document.getElementById("fireagirligi1");
             var fireyuz = document.getElementById("fireyuzde1");
@@ -3446,9 +3475,9 @@
         const hamoran = document.getElementById('hamoran');
 
         const inputHandler = function () {
+           
             //result.innerHTML = e.target.value;
             var b = jsonObj.find(x => x.SERI_NO === seri.value);
-
             var top = 0;
 
             if (localStorage.list != "null" && localStorage.list!=null ) {
@@ -3491,6 +3520,7 @@
                 kalite.value = b.KALITE;
                 stokAdi.value = b.STOK_ADI;
                 metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2);
+                
 
             } else {
                 genislik.value = "";
@@ -3501,9 +3531,10 @@
                 kaplama.value = "";
                 stokAdi.value = "";
                 kalite.value = "";
+                $("#metraj").val("");
             }
 
-
+          
 
             if (top != 0) {
                 const Toast = Swal.mixin({
@@ -3528,16 +3559,17 @@
                         icon: 'info',
                         title: 'Ürün maksimum %' + (((1 - top).toFixed(4)) * 100) + ' oranında kullanılabilir!'
                     });
-                    if (document.getElementById("kaydet").disabled == true) {
-                        document.getElementById("kaydet").disabled = false;
-                    }
+                    $("#kaydet").attr("disabled", true)
 
                 }
 
             } else {
-                if (document.getElementById("kaydet").disabled == true) {
-                    document.getElementById("kaydet").disabled = false;
-                }
+                $("#kaydet").attr("disabled", false)
+            }
+            if (b != null) {
+                $("#kaydet").attr("disabled", false)
+            } else {
+                $("#kaydet").attr("disabled", true)
             }
 
 
@@ -3557,8 +3589,13 @@
             var ro = ta.getElementsByTagName("tr");
 
             for (let i = 1; i < ro.length; i++) {
-
-                ro[i].getElementsByTagName("input")[3].onkeyup();
+                if (i == 1) {
+                    ro[i].getElementsByTagName("input")[3].onkeyup();
+                } else {
+                    ro[i].getElementsByTagName("select")[3].onchange();
+                    keyupadet1(i);
+                }
+                
             }
             changeadet();
 
@@ -3569,7 +3606,17 @@
                 var b = jsonObj.find(x => x.SERI_NO === seri.value);
                 agirlik.value = (b.MIKTAR * hamoran.value).toLocaleString('tr-TR') + " / " + (b.MIKTAR).toLocaleString('tr-TR');
                 metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2);
+                var ta = document.getElementById("test");
+                var ro = ta.getElementsByTagName("tr");
+                for (let i = 1; i < ro.length; i++) {
+                    if (i == 1) {
+                        ro[i].getElementsByTagName("input")[3].onkeyup();
+                    } else {
+                        ro[i].getElementsByTagName("select")[3].onchange();
+                        keyupadet1(i);
+                    }
 
+                }
                 changeadet();
 
 
@@ -3581,8 +3628,7 @@
         var oran1 = document.getElementById("oran1");
         hamoran.addEventListener('input', inputHandler1);
         hamoran.addEventListener('propertychange', inputHandler1);
-        oran1.addEventListener('input', inputHandler1);
-        oran1.addEventListener('propertychange', inputHandler1);
+        oran1.addEventListener('focusout', inputHandler1);
 
         seri.addEventListener('input', inputHandler);
         seri.addEventListener('propertychange', inputHandler);
@@ -4284,6 +4330,7 @@
             var totaltr = table.getElementsByTagName("tr");
             var currenttr = table.getElementsByTagName("tr")[rownum];
             var currenttd = currenttr.getElementsByTagName("td");
+            
             if (x == 1) {
 
                 for (let i = 0; i < 3; i++) {
@@ -4330,24 +4377,24 @@
                                 }
                             } else if (i == 7) {
                                 if (x != 0) {
-                                    td.innerHTML = "<select class='js-example-basic-single' style='width: 120px' onchange='changemakine2(this)'><option selected value='" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "'>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "</option></select>"
+                                    td.innerHTML = "<select class='js-example-basic-single' style='width: 150px' onchange='changemakine2(this)'><option selected value='" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "'>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "</option></select>"
                                 } else {
 
-                                    td.innerHTML = "<select class='js-example-basic-single' style='width: 120px'><option selected value='" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "'>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "</option></select>"
+                                    td.innerHTML = "<select class='js-example-basic-single' style='width: 150px'><option selected value='" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "'>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "</option></select>"
                                 }
 
                             }
                             else if (i == 12) {
-                                td.innerHTML = "<select class='js-example-basic-single' style='width: 120px'><option selected disabled>EFECE GALVANİZ</option></select>"
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 150px'><option selected disabled>EFECE GALVANİZ</option></select>"
                             }
                             else {
-                                td.innerHTML = "<select class='js-example-basic-single' style='width: 120px' onchange='makinechange(this)'><option selected value='" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "'>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "</option></select>"
+                                td.innerHTML = "<select class='js-example-basic-single' style='width: 150px' onchange='makinechange(this)'><option selected value='" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "'>" + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("select")[0].value + "</option></select>"
                             }
                         }
                         else if (i == 4 || i == 5) {
-                            td.innerHTML = '<input class="border-0 text-center" style="width: 80px" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("input")[0].value +'" onkeyup="changeadet1(this)" disabled="">';
+                            td.innerHTML = '<input class="border-0 text-center" style="width: 120px" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("input")[0].value +'" onkeyup="changeadet1(this)" disabled="">';
                         } else if (i == 1) {
-                            td.innerHTML = '<input class="border-0 text-center" oninput="oranchange(this)" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00"><div class="text-center"><img onclick = "removeRow1(this)" style = "width:18px" src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC"></div>'
+                            td.innerHTML = '<input class="border-0 text-center" onblur="oranchange(this)" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00"><div class="text-center"><img onclick = "removeRow1(this)" style = "width:18px" src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC"></div>'
                         }
                         else {
                             td.innerHTML = table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].innerHTML;
@@ -4368,14 +4415,14 @@
                 table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[0].onchange();
                 table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].value = "0.5";
                 table.getElementsByTagName("tr")[rownum+1].getElementsByTagName("input")[0].value = "0.5";
-                table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].onkeyup = function () {
+                table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].onblur = function () {
                     table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[4].getElementsByTagName("input")[0].onkeyup();
                 }
                 table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value = 1;
                 table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value = 1;
                 table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[5].getElementsByTagName("input")[0].disabled = true;
                 table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[5].getElementsByTagName("input")[0].disabled = true;
-
+                table.getElementsByTagName("tr")[rownum].getElementsByTagName("img")[0].setAttribute("onclick", "");
                 if (x == 1) {
                     table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[2].onchange();
                     table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[3].onchange = function (e) {
@@ -4402,16 +4449,20 @@
 
                     table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value;
                     table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[3].onchange();
-                    table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].onkeyup = function () {
-                        if (this.value > 1) {
-                            this.value = 1;
-                            this.onkeyup();
+                    table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].onblur = function () {
+                        if (this.value > 0.99) {
+                            this.value = "0.99";
+                            this.onblur();
+                        } else if (this.value <= 0) {
+                            this.value = "0.01";
+                            this.onblur();
                         } else {
-                            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].value = 1 - parseFloat(this.value);
-                            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].onkeyup();
-                            keyupadet1(this.parentNode.parentNode.rowIndex);
+                            var m = (1 - this.value).toFixed(2)
+                            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].value = m;
+                            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].onblur();
                             document.getElementsByTagName("table")[1].getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
                             document.getElementsByTagName("table")[1].getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex + 1].value = (1 - parseFloat(this.value.toString().replace(",", "."))).toLocaleString().replace(",", ".")
+                            keyupadet1(this.parentNode.parentNode.rowIndex);
                             changeadet();
                         }
                         
@@ -4420,7 +4471,8 @@
                    
                 }
                 keyupadet1(rownum);
-                table.getElementsByTagName("tr")[rownum+1].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
+                table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
+                
             }
             else {
                 const Toast = Swal.mixin({
@@ -4493,6 +4545,7 @@
             var table = document.getElementsByTagName("table")[1]
             var currenttr = table.getElementsByTagName("tr")[rownum-1];
             var currenttd = currenttr.getElementsByTagName("td");
+            currenttd[1].getElementsByTagName("img")[0].setAttribute("onclick", "addRow1(this)");
             for (let i = 0; i < currenttd.length; i++) {
                 if (x == 1 && (i == 10 || i == 6)) {
 
@@ -4558,22 +4611,26 @@
         }
         function oranchange(e) {
             var n = e.parentNode.parentNode.rowIndex;
-            if (e.value.length > 0) {
-                if (e.value > 1) {
+            
+            if (e.value > 0.99) {
 
-                    e.value = "1.00";
-                    e.oninput();
+                e.value = "0.99";
+                e.onblur();
 
-                } else {
-                    var m = 1 - parseFloat(e.value);
+            } else if (e.value<=0) {
+                e.value = "0.01";
+                e.onblur();
+            }
+            else {
+                var m = 1 - parseFloat(e.value);
                     document.getElementsByTagName("table")[1].getElementsByTagName("tr")[n - 1].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value = m.toLocaleString().replace(",", ".");
-                    document.getElementsByTagName("table")[1].getElementsByTagName("tr")[n - 1].getElementsByTagName("td")[1].getElementsByTagName("input")[0].onkeyup();
+                    document.getElementsByTagName("table")[1].getElementsByTagName("tr")[n - 1].getElementsByTagName("td")[1].getElementsByTagName("input")[0].onblur();
                     changeadet();
                     if (x != 0) {
                         document.getElementsByTagName("table")[1].getElementsByTagName("tr")[n].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
                     }
                 }
-            }
+            
             
         }
     </script>

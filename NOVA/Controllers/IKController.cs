@@ -1840,7 +1840,7 @@ namespace NOVA.Controllers
                 personel1.USER_ID = personel.USER_ID;
                 personel1.DEV_ID = 10003;
 
-                var apiUrl1 = "http://192.168.2.13:83/api/attendance/mesai";
+                var apiUrl1 = "http://192.168.2.209:84/api/attendance/mesai";
 
 
                 var httpClient1 = new HttpClient();
@@ -1873,7 +1873,7 @@ namespace NOVA.Controllers
                 personel2.USER_ID = personel.USER_ID;
                 personel2.DEV_ID = 10003;
 
-                var apiUrl2 = "http://192.168.2.13:83/api/attendance/mesai";
+                var apiUrl2 = "http://192.168.2.209:84/api/attendance/mesai";
 
 
                 var httpClient2 = new HttpClient();

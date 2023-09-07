@@ -93,6 +93,9 @@
             display: none;
         }*/
     }
+    body{
+        overflow:hidden !important;
+    }
 </style>
 <style>
     .heart {
@@ -147,7 +150,7 @@
     }
 </style>
 <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
-<div class="container-fluid d-flex h-100">
+<div class="container-fluid d-flex">
 
     <div class="card mx-auto" style="font-size:12px">
         <div class="card-header pb-0">
@@ -222,8 +225,29 @@
             </div>
             <div>
                 <div id="toolbar">
+                    <div class="row mt-1" onchange="datefilter()">
+
+                        <div class="col-sm">
+                            <label for="baslagictarihi">Başlagıç Tarihi:</label>
+                            <input class="form-control" style="width: 15vw;height:32px" type="date" id="baslangictarihi" name="BASLANGIC_TARIH" value=" " placeholder="Başlangıç Tarihi">
+                        </div>
+                        <div class="col-sm">
+                            <label for="bitistarihi">Bitiş Tarihi:</label>
+                            <input class="form-control" style="width: 15vw;height:32px" type="date" id="bitistarihi" name="BASLANGIC_TARIH" value=" " placeholder="Bitiş Tarihi">
+                        </div>
+                        <div class="col">
+                            <button onclick="clearfilter()" class="btn btn-secondary btn-sm mt-3"><i class="bx bxs-trash"></i></button>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                        <div class="col">
+
+                        </div>
+
+                    </div>
                     <form id="form1">
-                        <div class="row">
+                        <div class="row mt-1">
                             <div class="col">
                                 <select id="filter" multiple="multiple" name="filterAlgorithm" style="width: 15vw">
                                 </select>
@@ -244,27 +268,7 @@
 
                 </div>
 
-                <div class="row mt-1" onchange="datefilter()">
-
-                    <div class="col-sm">
-                        <label for="baslagictarihi">Başlagıç Tarihi:</label>
-                        <input class="form-control" style="width: 15vw;height:32px" type="date" id="baslangictarihi" name="BASLANGIC_TARIH" value=" " placeholder="Başlangıç Tarihi">
-                    </div>
-                    <div class="col-sm">
-                        <label for="bitistarihi">Bitiş Tarihi:</label>
-                        <input class="form-control" style="width: 15vw;height:32px" type="date" id="bitistarihi" name="BASLANGIC_TARIH" value=" " placeholder="Bitiş Tarihi">
-                    </div>
-                    <div class="col">
-                        <button onclick="clearfilter()" class="btn btn-secondary btn-sm mt-3"><i class="bx bxs-trash"></i></button>
-                    </div>
-                    <div class="col">
-
-                    </div>
-                    <div class="col">
-
-                    </div>
-
-                </div>
+                
                 <table id="table"
                        class="table table-striped"
                        data-show-fullscreen="true"
@@ -361,7 +365,7 @@
     }
     $(document).ready(function () {
 
-        $.getJSON("http://192.168.2.13:83/api/mongo/detayli", function (data) {
+        $.getJSON("http://192.168.2.13:83/api/detaylisip", function (data) {
             detayli = data;
         }).done(function () {
             $('#table').bootstrapTable("refresh", {

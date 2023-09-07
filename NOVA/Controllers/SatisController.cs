@@ -3767,7 +3767,7 @@ namespace NOVA.Controllers
             {
                 wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
                 HtmlResult = wc.UploadString(URI, myParameters);
-
+                
             }
 
             var apiUrl = "http://192.168.2.13:83/api/musteri/randevu";
