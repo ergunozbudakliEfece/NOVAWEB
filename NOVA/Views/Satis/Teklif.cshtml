@@ -10,8 +10,13 @@
     <meta name="viewport" content="width=device-width" />
     <title>Teklif</title>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
+    <script src="https://cdn.jsdelivr.net/npm/litepicker-polyfills-ie11/dist/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+
     <style>
-      
+
 
         footer {
             bottom: 0px;
@@ -41,9 +46,11 @@
             --div2color: black;
             --div3color: black;
         }
-        .fa-pencil:hover{
-            opacity:.7;
+
+        .fa-pencil:hover {
+            opacity: .7;
         }
+
         .floatlabel {
             position: relative;
         }
@@ -253,6 +260,7 @@
         .current:hover {
             color: white !important;
         }
+
         .bg-footer-theme {
             background-color: transparent !important;
             color: #697a8d;
@@ -283,8 +291,10 @@
                 transform: scale(0.40);
             }
         }
+
         .container {
         }
+
         @@media screen and (max-width: 600px) {
             .container {
                 width: 100% !important;
@@ -293,9 +303,11 @@
             #vert_menu #div1 {
                 font: normal 15px calibri;
             }
+
             #vert_menu #div2 {
                 font: normal 15px calibri;
             }
+
             #vert_menu #div3 {
                 font: normal 15px calibri;
             }
@@ -549,12 +561,13 @@
                                             <th data-field="STHAR_GCMIK2" data-sortable="true" data-align="center" data-halign="center" data-formatter="miktar2Formatter">MİKTAR 2</th>
                                             <th data-field="OLCU_BR2" data-sortable="true" data-align="center" data-halign="center" data-visible="false">ÖLÇÜ BR 2</th>
                                             <th data-field="STHAR_SATISK" data-sortable="true" data-align="center" data-halign="center">İSKONTO</th>
+                                            <th data-field="STHAR_DOVTIP" data-sortable="true" data-align="center" data-halign="center" data-formatter="dovFormatter">DÖVİZ TİPİ</th>
                                             <th data-field="KUR" data-sortable="true" data-align="center" data-halign="center">KUR</th>
+                                            <th data-field="STHAR_DOVFIAT" data-sortable="true" data-align="center" data-halign="center">DÖV. FİYAT</th>
                                             <th data-field="STHAR_BF" data-sortable="true" data-align="center" data-halign="center">BRÜT FİYAT</th>
                                             <th data-field="STHAR_NF" data-sortable="true" data-align="center" data-halign="center">NET FİYAT</th>
                                             <th data-field="DEPO_KODU" data-sortable="true" data-align="center" data-halign="center" data-formatter="depoFormatter">DEPO</th>
-                                            <th data-field="STHAR_DOVTIP" data-sortable="true" data-align="center" data-halign="center" data-formatter="dovFormatter">DÖVİZ TİPİ</th>
-                                            <th data-field="STHAR_DOVFIAT" data-sortable="true" data-align="center" data-halign="center">DÖV. FİYAT</th>
+                                            <th data-field="TERMIN" data-sortable="true" data-align="center" data-halign="center">TERMİN</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -605,6 +618,10 @@
                 document.getElementById("satis").className = "nav__link active";
                 document.getElementById("teklif1").className = "nav__dropdown-item active";
             }
+
+            $('#table').bootstrapTable('hideColumn', 'KUR');
+            $('#table').bootstrapTable('hideColumn', 'STHAR_DOVFIAT');
+
             $.getJSON('http://192.168.2.13:83/api/musteri/cariler', function (data) {
                 caridata = data;
                 var select = document.getElementById("cariler");
@@ -1054,7 +1071,37 @@
                 async function func() {
                     var tr = document.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
                     for (let i = 0; i < tr.length; i++) {
-                        model.push({ "STOK_ADI": tr[i].getElementsByTagName("td")[3].innerHTML, "MIKTAR1": tr[i].getElementsByTagName("td")[4].innerHTML.split(" ")[0], "OLCUBR1": tr[i].getElementsByTagName("td")[4].innerHTML.split(" ")[1], "MIKTAR2": tr[i].getElementsByTagName("td")[5].innerHTML.split(" ")[0], "OLCUBR2": tr[i].getElementsByTagName("td")[5].innerHTML.split(" ")[1], "STHAR_SATISK": tr[i].getElementsByTagName("td")[6].innerHTML, "STHAR_BF": tr[i].getElementsByTagName("td")[8].innerHTML, "TESLIM_TARIHI": null, "TESLIM_YERI": null })
+                        if (farkliDoviz) {
+                            model.push({
+                                "STOK_ADI": tr[i].getElementsByTagName("td")[3].innerHTML,
+                                "MIKTAR1": tr[i].getElementsByTagName("td")[4].innerHTML.split(" ")[0],
+                                "OLCUBR1": tr[i].getElementsByTagName("td")[4].innerHTML.split(" ")[1],
+                                "MIKTAR2": tr[i].getElementsByTagName("td")[5].innerHTML.split(" ")[0],
+                                "OLCUBR2": tr[i].getElementsByTagName("td")[5].innerHTML.split(" ")[1],
+                                "STHAR_SATISK": tr[i].getElementsByTagName("td")[6].innerHTML,
+                                "DOVIZ_TUTAR": tr[i].getElementsByTagName("td")[7].innerHTML,
+                                "DOVIZ_FIYAT": tr[i].getElementsByTagName("td")[9].innerHTML,
+                                "STHAR_BF": tr[i].getElementsByTagName("td")[10].innerHTML,
+                                "TESLIM_YERI": tr[i].getElementsByTagName("td")[12].getElementsByTagName("span")[0].innerHTML,
+                                "TESLIM_TARIHI": tr[i].getElementsByTagName("td")[13].innerHTML,
+                            })
+                        }
+                        else
+                        {
+                            model.push({
+                                "STOK_ADI": tr[i].getElementsByTagName("td")[3].innerHTML,
+                                "MIKTAR1": tr[i].getElementsByTagName("td")[4].innerHTML.split(" ")[0],
+                                "OLCUBR1": tr[i].getElementsByTagName("td")[4].innerHTML.split(" ")[1],
+                                "MIKTAR2": tr[i].getElementsByTagName("td")[5].innerHTML.split(" ")[0],
+                                "OLCUBR2": tr[i].getElementsByTagName("td")[5].innerHTML.split(" ")[1],
+                                "STHAR_SATISK": tr[i].getElementsByTagName("td")[6].innerHTML,
+                                "DOVIZ_TUTAR": tr[i].getElementsByTagName("td")[7].innerHTML,
+                                "DOVIZ_FIYAT": "0",
+                                "STHAR_BF": tr[i].getElementsByTagName("td")[8].innerHTML,
+                                "TESLIM_YERI": tr[i].getElementsByTagName("td")[10].getElementsByTagName("span")[0].innerHTML,
+                                "TESLIM_TARIHI": tr[i].getElementsByTagName("td")[11].innerHTML,
+                            })
+                        }
                     }
                 }
                 func();
@@ -1123,6 +1170,9 @@
         var dovfiyat = null;
         var depo = null;
         var kur = null;
+        var termindate = null;
+
+        var farkliDoviz = false;
         function buttons() {
             return {
                 btnRowAdd: {
@@ -1132,7 +1182,7 @@
                         if (options != "") {
                             Swal.fire({
                                 title: "Kalem Ekle",
-                                html: '<div class="container" style="overflow:hidden"><div class="row"><div class="col d-flex"><select class="form-control" onchange="selectchange()" id="stokadlari" value="">' + options + '</select></div></div><div class="row mt-2"><div class="col d-flex"><input type="text" class="form-control" placeholder="Miktar 1" onkeyup="keychange()" id="miktar1"></input></div><div class="col-2 d-flex"><input type="text" class="form-control" disabled id="olcubr1" style="font-size:11px !important"></input></div><div class="col d-flex"><input type="text" class="form-control"  placeholder="Miktar 2" onkeyup="keychange()" id="miktar2"></input></div><div class="col-2 d-flex"><select value="" disabled style="font-size:11px !important" onchange="keychange()" id="olcubr2" class="form-control" value="AD"><option value="AD">AD</option><option value="MT">MT</option><option value="KT">KT</option><option value="PK">PK</option><option value="KL">KL</option></select></div></div><div class="row mt-2"><div class="col d-flex"><select onchange="kurchange()" id="kurselect" class="form-control"><option value="0">TRY</option><option value="1">USD</option><option value="2">EUR</option></select></div><div class="col d-flex"><input readonly placeholder="Döviz Fiyat" class="form-control" onkeyup="dovfiatchange()" id="dovfiat"></input></div><div class="col d-flex"><input onkeyup="keychange()" readonly placeholder="Kur" class="form-control" id="kurinput"></input></div></div><div class="row mt-2"><div class="col d-flex"><input class="form-control" onkeyup="brutchange()"  placeholder="Brüt Fiyat" id="brutfiyat"></input></div><div class="col d-flex"><input onkeyup="iskontochange()" placeholder="İskonto (%)" class="form-control" id="iskonto" value=0></input></div></div><div class="row mt-2"><div class="col d-flex"><input onkeyup="keychange()" readonly placeholder="Net Fiyat" class="form-control" id="netfiyat"></input></div><div class=col d-flex><select class="form-control" onchange="keychange()" id="deppo" value=""><option value=1>EFECE 1 (1)</option><option value=5>EFECE 2 (5)</option><option value=8>EFECE 3 (8)</option><option value=46>MANİSA FAB. (46)</option><option value=10>FAB. DİRECT (10)</option></select></div></div></div>',
+                                html: '<div class="container" style="overflow:hidden"><div class="row"><div class="col d-flex"><select class="form-control" onchange="selectchange()" id="stokadlari" value="">' + options + '</select></div></div><div class="row mt-2"><div class="col d-flex"><input class="form-control" type="text" id="termindate" placeholder="Termin" autocomplete="off"></div></div><div class="row mt-2"><div class="col d-flex"><input type="text" class="form-control" placeholder="Miktar 1" onkeyup="keychange()" id="miktar1" autocomplete="off"></div><div class="col-2 d-flex"><input type="text" class="form-control" disabled="disabled" id="olcubr1" style="font-size:11px!important" autocomplete="off"></div><div class="col d-flex"><input type="text" class="form-control" placeholder="Miktar 2" onkeyup="keychange()" id="miktar2" autocomplete="off"></div><div class="col-2 d-flex"><select value="" disabled="disabled" style="font-size:11px!important" onchange="keychange()" id="olcubr2" class="form-control" value="AD"><option value="AD">AD</option><option value="MT">MT</option><option value="KT">KT</option><option value="PK">PK</option><option value="KL">KL</option></select></div></div><div class="row mt-2"><div class="col d-flex"><select onchange="kurchange()" id="kurselect" class="form-control"><option value="0">TRY</option><option value="1">USD</option><option value="2">EUR</option></select></div><div class="col d-flex"><input readonly="readonly" placeholder="Döviz Fiyat" autocomplete="off" class="form-control" onkeyup="dovfiatchange()" id="dovfiat"></div><div class="col d-flex"><input onkeyup="keychange()" autocomplete="off" readonly="readonly" placeholder="Kur" class="form-control" id="kurinput"></div></div><div class="row mt-2"><div class="col d-flex"><input class="form-control" autocomplete="off" onkeyup="brutchange()" placeholder="Brüt Fiyat" id="brutfiyat"></div><div class="col d-flex"><input onkeyup="iskontochange()" autocomplete="off" placeholder="İskonto (%)" class="form-control" id="iskonto" value="0"></div></div><div class="row mt-2"><div class="col d-flex"><input onkeyup="keychange()" autocomplete="off" readonly="readonly" placeholder="Net Fiyat" class="form-control" id="netfiyat"></div><div class="col" d-flex><select class="form-control" onchange="keychange()" id="deppo" value=""><option value="1">EFECE 1 (1)</option><option value="5">EFECE 2 (5)</option><option value="8">EFECE 3 (8)</option><option value="46">MANİSA FAB. (46)</option><option value="10">FAB. DİRECT (10)</option></select></div></div></div>',
                                 showCancelButton: true,
                                 confirmButtonColor: '#3085d6',
                                 cancelButtonColor: '#d33',
@@ -1145,6 +1195,29 @@
                                     popup: 'pop2 animate__animated animate__zoomOut'
                                 },
                                 didOpen: function () {
+
+                                    const picker = new Litepicker({
+                                        element: document.getElementById('termindate'),
+                                        lang: "tr-TR",
+                                        minDate: Date.now(),
+                                        plugins: ['mobilefriendly'],
+                                        mobilefriendly: {
+                                            breakpoint: 570,
+                                        },
+                                        format: 'DD.MM.YYYY'
+                                    });
+
+                                    picker.on("selected", (date1, date2) =>
+                                    {
+                                        termindate = new Date(date1.dateInstance).toLocaleDateString();
+                                        keychange();
+                                    });
+
+                                    $('#termindate').on("change input paste", (e) =>
+                                    {
+                                        TerminChange(e);
+                                    });
+
                                     $(swal.getConfirmButton()).prop('disabled', true)
                                     $("#deppo").select2({
                                         placeholder: "DEPO",
@@ -1158,6 +1231,7 @@
                                 }
                             }).then((result) => {
                                 if (result.isConfirmed) {
+
                                     $("#table").bootstrapTable('insertRow', {
                                         index: $('#table tr').length,
                                         row: {
@@ -1173,10 +1247,21 @@
                                             STHAR_SATISK: iskonto != "" ? iskonto /10000 :0,
                                             STHAR_DOVTIP: dovtip,
                                             STHAR_DOVFIAT: dovfiyat != "" ? dovfiyat : 0,
-                                            DEPO_KODU: depo
-
+                                            DEPO_KODU: depo,
+                                            TERMIN: termindate
                                         }
                                     })
+
+                                    FarkliDovizKontrol();
+
+                                    if (dovtip != "0" || farkliDoviz) {
+                                        $('#table').bootstrapTable('showColumn', 'KUR');
+                                        $('#table').bootstrapTable('showColumn', 'STHAR_DOVFIAT');
+                                    }
+                                    else {
+                                        $('#table').bootstrapTable('hideColumn', 'KUR');
+                                        $('#table').bootstrapTable('hideColumn', 'STHAR_DOVFIAT');
+                                    }
                                 }
                             })
                             
@@ -1213,13 +1298,20 @@
         }
         function selectchange() {
             var data = d.filter(x => x.STOK_KODU == $("#stokadlari").val());
+
             stokkodu = $("#stokadlari").val();
             stokadi = $("#stokadlari option:selected").text();
-            $("#olcubr1").val(data[0].OLCU_BR1);
-            $("#olcubr2").val(data[0].OLCU_BR2);
+
+            if (data.length > 0)
+            {
+                $("#olcubr1").val(data[0].OLCU_BR1);
+                $("#olcubr2").val(data[0].OLCU_BR2);
+            }
+
             keychange();
         }
         function keychange() {
+            stokkodu = $("#stokadlari").val();
             miktar1 = $("#miktar1").val();
             miktar2 = $("#miktar2").val();
             olcubr1=$("#olcubr1").val();
@@ -1232,7 +1324,7 @@
             dovtip = $("#kurselect").val();
             dovfiyat = $("#dovfiat").val();
             depo = $("#deppo").val();
-            if (miktar1 != "" && miktar2 != "" && bf != "" && nf != "" && iskonto != "" && dovtip != "" && depo != "") {
+            if (miktar1 != "" && miktar2 != "" && bf != "" && nf != "" && iskonto != "" && dovtip != "" && depo != null && termindate != null && stokkodu != null) {
                 $(swal.getConfirmButton()).prop('disabled', false)
             } else {
                 $(swal.getConfirmButton()).prop('disabled', true)
@@ -1250,16 +1342,33 @@
             var tr = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
             
             for (let i = 0; i < tr.length; i++) {
-                var stokkodu = tr[i].getElementsByTagName("td")[2].innerHTML;
-                var miktar1 = tr[i].getElementsByTagName("td")[4].innerHTML;
-                var miktar2 = tr[i].getElementsByTagName("td")[5].innerHTML;
-                var bf = tr[i].getElementsByTagName("td")[8].innerHTML;
-                var nf = tr[i].getElementsByTagName("td")[9].innerHTML;
-                var iskonto = tr[i].getElementsByTagName("td")[6].innerHTML;
-                var depo = tr[i].getElementsByTagName("td")[10].getElementsByTagName("span")[0].innerHTML;
-                var depokodu = depodata.filter(x => x.DEPO_ISMI == depo)[0].DEPO_KODU;
-                var kur = tr[i].getElementsByTagName("td")[7].innerHTML;
-                var dov = tr[i].getElementsByTagName("td")[11].innerHTML;
+                FarkliDovizKontrol();
+                if (farkliDoviz)
+                {
+                    var stokkodu = tr[i].getElementsByTagName("td")[2].innerHTML;
+                    var miktar1 = tr[i].getElementsByTagName("td")[4].innerHTML;
+                    var miktar2 = tr[i].getElementsByTagName("td")[5].innerHTML;
+                    var bf = tr[i].getElementsByTagName("td")[10].innerHTML;
+                    var nf = tr[i].getElementsByTagName("td")[11].innerHTML;
+                    var iskonto = tr[i].getElementsByTagName("td")[6].innerHTML;
+                    var depo = tr[i].getElementsByTagName("td")[12].getElementsByTagName("span")[0].innerHTML;
+                    var depokodu = depodata.filter(x => x.DEPO_ISMI == depo)[0].DEPO_KODU;
+                    var kur = tr[i].getElementsByTagName("td")[8].innerHTML;
+                    var dov = tr[i].getElementsByTagName("td")[7].innerHTML;
+                }
+                else
+                {
+                    var stokkodu = tr[i].getElementsByTagName("td")[2].innerHTML;
+                    var miktar1 = tr[i].getElementsByTagName("td")[4].innerHTML;
+                    var miktar2 = tr[i].getElementsByTagName("td")[5].innerHTML;
+                    var bf = tr[i].getElementsByTagName("td")[8].innerHTML;
+                    var nf = tr[i].getElementsByTagName("td")[9].innerHTML;
+                    var iskonto = tr[i].getElementsByTagName("td")[6].innerHTML;
+                    var depo = tr[i].getElementsByTagName("td")[10].getElementsByTagName("span")[0].innerHTML;
+                    var depokodu = depodata.filter(x => x.DEPO_ISMI == depo)[0].DEPO_KODU;
+                    var kur = "-";
+                    var dov = tr[i].getElementsByTagName("td")[7].innerHTML;
+                }
                 
                 var dovtip = "0";
                 if (dov == "TRY") {
@@ -1296,18 +1405,36 @@
             $("#content").show();
             var tr = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
             for (let i = 0; i < tr.length; i++) {
-                var stokkodu = tr[i].getElementsByTagName("td")[2].innerHTML;
-                var miktar1 = tr[i].getElementsByTagName("td")[4].innerHTML;
-                var miktar2 = tr[i].getElementsByTagName("td")[5].innerHTML;
-                var bf = tr[i].getElementsByTagName("td")[8].innerHTML;
-                var nf = tr[i].getElementsByTagName("td")[9].innerHTML;
-                var iskonto = tr[i].getElementsByTagName("td")[6].innerHTML;
-                var depo = tr[i].getElementsByTagName("td")[10].innerHTML.getElementsByTagName("span")[0].innerHTML;;
+                FarkliDovizKontrol();
+                if (farkliDoviz) {
+                    var stokkodu = tr[i].getElementsByTagName("td")[2].innerHTML;
+                    var miktar1 = tr[i].getElementsByTagName("td")[4].innerHTML;
+                    var miktar2 = tr[i].getElementsByTagName("td")[5].innerHTML;
+                    var bf = tr[i].getElementsByTagName("td")[10].innerHTML;
+                    var nf = tr[i].getElementsByTagName("td")[11].innerHTML;
+                    var iskonto = tr[i].getElementsByTagName("td")[6].innerHTML;
+                    var depo = tr[i].getElementsByTagName("td")[12].getElementsByTagName("span")[0].innerHTML;
+                    var depokodu = depodata.filter(x => x.DEPO_ISMI == depo)[0].DEPO_KODU;
+                    var kur = tr[i].getElementsByTagName("td")[8].innerHTML;
+                    var dov = tr[i].getElementsByTagName("td")[7].innerHTML;
+                }
+                else {
+                    var stokkodu = tr[i].getElementsByTagName("td")[2].innerHTML;
+                    var miktar1 = tr[i].getElementsByTagName("td")[4].innerHTML;
+                    var miktar2 = tr[i].getElementsByTagName("td")[5].innerHTML;
+                    var bf = tr[i].getElementsByTagName("td")[8].innerHTML;
+                    var nf = tr[i].getElementsByTagName("td")[9].innerHTML;
+                    var iskonto = tr[i].getElementsByTagName("td")[6].innerHTML;
+                    var depo = tr[i].getElementsByTagName("td")[10].getElementsByTagName("span")[0].innerHTML;
+                    var depokodu = depodata.filter(x => x.DEPO_ISMI == depo)[0].DEPO_KODU;
+                    var kur = "-";
+                    var dov = tr[i].getElementsByTagName("td")[7].innerHTML;
+                }
+
                 var tn = $("#TEKLIFNO").val();
-                var depokodu = depodata.filter(x => x.DEPO_ISMI == depo)[0].DEPO_KODU;
-                var kur = tr[i].getElementsByTagName("td")[7].innerHTML;
-                var dov = tr[i].getElementsByTagName("td")[11].innerHTML;
                 var dovtip = 0;
+
+
                 if (dov == "TRY") {
                     dovtip = "0";
                 } else if (dov == "USD") {
@@ -1367,19 +1494,49 @@
 
         }
         function duzenlefunc() {
-            var t = document.getElementById("table").getElementsByTagName("tr");
-            var rowNum = event.currentTarget.parentNode.parentNode.rowIndex;
-            var first = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[2].innerHTML;
-            var onmiktar1 = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[4].innerHTML.split(" ")[0];
-            var onmiktar2 = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[5].innerHTML.split(" ")[0];
-            var onbrut = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[8].innerHTML;
-            var oniskonto = (t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[6].innerHTML)*100000;
-            var ondepo = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[10].innerHTML;
-            var ondepokodu = depodata.filter(x => x.DEPO_ISMI == ondepo)[0].DEPO_KODU;
-            var onnet = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[9].innerHTML;
+            var t;
+            var rowNum;
+            var first;
+            var onmiktar1;
+            var onmiktar2;
+            var onbrut;
+            var oniskonto;
+            var ondepo;
+            var ondepokodu;
+            var onnet;
+            var termin;
+
+            if (!farkliDoviz) {
+                t = document.getElementById("table").getElementsByTagName("tr");
+                rowNum = event.currentTarget.parentNode.parentNode.rowIndex;
+                first = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[2].innerHTML;
+                onmiktar1 = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[4].innerHTML.split(" ")[0];
+                onmiktar2 = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[5].innerHTML.split(" ")[0];
+                onbrut = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[8].innerHTML;
+                oniskonto = (t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[6].innerHTML) * 100000;
+                ondepo = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[10].getElementsByTagName("span")[0].innerHTML;
+                ondepokodu = depodata.filter(x => x.DEPO_ISMI == ondepo)[0].DEPO_KODU;
+                onnet = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[9].innerHTML;
+                termin = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[11].innerHTML;
+            }
+            else
+            {
+                t = document.getElementById("table").getElementsByTagName("tr");
+                rowNum = event.currentTarget.parentNode.parentNode.rowIndex;
+                first = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[2].innerHTML;
+                onmiktar1 = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[4].innerHTML.split(" ")[0];
+                onmiktar2 = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[5].innerHTML.split(" ")[0];
+                onbrut = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[10].innerHTML;
+                oniskonto = (t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[6].innerHTML) * 100000;
+                ondepo = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[12].getElementsByTagName("span")[0].innerHTML;
+                ondepokodu = depodata.filter(x => x.DEPO_ISMI == ondepo)[0].DEPO_KODU;
+                onnet = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[11].innerHTML;
+                termin = t[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[13].innerHTML;
+            }
+
             Swal.fire({
                 title: "Kalem Değiştir",
-                html: '<div class="container" style="overflow:hidden"><div class="row"><div class="col d-flex"><select class="form-control" onchange="selectchange()" id="stokadlari" value="">' + options + '</select></div></div><div class="row mt-2"><div class="col d-flex"><input type="text" class="form-control" placeholder="Miktar 1" onkeyup="keychange()" id="miktar1"></input></div><div class="col-2 d-flex"><input type="text" class="form-control" disabled id="olcubr1" style="font-size:11px !important"></input></div><div class="col d-flex"><input type="text" class="form-control"  placeholder="Miktar 2" onkeyup="keychange()" id="miktar2"></input></div><div class="col-2 d-flex"><input type="text" class="form-control" style="font-size:11px !important" disabled id="olcubr2"></input></div></div><div class="row mt-2"><div class="col d-flex"><select onchange="kurchange()" id="kurselect" class="form-control"><option value="0">TRY</option><option value="1">USD</option><option value="2">EUR</option></select></div><div class="col d-flex"><input readonly placeholder="Döviz Fiyat" class="form-control" onkeyup="dovfiatchange()" id="dovfiat"></input></div><div class="col d-flex"><input onkeyup="keychange()" readonly placeholder="Kur" class="form-control" id="kurinput"></input></div></div><div class="row mt-2"><div class="col d-flex"><input class="form-control" onkeyup="brutchange()"  placeholder="Brüt Fiyat" id="brutfiyat"></input></div><div class="col d-flex"><input onkeyup="iskontochange()" placeholder="İskonto (%)" class="form-control" id="iskonto"></input></div></div><div class="row mt-2"><div class="col d-flex"><input onkeyup="keychange()" readonly placeholder="Net Fiyat" class="form-control" id="netfiyat"></input></div><div class=col d-flex><select class="form-control" onchange="keychange()" id="deppo" value=""><option value="1">EFECE 1 (1)</option><option value="5">EFECE 2 (5)</option><option value="8">EFECE 3 (8)</option><option value="46">MANİSA FAB. (46)</option><option value="10">FAB. DİRECT (10)</option></select></div></div></div>',
+                html: '<div class="container" style="overflow:hidden"><div class="row"><div class="col d-flex"><select class="form-control" onchange="selectchange()" id="stokadlari" value="">' + options + '</select></div></div><div class="row mt-2"><div class="col d-flex"><input class="form-control" type="text" id="termindate" placeholder="Termin" autocomplete="off"></div></div><div class="row mt-2"><div class="col d-flex"><input type="text" class="form-control" placeholder="Miktar 1" onkeyup="keychange()" id="miktar1" autocomplete="off"></div><div class="col-2 d-flex"><input type="text" class="form-control" disabled="disabled" id="olcubr1" style="font-size:11px!important" autocomplete="off"></div><div class="col d-flex"><input type="text" class="form-control" placeholder="Miktar 2" onkeyup="keychange()" id="miktar2" autocomplete="off"></div><div class="col-2 d-flex"><select value="" disabled="disabled" style="font-size:11px!important" onchange="keychange()" id="olcubr2" class="form-control" value="AD"><option value="AD">AD</option><option value="MT">MT</option><option value="KT">KT</option><option value="PK">PK</option><option value="KL">KL</option></select></div></div><div class="row mt-2"><div class="col d-flex"><select onchange="kurchange()" id="kurselect" class="form-control"><option value="0">TRY</option><option value="1">USD</option><option value="2">EUR</option></select></div><div class="col d-flex"><input readonly="readonly" placeholder="Döviz Fiyat" autocomplete="off" class="form-control" onkeyup="dovfiatchange()" id="dovfiat"></div><div class="col d-flex"><input onkeyup="keychange()" autocomplete="off" readonly="readonly" placeholder="Kur" class="form-control" id="kurinput"></div></div><div class="row mt-2"><div class="col d-flex"><input class="form-control" autocomplete="off" onkeyup="brutchange()" placeholder="Brüt Fiyat" id="brutfiyat"></div><div class="col d-flex"><input onkeyup="iskontochange()" autocomplete="off" placeholder="İskonto (%)" class="form-control" id="iskonto" value="0"></div></div><div class="row mt-2"><div class="col d-flex"><input onkeyup="keychange()" autocomplete="off" readonly="readonly" placeholder="Net Fiyat" class="form-control" id="netfiyat"></div><div class="col" d-flex><select class="form-control" onchange="keychange()" id="deppo" value=""><option value="1">EFECE 1 (1)</option><option value="5">EFECE 2 (5)</option><option value="8">EFECE 3 (8)</option><option value="46">MANİSA FAB. (46)</option><option value="10">FAB. DİRECT (10)</option></select></div></div></div>',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
@@ -1392,6 +1549,32 @@
                     popup: 'pop2 animate__animated animate__zoomOut'
                 },
                 didOpen: function () {
+
+                    const picker = new Litepicker({
+                        element: document.getElementById('termindate'),
+                        lang: "tr-TR",
+                        minDate: Date.now(),
+                        plugins: ['mobilefriendly'],
+                        mobilefriendly: {
+                            breakpoint: 570,
+                        },
+                        format: 'DD.MM.YYYY'
+                    });
+
+                    picker.on("selected", (date1, date2) => {
+                        if (date1 != null)
+                        {
+                            termindate = new Date(date1.dateInstance).toLocaleDateString();
+                            keychange();
+                        }
+                    });
+
+                    $('#termindate').on("change input paste", (e) => {
+                        TerminChange(e);
+                    });
+
+                    picker.setDate(moment(termin, 'DD.MM.YYYY')._d);
+
                     $("#deppo").select2({
                         placeholder: "Depo",
                         dropdownParent: $(".swal2-modal")
@@ -1409,6 +1592,7 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
+
                     $("#table").bootstrapTable('updateRow', {
                         index: rowNum-1,
                         row: {
@@ -1424,15 +1608,52 @@
                             STHAR_SATISK: iskonto,
                             STHAR_DOVTIP: dovtip,
                             STHAR_DOVFIAT: dovfiyat != "" ? dovfiyat:0,
-                            DEPO_KODU: depo
-
+                            DEPO_KODU: depo,
+                            TERMIN: termindate
                         }
                     })
+
+                    FarkliDovizKontrol();
+
+                    if (dovtip != "0") {
+                        $('#table').bootstrapTable('showColumn', 'KUR');
+                        $('#table').bootstrapTable('showColumn', 'STHAR_DOVFIAT');
+                    }
+                    else {
+                        $('#table').bootstrapTable('hideColumn', 'KUR');
+                        $('#table').bootstrapTable('hideColumn', 'STHAR_DOVFIAT');
+                    }
                 }
             })
 
 
         }
+
+        function FarkliDovizKontrol()
+        {
+            var tr = document.getElementById("table").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+            farkliDoviz = false;
+
+            for (var i = 0; i < tr.length; i++)
+            {
+                var dov = tr[i].getElementsByTagName("td")[7].innerHTML;
+
+                if (dov != 0)
+                {
+                    farkliDoviz = true;
+                    break;
+                }
+            }
+        }
+
+        function TerminChange(e)
+        {
+            e.target.value = null;
+            termindate = null;
+
+            keychange();
+        }
+
         function kurchange() {
             var k = $("#kurselect").val();
             var url ="http://192.168.2.13:83/api/satis/kur/"+k

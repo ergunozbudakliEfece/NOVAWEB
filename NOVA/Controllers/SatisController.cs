@@ -2417,7 +2417,7 @@ namespace NOVA.Controllers
             string pdfpath = Server.MapPath("PDF");
 
             string imagepath = Server.MapPath("Content");
-            iTextSharp.text.Document document = new iTextSharp.text.Document(PageSize.A4, 10f,10f,10f,10f);
+            iTextSharp.text.Document document = new iTextSharp.text.Document(PageSize.A4, 0f,0f,0f,0f);
             iTextSharp.text.pdf.BaseFont STF_Helvetica_Turkish = iTextSharp.text.pdf.BaseFont.CreateFont("Helvetica", "CP1254", iTextSharp.text.pdf.BaseFont.NOT_EMBEDDED);
 
             iTextSharp.text.Font fontNormal = new iTextSharp.text.Font(STF_Helvetica_Turkish, 8, iTextSharp.text.Font.NORMAL);
@@ -2449,7 +2449,7 @@ namespace NOVA.Controllers
             ct4.SetSimpleColumn(new Phrase(new Chunk("TEKLİF NO: " + teklif + "\nTEKLİFİ HAZIRLAYAN: "+plasiyer+ "\nGSM: "+gsm+ "\nE-MAIL:"+mail, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD))),
                               285, 660, 600, 295, 10, Element.ALIGN_LEFT);
             ct4.Go();
-            PdfPTable table = new PdfPTable(8);
+            PdfPTable table = new PdfPTable(10);
             var firsth = new PdfPCell(new Phrase("MALZEME CİNSİ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             var firsth2 = new PdfPCell(new Phrase("MİKTAR 1", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             var firsth3 = new PdfPCell(new Phrase("MİKTAR 2", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
@@ -2462,133 +2462,158 @@ namespace NOVA.Controllers
             var firsth8 = new PdfPCell(new Phrase("TESLİM YERİ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth.Border = Rectangle.NO_BORDER;
             firsth.BorderWidthBottom = 1f;
-            firsth.HorizontalAlignment = Rectangle.ALIGN_LEFT;
+            firsth.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth);
             firsth2.Border = Rectangle.NO_BORDER;
             firsth2.BorderWidthBottom = 1f;
-            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth2);
             firsth3.Border = Rectangle.NO_BORDER;
             firsth3.BorderWidthBottom = 1f;
-            firsth3.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth3.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth3);
             firsth4.Border = Rectangle.NO_BORDER;
             firsth4.BorderWidthBottom = 1f;
-            firsth4.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth4.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth4);
-            firsth5.Border = Rectangle.NO_BORDER;
-            firsth5.BorderWidthBottom = 1f;
-            firsth5.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth9.Border = Rectangle.NO_BORDER;
+            firsth9.BorderWidthBottom = 1f;
+            firsth9.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth9);
-            firsth5.Border = Rectangle.NO_BORDER;
-            firsth5.BorderWidthBottom = 1f;
-            firsth5.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth10.Border = Rectangle.NO_BORDER;
+            firsth10.BorderWidthBottom = 1f;
+            firsth10.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth10);
             firsth5.Border = Rectangle.NO_BORDER;
             firsth5.BorderWidthBottom = 1f;
-            firsth5.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth5.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth5);
             firsth6.Border = Rectangle.NO_BORDER;
             firsth6.BorderWidthBottom = 1f;
-            firsth6.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth6.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth6);
             firsth7.Border = Rectangle.NO_BORDER;
             firsth7.BorderWidthBottom = 1f;
-            firsth7.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth7.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth7);
             firsth8.Border = Rectangle.NO_BORDER;
             firsth8.BorderWidthBottom = 1f;
-            firsth8.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth8.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth8);
             for (var i = 0; i < input.Count; i++)
             {
                 firsth = new PdfPCell(new Phrase(input[i].STOK_ADI, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
                 firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(input[i].MIKTAR1)) + " " + input[i].OLCUBR1, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
                 firsth3 = (new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(input[i].MIKTAR2)) + " " + input[i].OLCUBR2, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL))));
-                firsth4 = (new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(input[i].STHAR_BF)) + " " + dovizadi, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL))));
-                firsth5 =new PdfPCell(new Phrase( (Double.Parse(input[i].STHAR_SATISK)*10)+" %", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
-                firsth6 = new PdfPCell(new Phrase(String.Format("{0:N}", (100- input[i].STHAR_SATISK.ToDecimal()*10) * input[i].STHAR_BF.ToDecimal() / 100* input[i].MIKTAR1.ToDecimal())+" "+dovizadi, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
-                firsth7 = new PdfPCell(new Phrase(input[i].TESLIM_TARIHI, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
-                firsth8 = new PdfPCell(new Phrase(input[i].TESLIM_YERI, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth4 = new PdfPCell(new Phrase(input[i].DOVIZ_FIYAT, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth5 = new PdfPCell(new Phrase(input[i].DOVIZ_TUTAR, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth6 = (new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(input[i].STHAR_BF)) + " " + dovizadi, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL))));
+                firsth7 =new PdfPCell(new Phrase( (Double.Parse(input[i].STHAR_SATISK)*10)+" %", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth8 = new PdfPCell(new Phrase(String.Format("{0:N}", (100- input[i].STHAR_SATISK.ToDecimal()*10) * input[i].STHAR_BF.ToDecimal() / 100* input[i].MIKTAR1.ToDecimal())+" "+dovizadi, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth9 = new PdfPCell(new Phrase(input[i].TESLIM_TARIHI, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+                firsth10 = new PdfPCell(new Phrase(input[i].TESLIM_YERI, FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.NORMAL)));
+
                 firsth.Border = Rectangle.NO_BORDER;
-                firsth.HorizontalAlignment = Rectangle.ALIGN_LEFT;
+                firsth.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
                 table.AddCell(firsth);
                 firsth2.Border = Rectangle.NO_BORDER;
-                firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                firsth2.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth2.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
                 table.AddCell(firsth2);
                 firsth3.Border = Rectangle.NO_BORDER;
-                firsth3.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                firsth3.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth3.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
                 table.AddCell(firsth3);
                 firsth4.Border = Rectangle.NO_BORDER;
-                firsth4.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                firsth4.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth4.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
                 table.AddCell(firsth4);
                 firsth5.Border = Rectangle.NO_BORDER;
-                firsth5.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                firsth5.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth5.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
                 table.AddCell(firsth5);
                 firsth6.Border = Rectangle.NO_BORDER;
-                firsth6.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                firsth6.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth6.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
                 table.AddCell(firsth6);
                 firsth7.Border = Rectangle.NO_BORDER;
-                firsth7.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                firsth7.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth7.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
                 table.AddCell(firsth7);
                 firsth8.Border = Rectangle.NO_BORDER;
-                firsth8.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+                firsth8.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth8.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
                 table.AddCell(firsth8);
+                firsth9.Border = Rectangle.NO_BORDER;
+                firsth9.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth9.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
+                table.AddCell(firsth9);
+                firsth10.Border = Rectangle.NO_BORDER;
+                firsth10.HorizontalAlignment = Rectangle.ALIGN_CENTER;
+                firsth10.VerticalAlignment = Rectangle.ALIGN_MIDDLE;
+                table.AddCell(firsth10);
             }
+
             firsth = new PdfPCell(new Phrase("BRÜT TOPLAM : ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(bruttop.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth.Border = Rectangle.NO_BORDER;
-            firsth.Colspan = 7;
+            firsth.Colspan = 9;
             firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
             table.AddCell(firsth);
             firsth2.Border = Rectangle.NO_BORDER;
-            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth2);
             firsth = new PdfPCell(new Phrase("TOPLAM İSKONTO :", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(isktop.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth.Border = Rectangle.NO_BORDER;
-            firsth.Colspan = 7;
+            firsth.Colspan = 9;
             firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
             table.AddCell(firsth);
             firsth2.Border = Rectangle.NO_BORDER;
-            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth2);
             firsth = new PdfPCell(new Phrase("TOPLAM KDV : ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(kdv.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth.Border = Rectangle.NO_BORDER;
-            firsth.Colspan = 7;
+            firsth.Colspan = 9;
             firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
             table.AddCell(firsth);
             firsth2.Border = Rectangle.NO_BORDER;
-            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth2);
             firsth = new PdfPCell(new Phrase("TEVKİFAT (5/10) : ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(tevkifat.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth.Border = Rectangle.NO_BORDER;
-            firsth.Colspan=7;
+            firsth.Colspan=9;
             firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
             table.AddCell(firsth);
             firsth2.Border = Rectangle.NO_BORDER;
-            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth2);
             firsth = new PdfPCell(new Phrase("GENEL TOPLAM : ", FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth2 = new PdfPCell(new Phrase(String.Format("{0:N}", decimal.Parse(geneltoplam.Replace(".", ","))), FontFactory.GetFont(FontFactory.HELVETICA, "CP1254", 8, iTextSharp.text.Font.BOLD)));
             firsth.Border = Rectangle.NO_BORDER;
-            firsth.Colspan = 7;
+            firsth.Colspan = 9;
             firsth.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
             table.AddCell(firsth);
             firsth2.Border = Rectangle.NO_BORDER;
-            firsth2.HorizontalAlignment = Rectangle.ALIGN_RIGHT;
+            firsth2.HorizontalAlignment = Rectangle.ALIGN_CENTER;
             table.AddCell(firsth2);
 
-            ColumnText ct5 = new ColumnText(cb);
-            ct5.SetSimpleColumn(new Rectangle(0, 270, 600, 570));
-            ct5.AddElement(table);
-            ct5.Go();
+            //ColumnText ct5 = new ColumnText(cb);
+            //ct5.SetSimpleColumn(new Rectangle(0, 270, 800, 570));
+            //ct5.AddElement(table);
+            //ct5.Go();
+
+            float columnWidth = 54.5f;
+            table.SetTotalWidth(new float[] { columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth });
+            table.WriteSelectedRows(0, -1, 30, 580, writer.DirectContent);
+
             // Belgeyi kapat
-            
+
             //var s = ConvertToBase64(file);
-            
+
             //MailMessage mmail = new MailMessage();
 
             //var pdf = new Attachment(file, teklif+".pdf");
@@ -2792,6 +2817,8 @@ namespace NOVA.Controllers
             public string STHAR_BF { get; set; }
             public string TESLIM_TARIHI { get; set; }
             public string TESLIM_YERI { get; set; }
+            public string DOVIZ_TUTAR { get; set; }
+            public string DOVIZ_FIYAT { get; set; }
         }
         public class StokListeLocal
         {
@@ -3767,7 +3794,7 @@ namespace NOVA.Controllers
             {
                 wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
                 HtmlResult = wc.UploadString(URI, myParameters);
-                
+
             }
 
             var apiUrl = "http://192.168.2.13:83/api/musteri/randevu";

@@ -13,14 +13,14 @@
 
             <div class="col-sm-2 col-12">
                 <div class="form-label-group outline m-0">
-                    <input type="text" id="GIRIS_DEPO" class="form-control" placeholder="GİRİŞ DEPO" autocomplete="off" />
-                    <span><label for="GIRIS_DEPO">GİRİŞ DEPO</label></span>
+                    <input type="text" id="CIKIS_DEPO" class="form-control" placeholder="ÇIKIŞ DEPO" autocomplete="off" />
+                    <span><label for="CIKIS_DEPO">ÇIKIŞ DEPO</label></span>
                 </div>
             </div>
             <div class="col-sm-2 col-12">
                 <div class="form-label-group outline m-0">
-                    <input type="text" id="CIKIS_DEPO" class="form-control" placeholder="ÇIKIŞ DEPO" autocomplete="off" />
-                    <span><label for="CIKIS_DEPO">ÇIKIŞ DEPO</label></span>
+                    <input type="text" id="GIRIS_DEPO" class="form-control" placeholder="GİRİŞ DEPO" autocomplete="off" />
+                    <span><label for="GIRIS_DEPO">GİRİŞ DEPO</label></span>
                 </div>
             </div>
         </div>
@@ -920,10 +920,22 @@
 </script>
 
 <script>
+    function isNumericString(input) {
+        return typeof input === 'string' && !Number.isNaN(input)
+    }
+
     function StokAdlariOtomatikTamamlama(arr) {
         var currentFocus;
 
         var inp = document.getElementById('STOK_ADLARI');
+
+        let StokSorgu = new Fuse(arr, {
+            keys: [
+                { name: 'STOK_ADI', getFn: (item) => item.STOK_ADI },
+                { name: 'STOK_KODU', getFn: (item) => item.STOK_KODU }],
+            includeMatches: true,
+            includeScore: true
+        });
 
         inp.addEventListener("input", function (e) {
             var a, b, i, val = this.value.trim();
@@ -933,6 +945,11 @@
             if (!val) {
                 AlanlariTemizle();
                 DurumDegisikligi(0);
+
+                if (KayitTipi == 0)
+                {
+                    $('#STOK_ADLARI').prop("disabled", false);
+                }
 
                 $('#BarkodButton').prop("disabled", false);
 
@@ -944,22 +961,33 @@
             a = document.createElement("DIV");
             a.setAttribute("id", this.id + "autocomplete-list");
             a.setAttribute("class", "autocomplete-items");
+            a.setAttribute("style", "height:auto;max-height:200px;overflow-y:auto;box-shadow: 0 4px 2px -2px gray;");
 
             this.parentNode.appendChild(a);
 
             var itemNumber = 0;
 
-            for (let i = 0; i < arr.length; i++) {
+            var KodSorgu = val.replaceAll(",", "").replaceAll(".", "").trimLeft().trimRight();
+            var Sorgu;
 
-                if ((arr[i].STOK_ADI.substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1 || arr[i].STOK_KODU.substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1) && itemNumber < 5) {
+            if (isNaN(KodSorgu)) {
+                Sorgu = StokSorgu.search({ STOK_ADI: val });
+            }
+            else
+            {
+                Sorgu = StokSorgu.search({ STOK_KODU: val });
+            }
+
+            for (let i = 0; i < Sorgu.length; i++) {
+                if ((itemNumber < 50 && isNaN(KodSorgu)) || (!isNaN(KodSorgu) && itemNumber < 1)) {
+
                     b = document.createElement("DIV");
 
-                    b.innerHTML = "<strong>" + arr[i].STOK_ADI.substr(0, val.length) + "</strong>";
-                    b.innerHTML += arr[i].STOK_ADI.substr(val.length);
+                    b.innerHTML = Sorgu[i].item.STOK_ADI;
 
-                    b.innerHTML += "<input type='hidden' kod='" + arr[i].STOK_KODU + "' value='" + arr[i].STOK_ADI + "'>";
+                    b.innerHTML += "<input type='hidden' kod='" + Sorgu[i].item.STOK_KODU + "' value='" + Sorgu[i].item.STOK_ADI + "'>";
 
-                    b.addEventListener("click", function (e) {
+                    b.addEventListener("click", function () {
                         inp.value = this.getElementsByTagName("input")[0].value;
 
                         if (inp.value.trim().length !== 0) {
@@ -967,8 +995,8 @@
                             $("#BARKOD_LISTE_BUTTON").prop("disabled", false);
                             $('#BarkodButton').prop("disabled", false);
 
-                            $("#OLCU_BR1").val(arr[i].OLCU_BR1);
-                            $("#OLCU_BR2").val(arr[i].OLCU_BR2);
+                            $("#OLCU_BR1").val(Sorgu[i].item.OLCU_BR1);
+                            $("#OLCU_BR2").val(Sorgu[i].item.OLCU_BR2);
 
                             BarkodNoGetir(this.getElementsByTagName("input")[0].getAttribute("kod"));
                         }
@@ -1022,13 +1050,22 @@
             }
         }
         document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
+            if (e.target.className.trim() != "") {
+                closeAllLists(e.target);
+            }
         });
     }
 
     function BarkodNoOtomatikTamamlama(arr) {
         var currentFocus;
         var inp = document.getElementById('SERI_NO');
+
+        let BarkodSorgu = new Fuse(arr, {
+            keys: [],
+            includeMatches: true,
+            threshold: 0.1,
+            distance: 15
+        });
 
         inp.addEventListener("input", function (e) {
             var a, b, i, val = this.value.trim();
@@ -1057,15 +1094,16 @@
 
             var itemNumber = 0;
 
-            for (i = 0; i < arr.length; i++) {
+            var Sorgu = BarkodSorgu.search(val);
 
-                if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase() && itemNumber < 5) {
+            for (let i = 0; i < Sorgu.length; i++) {
+
+                if (itemNumber < 5) {
                     b = document.createElement("DIV");
 
-                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                    b.innerHTML += arr[i].substr(val.length);
+                    b.innerHTML = Sorgu[i].item;
 
-                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                    b.innerHTML += "<input type='hidden' value='" + Sorgu[i].item + "'>";
 
                     b.addEventListener("click", function (e) {
                         inp.value = this.getElementsByTagName("input")[0].value;
@@ -1130,15 +1168,17 @@
                 }
             }
         }
-        document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
-        });
     }
 
     function DepoOtomatikTamamlama(id, arr) {
         var currentFocus;
 
         var inp = document.getElementById(id);
+
+        let DepoSorgu = new Fuse(arr, {
+            keys: ['DEPO_ISMI', 'DEPO_KODU'],
+            includeMatches: true
+        });
 
         inp.addEventListener("input", function (e) {
             var a, b, i, val = this.value.trimLeft();
@@ -1171,15 +1211,18 @@
 
             var itemNumber = 0;
 
-            for (let i = 0; i < arr.length; i++) {
+            var Sorgu = DepoSorgu.search(val);
 
-                if ((arr[i].DEPO_ISMI.substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1 || arr[i].DEPO_KODU.toString().substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1) && itemNumber < 5) {
+            for (let i = 0; i < Sorgu.length; i++) {
+
+                var KodSorgu = parseInt(val.replace(",", "").replace(".", "").trim());
+
+                if ((itemNumber < 5 && isNaN(KodSorgu)) || (!isNaN(KodSorgu) && itemNumber < 1)) {
                     b = document.createElement("DIV");
 
-                    b.innerHTML = "<strong>" + arr[i].DEPO_ISMI.substr(0, val.length) + "</strong>";
-                    b.innerHTML += arr[i].DEPO_ISMI.substr(val.length);
+                    b.innerHTML = Sorgu[i].item.DEPO_ISMI;
 
-                    b.innerHTML += "<input type='hidden' kod='" + arr[i].DEPO_KODU + "' value='" + arr[i].DEPO_ISMI + "'>";
+                    b.innerHTML += "<input type='hidden' kod='" + Sorgu[i].item.DEPO_KODU + "' value='" + Sorgu[i].item.DEPO_ISMI + "'>";
 
                     b.addEventListener("click", function (e) {
                         inp.value = this.getElementsByTagName("input")[0].value;
@@ -1250,9 +1293,6 @@
                 }
             }
         }
-        document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
-        });
     }
 
     $('#GIRIS_DEPO').on("blur", (e) => {
@@ -1273,12 +1313,40 @@
                     }
                 }
                 else {
-                    e.target.value = null;
-                    GirisDepo = -1;
+                    var FiltreliDepolar = Depolar.filter(x => x.DEPO_KODU == val.toUpperCase());
+
+                    if (FiltreliDepolar.length > 0) {
+                        GirisDepo = FiltreliDepolar[0].DEPO_KODU;
+
+                        $('#GIRIS_DEPO').val(FiltreliDepolar[0].DEPO_ISMI);
+
+                        if (GirisDepo != -1 && CikisDepo != -1) {
+                            if (KayitTipi == 0) {
+                                $('#STOK_ADLARI').prop("disabled", false);
+                            }
+                        }
+
+                        if (GirisDepo != -1) {
+                            $('#GIRIS_DEPOautocomplete-list').html('');
+                        }
+                    }
+                    else {
+                        e.target.value = null;
+                        GirisDepo = -1;
+                    }
                 }
+
+                if (GirisDepo != -1) {
+                    $('#GIRIS_DEPOautocomplete-list').html('');
+                }
+
+                if (GirisDepo != -1 && CikisDepo != -1) {
+                    StokAdlariGetir();
+                }
+
+                KayitDepolariDegistir();
             }
 
-            $('#GIRIS_DEPOautocomplete-list').html('');
         }, 100);
     });
 
@@ -1299,14 +1367,66 @@
                     }
                 }
                 else {
-                    e.target.value = null;
-                    CikisDepo = -1;
+                    var FiltreliDepolar = Depolar.filter(x => x.DEPO_KODU == val.toUpperCase());
+
+                    if (FiltreliDepolar.length > 0) {
+                        CikisDepo = FiltreliDepolar[0].DEPO_KODU;
+
+                        $('#CIKIS_DEPO').val(FiltreliDepolar[0].DEPO_ISMI);
+
+                        if (GirisDepo != -1 && CikisDepo != -1) {
+                            if (KayitTipi == 0) {
+                                $('#STOK_ADLARI').prop("disabled", false);
+                            }
+                        }
+
+                        if (CikisDepo != -1) {
+                            $('#CIKIS_DEPOautocomplete-list').html('');
+                        }
+                    }
+                    else {
+                        e.target.value = null;
+                        CikisDepo = -1;
+                    }
+                }
+
+                if (CikisDepo != -1) {
+                    $('#CIKIS_DEPOautocomplete-list').html('');
                 }
             }
 
-            $('#CIKIS_DEPOautocomplete-list').html('');
+            if (GirisDepo != -1 && CikisDepo != -1) {
+                StokAdlariGetir();
+            }
+
+            KayitDepolariDegistir();
         }, 100);
     });
+
+    $('#GIRIS_DEPO').on("keydown", (e) => {
+        if (e.which == 9) {
+            $('#GIRIS_DEPOautocomplete-list').html('');
+        }
+    });
+
+    $('#CIKIS_DEPO').on("keydown", (e) => {
+        if (e.which == 9) {
+            $('#CIKIS_DEPOautocomplete-list').html('');
+        }
+    });
+
+    $('#STOK_ADLARI').on("keydown", (e) => {
+        if (e.which == 9 && (GirisDepo == -1 || CikisDepo == -1)) {
+            $('#STOK_ADLARIautocomplete-list').html('');
+        }
+    });
+
+    $('#SERI_NO').on("keydown", (e) => {
+        if (e.which == 9) {
+            $('#SERI_NOautocomplete-list').html('');
+        }
+    });
+    
 </script>
 
 <style>
