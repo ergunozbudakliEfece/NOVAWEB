@@ -270,7 +270,6 @@
     </style>
 </head>
 <body style="overflow-x:hidden;">
-
     <div class="centercontent" id="content" style="display:unset">
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
     </div>
@@ -292,7 +291,7 @@
 
         <div class="row" style="min-height:100%;overflow-y:auto;">
             <div class="col">
-                <div class="row mt-4" style="min-height:11%; max-width:100vw">
+                <div class="row mt-4" style="max-width:100vw">
                     <div class="col">
                         <div id="BekleyenIsEmirleriMakine" style="max-width:50vw;display:none;"> </div>
                         <div id="BekleyenIsEmirleriMakineMobil" style="max-width:50vw;display:none;"> </div>
@@ -302,6 +301,23 @@
                         <div class="btn-group" role="group" aria-label="Basic radio toggle button group" id="makineler1" style="display:none">
 
                         </div>
+                    </div>
+                </div>
+                <div class="row  mt-3">
+                    <div class="col-sm-auto">
+                        <div class="btn-group iefiltre" role="group" aria-label="Basic radio toggle button group" style="display:none;">
+                            <input type="radio" class="btn-check" name="makine-status-ie" id="on-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="open" autocomplete="off">
+                            <label class="btn btn-outline-primary openlbl" for="on-ie">AÇIK</label>
+
+                            <input type="radio" class="btn-check" name="makine-status-ie" id="off-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="close" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="off-ie">KAPALI</label>
+
+                            <input type="radio" class="btn-check" name="makine-status-ie" id="all-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="all" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="all-ie">TÜMÜ</label>
+                        </div>
+                    </div>
+                    <div class="col" id="isemirlerinikapatbtn" style="display:none;">
+                        <button type="button" class="btn btn-outline-primary" onclick="SeciliIsEmirleriniKapat()">SEÇİLİ İŞ EMİRLERİNİ KAPAT</button>
                     </div>
                 </div>
                 <div class="row" id="makmobile1" style="min-height:11%; max-width:100vw">
@@ -426,24 +442,6 @@
 
         function MakineListele() {
             $.getJSON("http://192.168.2.13:83/api/makine/makineler", (data) => {
-                var Filtre = `<div class="row  mt-3">
-                                    <div class="col-sm-auto">
-                                        <div class="btn-group iefiltre" role="group" aria-label="Basic radio toggle button group" style="display:none;">
-                                            <input type="radio" class="btn-check" name="makine-status-ie" id="on-ie" onclick="BekleyenIsEmriFiltrele(this.value)" checked="checked" value="open" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="on-ie">AÇIK</label>
-
-                                            <input type="radio" class="btn-check" name="makine-status-ie" id="off-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="close" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="off-ie">KAPALI</label>
-
-                                            <input type="radio" class="btn-check" name="makine-status-ie" id="all-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="all" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="all-ie">TÜMÜ</label>
-                                       </div>
-                                    </div>
-                                    <div class="col" id="isemirlerinikapatbtn" style="display:none;">
-                                            <button type="button" class="btn btn-outline-primary" onclick="SeciliIsEmirleriniKapat()">SEÇİLİ İŞ EMİRLERİNİ KAPAT</button>
-                                    </div>
-                             </div>`;
-
                 var Makineler = `<div class="btn-group" role="group" aria-label="Basic radio toggle button group">`;
                 var MakinelerMobil = `<div class="btn-group " role="group" aria-label="Basic radio toggle button group">`;
 
@@ -457,8 +455,8 @@
                     MakinelerMobil += `<input type="radio" class="btn-check" name="makine-ie" id="${data[i].HAT_KODU}" onclick="MakineBekleyenIsEmri(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                 }
 
-                $('#BekleyenIsEmirleriMakine').html(Makineler + `</div>${Filtre}`);
-                $('#BekleyenIsEmirleriMakineMobil').html(MakinelerMobil + `</div>${Filtre}`);
+                $('#BekleyenIsEmirleriMakine').html(Makineler + `</div>`);
+                $('#BekleyenIsEmirleriMakineMobil').html(MakinelerMobil + `</div>`);
             });
         }
 
@@ -469,10 +467,12 @@
             $('#BekleyenIsEmirleriTable').bootstrapTable('destroy');
             $('#BekleyenIsEmirleriTable').bootstrapTable({ data: [] });
 
-            $("input:radio[name=makine-status-ie]").prop('checked', false);
+            $("input:radio[name=makine-status-ie][value='open']").prop('checked', true);
 
             KapatilacakIsEmirleri = [];
             $('#isemirlerinikapatbtn').hide();
+
+            BekleyenIsEmriFiltrele($("input:radio[name=makine-status-ie]").val());
 
             $(".iefiltre").show();
             $("#progress").hide();
@@ -705,7 +705,7 @@
                 case "SM01":
                 case "SM02":
                 case "TP01":
-                    $(`#BekleyenIsEmirleri${DetailTableId}DetailTable`).bootstrapTable('hideColumn', 'TARIH');
+                    $(`#BekleyenIsEmirleri${DetailTableId}DetailTable`).bootstrapTable('showColumn', 'TARIH');
                     $(`#BekleyenIsEmirleri${DetailTableId}DetailTable`).bootstrapTable('showColumn', 'HAM_SERINO');
                     $(`#BekleyenIsEmirleri${DetailTableId}DetailTable`).bootstrapTable('hideColumn', 'HAM_STOK_KODU');
                     $(`#BekleyenIsEmirleri${DetailTableId}DetailTable`).bootstrapTable('hideColumn', 'HAM_ADI');
@@ -904,17 +904,17 @@
                 bootstrap.Tooltip.getOrCreateInstance("#guncelleButton")
             })
 
-            $("#uretimkaydi").focus();
-            $('body').click(function () {
-                if (constant == 0) {
-                    $("#uretimkaydi").focus();
-                } else if (constant == 1) {
-                    $("#uretimeal").focus();
-                }
-                else if (constant == 2) {
-                    $("#bekleyenisemirleri").focus();
-                }
-            });
+            //$("#uretimkaydi").focus();
+            //$('body').click(function () {
+            //    if (constant == 0) {
+            //        $("#uretimkaydi").focus();
+            //    } else if (constant == 1) {
+            //        $("#uretimeal").focus();
+            //    }
+            //    else if (constant == 2) {
+            //        $("#bekleyenisemirleri").focus();
+            //    }
+            //});
             $.getJSON("http://192.168.2.13:83/api/makine/makineler", function (data) {
 
                 for (let i = 0; i < data.length; i++) {
