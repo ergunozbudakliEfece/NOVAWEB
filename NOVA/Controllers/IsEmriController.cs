@@ -285,11 +285,14 @@ namespace NOVA.Controllers
 
                         //netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2=" + jsonList[i].MIKTAR2 + " WHERE  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                         netRS1.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[0].ISEMRINO + "'");
-
+                        
                         if (i == 0)
                         {
                             karsi = netRS1.FieldByName("SERI_NO").AsString;
                         }
+                        
+                           
+                        
 
                         //netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                         //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
@@ -303,7 +306,8 @@ namespace NOVA.Controllers
                         }
                         else
                         {
-
+                            netRS1.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            var karsi1 = netRS1.FieldByName("SERI_NO").AsString;
                             netRS1.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                             var referans = netRS1.FieldByName("REFISEMRINO").AsString;
                             netRS1.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + referans + "'");
@@ -311,6 +315,7 @@ namespace NOVA.Controllers
                             var oran = jsonList[i].KULL_MIKTAR / eski;
                             var miktar2 = netRS1.FieldByName("ACIKLAMA").AsString;
                             var yeni = miktar2.ToDouble() * oran;
+                            netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi1 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
 
                             netRS1.Ac("UPDATE TBLISEMRI SET MIKTAR='" + jsonList[i].KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
                             if (kontrol == true)
