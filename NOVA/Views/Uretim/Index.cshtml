@@ -349,7 +349,6 @@
                                data-show-footer="false"
                                data-mobile-responsive="true"
                                data-row-style="rowFormatter"
-                               data-response-handler="responseHandler"
                                data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
                                data-locale="tr-TR">
                             <thead>
@@ -423,19 +422,27 @@
     <script>
         var IsEmirleri = [];
         var IsEmirleriUstBilgi = [];
+        var KapatilacakIsEmirleri = [];
 
         function MakineListele() {
             $.getJSON("http://192.168.2.13:83/api/makine/makineler", (data) => {
-                var Filtre = `<div class="btn-group mt-3 iefiltre" role="group" aria-label="Basic radio toggle button group" style="display:none;">
-                                                <input type="radio" class="btn-check" name="makine-status-ie" id="on-ie" onclick="BekleyenIsEmriFiltrele(this.value)" checked="checked" value="open" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="on-ie">AÇIK</label>
+                var Filtre = `<div class="row  mt-3">
+                                    <div class="col-sm-auto">
+                                        <div class="btn-group iefiltre" role="group" aria-label="Basic radio toggle button group" style="display:none;">
+                                            <input type="radio" class="btn-check" name="makine-status-ie" id="on-ie" onclick="BekleyenIsEmriFiltrele(this.value)" checked="checked" value="open" autocomplete="off">
+                                            <label class="btn btn-outline-primary" for="on-ie">AÇIK</label>
 
-                                                <input type="radio" class="btn-check" name="makine-status-ie" id="off-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="close" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="off-ie">KAPALI</label>
+                                            <input type="radio" class="btn-check" name="makine-status-ie" id="off-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="close" autocomplete="off">
+                                            <label class="btn btn-outline-primary" for="off-ie">KAPALI</label>
 
-                                                <input type="radio" class="btn-check" name="makine-status-ie" id="all-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="all" autocomplete="off">
-                                                <label class="btn btn-outline-primary" for="all-ie">TÜMÜ</label>
-                                           </div>`;
+                                            <input type="radio" class="btn-check" name="makine-status-ie" id="all-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="all" autocomplete="off">
+                                            <label class="btn btn-outline-primary" for="all-ie">TÜMÜ</label>
+                                       </div>
+                                    </div>
+                                    <div class="col" id="isemirlerinikapatbtn" style="display:none;">
+                                            <button type="button" class="btn btn-outline-primary" onclick="SeciliIsEmirleriniKapat()">SEÇİLİ İŞ EMİRLERİNİ KAPAT</button>
+                                    </div>
+                             </div>`;
 
                 var Makineler = `<div class="btn-group" role="group" aria-label="Basic radio toggle button group">`;
                 var MakinelerMobil = `<div class="btn-group " role="group" aria-label="Basic radio toggle button group">`;
@@ -464,6 +471,9 @@
 
             $("input:radio[name=makine-status-ie]").prop('checked', false);
 
+            KapatilacakIsEmirleri = [];
+            $('#isemirlerinikapatbtn').hide();
+
             $(".iefiltre").show();
             $("#progress").hide();
         }
@@ -480,6 +490,9 @@
 
             IsEmirleri = [];
             IsEmirleriUstBilgi = [];
+            KapatilacakIsEmirleri = [];
+
+            $('#isemirlerinikapatbtn').hide();
 
             $.ajax({
                 url: `http://192.168.2.13:83/api/ie/sp/${MakineKodu}/${Type}`,
@@ -487,7 +500,8 @@
                 success: (data) => {
                     IsEmirleri = data;
                 }
-            }).then(() => {
+            }).then(() =>
+            {
                 MakineKoduIleIsEmriUstBilgiDuzenle();
 
                 $('#BekleyenIsEmirleriTable').bootstrapTable('destroy');
@@ -502,31 +516,33 @@
 
         $('#BekleyenIsEmirleriTable').on('expand-row.bs.table', function (e, index, row, $detail) {
             $detail.html(`<div class="card-body p-2" style="background-color:mintcream;"><div class="table-responsive"><table id="BekleyenIsEmirleri${row.HAM_SERINO}DetailTable" class="table" data-search="false" data-show-refresh="false" data-show-toggle="false" data-show-fullscreen="false" data-show-columns="false" data-show-columns-toggle-all="false" data-detail-view="false" data-detail-view-by-click="false" data-show-export="false" data-click-to-select="true" data-minimum-count-columns="2" data-show-pagination-switch="false" data-pagination="false" data-id-field="id" data-show-footer="false" data-mobile-responsive="true" data-row-style="DetailSatirStili" data-response-handler="responseHandler" data-pagination-parts="['pageSize', 'pageInfo', 'pageList']" data-locale="tr-TR"><thead><tr>
-                <th data-field="TARIH" data-halign="center" data-align="center" data-sortable="true">TARİH</th>
-                                            <th data-field="HAM_SERINO" data-halign="center" data-align="center" data-sortable="true">HAM_SERINO</th>
-                                            <th data-field="HAM_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">HAM_STOK_KODU</th>
-                                            <th data-field="HAM_ADI" data-halign="center" data-align="center" data-sortable="true">HAM_ADI</th>
-                                            <th data-field="HAM_DETAY" data-width="150" data-halign="center" data-align="center" data-sortable="true">HAM_DETAY</th>
-                                            <th data-field="HAM_GENISLIK" data-halign="center" data-align="center" data-sortable="true">HAM_GENISLIK</th>
-                                            <th data-field="HAM_KALINLIK" data-halign="center" data-align="center" data-sortable="true">HAM_KALINLIK</th>
-                                            <th data-field="HAM_FIRMA_SERI" data-halign="center" data-align="center" data-sortable="true">HAM_FIRMA_SERI</th>
-                                            <th data-field="ACIKLAMA_4" data-halign="center" data-align="center" data-sortable="true">ACIKLAMA_4</th>
-                                            <th data-field="ACIKLAMA_5" data-halign="center" data-align="center" data-sortable="true">ACIKLAMA_5</th>
-                                            <th data-field="HAM_KALITE" data-halign="center" data-align="center" data-sortable="true">HAM_KALITE</th>
-                                            <th data-field="HAM_KAP_KALINLIK" data-halign="center" data-align="center" data-sortable="true">HAM_KAP_KALINLIK</th>
-                                            <th data-field="HAM_MIKTAR" data-halign="center" data-align="center" data-sortable="true">HAM_MIKTAR</th>
-                                            <th data-field="SIRA" data-halign="center" data-align="center" data-sortable="true">SIRA</th>
-                                            <th data-field="USTISEMRI" data-halign="center" data-align="center" data-sortable="true">USTISEMRI</th>
-                                            <th data-field="ALT_ISEMRI" data-halign="center" data-align="center" data-sortable="true">ALT_ISEMRI</th>
-                                            <th data-field="URT_SERINO" data-halign="center" data-align="center" data-sortable="true">URT_SERINO</th>
-                                            <th data-field="URT_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">URT_STOK_KODU</th>
-                                            <th data-field="URT_STOK_ADI" data-halign="center" data-align="center" data-sortable="true">URT_STOK_ADI</th>
-                                            <th data-field="URT_GENISLIK" data-halign="center" data-align="center" data-sortable="true">URT_GENISLIK</th>
-                                            <th data-field="IE_MIKTAR2" data-halign="center" data-align="center" data-sortable="true">IE_MIKTAR2</th>
-                                            <th data-field="IE_MIKTAR" data-halign="center" data-align="center" data-sortable="true">IE_MIKTAR</th>
-                                            <th data-field="REFISEMRINO" data-halign="center" data-align="center" data-sortable="true">REFISEMRINO</th>
-                                            <th data-field="REF_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">REF_STOK_KODU</th>
-                                            <th data-field="REF_STOK_ADI" data-halign="center" data-align="center" data-sortable="true">REF_STOK_ADI</th></tr></thead></table></div></div>`);
+            <th data-field="TARIH" data-halign="center" data-align="center" data-sortable="true">TARİH</th>
+                                        <th data-field="HAM_SERINO" data-halign="center" data-align="center" data-sortable="true">HAM_SERINO</th>
+                                        <th data-field="HAM_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">HAM_STOK_KODU</th>
+                                        <th data-field="HAM_ADI" data-halign="center" data-align="center" data-sortable="true">HAM_ADI</th>
+                                        <th data-field="HAM_DETAY" data-width="150" data-halign="center" data-align="center" data-sortable="true">HAM_DETAY</th>
+                                        <th data-field="HAM_GENISLIK" data-halign="center" data-align="center" data-sortable="true">HAM_GENISLIK</th>
+                                        <th data-field="HAM_KALINLIK" data-halign="center" data-align="center" data-sortable="true">HAM_KALINLIK</th>
+                                        <th data-field="HAM_FIRMA_SERI" data-halign="center" data-align="center" data-sortable="true">HAM_FIRMA_SERI</th>
+                                        <th data-field="ACIKLAMA_4" data-halign="center" data-align="center" data-sortable="true">ACIKLAMA_4</th>
+                                        <th data-field="ACIKLAMA_5" data-halign="center" data-align="center" data-sortable="true">ACIKLAMA_5</th>
+                                        <th data-field="HAM_KALITE" data-halign="center" data-align="center" data-sortable="true">HAM_KALITE</th>
+                                        <th data-field="HAM_KAP_KALINLIK" data-halign="center" data-align="center" data-sortable="true">HAM_KAP_KALINLIK</th>
+                                        <th data-field="HAM_MIKTAR" data-halign="center" data-align="center" data-sortable="true">HAM_MIKTAR</th>
+                                        <th data-field="SIRA" data-halign="center" data-align="center" data-sortable="true">SIRA</th>
+                                        <th data-field="USTISEMRI" data-halign="center" data-align="center" data-sortable="true">USTISEMRI</th>
+                                        <th data-field="ALT_ISEMRI" data-halign="center" data-align="center" data-sortable="true">ALT_ISEMRI</th>
+                                        <th data-field="URT_SERINO" data-halign="center" data-align="center" data-sortable="true">URT_SERINO</th>
+                                        <th data-field="URT_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">URT_STOK_KODU</th>
+                                        <th data-field="URT_STOK_ADI" data-halign="center" data-align="center" data-sortable="true">URT_STOK_ADI</th>
+                                        <th data-field="URT_GENISLIK" data-halign="center" data-align="center" data-sortable="true">URT_GENISLIK</th>
+                                        <th data-field="IE_MIKTAR2" data-halign="center" data-align="center" data-sortable="true">IE_MIKTAR2</th>
+                                        <th data-field="IE_MIKTAR" data-halign="center" data-align="center" data-sortable="true">IE_MIKTAR</th>
+                                        <th data-field="REFISEMRINO" data-halign="center" data-align="center" data-sortable="true">REFISEMRINO</th>
+                                        <th data-field="REF_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">REF_STOK_KODU</th>
+                                        <th data-field="REF_STOK_ADI" data-halign="center" data-align="center" data-sortable="true">REF_STOK_ADI</th>
+                                    <th data-formatter="IsEmriDetayIslemFormatter" data-halign="center" data-align="center" data-sortable="true">İŞLEM</th>
+                                        </tr></thead></table></div></div>`);
 
 
 
@@ -537,39 +553,50 @@
             MakineKoduIleDetaySutunFiltrele(row.HAM_SERINO);
         });
 
-        function MakineKoduIleIsEmriUstBilgiDuzenle() {
+        function MakineKoduIleIsEmriUstBilgiDuzenle()
+        {
             var MakineKodu = $('input:radio[name="makine-ie"]:checked').val();
             var IsEmirleriTMP = JSON.parse(JSON.stringify(IsEmirleri));
 
-            if (MakineKodu === "DL01") {
-                for (var i = 0; i < IsEmirleriTMP.length; i++) {
+            if (MakineKodu === "DL01")
+            {
+                for (var i = 0; i < IsEmirleriTMP.length; i++)
+                {
                     const index = IsEmirleriUstBilgi.map(object => object.HAM_SERINO).indexOf(IsEmirleriTMP[i].HAM_SERINO);
 
-                    if (index > -1) {
+                    if (index > -1)
+                    {
                         IsEmirleriUstBilgi[index].HAM_MIKTAR += IsEmirleriTMP[i].HAM_MIKTAR;
                     }
-                    else {
+                    else
+                    {
                         IsEmirleriUstBilgi.push(IsEmirleriTMP[i]);
                     }
                 }
             }
-            else if (MakineKodu === "BK01" || MakineKodu === "MH01" || MakineKodu === "PB01" || MakineKodu === "PB02" || MakineKodu === "RF01" || MakineKodu === "RF02" || MakineKodu === "RF03" || MakineKodu === "TP01" || MakineKodu === "SM01" || MakineKodu === "SM02") {
-                for (var i = 0; i < IsEmirleriTMP.length; i++) {
+            else if (MakineKodu === "BK01" || MakineKodu === "MH01" || MakineKodu === "PB01" || MakineKodu === "PB02" || MakineKodu === "RF01" || MakineKodu === "RF02" || MakineKodu === "RF03" || MakineKodu === "TP01" || MakineKodu === "SM01" || MakineKodu === "SM02")
+            {
+                for (var i = 0; i < IsEmirleriTMP.length; i++)
+                {
                     const index = IsEmirleriUstBilgi.map(object => object.URT_STOK_KODU).indexOf(IsEmirleriTMP[i].URT_STOK_KODU);
 
-                    if (index > -1) {
+                    if (index > -1)
+                    {
                         IsEmirleriUstBilgi[index].IE_MIKTAR += IsEmirleriTMP[i].IE_MIKTAR;
                         IsEmirleriUstBilgi[index].IE_MIKTAR2 += IsEmirleriTMP[i].IE_MIKTAR2;
                     }
-                    else {
+                    else
+                    {
                         IsEmirleriUstBilgi.push(IsEmirleriTMP[i]);
                     }
                 }
             }
         }
 
-        function MakineKoduIleSutunFiltrele(MakineKodu) {
-            switch (MakineKodu) {
+        function MakineKoduIleSutunFiltrele(MakineKodu)
+        {
+            switch (MakineKodu)
+            {
                 case "DL01":
                     $('#BekleyenIsEmirleriTable').bootstrapTable('showColumn', 'TARIH');
                     $('#BekleyenIsEmirleriTable').bootstrapTable('showColumn', 'HAM_SERINO');
@@ -636,7 +663,8 @@
             };
         }
 
-        function MakineKoduIleDetaySutunFiltrele(DetailTableId) {
+        function MakineKoduIleDetaySutunFiltrele(DetailTableId)
+        {
             let MakineKodu = $('input:radio[name="makine-ie"]:checked').val();
 
             switch (MakineKodu) {
@@ -706,11 +734,13 @@
             };
         }
 
-        function MakineKoduIleDetayTabloFiltrele(value) {
+        function MakineKoduIleDetayTabloFiltrele(value)
+        {
             var MakineKodu = $('input:radio[name="makine-ie"]:checked').val();
             var FiltrelenmisIsEmirleri = [];
 
-            switch (MakineKodu) {
+            switch (MakineKodu)
+            {
                 case "DL01":
                     FiltrelenmisIsEmirleri = IsEmirleri.filter(x => x.HAM_SERINO == value.HAM_SERINO);
                     break;
@@ -745,6 +775,110 @@
                     "background-color": '#fdf8f8'
                 }
             }
+        }
+
+        function IsEmriDetayIslemFormatter(value, row, index, field)
+        {
+            if(row.KAPALI == "H")
+            {
+                var ButonSinifi = KapatilacakIsEmirleri.indexOf(row.ALT_ISEMRI) > -1 ? "bi bi-check-circle-fill" : "bi bi-check-circle";
+                var ButonStili = KapatilacakIsEmirleri.indexOf(row.ALT_ISEMRI) > -1 ? "color:#71dd37;font-size:x-large;" : "color:red;font-size:x-large;" ;
+
+                var IslemIkon = `<i class="${ButonSinifi}" style="${ButonStili}"></i>`;
+
+                return `<div style="cursor:pointer" onclick="KapatilacakIsEmriSec(this, '${row.ALT_ISEMRI}')">${IslemIkon}</div>`;
+            }
+            else
+            {
+                return `<div><i class="bi bi-check-circle" style="color:#ff00002b;font-size:x-large;"></i></div>`;
+            }
+        }
+
+        function KapatilacakIsEmriSec(btn, value)
+        {
+            event.stopPropagation();
+
+            if (KapatilacakIsEmirleri.filter(item => item.ISEMRINO === value).length > 0)
+            {
+                KapatilacakIsEmirleri = KapatilacakIsEmirleri.filter(item => item.ISEMRINO !== value);
+
+                btn.getElementsByTagName("i")[0].className = "bi bi-check-circle";
+                btn.getElementsByTagName("i")[0].style = "color:red;font-size:x-large;";
+            }
+            else
+            {
+                KapatilacakIsEmirleri.push({ "ISEMRINO": value });
+
+                btn.getElementsByTagName("i")[0].className = "bi bi-check-circle-fill";
+                btn.getElementsByTagName("i")[0].style = "color:#71dd37;font-size:x-large;";
+            }
+
+            if(KapatilacakIsEmirleri.length > 0)
+            {
+                $('#isemirlerinikapatbtn').show();
+            }
+            else
+            {
+                $('#isemirlerinikapatbtn').hide();
+            }
+        }
+
+        function SeciliIsEmirleriniKapat()
+        {
+            if(KapatilacakIsEmirleri.length > 0)
+            {
+                var Liste = '<div style="overflow-y:auto;max-height:150px;font-size:smaller;margin-bottom:1rem;">';
+
+                for (var i = 0; i < KapatilacakIsEmirleri.length; i++)
+                {
+                    Liste += `<b>${KapatilacakIsEmirleri[i].ISEMRINO}<br/>`;
+                }
+
+                Swal.fire({
+                    title: "UYARI",
+                    html: `${Liste}</div>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonText: 'HAYIR',
+                    cancelButtonColor: '#d33',
+                    confirmButtonColor: '#3085d6',
+                    allowEnterKey: false,
+                    confirmButtonText: 'EVET',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed)
+                    {
+                        $("#progress").show();
+                        $('#isemirlerinikapatbtn').hide();
+
+                        $.ajax({
+                            url: '@Url.Action("IsEmirleriniKapat", "Uretim")',
+                            type: 'POST',
+                            data: {"isemrimod":KapatilacakIsEmirleri },
+                            error: function (data) {  alert(JSON.stringify(data)); },
+                            success: function (data)
+                            {
+                                Swal.fire('Başarılı!','Kayıt başarılı','success');
+
+                                KapatilacakIsEmirleri = [];
+
+                                if(KapatilacakIsEmirleri.length > 0)
+                                {
+                                    $('#isemirlerinikapatbtn').show();
+                                }
+                                else
+                                {
+                                    $('#isemirlerinikapatbtn').hide();
+                                }
+                            }
+                            }).then(() => {
+                                BekleyenIsEmriFiltrele($('input:radio[name="makine-status-ie"]:checked').val());
+                            });
+
+                    }
+                });
+
+           }
         }
     </script>
 
@@ -1680,7 +1814,7 @@
                     <div class="row">
                         <div class="col" style="display:none" id="kontrolcol">
                             <div class="form-check form-switch mb-2">
-                                <input id="kontrol" class="form-check-input" type="checkbox" >
+                                <input id="kontrol" class="form-check-input" type="checkbox">
                                 <label class="form-check-label" for="kontrol">İş Emirleri Otomatik Kapansın</label>
                             </div>
                         </div>
