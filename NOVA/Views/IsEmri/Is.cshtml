@@ -28,6 +28,9 @@
     <link rel="stylesheet" href="https://lipis.github.io/bootstrap-sweetalert/lib/sweet-alert.css">
 
     <style>
+        textarea:focus, input:focus {
+            outline: none;
+        }
         #test td:nth-of-type(2) {
             display: flex;
             flex-direction: column;
@@ -508,7 +511,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td id="fabrika">
+                                    <td id="fabrika" class="text-center">
                                         <span>MANİSA</span>
                                     </td>
                                     <td class="text-center p-0" id="or">
@@ -527,7 +530,7 @@
 
                                     <td class="text-center p-0" id="urunkodu">
                                         <form>
-                                            <input class="border-0 text-center" style="flex-grow:2;" id="seri" onkeyup="rechange()" />
+                                            <input class="border-0 text-center" style="flex-grow:2;" id="seri" oninput="rechange()" />
                                             <button type="button" id="rehberbutton" onclick="rehberAc()" class="btn btn-primary showmodal"><i class="bi bi-list-ul"></i></button>
                                             <i id="rehbermobil" style="cursor:pointer;display:none" onclick="rehberAc()" class="bi bi-list-ul"></i>
                                         </form>
@@ -655,8 +658,18 @@
                             var t = document.getElementById("test");
                             var r = t.getElementsByTagName("tr");
                             for (let i = 1; i < r.length; i++) {
-                                r[i].getElementsByTagName("input")[3].onkeyup();
-                                r[i].getElementsByTagName("select")[3].onchange();
+                                if (x == 1) {
+                                    r[i].getElementsByTagName("select")[3].onchange();
+                                }
+                                if (i == 1) {
+                                   
+                                        r[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].onkeyup();
+                                   
+                                    
+                                } else {
+                                    keyupadet1(i);
+                                }
+                                
                             }
                         }
                     </script>
@@ -696,19 +709,21 @@
                                             <td class="text-center p-1">1</td>
                                             <td class="p-1">
 
-                                                <input class="border-0 text-center" style="font-size:small;max-width:50px" type="number" value="1.00" max="1.00" min="0.00" id="oran1" />
+                                                <input class="border-0 text-center" style="font-size:small;max-width:50px" type="number" value="1.00" max="1.00" min="0.00" id="oran1" onblur="oran()"/>
                                                 <div class="text-center">
                                                     <img onclick="addRow1(this)" style="width:18px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC">
                                                 </div>
                                                 <script>
 
-                                                    var oraninput = document.getElementById("oran1");
-                                                    oraninput.onblur = function () {
-                                                        if (this.value >= 1) {
-                                                            this.value = "1.00";
+                                                   
+                                                    function oran() {
+                                                        if (event.currentTarget.value >= 1) {
+                                                            event.currentTarget.value = "1.00";
                                                         } else if (this.value <= 0) {
-                                                            this.value = "0.01";
+                                                            event.currentTarget.value = "0.01";
                                                         }
+                                                        keyupadet1(event.currentTarget.parentNode.parentNode.rowIndex);
+                                                        document.getElementsByTagName("table")[1].getElementsByTagName("tr")[event.currentTarget.parentNode.parentNode.rowIndex].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
 
                                                     };
 
@@ -740,28 +755,33 @@
                                                 <script>
 
                                                     function selectChange(value) {
+                                                       
                                                         var tb = document.getElementsByClassName("table")[1];
                                                         var tbrows = tb.getElementsByTagName("tr");
                                                         var rownumber = value.parentNode.parentNode.rowIndex;
                                                         tbrows[1].getElementsByTagName("select")[1].removeAttribute("disabled");
                                                         $.getJSON("http://192.168.2.13:83/api/ie/besleme", function (data) {
                                                             var d = data.filter(x => x.HAT_KODU == value.value);
-                                                            $(".selectmakina2").select2('destroy');
-                                                            var $sel2 = document.getElementsByTagName("table")[1].getElementsByTagName("tr")[rownumber].getElementsByTagName("select")[2];
-                                                            $sel2.replaceChildren();
-                                                            var opt = document.createElement("option");
-                                                            opt.value = "MAKİNE SEÇİN";
-                                                            opt.text = "MAKİNE SEÇİN";
-                                                            opt.setAttribute("selected", "");
-                                                            opt.setAttribute("disabled", "");
-                                                            $sel2.appendChild(opt);
-                                                            for (let i = 0; i < d.length; i++) {
-                                                                var opt1 = document.createElement("option");
-                                                                opt1.value = d[i].HAT_KODU2;
-                                                                opt1.text = d[i].HAT_KODU2;
-                                                                $sel2.appendChild(opt1);
+                                                            if (x == 1) {
+                                                                $(".selectmakina2").select2('destroy');
+
+                                                                var $sel2 = document.getElementsByTagName("table")[1].getElementsByTagName("tr")[rownumber].getElementsByTagName("select")[2];
+                                                                $sel2.replaceChildren();
+                                                                var opt = document.createElement("option");
+                                                                opt.value = "MAKİNE SEÇİN";
+                                                                opt.text = "MAKİNE SEÇİN";
+                                                                opt.setAttribute("selected", "");
+                                                                opt.setAttribute("disabled", "");
+                                                                $sel2.appendChild(opt);
+                                                                for (let i = 0; i < d.length; i++) {
+                                                                    var opt1 = document.createElement("option");
+                                                                    opt1.value = d[i].HAT_KODU2;
+                                                                    opt1.text = d[i].HAT_KODU2;
+                                                                    $sel2.appendChild(opt1);
+                                                                }
+                                                                $(".selectmakina2").select2();
                                                             }
-                                                            $(".selectmakina2").select2();
+                                                            
                                                             if (value.value == "DL01") {
                                                                 $("#2input").attr("disabled", false);
                                                                 $("#3input").attr("disabled", false);
@@ -1023,7 +1043,8 @@
                             </div>
                             <div class="row mt-3 me-1">
                                 <div class="col">
-                                    <button class="btn btn-info float-end" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="kaydet()" id="kaydet">KAYDET</button>
+                                    <button class="btn btn-info float-start" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="kaydet()" id="kaydet">KAYDET</button>
+                                    <button class="btn btn-info float-start ms-1" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="tablosil()" id="kaydet">SİL</button>
                                 </div>
                                 <script>
                                     var oncekiadet = 0;
@@ -1294,6 +1315,8 @@ function getPivot() {
             }
 
             var newtakip = [];
+            var hamtop = 0;
+            var firtop = 0;
             for (let i = 0; i < girdi1.length; i++) {
                 var sum = 0;
                 var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
@@ -1316,12 +1339,17 @@ function getPivot() {
 
 
             takiplist = newtakip;
-
+            var fn = takiplist.filter(x => x.ISEMRINO === takiplist[0].ISEMRINO).length;
             for (let i = 0; i < takiplist.length; i++) {
                 tp = tp + parseInt(takiplist[i].FIRE);
             }
 
-            fireyuz.value = ((fireag.value / parseFloat(takiplist[0].TAMAGIRLIK)) * 100).toFixed(2) + " %";
+            for (let i = 0; i < takiplist.length; i++) {
+                hamtop = hamtop + takiplist[i].HAMSARF;
+                firtop = firtop + takiplist[i].FIRE;
+            }
+            fireag.value = (firtop/fn).toLocaleString();
+            fireyuz.value = ((firtop / fn) / (hamtop / fn) * 100).toFixed(2) + " %";
             localStorage.list4 = JSON.stringify(takiplist);
             drawPivot();
         });
@@ -1442,13 +1470,13 @@ config.renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.gtRende
                 var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
                 var sum = 0;
                 var sum2 = 0;
-                for (let i = 1; i < rr.length - 1; i++) {
-                    sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
-                    sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
+                for (let i = 1; i < rr.length; i++) {
+                    sum = sum + parseInt(rr[i].getElementsByTagName("td")[14].innerHTML);
+                    sum2 = sum2 + parseInt(rr[i].getElementsByTagName("td")[15].innerHTML);
                 }
                 document.getElementById("fireagirligi1").value = sum;
 
-                document.getElementById("fireyuzde1").value = parseFloat((parseInt(document.getElementById("fireagirligi1").value) / sum2) * 100).toFixed(2) + " %";
+                document.getElementById("fireyuzde1").value = parseFloat(sum / sum2 * 100).toFixed(2) + " %";
 
             });
     }
@@ -1483,6 +1511,7 @@ for (let i = 1; i < rows1.length; i++) {
     //document.getElementById("removeRw").setAttribute("disabled", "");
         getPivot();
         getPivot2();
+        document.getElementById("genislikalti").value = 0;
 } else {
     const Toast = Swal.mixin({
         toast: true,
@@ -1634,17 +1663,53 @@ for (let i = 1; i < rows1.length; i++) {
             })
         }
         function sil() {
-            document.body.style.cursor = 'wait';
 
             load();
+        }
+        function tablosil() {
+            
+            
+            var rows = document.getElementById("test").getElementsByTagName("tr").length;
+            satirlariSilAsync(rows).then(function () {
+
+                $(".js-example-basic-single").trigger("change");
+
+
+            })
+            setTimeout(function () {
+                removeCell();
+            },50) 
+           
+
+
+
+        }
+        
+        async function satirlariSilAsync(rows) {
+           
+            
+            
+
+            document.getElementById("test").getElementsByTagName("tr")[1].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value = "1.00";
+            document.getElementById("test").getElementsByTagName("tr")[1].getElementsByTagName("td")[2].getElementsByTagName("select")[0].value = "MAKİNE SEÇİN";
+            document.getElementById("test").getElementsByTagName("tr")[1].getElementsByTagName("td")[3].getElementsByTagName("select")[0].value = "STOK SEÇİN";
+            document.getElementById("test").getElementsByTagName("tr")[1].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value = "";
+            document.getElementById("test").getElementsByTagName("tr")[1].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value = "";
+            document.getElementById("test").getElementsByTagName("tr")[1].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = "";
+            document.getElementById("test").getElementsByTagName("tr")[1].getElementsByTagName("td")[12].getElementsByTagName("select")[0].value = "EFECE GALVANİZ";
+             for (let i = 0; i < rows; i++) {
+                 removeRow();
+            }
+            
         }
         function load() {
 
             localStorage.list = null;
             localStorage.list2 = null;
             localStorage.list3 = null;
-                $('#card').load(document.URL + ' #card');
-                document.body.style.cursor = 'default';
+            document.getElementById("pivotoutput").replaceChildren();
+            document.getElementById("pivotoutput2").replaceChildren();
+
             };
 
 
@@ -1687,6 +1752,7 @@ for (let i = 1; i < rows1.length; i++) {
                     load();
                     $("#seri").val(null);
                     inputHandler();
+                    document.getElementById("genislikalti").value = 0;
                 },
                 error: function () {
                     document.body.style.cursor = 'default';
@@ -1900,6 +1966,8 @@ for (let i = 1; i < rows1.length; i++) {
 
                                     var today = new Date();
                                     var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+                                    
+                                    
                                     var b = jsonObj.find(x => x.MAK_KODU === this.value);
                                     var x = "";
                                     var y = (rownum - 1 - 2) * (6 + rownum - 1 - 2) + 1;
@@ -2251,7 +2319,7 @@ for (let i = 1; i < rows1.length; i++) {
                                         option.innerHTML = grup.options[a].text;
                                         option.value = grup.options[a].text;
                                             sl.appendChild(option);
-                                       
+
 
 
                                     }
@@ -2275,7 +2343,7 @@ for (let i = 1; i < rows1.length; i++) {
                                     var tb = document.getElementsByClassName("table")[1];
                                     var tbrows = tb.getElementsByTagName("tr");
                                     var rownumber = e.target.parentNode.parentNode.rowIndex;
-                                    
+
                                     document.getElementsByTagName("table")[1].getElementsByTagName("tr")[rownumber].getElementsByTagName("td")[3].getElementsByTagName("select")[0].removeAttribute("disabled");
                                     $.getJSON("http://192.168.2.13:83/api/ie/besleme", function (data) {
                                         var d = data.filter(x => x.HAT_KODU == e.target.value);
@@ -2452,7 +2520,7 @@ for (let i = 1; i < rows1.length; i++) {
                                     option.selected = true;
                                     option.disabled = true;
                                     select.appendChild(option);
-                                   
+
 
                                     cell.className = "text-center border-0 p-1"
                                     input1.className = "border-0 ms-1 text-center d-none";
@@ -3260,7 +3328,7 @@ for (let i = 1; i < rows1.length; i++) {
                         title: 'Makine seçmediniz!'
                     })
                 }
-           
+
 
 
         }
@@ -3272,13 +3340,13 @@ for (let i = 1; i < rows1.length; i++) {
             $("#kaydet").attr("disabled", true);
     var tp = 0;
     var fireag = document.getElementById("fireagirligi1");
-            var fireyuz = document.getElementById("fireyuzde1");
+     var fireyuz = document.getElementById("fireyuzde1");
     $("#makkodlari").select2();
     document.getElementById("test").getElementsByTagName("tbody")[0].onclick = function (e) {
         console.log(e.target.parentNode.rowIndex)
         console.log(e.target.innerHTML)
     };
-            var tpl = $.pivotUtilities.aggregatorTemplates;
+var tpl = $.pivotUtilities.aggregatorTemplates;
     function drawPivot() {
 
         $(function () {
@@ -3298,7 +3366,8 @@ for (let i = 1; i < rows1.length; i++) {
 
                 }, false, "tr")
         })
-    }
+            }
+           
     function getPivot() {
         return fetch('./Index?handler=PivotData',
             {
@@ -3330,6 +3399,8 @@ for (let i = 1; i < rows1.length; i++) {
                 }
 
                 var newtakip = [];
+                var hamtop = 0;
+                var firtop = 0;
                 for (let i = 0; i < girdi1.length; i++) {
                     var sum = 0;
                     var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
@@ -3352,12 +3423,18 @@ for (let i = 1; i < rows1.length; i++) {
 
 
                 takiplist = newtakip;
+                var fn = takiplist.filter(x => x.ISEMRINO === takiplist[0].ISEMRINO).length;
 
                 for (let i = 0; i < takiplist.length; i++) {
                     tp = tp + parseInt(takiplist[i].FIRE);
                 }
-
-                fireyuz.value = ((fireag.value / parseFloat(takiplist[0].TAMAGIRLIK)) * 100).toFixed(2) + " %";
+                
+                for (let i = 0; i < takiplist.length; i++) {
+                    hamtop = hamtop + takiplist[i].HAMSARF;
+                    firtop = firtop + takiplist[i].FIRE;
+                }
+                fireag.value = (firtop / fn).toFixed(2).toLocaleString();
+                fireyuz.value = ((firtop/fn) / (hamtop/fn)  * 100).toFixed(2) + " %";
                 localStorage.list4 = JSON.stringify(takiplist);
                 drawPivot();
                 document.body.style.cursor = 'default';
@@ -3413,10 +3490,10 @@ for (let i = 1; i < rows1.length; i++) {
                         agirlik = agirlik + parseInt(result[l[i].STOKADI][a].AGIRLIK);
                         adet = adet + parseInt(result[l[i].STOKADI][a].REF_ADET);
                     }
-                    
+
                     takiplist2.push({ STOKADI: result[l[i].STOKADI][0].STOKADI, MUSTERI: result[l[i].STOKADI][0].MUSTERI, KAPLAMA: result[l[i].STOKADI][0].KAPLAMA, KALINLIK: result[l[i].STOKADI][0].KALINLIK, AGIRLIK: agirlik,ADET: adet })
 
-                    
+
                 }
                 maillist = takiplist2;
                 drawPivot2();
@@ -3429,9 +3506,7 @@ for (let i = 1; i < rows1.length; i++) {
                     sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
                     sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
                 }
-                document.getElementById("fireagirligi1").value = sum;
-
-                document.getElementById("fireyuzde1").value = parseFloat((parseInt(document.getElementById("fireagirligi1").value) / sum2) * 100).toFixed(2) + " %";
+                
 
             });
     }
@@ -3450,18 +3525,57 @@ for (let i = 1; i < rows1.length; i++) {
             var table = document.getElementById("test");
             var rows = table.getElementsByTagName("tr");
                 rows[1].getElementsByTagName("select")[0].removeAttribute("disabled");
-
             if (table.getElementsByTagName("tr").length > 2) {
 
+                var ust = rows[table.getElementsByTagName("tr").length - 2].getElementsByTagName("td")[0].innerHTML;
+                var alt = rows[table.getElementsByTagName("tr").length - 1].getElementsByTagName("td")[0].innerHTML;
 
-                 table.deleteRow(table.getElementsByTagName("tr").length - 1);
+                if (alt != 1) {
+                    if (ust == alt) {
+                        table.deleteRow(table.getElementsByTagName("tr").length - 1);
+                    }
+                } else {
+                    var currenttd = rows[1].getElementsByTagName("td");
+                    for (let i = 0; i < currenttd.length; i++) {
+                        if (x == 1 && (i == 10 || i == 6)) {
+
+                        } else {
+
+                            currenttd[i].removeAttribute("style");
+                        }
+                    }
+                    if (document.getElementsByTagName("table")[1].getElementsByTagName("tr")[table.getElementsByTagName("tr").length - 1].getElementsByTagName("select")[0].value == "DL01") {
+                        document.getElementsByTagName("table")[1].getElementsByTagName("tr")[table.getElementsByTagName("tr").length - 1].getElementsByTagName("input")[3].disabled = false;
+                    }
+
+
+                    document.getElementsByTagName("table")[1].getElementsByTagName("tr")[table.getElementsByTagName("tr").length - 1].getElementsByTagName("input")[0].onkeyup = function (e) {
+                        keyupadet1(table.getElementsByTagName("tr").length - 1);
+                        changeadet();
+                    };
+                    currenttd[1].getElementsByTagName("img")[0].setAttribute("onclick", "addRow1(this)");
+                    currenttd[1].getElementsByTagName("input")[0].value = "1.00";
+                    currenttd[1].getElementsByTagName("input")[0].onblur = function () {
+                        if (this.value >= 1) {
+                            this.value = "1.00";
+                        } else if (this.value <= 0) {
+                            this.value = "0.01";
+                        }
+                        keyupadet1(this.parentNode.parentNode.rowIndex);
+                        document.getElementsByTagName("table")[1].getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
+
+                    }
+
+                }
+                table.deleteRow(table.getElementsByTagName("tr").length - 1);
                 rownum--;
                 selectindex--;
             }
         }
     </script>
     <script>
-        var jsonObj = @Html.Raw(Json.Encode(ViewBag.UretimTakip));
+        var jsonObj = null;
+        
         const seri = document.getElementById('seri');
         const genislik = document.getElementById('genislik');
         const genislikarti = document.getElementById('genislikalti');
@@ -3475,102 +3589,117 @@ for (let i = 1; i < rows1.length; i++) {
         const hamoran = document.getElementById('hamoran');
 
         const inputHandler = function () {
-           
-            //result.innerHTML = e.target.value;
-            var b = jsonObj.find(x => x.SERI_NO === seri.value);
-            var top = 0;
+            $.getJSON("http://192.168.2.13:83/api/seri/serirehber", function (data) {
+                jsonObj = data;
+            }).done(function () {
+                var b = jsonObj.find(x => x.SERI_NO === seri.value);
+                var top = 0;
 
-            if (localStorage.list != "null" && localStorage.list!=null ) {
-                var j = JSON.parse(localStorage.list);
-                var son = j.filter(x => x.GIRDI1 == seri.value);
-                if (son.length > 0) {
-                    var s = [];
-                    for (let i = 0; i < son.length; i++) {
-                        if (!s.includes(son[i].HAMORAN)) {
-                            s.push(son[i].HAMORAN)
+                if (localStorage.list != "null" && localStorage.list != null) {
+                    var j = JSON.parse(localStorage.list);
+                    var son = j.filter(x => x.GIRDI1 == seri.value);
+                    if (son.length > 0) {
+                        var s = [];
+                        for (let i = 0; i < son.length; i++) {
+                            if (!s.includes(son[i].HAMORAN)) {
+                                s.push(son[i].HAMORAN)
+                            }
                         }
+                        if (s.length > 1) {
+                            top = eval(s.join('+'));
+                        } else {
+                            top = s[0];
+                        }
+
+
                     }
-                    if (s.length > 1) {
-                        top = eval(s.join('+'));
+
+                }
+
+                hamoran.value = (1 - top).toFixed(4);
+                ham.oninput = function () {
+                    if (this.value >= 1 - top) {
+                        this.value = ((1 - top).toFixed(4)).toString();
+                    } else if (this.value < 0) {
+                        this.value = 0;
+                    }
+                };
+
+                if (b != null) {
+                    kalinlik.value = b.ACIK2;
+                    genislik.value = b.ACIK1;
+                    agirlik.value = (b.MIKTAR * hamoran.value).toLocaleString('tr-TR') + " / " + (b.MIKTAR).toLocaleString('tr-TR');
+                    marka.innerHTML = b.MENSEI;
+                    adet.value = b.MIKTAR2;
+                    kaplama.value = b.SERI_NO_4;
+                    kalite.value = b.SERI_NO_3;
+                    stokAdi.value = b.STOK_ADI;
+                    metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.ACIK1) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.ACIK1) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2);
+                    var alltr = document.getElementsByTagName("table")[1].getElementsByTagName("tr");
+                    for (let i = 1; i < alltr.length; i++) {
+                        keyupadet1(i);
+                        if (x == 1) {
+                            alltr[i].getElementsByTagName("select")[3].onchange();
+                        }
+                        
+                    }
+                    changeadet();
+
+                }
+                else {
+                    genislik.value = "";
+                    kalinlik.value = "";
+                    agirlik.value = "";
+                    marka.innerHTML = "";
+                    adet.value = "";
+                    kaplama.value = "";
+                    stokAdi.value = "";
+                    kalite.value = "";
+                    $("#metraj").val("");
+                }
+
+
+
+                if (top != 0) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+                    if ((1 - top) == 0) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Ürün kullanılabilir değil!'
+                        });
+                        document.getElementById("kaydet").disabled = true;
                     } else {
-                        top = s[0];
+                        Toast.fire({
+                            icon: 'info',
+                            title: 'Ürün maksimum %' + (((1 - top).toFixed(4)) * 100) + ' oranında kullanılabilir!'
+                        });
+                        $("#kaydet").attr("disabled", true)
+
                     }
 
-
+                } else {
+                    $("#kaydet").attr("disabled", false)
                 }
-
-            }
-
-            hamoran.value = (1 - top).toFixed(4);
-            ham.oninput = function () {
-                if (this.value >= 1 - top) {
-                    this.value = ((1 - top).toFixed(4)).toString();
-                } else if (this.value < 0) {
-                    this.value = 0;
+                if (b != null) {
+                    $("#kaydet").attr("disabled", false)
+                } else {
+                    $("#kaydet").attr("disabled", true)
                 }
-            };
-
-            if (b != null) {
-                kalinlik.value = b.KALINLIK;
-                genislik.value = b.GENISLIK;
-                agirlik.value = (b.MIKTAR * hamoran.value).toLocaleString('tr-TR') + " / " + (b.MIKTAR).toLocaleString('tr-TR');
-                marka.innerHTML = b.MENSEI;
-                adet.value = b.MIKTAR2;
-                kaplama.value = b.KAPLAMA_KALINLIK;
-                kalite.value = b.KALITE;
-                stokAdi.value = b.STOK_ADI;
-                metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.GENISLIK) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.KALINLIK).replace(",", ".")) * (0.00786))).toFixed(2);
                 
 
-            } else {
-                genislik.value = "";
-                kalinlik.value = "";
-                agirlik.value = "";
-                marka.innerHTML = "";
-                adet.value = "";
-                kaplama.value = "";
-                stokAdi.value = "";
-                kalite.value = "";
-                $("#metraj").val("");
-            }
-
-          
-
-            if (top != 0) {
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.addEventListener('mouseenter', Swal.stopTimer)
-                        toast.addEventListener('mouseleave', Swal.resumeTimer)
-                    }
-                })
-                if ((1 - top) == 0) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'Ürün kullanılabilir değil!'
-                    });
-                    document.getElementById("kaydet").disabled = true;
-                } else {
-                    Toast.fire({
-                        icon: 'info',
-                        title: 'Ürün maksimum %' + (((1 - top).toFixed(4)) * 100) + ' oranında kullanılabilir!'
-                    });
-                    $("#kaydet").attr("disabled", true)
-
-                }
-
-            } else {
-                $("#kaydet").attr("disabled", false)
-            }
-            if (b != null) {
-                $("#kaydet").attr("disabled", false)
-            } else {
-                $("#kaydet").attr("disabled", true)
-            }
+            })
+            
+            
 
 
         }
@@ -4091,6 +4220,7 @@ for (let i = 1; i < rows1.length; i++) {
                          $(document).ready(function () {
                              $('.selectmakina2').select2();
                              $('.js-example-basic-single').select2();
+                             $('.js-example-basic-single').trigger("change")
 
                          });
                          x++;
@@ -4135,7 +4265,7 @@ for (let i = 1; i < rows1.length; i++) {
                          title: 'Makine seçmediniz!'
                      })
                  }
-                 $(".select2-hidden-accessible").trigger("change");
+                 
              }
              else {
                  const Toast = Swal.mixin({
@@ -4394,7 +4524,7 @@ for (let i = 1; i < rows1.length; i++) {
                         else if (i == 4 || i == 5) {
                             td.innerHTML = '<input class="border-0 text-center" style="width: 120px" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].getElementsByTagName("input")[0].value +'" onkeyup="changeadet1(this)" disabled="">';
                         } else if (i == 1) {
-                            td.innerHTML = '<input class="border-0 text-center" onblur="oranchange(this)" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00"><div class="text-center"><img onclick = "removeRow1(this)" style = "width:18px" src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC"></div>'
+                            td.innerHTML = '<input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00"><div class="text-center"><img onclick = "removeRow1(this)" style = "width:18px" src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC"></div>'
                         }
                         else {
                             td.innerHTML = table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].innerHTML;
@@ -4413,9 +4543,46 @@ for (let i = 1; i < rows1.length; i++) {
 
                 
                 table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[0].onchange();
-                table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].value = "0.5";
-                table.getElementsByTagName("tr")[rownum+1].getElementsByTagName("input")[0].value = "0.5";
+                table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].value = "0.50";
+                table.getElementsByTagName("tr")[rownum+1].getElementsByTagName("input")[0].value = "0.50";
+                table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[1].getElementsByTagName("input")[0].onblur = function () {
+                    if (this.value > 0.99) {
+                        this.value = "0.99";
+                        this.onblur();
+                    } else if (this.value <= 0) {
+                        this.value = "0.01";
+                        this.onblur();
+                    } else {
+                        var m = (1 - this.value).toFixed(2)
+                        table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].value = m;
+                        table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].value = parseFloat(this.value).toFixed(2);
+                        keyupadet1(this.parentNode.parentNode.rowIndex);
+                        document.getElementsByTagName("table")[1].getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
+                        changeadet();
+                    }
+
+                }
                 table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].onblur = function () {
+
+                    if (this.value > 0.99) {
+                        this.value = "0.99";
+                        this.onblur();
+
+                    } else if (this.value <= 0) {
+                        this.value = "0.01";
+                        this.onblur();
+                    }
+                    else {
+                        var m = (1 - this.value).toFixed(2);
+                       
+                        table.getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value = m;
+                        table.getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex].getElementsByTagName("input")[0].value = this.value;
+                        keyupadet1(this.parentNode.parentNode.rowIndex);
+                        changeadet();
+                        if (x != 0) {
+                            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3].onchange();
+                        }
+                    }
                     table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[4].getElementsByTagName("input")[0].onkeyup();
                 }
                 table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value = 1;
@@ -4425,9 +4592,9 @@ for (let i = 1; i < rows1.length; i++) {
                 table.getElementsByTagName("tr")[rownum].getElementsByTagName("img")[0].setAttribute("onclick", "");
                 if (x == 1) {
                     table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[2].onchange();
-                    table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[3].onchange = function (e) {
+                    table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("select")[3].onchange = function () {
                     var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-                    var oo = jsonObj.find(x => x.STOK_ADI == e.currentTarget.value);
+                    var oo = jsonObj.find(x => x.STOK_ADI == this.value);
                     var m = document.getElementById("metraj").value;
                         var adt = table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
                     var upt = m.split('/')[0];
@@ -4437,7 +4604,7 @@ for (let i = 1; i < rows1.length; i++) {
                     }
 
                 }
-
+                
 
                 table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value = table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value;
                 table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[4].getElementsByTagName("input")[0].onkeyup();
@@ -4449,24 +4616,8 @@ for (let i = 1; i < rows1.length; i++) {
 
                     table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value;
                     table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[3].onchange();
-                    table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].onblur = function () {
-                        if (this.value > 0.99) {
-                            this.value = "0.99";
-                            this.onblur();
-                        } else if (this.value <= 0) {
-                            this.value = "0.01";
-                            this.onblur();
-                        } else {
-                            var m = (1 - this.value).toFixed(2)
-                            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].value = m;
-                            table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0].onblur();
-                            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
-                            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex + 1].value = (1 - parseFloat(this.value.toString().replace(",", "."))).toLocaleString().replace(",", ".")
-                            keyupadet1(this.parentNode.parentNode.rowIndex);
-                            changeadet();
-                        }
-                        
-                    }
+                   
+                    
 
                    
                 }
@@ -4558,11 +4709,20 @@ for (let i = 1; i < rows1.length; i++) {
                 document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[3].disabled = false;
             }
 
-            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex].remove();
-            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].onkeyup = function (e) {
-                keyupadet1(e.currentTarget.parentNode.parentNode.rowIndex);
-                changeadet();
+            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].onblur = function () {
+
+                if (this.value >= 1) {
+                    this.value = "1.00";
+                } else if (this.value <= 0) {
+                    this.value = "0.01";
+                }
+                keyupadet1(this.parentNode.parentNode.rowIndex);
+                document.getElementsByTagName("table")[1].getElementsByTagName("tr")[this.parentNode.parentNode.rowIndex].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
+
             };
+            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value = "1.00";
+            document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value.parentNode.parentNode.parentNode.rowIndex].remove();
+            
         }
         function keyupadet1(value) {
             
@@ -4576,7 +4736,7 @@ for (let i = 1; i < rows1.length; i++) {
             $("#urunler").bootstrapTable("destroy").bootstrapTable({
                 url: 'http://192.168.2.13:83/api/seri/serirehber'
             }).on('click-row.bs.table', function (e, row, $element) {
-                $("#seri").val(row.SERI_NO);
+                $("#seri").val(row.SERI_NO).trigger("input");
                 $("#rehberSec").modal("hide");
                 inputHandler();
             });
@@ -4605,34 +4765,11 @@ for (let i = 1; i < rows1.length; i++) {
             return m == "NaN" ? "-" : parseFloat(m).toLocaleString();
         }
         function urunClick(v) {
-            $("#seri").val(v.innerHTML);
+            $("#seri").val(v.innerHTML).trigger("input");
             $("#rehberSec").modal("hide");
             inputHandler();
         }
-        function oranchange(e) {
-            var n = e.parentNode.parentNode.rowIndex;
-            
-            if (e.value > 0.99) {
-
-                e.value = "0.99";
-                e.onblur();
-
-            } else if (e.value<=0) {
-                e.value = "0.01";
-                e.onblur();
-            }
-            else {
-                var m = 1 - parseFloat(e.value);
-                    document.getElementsByTagName("table")[1].getElementsByTagName("tr")[n - 1].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value = m.toLocaleString().replace(",", ".");
-                    document.getElementsByTagName("table")[1].getElementsByTagName("tr")[n - 1].getElementsByTagName("td")[1].getElementsByTagName("input")[0].onblur();
-                    changeadet();
-                    if (x != 0) {
-                        document.getElementsByTagName("table")[1].getElementsByTagName("tr")[n].getElementsByTagName("td")[8].getElementsByTagName("select")[0].onchange();
-                    }
-                }
-            
-            
-        }
+       
     </script>
 
     <div class="layout-overlay layout-menu-toggle"></div>

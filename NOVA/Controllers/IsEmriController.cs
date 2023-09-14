@@ -108,7 +108,7 @@ namespace NOVA.Controllers
                 ViewBag.Id = Request.Cookies["Id"].Value;
             }
 
-            ViewBag.UretimTakip = Get();
+            
             ViewBag.SIRANO = GetMax();
             ViewBag.Stok_Adlari = GetStokAdlari();
             ViewBag.Cariler = GetCariler();
@@ -173,7 +173,7 @@ namespace NOVA.Controllers
                 ViewBag.Id = Request.Cookies["Id"].Value;
             }
 
-            ViewBag.UretimTakip = Get();
+           
             ViewBag.SIRANO = GetMax();
             ViewBag.Stok_Adlari = GetStokAdlari();
             ViewBag.Cariler = GetCariler();
@@ -188,7 +188,7 @@ namespace NOVA.Controllers
             public string SERI_NO { get; set; }
         }
 
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult UretimSonuKaydı(string hatkodu, string stokkodu, string genislik, string mik1, string mik2)
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult UretimSonuKaydı(string hatkodu, string stokkodu, string genislik, string mik1, string mik2,bool kontrol)
         {
             var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
 
@@ -291,7 +291,7 @@ namespace NOVA.Controllers
                             karsi = netRS1.FieldByName("SERI_NO").AsString;
                         }
 
-                        netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                        //netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                         //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
                         //{
                         //    netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
@@ -299,6 +299,7 @@ namespace NOVA.Controllers
                         if (miktarsabitle != "E")
                         {
                             netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                         }
                         else
                         {
@@ -312,7 +313,10 @@ namespace NOVA.Controllers
                             var yeni = miktar2.ToDouble() * oran;
 
                             netRS1.Ac("UPDATE TBLISEMRI SET MIKTAR='" + jsonList[i].KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
-
+                            if (kontrol == true)
+                            {
+                                netRS1.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                            }
                         }
 
 
@@ -989,26 +993,7 @@ namespace NOVA.Controllers
 
             return jsonList;
         }
-        public List<UretimTakip> Get()
-        {
-            var apiUrl = "http://192.168.2.13:83/api/uretimtakip/";
-
-            //Connect API
-            Uri url = new Uri(apiUrl);
-            WebClient client = new WebClient();
-            client.Encoding = System.Text.Encoding.UTF8;
-
-            string json = client.DownloadString(url);
-            //END
-
-            //JSON Parse START
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            List<UretimTakip> jsonList = ser.Deserialize<List<UretimTakip>>(json);
-
-            //END
-
-            return jsonList;
-        }
+        
         public List<SiparisModel> GetSip()
         {
             var apiUrl = "http://192.168.2.13:83/api/detaylisip/acik";
