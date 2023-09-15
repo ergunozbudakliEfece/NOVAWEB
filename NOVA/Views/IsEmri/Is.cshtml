@@ -871,7 +871,10 @@
                                             </td>
                                             <td class="text-center p-1"><input class="border-0 text-center" style="width:120px" id="2input" onkeyup="changeadet()" disabled /></td>
                                             <td class="text-center p-1"><input class="border-0 text-center" style="width:120px" id="3input" onkeyup="changeadet()" disabled /></td>
-                                            <td class="text-center p-1"><input class="border-0 text-center" style="width:120px" id="agirlikhesap" readonly /></td>
+                                            <td class="text-center p-1"><input class="border-0 text-center" style="width:120px;display:none" id="agirlikhesap" readonly /> 
+                                                                        <input class="border-0 text-center" style="width:120px" id="agirlikhesap1" readonly="">
+                                            </td>
+
                                             <td class="text-center p-1" id="deneme">
                                                 <select class="select2-single1" style="width:150px">
                                                     <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
@@ -962,7 +965,8 @@
                                     $("#kaydet").attr("disabled", true);
                                 }
 
-                                document.getElementById("agirlikhesap").value = thousands_separators(Math.round(parseFloat((parseInt(document.getElementById("2input").value) * parseInt(document.getElementById("3input").value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(document.getElementById("oran1").value.toString().replace(",", "."))).toFixed(2)));
+                                document.getElementById("agirlikhesap").value = parseFloat((parseInt(document.getElementById("2input").value) * parseInt(document.getElementById("3input").value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(document.getElementById("oran1").value.toString().replace(",", ".")));
+                                document.getElementById("agirlikhesap1").value = parseInt(document.getElementById("agirlikhesap").value);
 
                                 document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
 
@@ -1182,7 +1186,7 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
             }
 
             list2.push({
-                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseInt(refagirlik.replace('.', '')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseFloat(refagirlik.replace(',','.')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
             });
             if (!serilist.includes(girdi2)) {
 
@@ -1197,7 +1201,7 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
             say++;
             }
 
-        list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace('.', '')), REF_ADET: refadet });
+        list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: refadet });
     }
     else {
 
@@ -1224,7 +1228,7 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
 
             }
             list2.push({
-                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseInt(refagirlik.replace('.', '')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseFloat(refagirlik.replace(',','.')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
             });
             if (!serilist.includes(girdi2)) {
 
@@ -1238,7 +1242,7 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
             isemrilist.push(sonrefisemri);
             say++;
         }
-        list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace('.', '')), REF_ADET: refadet });
+        list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: refadet });
         }
 
     }
@@ -1321,13 +1325,22 @@ function getPivot() {
                 var sum = 0;
                 var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
                 for (let e = 0; e < fil.length; e++) {
-                    sum = sum + parseFloat(fil[e].AGIRLIK);
+                    sum = sum + parseFloat(fil[e].GENISLIK);
+                }
+                var ek = 0;
+                for (let e = 0; e < fil.length; e++) {
+                    fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK));
+                    var oldek = ek;
+                    ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
+                    if (Math.round(ek) != Math.round(oldek)) {
+                        fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
+                    } else {
+                        fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
+                    }
+                    fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
+                    fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
                 }
 
-                for (let e = 0; e < fil.length; e++) {
-                    fil[e].HAMSARF = (parseFloat(fil[e].AGIRLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK));
-                    fil[e].FIRE =fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
-                }
                 if (newtakip.length == 0) {
                     newtakip = fil;
                 } else {
@@ -1336,7 +1349,7 @@ function getPivot() {
 
             }
 
-
+            
 
             takiplist = newtakip;
             var fn = takiplist.filter(x => x.ISEMRINO === takiplist[0].ISEMRINO).length;
@@ -1911,7 +1924,8 @@ for (let i = 1; i < rows1.length; i++) {
 
                                     document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
 
-                                    row.getElementsByTagName("input")[5].value = thousands_separators(parseFloat((parseInt(row.getElementsByTagName("input")[4].value) * parseInt(row.getElementsByTagName("input")[3].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value.toString().replace(",", "."))).toFixed(2));
+                                    row.getElementsByTagName("input")[5].value = parseFloat((parseInt(row.getElementsByTagName("input")[4].value) * parseInt(row.getElementsByTagName("input")[3].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value.toString().replace(",", ".")));
+                                    row.getElementsByTagName("input")[6].value = parseInt(row.getElementsByTagName("input")[5].value);
                                 };
                                 cell.appendChild(oraninput);
                                 cell.appendChild(div);
@@ -2189,7 +2203,7 @@ for (let i = 1; i < rows1.length; i++) {
                                     idIndex.push(input.id);
                                 }
 
-                                if (i == 4) {
+                               
                                     input.onkeyup = function changeadet(e) {
                                         var rows = table.getElementsByTagName("tr");
                                         var top = 0;
@@ -2233,10 +2247,11 @@ for (let i = 1; i < rows1.length; i++) {
 
                                         document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
 
-                                        row.getElementsByTagName("input")[4].value = Math.round(parseFloat((parseInt(row.getElementsByTagName("input")[3].value) * parseInt(row.getElementsByTagName("input")[2].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value)));
+                                        row.getElementsByTagName("input")[4].value = (parseInt(row.getElementsByTagName("input")[3].value) * parseInt(row.getElementsByTagName("input")[2].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value);
+                                        row.getElementsByTagName("input")[5].value = parseInt(row.getElementsByTagName("input")[4].value);
                                     };
-                                }
-
+                                
+                               
                             }
                             else if (i == 6) {
                                 var sl1 = document.createElement("select");
@@ -2255,9 +2270,14 @@ for (let i = 1; i < rows1.length; i++) {
                                 cell.className = "text-center p-1"
                                 var ag = document.createElement("input");
                                 ag.className = "border-0 text-center";
-                                ag.style = "width:120px";
+                                ag.style = "width:120px;display:none";
                                 ag.readOnly = true;
+                                var ag1 = document.createElement("input");
+                                ag1.className = "border-0 text-center";
+                                ag1.style = "width:120px";
+                                ag1.readOnly = true;
                                 cell.appendChild(ag);
+                                cell.appendChild(ag1);
                             }
 
                         }
@@ -2804,11 +2824,26 @@ for (let i = 1; i < rows1.length; i++) {
 
                             }
                             else {
-                                var n = document.createElement("input")
-                                n.className = "border-0 text-center";
-                                n.style = "width:80px";
-                                n.readOnly = true;
-                                cell.appendChild(n);
+
+                                
+                                if (i == 10) {
+                                    var n = document.createElement("input")
+                                    n.className = "border-0 text-center";
+                                    n.style = "width:80px;display:none";
+                                    n.readOnly = true;
+                                    var n1 = document.createElement("input")
+                                    n1.className = "border-0 text-center";
+                                    n1.style = "width:80px";
+                                    n1.readOnly = true;
+                                    cell.appendChild(n);
+                                    cell.appendChild(n1);
+                                } else {
+                                    var n = document.createElement("input")
+                                    n.className = "border-0 text-center";
+                                    n.style = "width:80px";
+                                    n.readOnly = true;
+                                    cell.appendChild(n);
+                                }
                             }
 
                         }
@@ -3336,7 +3371,11 @@ for (let i = 1; i < rows1.length; i++) {
 
         var maillist = [];
         var takiplist = [];
+        var maklar = null;
         $(document).ready(function () {
+            $.getJSON("http://192.168.2.13:83/api/ie/besleme", function (data) {
+                maklar = data;
+            })
             $("#kaydet").attr("disabled", true);
     var tp = 0;
     var fireag = document.getElementById("fireagirligi1");
@@ -3405,13 +3444,22 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                     var sum = 0;
                     var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
                     for (let e = 0; e < fil.length; e++) {
-                        sum = sum + parseFloat(fil[e].AGIRLIK);
+                        sum = sum + parseFloat(fil[e].GENISLIK);
                     }
-
+                    var ek = 0;
                     for (let e = 0; e < fil.length; e++) {
-                        fil[e].HAMSARF = (parseFloat(fil[e].AGIRLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK));
+                        fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK));
+                        var oldek = ek;
+                        ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
+                        if (Math.round(ek) != Math.round(oldek)) {
+                            fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
+                        } else {
+                            fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
+                        }
                         fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
+                        fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
                     }
+                   
                     if (newtakip.length == 0) {
                         newtakip = fil;
                     } else {
@@ -3967,7 +4015,73 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
 
                                      document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
 
-                                     t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = thousands_separators(parseFloat((parseInt(t[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseInt(t[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value)).toFixed(0));
+                                     t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = parseFloat((parseInt(t[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseInt(t[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value));
+                                     t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[1].value = parseInt(t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value)
+
+                                     t[i].getElementsByTagName("select")[3].onchange();
+                                 };
+                                 t[i].getElementsByTagName("input")[4].onkeyup = function (e) {
+                                     var rows = table.getElementsByTagName("tr");
+                                     var top = 0;
+
+                                     for (let i = 1; i < rows.length; i++) {
+                                         top = top + (parseInt(rows[i].getElementsByTagName("input")[2].value) * parseInt(rows[i].getElementsByTagName("input")[3].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
+                                     }
+                                     if ((rows[i].getElementsByTagName("input")[4].value != "") && (rows[i].getElementsByTagName("select")[3].value == "STOK SEÇİN")) {
+                                         const Toast = Swal.mixin({
+                                             toast: true,
+                                             position: 'top-end',
+                                             showConfirmButton: false,
+                                             timer: 3000,
+                                             timerProgressBar: true,
+                                             didOpen: (toast) => {
+                                                 toast.addEventListener('mouseenter', Swal.stopTimer)
+                                                 toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                             }
+                                         })
+
+                                         //Toast.fire({
+                                         //    icon: 'info',
+                                         //    title: 'Hesaplamaların doğru çalışabilmesi için Makine seçtiğiniz satırdaki Stok Ölçüsü alanını seçmeniz gerekmektedir!'
+                                         //});
+                                     }
+                                     var d = parseInt(((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) - top);
+                                     document.getElementById("fireagir").value = d;
+                                     $("#kaydet").attr("disabled", false);
+                                     if (d < 0) {
+
+                                         const Toast = Swal.mixin({
+                                             toast: true,
+                                             position: 'top-end',
+                                             showConfirmButton: false,
+                                             timer: 3000,
+                                             timerProgressBar: true,
+                                             didOpen: (toast) => {
+                                                 toast.addEventListener('mouseenter', Swal.stopTimer)
+                                                 toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                             }
+                                         })
+
+                                         Toast.fire({
+                                             icon: 'error',
+                                             title: 'Fire eksi olamaz!'
+                                         });
+                                         $("#kaydet").attr("disabled", true);
+
+                                     }
+
+                                     if (fireyuzde == 0) {
+                                         document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
+                                     } else {
+                                         document.getElementById("fireyuzde").value = ((fireagirlik / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
+
+                                     }
+
+
+                                     document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
+
+                                     t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = parseFloat((parseInt(t[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseInt(t[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value));
+                                     t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[1].value = parseInt(t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value)
 
                                      t[i].getElementsByTagName("select")[3].onchange();
                                  };
@@ -3978,7 +4092,7 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                                  inp.className = "text-center border-0";
                                  inp.readOnly = true;
                                  g3.appendChild(inp);
-                                 inp.style="width:120px"
+                                 inp.style = "width:120px"
                                  g3.display = "flex";
                                  g3.className = "text-center border-0 p-1";
                                  g3.style = t[i].getElementsByTagName("td")[5].getAttribute("style");
@@ -3994,14 +4108,20 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                                  var select = document.createElement("select");
                                  select.className = "selectmakina2";
                                  select.style="width:150px"
-                                 var option;
                                  var grup = document.getElementById("machinenames");
-                                 option = document.createElement('option');
+                                 var option = document.createElement('option');
                                  option.innerHTML = "MAKİNE SEÇİN";
                                  option.selected = true;
                                  option.disabled = true;
                                  select.appendChild(option);
-
+                                 var c = t[i].getElementsByTagName("select")[0].value;
+                                 var d = maklar.filter(x => x.HAT_KODU == c);
+                                     for (let n = 0; n < d.length; n++) {
+                                         var option1 = document.createElement("option");
+                                         option1.innerHTML = d[n].HAT_KODU2;
+                                         option1.value = d[n].HAT_KODU2;
+                                         select.appendChild(option1);
+                                     }
                                  input1.className = "border-0 ms-1 text-center d-none";
 
                                  g2.appendChild(select);
@@ -4340,8 +4460,8 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                     $("#kaydet").attr("disabled", true);
                 }
 
-                document.getElementById("agirlikhesap").value = thousands_separators(Math.round(parseFloat((parseInt(document.getElementById("2input").value) * parseInt(document.getElementById("3input").value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(document.getElementById("oran1").value)).toFixed(2)));
-
+                document.getElementById("agirlikhesap").value = parseFloat((parseInt(document.getElementById("2input").value) * parseInt(document.getElementById("3input").value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(document.getElementById("oran1").value));
+                document.getElementById("agirlikhesap1").value = parseInt(document.getElementById("agirlikhesap").value);
 
                 document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
 
@@ -4424,7 +4544,53 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
 
                     document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
 
-                    t[i].getElementsByTagName("input")[5].value = thousands_separators(parseFloat((parseInt(t[i].getElementsByTagName("input")[4].value) * parseInt(t[i].getElementsByTagName("input")[3].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value)).toFixed(0));
+                    t[i].getElementsByTagName("input")[5].value = parseFloat((parseInt(t[i].getElementsByTagName("input")[4].value) * parseInt(t[i].getElementsByTagName("input")[3].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value));
+                    t[i].getElementsByTagName("input")[6].value = parseInt(t[i].getElementsByTagName("input")[5].value)
+
+
+                };
+                t[i].getElementsByTagName("input")[5].removeAttribute("onkeyup");
+                t[i].getElementsByTagName("input")[5].onkeyup = function k(e) {
+                    var rows = table.getElementsByTagName("tr");
+                    var top = 0;
+
+                    for (let i = 1; i < rows.length; i++) {
+                        top = top + (parseInt(rows[i].getElementsByTagName("input")[3].value) * parseInt(rows[i].getElementsByTagName("input")[4].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
+                    }
+                    var d = parseInt(((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) - top);
+                    document.getElementById("fireagir").value = d;
+                    $("#kaydet").attr("disabled", false);
+                    if (d < 0) {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Fire eksi olamaz!'
+                        });
+                        $("#kaydet").attr("disabled", true);
+                    }
+                    if (fireyuzde == 0) {
+                        document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
+                    } else {
+                        document.getElementById("fireyuzde").value = ((fireagirlik / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
+
+                    }
+
+
+                    document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
+
+                    t[i].getElementsByTagName("input")[5].value = parseFloat((parseInt(t[i].getElementsByTagName("input")[4].value) * parseInt(t[i].getElementsByTagName("input")[3].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value));
+                    t[i].getElementsByTagName("input")[6].value = parseInt(t[i].getElementsByTagName("input")[5].value)
 
 
                 };
@@ -4727,7 +4893,8 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
         function keyupadet1(value) {
             
             var inp = document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value];
-            inp.getElementsByTagName("td")[inp.getElementsByTagName("td").length - 2].getElementsByTagName("input")[0].value = thousands_separators(Math.round(parseFloat((parseInt(inp.getElementsByTagName("td")[4].getElementsByTagName("input")[0].value) * parseInt(inp.getElementsByTagName("td")[5].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(inp.getElementsByTagName("td")[1].getElementsByTagName("input")[0].value)).toFixed(2)));
+            inp.getElementsByTagName("td")[inp.getElementsByTagName("td").length - 2].getElementsByTagName("input")[0].value = parseFloat((parseInt(inp.getElementsByTagName("td")[4].getElementsByTagName("input")[0].value) * parseInt(inp.getElementsByTagName("td")[5].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(inp.getElementsByTagName("td")[1].getElementsByTagName("input")[0].value));
+            inp.getElementsByTagName("td")[inp.getElementsByTagName("td").length - 2].getElementsByTagName("input")[1].value = parseInt(inp.getElementsByTagName("td")[inp.getElementsByTagName("td").length - 2].getElementsByTagName("input")[0].value)
 
         }
         function rehberAc() {
