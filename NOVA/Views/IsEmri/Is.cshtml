@@ -1182,7 +1182,7 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
             }
 
             list2.push({
-                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseInt(refagirlik.replace('.', '')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
             });
             if (!serilist.includes(girdi2)) {
 
@@ -1224,7 +1224,7 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
 
             }
             list2.push({
-                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: Math.round((parseInt(refagirlik.replace('.', '')) / adet)).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseInt(refagirlik.replace('.', '')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
             });
             if (!serilist.includes(girdi2)) {
 
@@ -1321,12 +1321,12 @@ function getPivot() {
                 var sum = 0;
                 var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
                 for (let e = 0; e < fil.length; e++) {
-                    sum = sum + parseFloat(fil[e].AGIRLIK.split('.').join(''));
+                    sum = sum + parseFloat(fil[e].AGIRLIK);
                 }
 
                 for (let e = 0; e < fil.length; e++) {
-                    fil[e].HAMSARF = Math.round((parseFloat(fil[e].AGIRLIK.split('.').join('')) / sum) * (parseFloat(fil[e].TAMAGIRLIK)));
-                    fil[e].FIRE = Math.round(fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK.split('.').join(''))));
+                    fil[e].HAMSARF = (parseFloat(fil[e].AGIRLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK));
+                    fil[e].FIRE =fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
                 }
                 if (newtakip.length == 0) {
                     newtakip = fil;
@@ -1453,8 +1453,8 @@ config.renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.gtRende
                     var agirlik = 0;
                     var adet = 0;
                     for (let a = 0; a < result[l[i].STOKADI].length; a++) {
-                        agirlik = agirlik + parseInt(result[l[i].STOKADI][a].AGIRLIK);
-                        adet = adet + parseInt(result[l[i].STOKADI][a].REF_ADET);
+                        agirlik = agirlik + parseFloat(result[l[i].STOKADI][a].AGIRLIK);
+                        adet = adet + parseFloat(result[l[i].STOKADI][a].REF_ADET);
                     }
 
                     takiplist2.push({ STOKADI: result[l[i].STOKADI][0].STOKADI, MUSTERI: result[l[i].STOKADI][0].MUSTERI, KAPLAMA: result[l[i].STOKADI][0].KAPLAMA, KALINLIK: result[l[i].STOKADI][0].KALINLIK, AGIRLIK: agirlik, ADET: adet })
@@ -3405,12 +3405,12 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                     var sum = 0;
                     var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
                     for (let e = 0; e < fil.length; e++) {
-                        sum = sum + parseFloat(fil[e].AGIRLIK.split('.').join(''));
+                        sum = sum + parseFloat(fil[e].AGIRLIK);
                     }
 
                     for (let e = 0; e < fil.length; e++) {
-                        fil[e].HAMSARF = Math.round((parseFloat(fil[e].AGIRLIK.split('.').join('')) / sum) * (parseFloat(fil[e].TAMAGIRLIK)));
-                        fil[e].FIRE = Math.round(fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK.split('.').join(''))));
+                        fil[e].HAMSARF = (parseFloat(fil[e].AGIRLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK));
+                        fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
                     }
                     if (newtakip.length == 0) {
                         newtakip = fil;
@@ -3487,8 +3487,8 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                     var agirlik = 0;
                     var adet = 0;
                     for (let a = 0; a < result[l[i].STOKADI].length; a++) {
-                        agirlik = agirlik + parseInt(result[l[i].STOKADI][a].AGIRLIK);
-                        adet = adet + parseInt(result[l[i].STOKADI][a].REF_ADET);
+                        agirlik = agirlik + parseFloat(result[l[i].STOKADI][a].AGIRLIK);
+                        adet = adet + parseFloat(result[l[i].STOKADI][a].REF_ADET);
                     }
 
                     takiplist2.push({ STOKADI: result[l[i].STOKADI][0].STOKADI, MUSTERI: result[l[i].STOKADI][0].MUSTERI, KAPLAMA: result[l[i].STOKADI][0].KAPLAMA, KALINLIK: result[l[i].STOKADI][0].KALINLIK, AGIRLIK: agirlik,ADET: adet })
