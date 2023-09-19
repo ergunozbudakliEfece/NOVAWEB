@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-//using NetOpenX50;
 using NOVA.Models;
 using System.Net;
 using System.Web.Script.Serialization;
@@ -774,7 +773,7 @@ namespace NOVA.Controllers
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
-                    netRS2.Ac("UPDATE TBLISEMRIREC SET MIKTAR=1,MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemri[i].ISEMRINO + "'");
+                    netRS2.Ac("UPDATE TBLISEMRIREC SET MIKTAR=1,MIKTARSABITLE='H', DEPO_KODU='45' WHERE ISEMRINO='" + isemri[i].ISEMRINO + "'");
 
                 }
             }
@@ -835,7 +834,7 @@ namespace NOVA.Controllers
                 for (int i = 0; i < isemridis.Count(); i++)
                 {
 
-                    if (isemridis[i].REF_ISEMRINO != null)
+                    if (isemridis[i].REF_ISEMRINO != null && isemridis[i].REF_ISEMRINO!="-")
                     {
                         var stokkodu = stokadlari.Where(x => x.STOK_ADI == isemridis[i].REF_STOKOLCUSU);
 
@@ -885,11 +884,18 @@ namespace NOVA.Controllers
                     Isemri1.ReceteSaklansin = true;
                     Isemri1.ProjeKodu = "1";
                     Isemri1.Oncelik = 0;
-                    Isemri1.RefIsEmriNo = isemridis[i].REF_ISEMRINO;
+                    if(isemridis[i].REF_ISEMRINO != "-")
+                    {
+
+                        Isemri1.RefIsEmriNo = isemridis[i].REF_ISEMRINO;
+                    }
                     Isemri1.DepoKodu = 45;
                     Isemri1.CikisDepoKodu = 45;
                     Isemri1.SeriNo = isemridis[i].GIRDI2;
-                    Isemri1.SeriNo2 = isemridis[i].GENISLIK;
+                    if (isemridis[i].ISEMRINO.Substring(0, 2) != "DL")
+                    {
+                        Isemri1.SeriNo2 = isemridis[i].GENISLIK;
+                    }
                     double mik = 0;
                     if (isemridis[i].AGIRLIK.Contains('.'))
                     {

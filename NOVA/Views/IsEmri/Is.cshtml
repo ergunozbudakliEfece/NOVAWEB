@@ -702,6 +702,7 @@
                                             <th class="text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
                                             <th class="text-center" style="font-size: 11px;">GENİŞLİK(Dilme)</th>
                                             <th class="text-center" style="font-size: 11px;">ADET(Dilme)</th>
+                                            <th class="text-center" style="font-size: 11px;">ADET</th>
                                             <th class="text-center" style="font-size: 11px">AĞIRLIK</th>
                                             <th class="text-center" style="font-size: 11px">MÜŞTERİ</th>
                                         </tr>
@@ -709,13 +710,13 @@
                                             <td class="text-center p-1">1</td>
                                             <td class="p-1">
 
-                                                <input class="border-0 text-center" style="font-size:small;max-width:50px" type="number" value="1.00" max="1.00" min="0.00" id="oran1" onblur="oran()"/>
+                                                <input class="border-0 text-center" style="font-size:small;max-width:50px" type="number" value="1.00" max="1.00" min="0.00" id="oran1" onblur="oran()" />
                                                 <div class="text-center">
                                                     <img onclick="addRow1(this)" style="width:18px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC">
                                                 </div>
                                                 <script>
 
-                                                   
+
                                                     function oran() {
                                                         if (event.currentTarget.value >= 1) {
                                                             event.currentTarget.value = "1.00";
@@ -755,7 +756,7 @@
                                                 <script>
 
                                                     function selectChange(value) {
-                                                       
+
                                                         var tb = document.getElementsByClassName("table")[1];
                                                         var tbrows = tb.getElementsByTagName("tr");
                                                         var rownumber = value.parentNode.parentNode.rowIndex;
@@ -781,10 +782,20 @@
                                                                 }
                                                                 $(".selectmakina2").select2();
                                                             }
-                                                            
+
                                                             if (value.value == "DL01") {
                                                                 $("#2input").attr("disabled", false);
                                                                 $("#3input").attr("disabled", false);
+                                                                
+                                                            } else if (value.value == "DL01") {
+                                                                $("#2input").attr("disabled", true);
+                                                                $("#3input").attr("disabled", true);
+                                                            }
+                                                            else {
+                                                                $("#2input").attr("disabled", true);
+                                                                $("#3input").attr("disabled", true);
+                                                                $("#2input").val("");
+                                                                $("#3input").val("");
                                                             }
                                                         })
 
@@ -828,6 +839,29 @@
                                                                     ss.name = ss.options[ss.selectedIndex].text.split("SIPKONT:")[1] + " " + ss.options[ss.selectedIndex].text.split("*")[1];
                                                                 }
                                                             }
+                                                            var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+                                                            var oo = jsonObj.find(x => x.STOK_ADI == value);
+                                                            var m = document.getElementById("metraj").value;
+                                                            var adt = "";
+                                                            var upt = m.split('/')[0];
+                                                            var ag = (document.getElementById("agirlik").value).split('/')[0];
+                                                            var o = parseFloat(row1.getElementsByTagName("input")[0].value);
+                                                            adt = row1.getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
+                                                            if (row1.getElementsByTagName("select")[0].value == "DL01") {
+                                                                row1.getElementsByTagName("td")[6].getElementsByTagName("input")[0].value = "-";
+                                                                row1.getElementsByTagName("td")[5].getElementsByTagName("input")[0].value = "";
+                                                                row1.getElementsByTagName("td")[7].getElementsByTagName("input")[0].value = "";
+                                                            } else if (row1.getElementsByTagName("select")[0].value == "BK01") {
+
+                                                               
+                                                                row1.getElementsByTagName("td")[4].getElementsByTagName("input")[0].value = oo.EN;
+                                                                row1.getElementsByTagName("td")[5].getElementsByTagName("input")[0].value = "1";
+                                                                row1.getElementsByTagName("td")[6].getElementsByTagName("input")[0].value = Math.round((parseFloat(upt) / (oo.BOY / 1000)) * o);
+                                                                row1.getElementsByTagName("td")[7].getElementsByTagName("input")[0].value = ag;
+                                                                rechange()
+
+                                                            }
+                                                            
 
 
 
@@ -871,8 +905,10 @@
                                             </td>
                                             <td class="text-center p-1"><input class="border-0 text-center" style="width:120px" id="2input" onkeyup="changeadet()" disabled /></td>
                                             <td class="text-center p-1"><input class="border-0 text-center" style="width:120px" id="3input" onkeyup="changeadet()" disabled /></td>
-                                            <td class="text-center p-1"><input class="border-0 text-center" style="width:120px;display:none" id="agirlikhesap" readonly /> 
-                                                                        <input class="border-0 text-center" style="width:120px" id="agirlikhesap1" readonly="">
+                                            <td class="text-center p-1"><input class="border-0 text-center" style="width:120px" id="adet"  disabled /></td>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width:120px;display:none" id="agirlikhesap" readonly />
+                                                <input class="border-0 text-center" style="width:120px" id="agirlikhesap1" readonly="">
                                             </td>
 
                                             <td class="text-center p-1" id="deneme">
@@ -900,7 +936,7 @@
                                 if (x == 0) {
                                     tr.getElementsByTagName("input")[3].value = (Math.round(parseFloat(genislik * adet) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(tr.getElementsByTagName("input")[0].value))).toLocaleString()
                                 } else {
-                                    tr.getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = (Math.round(parseFloat(genislik * adet) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(tr.getElementsByTagName("input")[0].value))).toLocaleString()
+                                    tr.getElementsByTagName("td")[12].getElementsByTagName("input")[0].value = (Math.round(parseFloat(genislik * adet) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(tr.getElementsByTagName("input")[0].value))).toLocaleString()
                                     var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
                                     var oo = jsonObj.find(x => x.STOK_ADI == tr.getElementsByTagName("select")[3].value);
                                     var m = document.getElementById("metraj").value;
@@ -914,6 +950,7 @@
 
                             }
                             function changeadet() {
+
                                 var top1 = 0;
                                 var rows = document.getElementById("test").getElementsByTagName("tr");
                                 for (let i = 1; i < rows.length; i++) {
@@ -921,7 +958,7 @@
                                         top1 = top1 + (parseInt(rows[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value) * parseInt(rows[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
                                     }
                                     if (x > 0) {
-                                        if ((rows[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value != "") && (rows[i].getElementsByTagName("td")[8].getElementsByTagName("select")[0].value == "STOK SEÇİN")) {
+                                        if ((rows[i].getElementsByTagName("td")[12].getElementsByTagName("input")[0].value != "") && (rows[i].getElementsByTagName("td")[9].getElementsByTagName("select")[0].value == "STOK SEÇİN")) {
                                             const Toast = Swal.mixin({
                                                 toast: true,
                                                 position: 'top-end',
@@ -964,8 +1001,12 @@
                                     });
                                     $("#kaydet").attr("disabled", true);
                                 }
-
-                                document.getElementById("agirlikhesap").value = parseFloat((parseInt(document.getElementById("2input").value) * parseInt(document.getElementById("3input").value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(document.getElementById("oran1").value.toString().replace(",", ".")));
+                                var va = document.getElementById("test").getElementsByTagName("tr")[1].getElementsByTagName("select")[0].value;
+                                if (va == "DL01") {
+                                    document.getElementById("agirlikhesap").value = parseFloat((parseInt(document.getElementById("2input").value) * parseInt(document.getElementById("3input").value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(document.getElementById("oran1").value.toString().replace(",", ".")));
+                                } else if (va == "BK01"){
+                                    document.getElementById("agirlikhesap").value = document.getElementById("agirlik").value.split("/")[0].replaceAll(".","");
+                                }
                                 document.getElementById("agirlikhesap1").value = parseInt(document.getElementById("agirlikhesap").value);
 
                                 document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
@@ -1085,6 +1126,7 @@ var oldnum = 0;
 $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
     sonSeri = data;
 }).done(function () {
+   
     for (var i = 1; i < rows1.length; i++) {
     var jsonObjSeri = @Html.Raw(Json.Encode(ViewBag.Seriler));
     var jsonObjSip = @Html.Raw(Json.Encode(ViewBag.Cariler));
@@ -1096,9 +1138,8 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
     var kaplama = document.getElementById("kaplama").value;
     var kalite = document.getElementById("kalite").value;
         var genislik = rows1[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value;
-
+        var makine = rows1[i].getElementsByTagName("select")[0].value;
         var adet = rows1[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
-
         var makineref = "";
         var refstokolcusu = ""
         var refadet = ""
@@ -1107,27 +1148,29 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
         if (x == 1) {
             makineref = rows1[i].getElementsByTagName("select")[2].value;
             refstokolcusu = rows1[i].getElementsByTagName("select")[3].value;
-            refadet = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value;
-            refagirlik = rows1[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value;
+            refadet = rows1[i].getElementsByTagName("td")[10].getElementsByTagName("input")[0].value;
+            refagirlik = rows1[i].getElementsByTagName("td")[12].getElementsByTagName("input")[0].value;
         }
+        
         oncekiadet = parseInt(oncekiadet) + parseInt(adet);
-        var siparisno = rows1[i].getElementsByTagName("select")[4].name.split(" ")[1];
+        var siparisno = null;
         var agirlik = null;
         if (x == 1) {
-
-            if (rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value.split('.').length > 1) {
-                agirlik = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("input")[0].value.split('.')[1];
+            siparisno=rows1[i].getElementsByTagName("select")[4].name.split(" ")[1];
+            if (rows1[i].getElementsByTagName("td")[10].getElementsByTagName("input")[0].value.split('.').length > 1) {
+                agirlik = rows1[i].getElementsByTagName("td")[10].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("input")[0].value.split('.')[1];
             } else {
-                agirlik = rows1[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value;
+                agirlik = rows1[i].getElementsByTagName("td")[10].getElementsByTagName("input")[0].value;
             }
 
         } else {
-            if (rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value.split('.').length > 1) {
-                agirlik = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("input")[0].value.split('.')[1];
+            if (rows1[i].getElementsByTagName("td")[7].getElementsByTagName("input")[0].value.split('.').length > 1) {
+                agirlik = rows1[i].getElementsByTagName("td")[7].getElementsByTagName("input")[0].value.split('.')[0] + rows1[i].getElementsByTagName("td")[7].getElementsByTagName("input")[0].value.split('.')[1];
             } else {
-                agirlik = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value;
+                agirlik = rows1[i].getElementsByTagName("td")[7].getElementsByTagName("input")[0].value;
             }
         }
+       
     var musteri = rows1[i].getElementsByTagName("select")[rows1[i].getElementsByTagName("select").length-1].value;
         var stokolcu = null;
     if (rows1[i].getElementsByTagName("select")[3]) {
@@ -1139,9 +1182,14 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
     } else {
         stokolcu = rows1[i].getElementsByTagName("select")[1].value;
     }
-    var makine = rows1[i].getElementsByTagName("select")[0].value;
-        var sipkont = parseInt(rows1[i].getElementsByTagName("select")[4].name.split(" ")[0]);
+       
+        var sipkont = null;
+        if (x == 1) {
+            sipkont = parseInt(rows1[i].getElementsByTagName("select")[4].name.split(" ")[0]);
+        }
+       
         var sirano = parseInt(rows1[i].getElementsByTagName("td")[0].innerHTML);
+        
     //WARNING:Değişen bölge
     if (old != null) {
             oldnum = old.length;
@@ -1186,7 +1234,8 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
             }
 
             list2.push({
-                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseFloat(refagirlik.replace(',','.')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+                
+                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: adet, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseFloat(refagirlik.replace(',','.')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
             });
             if (!serilist.includes(girdi2)) {
 
@@ -1204,21 +1253,26 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
         list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: refadet });
     }
     else {
-
+      
         for (let b = 0; b < adet; b++) {
             var girdi2 = sonSeri[0].SERI_NO;
             var s = jsonObj.filter(x => x.MAK_KODU == makine);
             var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
             var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
-            var sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+            var sonrefisemri = null;
+            if (makine != "BK01") {
+                sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
+                if (isemrilist.includes(sonrefisemri)) {
+                    var is1 = isemrilist.filter(x => x.includes(makineref));
+                    sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                }
+            }
+           
             if (isemrilist.includes(sonisemri)) {
                 var is = isemrilist.filter(x => x.includes(makine));
                 sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15))+1).toString().padStart(3, '0');
             }
-            if (isemrilist.includes(sonrefisemri)) {
-                var is1 = isemrilist.filter(x => x.includes(makineref));
-                sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15))+1).toString().padStart(3, '0');
-            }
+           
             if (serilist.includes(girdi2)) {
                 if (siralist.includes(sirano) && adet==1) {
                     girdi2 = serilist[serilist.length - 1];
@@ -1227,9 +1281,17 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
                 }
 
             }
-            list2.push({
-                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseFloat(refagirlik.replace(',','.')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
-            });
+            if (makine == "BK01") {
+                var adet1 = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value;
+                list2.push({
+                    GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: adet1, REF_ISEMRINO: "-", REF_STOKOLCUSU: "-", REF_ADET: "-", AGIRLIK: agirlik, SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+                });
+            } else {
+                list2.push({
+                    GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: Math.round(refadet / adet), AGIRLIK: (parseFloat(refagirlik.replace(',', '.')) / adet).toString(), SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
+                });
+            }
+            
             if (!serilist.includes(girdi2)) {
 
                 serilist.push(girdi2);
@@ -1239,14 +1301,23 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
                 siralist.push(sirano);
             }
             isemrilist.push(sonisemri);
-            isemrilist.push(sonrefisemri);
+            if (makine != "BK01") {
+
+                isemrilist.push(sonrefisemri);
+            }
             say++;
         }
-        list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: refadet });
+        if (makine != "BK01")
+            list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: refadet });
+        else {
+            var adet1 = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value;
+            list3.push({ MAKINE: makine, MAKINEREF: "-", MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet1, AGIRLIK: agirlik, REF_ADET: adet1 });
+        }
+            
         }
 
     }
-
+    
 
     var rowNumber = (document.getElementsByTagName("table")[1].getElementsByTagName("tr").length);
     var number = serilist[serilist.length - 1].substring(serilist[serilist.length - 1].length - 2);
@@ -2187,7 +2258,7 @@ for (let i = 1; i < rows1.length; i++) {
 
                                 }
                             }
-                            else if (i == 3 || i == 4) {
+                            else if (i == 3 || i == 4 ||i==5) {
                                 cell.className = "text-center p-1";
                                 if (row.getElementsByTagName("select")[0].value == "DL01") {
 
@@ -2203,7 +2274,7 @@ for (let i = 1; i < rows1.length; i++) {
                                     idIndex.push(input.id);
                                 }
 
-                               
+                                if (i == 3 || i == 4) {
                                     input.onkeyup = function changeadet(e) {
                                         var rows = table.getElementsByTagName("tr");
                                         var top = 0;
@@ -2250,10 +2321,12 @@ for (let i = 1; i < rows1.length; i++) {
                                         row.getElementsByTagName("input")[4].value = (parseInt(row.getElementsByTagName("input")[3].value) * parseInt(row.getElementsByTagName("input")[2].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(row.getElementsByTagName("input")[0].value);
                                         row.getElementsByTagName("input")[5].value = parseInt(row.getElementsByTagName("input")[4].value);
                                     };
+                                }
+                                   
                                 
                                
                             }
-                            else if (i == 6) {
+                            else if (i == 7) {
                                 var sl1 = document.createElement("select");
                                 sl1.className = "selectcari" + " " + cell.parentNode.rowIndex;
                                 sl1.style = "width:150px";
@@ -2442,13 +2515,14 @@ for (let i = 1; i < rows1.length; i++) {
                                             op.value = filt1[i].CARI_ISIM;
                                             ss2.appendChild(op);
                                         }
-
+                                        
 
 
                                     } else {
                                         var tt2 = document.getElementById("test");
                                         var thisrow2 = tt2.getElementsByTagName("tr")[cell.parentNode.rowIndex];
                                         var ss3 = thisrow2.getElementsByTagName("select")[thisrow2.getElementsByTagName("select").length - 1];
+                                        thisrow2.getElementsByTagName("td")[6].getElementsByTagName("input")[0].value = "-";
                                         if (thisrow2.getElementsByTagName("input")[thisrow2.getElementsByTagName("input").length - 3].value == "") {
 
 
@@ -2476,7 +2550,7 @@ for (let i = 1; i < rows1.length; i++) {
 
                                 }
                             }
-                            else if (i == 3 || i == 4) {
+                            else if (i == 3 || i == 4 || i==5) {
                                 cell.className = "text-center p-1";
                                 if (row.getElementsByTagName("select")[0].value == "DL01") {
 
@@ -2493,15 +2567,16 @@ for (let i = 1; i < rows1.length; i++) {
                                 }
                                 if (i == 4 || i == 3) {
                                     input.onkeyup = function (e) {
-                                        changeadet();
+                                        changeadet()
                                         keyupadet1(e.currentTarget.parentNode.parentNode.rowIndex);
+                                       
                                     };
 
 
 
                                 }
                             }
-                            else if (i == 11) {
+                            else if (i == 12) {
                                 var sl1 = document.createElement("select");
                                 sl1.className = "selectcari" + " " + cell.parentNode.rowIndex;
                                 var opt = document.createElement("option");
@@ -2738,9 +2813,12 @@ for (let i = 1; i < rows1.length; i++) {
                                 $('.selectmakina2').select2();
                             }
                             else if (i == th.length - 8) {
+                                cell.style = "border-bottom: hidden; border-top: hidden; width: 1px;";
+                            }
+                            else if (i == th.length - 9) {
                                 cell.style = "border-bottom:hidden";
                             }
-                            else if (i == 9) {
+                            else if (i == 10) {
                                 cell.style = "border-top:hidden;border-bottom:hidden";
                             }
                             else if (i == th.length - 6) {
@@ -2795,7 +2873,7 @@ for (let i = 1; i < rows1.length; i++) {
                                     var adt = onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[3].value;
                                     var upt = m.split('/')[0];
                                     var o = parseFloat(onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[0].value)
-                                    onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[5].value = Math.round(((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000))*o);
+                                    onceki[cell.parentNode.rowIndex].getElementsByTagName("input")[6].value = Math.round(((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000))*o);
 
 
 
@@ -3032,7 +3110,7 @@ for (let i = 1; i < rows1.length; i++) {
                                 div3.appendChild(div4);
                                 cell.appendChild(div3);
                             }
-                            else if (i == 3 || i == 4) {
+                            else if (i == 3 || i == 4 ||i==5) {
                                 if (row.getElementsByTagName("select")[0].value == "DL01") {
 
                                     input.id = Math.random() * 100;
@@ -3107,7 +3185,7 @@ for (let i = 1; i < rows1.length; i++) {
 
                                 cell.appendChild(div);
                             }
-                            else if (i == th.length - 7) {
+                            else if (i == th.length - 8) {
                                 if (x == 1) {
                                     if (i == th.length - 4 || i == th.length - 8) {
                                         cell.style = "border-bottom:hidden";
@@ -3241,7 +3319,7 @@ for (let i = 1; i < rows1.length; i++) {
                                     cell.appendChild(input);
                                 }
                             }
-                            else if (i == th.length - 8) {
+                            else if (i == th.length - 9) {
                                 cell.style = "border-bottom:hidden";
                             }
                             else if (i == th.length - 4) {
@@ -4015,8 +4093,8 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
 
                                      document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
 
-                                     t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = parseFloat((parseInt(t[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseInt(t[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value));
-                                     t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[1].value = parseInt(t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value)
+                                     t[i].getElementsByTagName("td")[12].getElementsByTagName("input")[0].value = parseFloat((parseInt(t[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseInt(t[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value));
+                                     t[i].getElementsByTagName("td")[12].getElementsByTagName("input")[1].value = parseInt(t[i].getElementsByTagName("td")[12].getElementsByTagName("input")[0].value)
 
                                      t[i].getElementsByTagName("select")[3].onchange();
                                  };
@@ -4080,8 +4158,8 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
 
                                      document.getElementById("fireagirligi").value = thousands_separators(((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2));
 
-                                     t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = parseFloat((parseInt(t[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseInt(t[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value));
-                                     t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[1].value = parseInt(t[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value)
+                                     t[i].getElementsByTagName("td")[12].getElementsByTagName("input")[0].value = parseFloat((parseInt(t[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseInt(t[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(t[i].getElementsByTagName("input")[0].value));
+                                     t[i].getElementsByTagName("td")[12].getElementsByTagName("input")[1].value = parseInt(t[i].getElementsByTagName("td")[12].getElementsByTagName("input")[0].value)
 
                                      t[i].getElementsByTagName("select")[3].onchange();
                                  };
@@ -4092,7 +4170,7 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                                  inp.className = "text-center border-0";
                                  inp.readOnly = true;
                                  g3.appendChild(inp);
-                                 inp.style = "width:120px"
+                                 inp.style = "width:80px"
                                  g3.display = "flex";
                                  g3.className = "text-center border-0 p-1";
                                  g3.style = t[i].getElementsByTagName("td")[5].getAttribute("style");
@@ -4133,7 +4211,7 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                                  select.style = "width: 150px";
                                  select.onchange = function () {
 
-                                     t[i].getElementsByTagName("input")[4].name = this.value + 2;
+                                     t[i].getElementsByTagName("input")[5].name = this.value + 2;
                                      t[i].getElementsByTagName("select")[3].disabled = false;
                                      var today = new Date();
                                      var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
@@ -4142,7 +4220,7 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                                      if (localStorage.list != null) {
                                          m = JSON.parse(localStorage.list);
                                      }
-
+                                     
 
                                      var x = "";
                                      var deg = 0;
@@ -4191,8 +4269,8 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                                                  x = ".00000";
                                              }
                                          }
-                                         t[i].getElementsByTagName("input")[4].value = this.value + today.getFullYear().toString().substring(2) + x;
-                                         t[i].getElementsByTagName("input")[4].name = this.value + 2;
+                                         t[i].getElementsByTagName("input")[5].value = this.value + today.getFullYear().toString().substring(2) + x;
+                                         t[i].getElementsByTagName("input")[5].name = this.value + 2;
 
 
                                          for (let a = i + 1; a < t.length; a++) {
@@ -4295,7 +4373,7 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                                      var upt = m.split('/')[0];
                                      var o = parseFloat(t[i].getElementsByTagName("input")[0].value);
                                      adt = t[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
-                                     t[i].getElementsByTagName("td")[9].getElementsByTagName("input")[0].value = Math.round(((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000)) * o);
+                                     t[i].getElementsByTagName("td")[10].getElementsByTagName("input")[0].value = Math.round(((parseFloat(upt) * parseFloat(adt)) / (oo.BOY / 1000)) * o);
 
 
                                  }
@@ -4478,21 +4556,21 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
 
                 } else if (x == 1) {
 
-                    table.getElementsByTagName("tr")[a].deleteCell(6);
-                    table.getElementsByTagName("tr")[a].deleteCell(6);
-                    table.getElementsByTagName("tr")[a].deleteCell(6);
-                    table.getElementsByTagName("tr")[a].deleteCell(6);
-                    table.getElementsByTagName("tr")[a].deleteCell(6);
+                    table.getElementsByTagName("tr")[a].deleteCell(7);
+                    table.getElementsByTagName("tr")[a].deleteCell(7);
+                    table.getElementsByTagName("tr")[a].deleteCell(7);
+                    table.getElementsByTagName("tr")[a].deleteCell(7);
+                    table.getElementsByTagName("tr")[a].deleteCell(7);
 
                 }
 
             }
             if (x == 1) {
-                th.deleteCell(6);
-                th.deleteCell(6);
-                th.deleteCell(6);
-                th.deleteCell(6);
-                th.deleteCell(6);
+                th.deleteCell(7);
+                th.deleteCell(7);
+                th.deleteCell(7);
+                th.deleteCell(7);
+                th.deleteCell(7);
                 x--;
                 sag--;
             } else if (x == 2) {
@@ -4891,6 +4969,7 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
             
         }
         function keyupadet1(value) {
+
             
             var inp = document.getElementsByTagName("table")[1].getElementsByTagName("tr")[value];
             inp.getElementsByTagName("td")[inp.getElementsByTagName("td").length - 2].getElementsByTagName("input")[0].value = parseFloat((parseInt(inp.getElementsByTagName("td")[4].getElementsByTagName("input")[0].value) * parseInt(inp.getElementsByTagName("td")[5].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(inp.getElementsByTagName("td")[1].getElementsByTagName("input")[0].value));
