@@ -19,6 +19,10 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using static NOVA.Controllers.IsEmriController;
+using ServiceStack.Text;
+using System.Diagnostics;
+using Microsoft.Win32;
+using NOVA.Utils;
 
 namespace NOVA.Controllers
 {
@@ -519,10 +523,9 @@ namespace NOVA.Controllers
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
 
         }
-        public string UretimSonuKaydı(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket)
+        public void UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket)
         {
             var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
-            string BarkodCikti = null;
             try
             {
 
@@ -676,7 +679,7 @@ namespace NOVA.Controllers
 
                 if (etiket)
                 {
-                    BarkodCikti = UretimKaydiSonuBarkodCiktisi(jsonList);
+                     UretimKaydiSonuBarkodCiktisi(jsonList);
                 }
             }
             catch (Exception e)
@@ -685,9 +688,6 @@ namespace NOVA.Controllers
                 Console.WriteLine(e.Message);
                 throw;
             }
-
-
-            return BarkodCikti;
         }
         public Microsoft.AspNetCore.Mvc.StatusCodeResult TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2)
         {
@@ -907,12 +907,15 @@ namespace NOVA.Controllers
             return RedirectToAction("Index");
         }
         #region BarkodPDF
-        public string UretimKaydiSonuBarkodCiktisi(List<USKModel> Data)
+        public void UretimKaydiSonuBarkodCiktisi(List<USKModel> Data)
         {
             string imagepath = Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content");
             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
-            MemoryStream Memory = new MemoryStream();
+            string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{ DateTime.UtcNow.ToUnixTime()}.pdf");
+
+            FileStream Memory = new FileStream(pdfPath, FileMode.Create);
+            //MemoryStream Memory = new MemoryStream();
             PdfWriter writer = PdfWriter.GetInstance(document, Memory);
 
             document.Open();
@@ -992,8 +995,9 @@ namespace NOVA.Controllers
             }
 
             document.Close();
+            Memory.Close();
 
-            return Convert.ToBase64String(Memory.ToArray());
+            PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
         }
         private byte[] ImageToByteArray(System.Drawing.Image img)
         {
