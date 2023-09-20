@@ -278,7 +278,7 @@
                                         </td>
                                         <td class="border-0 text-center p-1 w-auto">
 
-                                            <select class="js-select" style="width:150px" onchange="MachineChange(this)">
+                                            <select class="js-select" style="width:150px" onchange="MachineChange(this, 'DLTable')">
 
                                                 <option selected disabled>MAKİNE SEÇİN</option>
 
@@ -382,26 +382,15 @@
 
 
                                         </td>
+
                                         <td class="border-0 text-center p-1 w-auto">
 
-                                            <select class="js-select" style="width:150px" onchange="MachineChange(this)">
-
+                                            <select class="js-select" style="width:150px" onchange="MachineChange(this, 'TPTable')">
                                                 <option selected disabled>MAKİNE SEÇİN</option>
-
-
-                                                <option value="DL01">DL01</option>
-
-
+                                                <option value="TP01">TP01</option>
                                             </select>
 
-
-
-
-
-
                                             <input class="border-0 text-center" id="1input" readonly style="display:none" />
-
-
 
                                         </td>
 
@@ -842,16 +831,16 @@
                 getPivot();
             }
         })
-    function MachineChange(val) {
+    function MachineChange(val, tableId) {
         if (val.value != "MAKİNE SEÇİN") {
-            document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].removeAttribute("disabled");
+            document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].removeAttribute("disabled");
             $.getJSON("http://192.168.2.13:83/api/ie/besleme", function (data) {
                 var d = data.filter(x => x.HAT_KODU == val.value);
                 $(".selectmakina2").select2('destroy');
-                if (document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2].value == "MAKİNE SEÇİN") {
+                if (document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2].value == "MAKİNE SEÇİN") {
 
 
-                    var $sel2 = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2];
+                    var $sel2 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2];
                     $sel2.replaceChildren();
                     var opt = document.createElement("option");
                     opt.value = "MAKİNE SEÇİN";
