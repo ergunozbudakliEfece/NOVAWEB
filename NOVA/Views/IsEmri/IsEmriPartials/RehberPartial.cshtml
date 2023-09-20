@@ -1,0 +1,57 @@
+﻿
+<div class="modal fade" id="rehberSec" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width:90% !important">
+        <div class="modal-content p-1" style="overflow-y: auto !important;width:90% !important;margin-left:7% !important;margin-top:1% !important;margin-bottom:1% !important">
+            <div class="modal-header" style="background: white; position: sticky; top: 0;z-index:5">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="ModalKapat()"></button>
+            </div>
+
+            <table id="urunler"
+                   class="table table-striped mt-2"
+                   data-toggle="table"
+                   data-search="false"
+                   data-export-types="['excel']"
+                   data-pagination="false"
+                   data-locale="tr-TR"
+                   data-loading-template="loadingTemplate"
+                   data-filter-control="true"
+                   data-mobile-responsive="true"
+                   data-url="http://192.168.2.13:83/api/seri/serirehber">
+                <thead>
+                    <tr id="thr">
+                        <th data-field="SERI_NO" data-halign="center" data-align="center" data-formatter="formatterUrun" data-filter-control="input">Ürün Kodları</th>
+                        <th data-field="STOK_KODU" data-halign="center" data-align="center" data-filter-control="input">STOK KODU</th>
+                        <th data-field="STOK_ADI" data-halign="center" data-align="center" data-filter-control="input">STOK ADI</th>
+                        <th data-field="MENSEI" data-halign="center" data-align="center" data-filter-control="input">MENŞEİ</th>
+                        <th data-field="ACIK1" data-halign="center" data-align="center" data-filter-control="input">Genişlik</th>
+                        <th data-field="ACIK2" data-halign="center" data-align="center" data-filter-control="input">Kalınlık</th>
+                        <th data-field="SERI_NO_4" data-halign="center" data-align="center" data-filter-control="input">Kaplama</th>
+                        <th data-field="SERI_NO_3" data-halign="center" data-align="center" data-filter-control="input">Kalite</th>
+                        <th data-halign="center" data-align="center" data-formatter="metFormatter">METRAJ</th>
+                        <th data-field="MIKTAR" data-halign="center" data-align="center" data-formatter="formatterMiktar">AĞIRLIK</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+
+    </div>
+</div>
+<script>
+    function formatterUrun(value, index, row) {
+        return '<span onclick="urunClick(this)">' + value + '</span>';
+    }
+    function formatterMiktar(value, index, row) {
+        return parseInt(value).toLocaleString();
+    }
+    function metFormatter(value, index, row) {
+        var m = parseFloat(parseInt(index.MIKTAR) / (parseInt(index.ACIK1) * parseFloat(index.ACIK2.replace(",", ".")) * (0.00786))).toFixed(2)
+        return m == "NaN" ? "-" : parseFloat(m).toLocaleString();
+    }
+    function urunClick(v) {
+        
+        $("#rehberSec").modal("hide");
+        $("#seri").val(v.innerHTML).trigger("input");
+    }
+</script>

@@ -121,6 +121,35 @@ namespace NOVA.Controllers
 
             return View();
         }
+        public ActionResult IsEmri()
+        {
+            if (TempData["Hata"] != null)
+            {
+                ViewBag.Hata = TempData["Hata"];
+            }
+
+            if (Request.Cookies["Id"] == null)
+            {
+                FormsAuthentication.SignOut();
+                TempData["LOG"] = "ok";
+                return RedirectToAction("Login", "Login");
+            }
+            //DrawImages();
+            ViewBag.Makine = GetMak(1);
+            if (Request.Cookies["Id"] != null)
+            {
+                ViewBag.Id = Request.Cookies["Id"].Value;
+            }
+
+
+            ViewBag.SIRANO = GetMax();
+            ViewBag.Stok_Adlari = GetStokAdlari();
+            ViewBag.Cariler = GetCariler();
+            ViewBag.Sip = GetSip();
+            ViewBag.Seriler = GetSeri();
+
+            return View();
+        }
 
         //27
         public async Task<ActionResult> Index()

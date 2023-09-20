@@ -1260,7 +1260,7 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
             var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
             var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
             var sonrefisemri = null;
-            if (makine != "BK01") {
+            if (x!=1) {
                 sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (b + 1).toString().padStart(3, '0');
                 if (isemrilist.includes(sonrefisemri)) {
                     var is1 = isemrilist.filter(x => x.includes(makineref));
@@ -1281,7 +1281,7 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
                 }
 
             }
-            if (makine == "BK01") {
+            if (x!=1) {
                 var adet1 = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value;
                 list2.push({
                     GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: adet1, REF_ISEMRINO: "-", REF_STOKOLCUSU: "-", REF_ADET: "-", AGIRLIK: agirlik, SIPKONT: sipkont, SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam
@@ -1301,13 +1301,13 @@ $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
                 siralist.push(sirano);
             }
             isemrilist.push(sonisemri);
-            if (makine != "BK01") {
+            if (x!=1) {
 
                 isemrilist.push(sonrefisemri);
             }
             say++;
         }
-        if (makine != "BK01")
+        if (x!=1)
             list3.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: stokolcu, KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: refadet });
         else {
             var adet1 = rows1[i].getElementsByTagName("td")[6].getElementsByTagName("input")[0].value;
@@ -3762,14 +3762,8 @@ var tpl = $.pivotUtilities.aggregatorTemplates;
                     stokAdi.value = b.STOK_ADI;
                     metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.ACIK1) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.ACIK1) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2);
                     var alltr = document.getElementsByTagName("table")[1].getElementsByTagName("tr");
-                    for (let i = 1; i < alltr.length; i++) {
-                        keyupadet1(i);
-                        if (x == 1) {
-                            alltr[i].getElementsByTagName("select")[3].onchange();
-                        }
-                        
-                    }
-                    changeadet();
+                   
+                  
 
                 }
                 else {
