@@ -772,21 +772,7 @@
             })
         }
         function getPivot() {
-            return fetch('./Index?handler=PivotData',
-                {
-                    method: 'get',
-                    headers: {
-                        'Content-Type': 'application/json;charset=UTF-8'
-                    }
-                }).then(function (response) {
-                    if (response.ok) { return response.text(); } else { throw Error("Hata"); }
-                }).then(function (text) {
-                    try {
-                        return JSON.parse(text);
-                    } catch (e) {
 
-                    }
-                }).then(function (responseJSON) {
                     document.body.style.cursor = 'default';
                     takiplist = JSON.parse(localStorage.DLlist);
                     var girdi1 = [];
@@ -852,7 +838,7 @@
                     //fireyuz.value = ((firtop / fn) / (hamtop / fn) * 100).toFixed(2) + " %";
                     localStorage.list4 = JSON.stringify(takiplist);
                     drawPivot();
-                });
+
 
 
 
@@ -876,13 +862,7 @@
                 }, false, "tr")
         }
         function getPivot2() {
-            return fetch('./Index?handler=PivotData',
-                {
-                    method: 'get',
-                    headers: {
-                        'Content-Type': 'application/json;charset=UTF-8'
-                    }
-                }).then(function (responseJSON) {
+
                     var result = groupBy(JSON.parse(localStorage.DLlistTop), 'STOKADI')
                     var l = JSON.parse(localStorage.DLlistTop);
                     for (let i = 0; i < l.length; i++) {
@@ -898,7 +878,7 @@
 
                     }
                     drawPivot2();
-                }).then(function () {
+
                     document.body.style.cursor = 'default';
                     var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
                     var sum = 0;
@@ -911,7 +891,6 @@
 
                     document.getElementById("fireyuzde1").value = parseFloat(sum / sum2 * 100).toFixed(2) + " %";
 
-                });
         }
         if (localStorage.DLlist != "null" && localStorage.DLlist != null) {
 
@@ -1366,21 +1345,7 @@
         })
     }
     function getPivot() {
-        return fetch('./Index?handler=PivotData',
-            {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json;charset=UTF-8'
-                }
-            }).then(function (response) {
-                if (response.ok) { return response.text(); } else { throw Error("Hata"); }
-            }).then(function (text) {
-                try {
-                    return JSON.parse(text);
-                } catch (e) {
 
-                }
-            }).then(function (responseJSON) {
                 document.body.style.cursor = 'default';
                 takiplist = JSON.parse(localStorage.DLlist);
                 var girdi1 = [];
@@ -1447,7 +1412,7 @@
                 //fireyuz.value = ((firtop / fn) / (hamtop / fn) * 100).toFixed(2) + " %";
                 localStorage.list4 = JSON.stringify(takiplist);
                 drawPivot();
-            });
+
 
 
 
@@ -1472,13 +1437,7 @@
             }, false, "tr")
     }
     function getPivot2() {
-        return fetch('./Index?handler=PivotData',
-            {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json;charset=UTF-8'
-                }
-            }).then(function (responseJSON) {
+
                 var result = groupBy(JSON.parse(localStorage.DLlistTop), 'STOKADI')
                 var l = JSON.parse(localStorage.DLlistTop);
                 for (let i = 0; i < l.length; i++) {
@@ -1493,19 +1452,16 @@
 
 
                 }
-                drawPivot2();
-            }).then(function () {
-                document.body.style.cursor = 'default';
-                var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
-                var sum = 0;
-                var sum2 = 0;
-                for (let i = 1; i < rr.length - 1; i++) {
-                    sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
-                    sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
-                }
+        drawPivot2();
+        document.body.style.cursor = 'default';
+        var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
+        var sum = 0;
+        var sum2 = 0;
+        for (let i = 1; i < rr.length - 1; i++) {
+            sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
+            sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
+        }
 
-
-            });
     }
     var aggMap = {
         'agg1': {
@@ -1630,13 +1586,15 @@
         KaydetAktivite();
     }
     function netsisaktar() {
+
         $("#content").show();
-document.body.style.cursor = 'wait';
-        var lis = [];
-        lis = takiplist;
-
-
-$.ajax({
+        document.body.style.cursor = 'wait';
+        var Tip = $('input[name="uretim-tip"]:checked').val();
+        switch (Tip) {
+            case 'DL':
+                var lis = [];
+                lis = takiplist;
+                $.ajax({
     url: '@Url.Action("Post","IsEmri")',
     type: 'POST',
     data: { isemri: lis },
@@ -1686,12 +1644,78 @@ $.ajax({
         });
     }
 }).done(function () {
-    $("#content").hide();
-    sil()
-    document.body.style.cursor = 'default';
+                           $("#content").hide();
+                           sil()
+                           document.body.style.cursor = 'default';
 
 
-})
+                                            })
+                break;
+            case 'TP':
+                var lis = [];
+                lis = JSON.parse(localStorage.TPPivotVeri);
+                                $.ajax({
+    url: '@Url.Action("PostTRPZ", "IsEmri")',
+    type: 'POST',
+    data: { isemri: lis },
+    success: function () {
+
+        $("#content").hide();
+
+        $("#seri").val(null).trigger("input");
+        /*mail();*/
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: 'success',
+            title: 'Veriler başarılı bir şekilde Netsis\'e aktarıldı.'
+        });
+        $("#seri").val(null);
+        document.getElementById("genislikalti").value = 0;
+    },
+    error: function () {
+        document.body.style.cursor = 'default';
+        $("#content").hide();
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: 'error',
+            title: 'Veriler Netsis\'e aktarılamadı!'
+        });
+    }
+}).done(function () {
+                           $("#content").hide();
+                           sil()
+                           document.body.style.cursor = 'default';
+
+
+                                            })
+                break;
+        }
+       
+
+
+
     }
     function removeRow1(value) {
         var rownum = value.parentNode.parentNode.parentNode.rowIndex;
@@ -1748,12 +1772,14 @@ $.ajax({
         } else if (tableId == "TPTable") {
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[0].value = "";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[1].value = "";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[2].value = "";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[3].value = "";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[4].value = "";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[0].value = "SEÇİNİZ";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[1].value = "SEÇİNİZ";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[2].value = "SEÇİNİZ";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[3].value = "SEÇİNİZ";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[4].value = "EFECE GALVANİZ";
-            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[2].value = "";
         }
 
         for (let i = 0; i < td.length; i++) {
