@@ -592,7 +592,7 @@
 
         }
         function rehberAc() {
-    
+
             $("#rehberSec").modal("show");
             $("#urunler").bootstrapTable("destroy").bootstrapTable({
                 url: 'http://192.168.2.13:83/api/seri/serirehber'
@@ -1569,7 +1569,7 @@
 
     }
     function sil() {
-        
+
         var Tip = $('input[name="uretim-tip"]:checked').val();
         var TableId = "";
         switch (Tip) {
@@ -1987,6 +1987,7 @@ $.ajax({
         if (localStorage.TPPivotVeri != null && localStorage.TPPivotVeri != "null")
         {
             TPTableCreatePivot(JSON.parse(localStorage.TPPivotVeri));
+            TPTableCreatePivot2Data();
         }
     }
 
@@ -2001,9 +2002,11 @@ $.ajax({
         var OlusturulanRefIsEmirleri = [];
 
         var TPPivotVeri = [];
+        var TPPivotToplamVeri = [];
 
         if (localStorage.TPPivotVeri != null && localStorage.TPPivotVeri != "null") {
             TPPivotVeri = JSON.parse(localStorage.TPPivotVeri);
+            TPPivotToplamVeri = JSON.parse(localStorage.TPPivotToplamVeri);
 
             TPPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
             TPPivotVeri.filter(x => x.REF_ISEMRINO != "-").forEach((item) => { OlusturulanRefIsEmirleri.push(item.REF_ISEMRINO); });
@@ -2068,7 +2071,7 @@ $.ajax({
 
                     var Veri = {
                         ISEMRINO: SonIsEmri,
-                        STOKADI: (RefStokAdi == '-' ? StokAdi : RefStokAdi),
+                        STOKADI: StokAdi,
                         GIRDI2: RefMakine != "SEÇİNİZ" ? GuncelSeriData.SERI_NO : "-",
                         REF_ISEMRINO: SonRefIsEmri,
                         REF_STOKOLCUSU: RefStokAdi,
@@ -2076,7 +2079,14 @@ $.ajax({
                         AGIRLIK: Math.round(AdetAgirlik)
                     };
 
+                    var ToplamVeri = {
+                        STOKADI: RefStokAdi == "-" ? StokAdi : RefStokAdi,
+                        ADET: PaketMiktari,
+                        AGIRLIK: Math.round(AdetAgirlik)
+                    };
+
                     TPPivotVeri.push(Veri);
+                    TPPivotToplamVeri.push(ToplamVeri);
                 }
             })
 
@@ -2092,6 +2102,7 @@ $.ajax({
             $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
 
             localStorage.setItem('TPPivotVeri', JSON.stringify(TPPivotVeri));
+            localStorage.setItem('TPPivotToplamVeri', JSON.stringify(TPPivotToplamVeri));
 
             TPTableCreatePivot2Data();
         });
@@ -2099,10 +2110,32 @@ $.ajax({
 
     function TPTableCreatePivot2Data()
     {
-        var TPPivotVeri = JSON.parse(localStorage.TPPivotVeri);
-        var GruplanmisVeri = groupBy(TPPivotVeri, 'STOKADI');
+        var TPPivotToplamVeri = JSON.parse(localStorage.TPPivotToplamVeri);
+        var GruplanmisVeri = groupBy(TPPivotToplamVeri, 'STOKADI');
 
-        var TPPivot2Veri = [];
+        var TPPivotTopVeri = [];
+
+        for (let i = 0; i < TPPivotToplamVeri.length; i++)
+        {
+            var ToplamAgirlik = 0;
+            var ToplamAdet = 0;
+
+            var Veri = GruplanmisVeri[TPPivotToplamVeri[i].STOKADI];
+
+            for (let a = 0; a < Veri.length; a++)
+            {
+                ToplamAgirlik += parseFloat(Veri[a].AGIRLIK);
+                ToplamAdet += parseFloat(Veri[a].ADET);
+            }
+
+            TPPivotTopVeri.push({
+                STOKADI: Veri[0].STOKADI,
+                AGIRLIK: ToplamAgirlik,
+                ADET: ToplamAdet
+            });
+        }
+
+        TPTableCreatePivot2(TPPivotTopVeri);
     }
 
     function TPTableCreatePivot(PivotVeri)
@@ -2116,14 +2149,11 @@ $.ajax({
         }, false, "tr");
     }
 
-    function TPTableCreatePivot2()
+    function TPTableCreatePivot2(PivotToplamVeri)
     {
-        $("#TPPivotTop").pivot(PivotVeri,
+        $("#TPPivotTop").pivot(PivotToplamVeri,
         {
-            rows: ["ISEMRINO", "STOKADI", "GIRDI2", "REF_ISEMRINO", "REF_STOKOLCUSU", "ADET", "AGIRLIK"],
-            sorters: {
-                ISEMRINO: function (a, b) { return a - b; } //sort backwards
-            }
+            rows: ["STOKADI", "ADET", "AGIRLIK"]
         }, false, "tr");
     }
 //#endregion
