@@ -2134,53 +2134,42 @@
         });
     }
 
-    function TPTableCreatePivot2Data()
-    {
+    function TPTableCreatePivot2Data() {
         var TPPivotToplamVeri = JSON.parse(localStorage.TPPivotToplamVeri);
-        var GruplanmisVeri = groupBy(TPPivotToplamVeri, 'STOKADI');
 
-        var TPPivotTopVeri = [];
-
-        for (let i = 0; i < TPPivotToplamVeri.length; i++)
-        {
-            var ToplamAgirlik = 0;
-            var ToplamAdet = 0;
-
-            var Veri = GruplanmisVeri[TPPivotToplamVeri[i].STOKADI];
-
-            for (let a = 0; a < Veri.length; a++)
-            {
-                ToplamAgirlik += parseFloat(Veri[a].AGIRLIK);
-                ToplamAdet += parseFloat(Veri[a].ADET);
-            }
-
-            TPPivotTopVeri.push({
-                STOKADI: Veri[0].STOKADI,
-                AGIRLIK: ToplamAgirlik,
-                ADET: ToplamAdet
-            });
-        }
-
-        TPTableCreatePivot2(TPPivotTopVeri);
+        TPTableCreatePivot2(Grupla(TPPivotToplamVeri));
     }
 
-    function TPTableCreatePivot(PivotVeri)
-    {
+    function TPTableCreatePivot(PivotVeri) {
         $("#TPPivot").pivot(PivotVeri,
-        {
-            rows: ["ISEMRINO", "STOKADI", "GIRDI2", "REF_ISEMRINO", "REF_STOKOLCUSU", "ADET", "AGIRLIK"],
-            sorters: {
-                ISEMRINO: function (a, b) { return a - b; } //sort backwards
-            }
-        }, false, "tr");
+            {
+                rows: ["ISEMRINO", "STOKADI", "GIRDI2", "REF_ISEMRINO", "REF_STOKOLCUSU", "ADET", "AGIRLIK"],
+                sorters: {
+                    ISEMRINO: function (a, b) { return a - b; } //sort backwards
+                }
+            }, false, "tr");
     }
 
-    function TPTableCreatePivot2(PivotToplamVeri)
-    {
+    function TPTableCreatePivot2(PivotToplamVeri) {
         $("#TPPivotTop").pivot(PivotToplamVeri,
-        {
-            rows: ["STOKADI", "ADET", "AGIRLIK"]
-        }, false, "tr");
+            {
+                rows: ["MUSTERI", "STOKADI", "ADET", "AGIRLIK"]
+            }, false, "tr");
+    }
+
+    function Grupla(Liste) {
+        var Grup = [];
+
+        Liste.forEach(function (a) {
+            if (!this[`${a.STOKADI}${a.MUSTERI}`]) {
+                this[`${a.STOKADI}${a.MUSTERI}`] = { MUSTERI: a.MUSTERI, STOKADI: a.STOKADI, ADET: 0, AGIRLIK: 0 };
+                Grup.push(this[`${a.STOKADI}${a.MUSTERI}`]);
+            }
+            this[`${a.STOKADI}${a.MUSTERI}`].ADET += a.ADET;
+            this[`${a.STOKADI}${a.MUSTERI}`].AGIRLIK += a.AGIRLIK;
+        }, Object.create(null));
+
+        return Grup;
     }
 //#endregion
 </script>
