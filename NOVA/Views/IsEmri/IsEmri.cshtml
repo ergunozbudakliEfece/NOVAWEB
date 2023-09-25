@@ -432,7 +432,7 @@
                                         </td>
 
                                         <td class="text-center p-1">
-                                            <select class="js-select" style="width:200px" disabled onchange="ReferansStokSecimi()">
+                                            <select class="js-select" style="width:200px" disabled onchange="ReferansStokSecimi(this)">
                                                 <option selected disabled>SEÇİNİZ</option>
                                                 @foreach (var item in ViewBag.Stok_Adlari)
                                                 {
@@ -1969,6 +1969,7 @@
             document.getElementById(tableId).getElementsByTagName("tr")[rows].remove();
             rows--;
         }
+
         KaydetAktivite();
     }
     //#region Genel Metotlar
@@ -1981,9 +1982,10 @@
         KaydetAktivite();
     }
 
-    function ReferansStokSecimi()
+    function ReferansStokSecimi(Satir)
     {
         KaydetAktivite();
+        CariGetir(Satir);
     }
 
     //Stok değiştiğinde gerçekleşecek metot.
@@ -2005,7 +2007,12 @@
         var rowNumber = Satir.parentNode.parentNode.rowIndex;
 
         var Cariler = @Html.Raw(Json.Encode(ViewBag.Cariler));
-        var StokKodu = document.getElementById('TPTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('td')[2].getElementsByTagName('select')[0].value;
+        var StokKodu = document.getElementById('TPTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[3].value;
+
+        if (StokKodu == "SEÇİNİZ")
+        {
+            StokKodu = document.getElementById('TPTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[1].value;
+        }
 
         var FiltreliCariler = Cariler.filter(x => x.STOK_KODU == StokKodu);
 
@@ -2017,23 +2024,23 @@
 
         document.getElementById('TPTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[4].innerHTML = CariListe;
     }
-     function DLCariGetir(SatirNo)
-     {
+    function DLCariGetir(SatirNo)
+    {
+        var rowNumber = SatirNo;
 
-         var rowNumber = SatirNo;
+        var Cariler = @Html.Raw(Json.Encode(ViewBag.Cariler));
+        var StokKodu = document.getElementById('DLTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[3].value;
 
-     var Cariler = @Html.Raw(Json.Encode(ViewBag.Cariler));
-         var StokKodu = document.getElementById('DLTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[3].value;
-         if (StokKodu == "SEÇİNİZ") {
-             StokKodu = document.getElementById('DLTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[1].value;
-         }
+        if (StokKodu == "SEÇİNİZ") {
+            StokKodu = document.getElementById('DLTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[1].value;
+        }
 
-         var FiltreliCariler = Cariler.filter(x => x.STOK_ADI == StokKodu);
-     var CariListe = `<option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>`;
+        var FiltreliCariler = Cariler.filter(x => x.STOK_ADI == StokKodu);
+        var CariListe = `<option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>`;
 
-     for (var i = 0; i < FiltreliCariler.length; i++) {
-         CariListe += `<option value="${FiltreliCariler[i].CARI_ISIM}">${FiltreliCariler[i].CARI_ISIM}</option>`;
-     }
+        for (var i = 0; i < FiltreliCariler.length; i++) {
+        CariListe += `<option value="${FiltreliCariler[i].CARI_ISIM}">${FiltreliCariler[i].CARI_ISIM}</option>`;
+        }
 
      document.getElementById('DLTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[4].innerHTML = CariListe;
     }
@@ -2160,25 +2167,28 @@
 
         miktar2input = document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[2].value;
 
-        $.getJSON("http://192.168.2.13:83/api/stok/miktar/" + kod, function (data) {
-            var miktar2 = data[0].PAY_1;
-            var mik1 = data[0].PAYDA_1;
+        if (miktar2input != "" && con != "" && kod != "SEÇİNİZ")
+        {
+            $.getJSON("http://192.168.2.13:83/api/stok/miktar/" + kod, function (data) {
+                var miktar2 = data[0].PAY_1;
+                var mik1 = data[0].PAYDA_1;
 
-            if (con.length > 0) {
-                if (miktar2input.length > 0) {
-                    if (rownumber === 1) {
-                        document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = Math.round(((con / miktar2) * mik1) * miktar2input);
+                if (con.length > 0) {
+                    if (miktar2input.length > 0) {
+                        if (rownumber === 1) {
+                            document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = Math.round(((con / miktar2) * mik1) * miktar2input);
+                        } else {
+                            document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = Math.round(((con / miktar2) * mik1) * miktar2input);
+                        }
                     } else {
-                        document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = Math.round(((con / miktar2) * mik1) * miktar2input);
+                        document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = null;
                     }
-                } else {
+                }
+                else {
                     document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = null;
                 }
-            }
-            else {
-                document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = null;
-            }
-        });
+            });
+        }
 
         KaydetAktivite();
     }
