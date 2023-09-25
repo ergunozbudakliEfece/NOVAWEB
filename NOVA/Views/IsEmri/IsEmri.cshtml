@@ -477,7 +477,7 @@
                                         <td class="text-center p-1">1</td>
                                         <td class="p-1 text-center">
                                             <div>
-                                                <input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00" onblur="oran(this)">
+                                                <input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00" onblur="oranBK(this)">
 
                                             </div>
 
@@ -501,14 +501,13 @@
 
 
 
-                                            <input class="border-0 text-center" id="1input" readonly style="display:none" />
 
 
 
                                         </td>
 
                                         <td class="p-0 text-center">
-                                            <select class="js-select" style="width:350px" disabled onchange="StokChange(this)">
+                                            <select class="js-select" style="width:350px" disabled onchange="StokChangeBK(this)">
                                                 <option selected disabled>SEÇİNİZ</option>
                                                 @foreach (var item in ViewBag.Stok_Adlari)
                                                 {
@@ -637,7 +636,7 @@
 
                     <div class="text-center" id="DLPivotTop"></div>
                     <div class="text-center" id="TPPivotTop" style="display:none"></div>
-
+                    <div class="text-center" id="BKPivotTop" style="display:none"></div>
 
 
 
@@ -652,7 +651,7 @@
                 <div class="col">
                     <div class="text-center mt-3" id="DLPivot"></div>
                     <div class="text-center mt-3" id="TPPivot" style="display:none"></div>
-
+                    <div class="text-center mt-3" id="BKPivot" style="display:none"></div>
 
                 </div>
 
@@ -725,8 +724,19 @@
                     }
 
                 }
-
                 hamoran.value = (1 - top).toFixed(4);
+                if (localStorage.BKPivotVeri != "null" && localStorage.BKPivotVeri != null) {
+                    var j = JSON.parse(localStorage.BKPivotVeri);
+                    var son = j.filter(x => x.GIRDI1 == seri.value);
+                    if (son.length > 0) {
+                        hamoran.value = "0.0000"
+                        top = 1;
+                    }
+
+
+                }
+
+
                 ham.oninput = function () {
                     if (this.value >= 1 - top) {
                         this.value = ((1 - top).toFixed(4)).toString();
@@ -761,17 +771,27 @@
                     kalite.value = "";
                     $("#metraj").val("");
                 }
+                var Tip = $('input[name="uretim-tip"]:checked').val();
 
 
                 var tr = document.getElementById("DLTable").getElementsByTagName("tr");
-                for (let i = 1; i < tr.length; i++) {
-                    if (i == 1) {
+                //Hammadde seri değişince aktif olan fonsiyon
+                switch (Tip) {
+                    case 'DL':
+                        for (let i = 1; i < tr.length; i++) {
+                            if (i == 1) {
 
-                        tr[i].getElementsByTagName("input")[0].onblur();
-                    } else {
-                        DlInputChange(tr[i].getElementsByTagName("input")[2]);
-                    }
+                                tr[i].getElementsByTagName("input")[0].onblur();
+                            } else {
+                                DlInputChange(tr[i].getElementsByTagName("input")[2]);
+                            }
+                        }
+                        break;
+                    case 'BK':
+                        $("#BKTable").find("select").eq(1).trigger("change");
+                        break;
                 }
+                KaydetAktivite()
                 if (top != 0) {
                     const Toast = Swal.mixin({
                         toast: true,
@@ -785,28 +805,25 @@
                         }
                     })
                     if ((1 - top) == 0) {
+                        KaydetAktivite()
                         Toast.fire({
                             icon: 'error',
                             title: 'Ürün kullanılabilir değil!'
                         });
-                        document.getElementById("kaydet").disabled = true;
+
                     } else {
                         Toast.fire({
                             icon: 'info',
                             title: 'Ürün maksimum %' + (((1 - top).toFixed(4)) * 100) + ' oranında kullanılabilir!'
                         });
-                        $("#kaydet").attr("disabled", true)
+                        KaydetAktivite()
 
                     }
 
                 } else {
-                    $("#kaydet").attr("disabled", false)
+                    KaydetAktivite()
                 }
-                if (b != null) {
-                    $("#kaydet").attr("disabled", false)
-                } else {
-                    $("#kaydet").attr("disabled", true)
-                }
+
 
 
             })
@@ -829,7 +846,7 @@
     $(document).on('select2:open', () => {
         document.querySelector('.select2-search__field').focus();
     });
-   
+
     $(document).ready(function () {
         $(".js-select").select2();
         var tpl = $.pivotUtilities.aggregatorTemplates;
@@ -936,9 +953,9 @@
         function getPivot2() {
 
             var result = Grupla(JSON.parse(localStorage.DLlistTop))
-                   
+
             for (let i = 0; i < result.length; i++) {
-                      
+
 
                 takiplist2.push({ STOKADI: result[i].STOKADI, MUSTERI: result[i].MUSTERI, AGIRLIK: result[i].AGIRLIK, ADET: result[i].ADET })
 
@@ -1274,6 +1291,10 @@
                 TPTableCreatePivotData()
                 TPTableCreatePivot2Data()
                 break;
+            case "BK":
+                BKTableCreatePivotData()
+                BKTableCreatePivot2Data()
+                break;
             case "DL":
                 $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
     sonSeri = data;
@@ -1497,7 +1518,7 @@
             takiplist2,
             {
                 rows: ["MUSTERI", "STOKADI", "ADET", "AGIRLIK"],
-              
+
 
 
 
@@ -1601,6 +1622,12 @@
                 document.getElementById("TPPivot").replaceChildren();
                 document.getElementById("TPPivotTop").replaceChildren();
                 break;
+            case 'BK':
+                localStorage.BKPivotVeri = null;
+                localStorage.BKPivotToplamVeri = null;
+                document.getElementById("BKPivot").replaceChildren();
+                document.getElementById("BKPivotTop").replaceChildren();
+                break;
         }
     }
     function c(val) {
@@ -1616,6 +1643,8 @@
             $("#TPTable").hide();
             $("#TPPivot").hide();
             $("#TPPivotTop").hide();
+            $("#BKPivot").hide();
+            $("#BKPivotTop").hide();
 
             $(".js-select").trigger("change");
         }
@@ -1630,6 +1659,8 @@
             $("#TPTable").show();
             $("#TPPivot").show();
             $("#TPPivotTop").show();
+            $("#BKPivot").hide();
+            $("#BKPivotTop").hide();
 
             TPTableLoadLocalData();
         }
@@ -1643,8 +1674,11 @@
             $("#BKTable").show();
             $("#TPPivot").hide();
             $("#TPPivotTop").hide();
+            $("#BKPivot").show();
+            $("#BKPivotTop").show();
             document.getElementById("DLTable").getElementsByTagName("select")[0].value = "BK01";
             $(".js-select").trigger("change");
+            BKTableLoadLocalData();
         }
         else
         {
@@ -1658,6 +1692,8 @@
             $("#TPTable").hide();
             $("#TPPivot").hide();
             $("#TPPivotTop").hide();
+            $("#BKPivot").hide();
+            $("#BKPivotTop").hide();
         }
 
         KaydetAktivite();
@@ -1788,8 +1824,68 @@
 
                                             })
                 break;
+            case 'BK':
+                                var lis = [];
+                lis = JSON.parse(localStorage.BKPivotVeri);
+                                $.ajax({
+    url: '@Url.Action("PostBKPBRF", "IsEmri")',
+    type: 'POST',
+    data: { isemri: lis },
+    success: function () {
+
+        $("#content").hide();
+
+        $("#seri").val(null).trigger("input");
+        /*mail();*/
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: 'success',
+            title: 'Veriler başarılı bir şekilde Netsis\'e aktarıldı.'
+        });
+        $("#seri").val(null);
+        document.getElementById("genislikalti").value = 0;
+    },
+    error: function () {
+        document.body.style.cursor = 'default';
+        $("#content").hide();
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: 'error',
+            title: 'Veriler Netsis\'e aktarılamadı!'
+        });
+    }
+}).done(function () {
+                           $("#content").hide();
+                           sil()
+                           document.body.style.cursor = 'default';
+
+
+                                            })
+                break;
         }
-       
+
 
 
 
@@ -1940,7 +2036,24 @@
      }
 
      document.getElementById('DLTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[4].innerHTML = CariListe;
+    }
+     function BKCariGetir(SatirNo)
+ {
+
+     var rowNumber = SatirNo;
+
+ var Cariler = @Html.Raw(Json.Encode(ViewBag.Cariler));
+     var StokKodu = document.getElementById('BKTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[1].value;
+
+     var FiltreliCariler = Cariler.filter(x => x.STOK_ADI == StokKodu);
+ var CariListe = `<option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>`;
+
+ for (let i = 0; i < FiltreliCariler.length; i++) {
+     CariListe += `<option value="${FiltreliCariler[i].CARI_ISIM}">${FiltreliCariler[i].CARI_ISIM}</option>`;
  }
+
+         document.getElementById('BKTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[2].innerHTML = CariListe;
+}
     //String olarak gelen veriyi, html element olarak geriye döner.
     function StringToHtml(str) {
         var dom = document.createElement('div');
@@ -1952,7 +2065,6 @@
     function KaydetAktivite()
     {
         var Tip = $('input[name="uretim-tip"]:checked').val();
-
         switch (Tip)
         {
             case "TP":
@@ -1961,10 +2073,14 @@
             case "DL":
                 KaydetAktiviteGenel("DL");
                 break;
+            case "BK":
+                KaydetAktiviteGenel("BK");
+                break;
 
         };
     }
     function KaydetAktiviteGenel(Tip) {
+
         var TableId = "";
         switch (Tip) {
             case 'DL':
@@ -1972,6 +2088,9 @@
                 break;
             case 'TP':
                 TableId = 'TPTable'
+                break;
+            case 'BK':
+                TableId = 'BKTable'
                 break;
         }
         var Satirlar = document.getElementById(TableId).getElementsByTagName('tr');
@@ -1983,27 +2102,36 @@
             Makine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[0].value == "SEÇİNİZ" ? false : true;
             Stok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[1].value == "SEÇİNİZ" ? false : true;
             var IlkKosul = true;
+            var IkinciKosul = false;
             switch (Tip) {
                 case 'TP':
                     Miktar = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[3].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
                     Adet = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[4].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
                     IlkKosul = Makine && Stok && Miktar && Adet;
+                    RefMakine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[2].value == "SEÇİNİZ" ? false : true;
+                    RefStok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[3].value == "SEÇİNİZ" ? false : true;
+                    IkinciKosul = (RefMakine && !RefStok) || (!RefMakine && RefStok);
                     break;
                 case 'DL':
                     Miktar = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[4].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
                     Adet = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[5].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
                     Seri = document.getElementById("seri").value.trim().length < 1 ? false : true;
                     IlkKosul = Makine && Stok && Miktar && Adet && Seri;
+                    RefMakine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[2].value == "SEÇİNİZ" ? false : true;
+                    RefStok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[3].value == "SEÇİNİZ" ? false : true;
+                    IkinciKosul = (RefMakine && !RefStok) || (!RefMakine && RefStok);
+                    break;
+                case 'BK':
+                    Seri = document.getElementById("seri").value.trim().length < 1 ? false : true;
+                    IlkKosul = Makine && Stok && Seri && (parseInt($("#agirlik").val().split("/")[0].replaceAll(".", "")) != 0);
                     break;
             }
 
 
-           
 
-            RefMakine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[2].value == "SEÇİNİZ" ? false : true;
-            RefStok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[3].value == "SEÇİNİZ" ? false : true;
 
-            var IkinciKosul = (RefMakine && !RefStok) || (!RefMakine && RefStok);
+
+
 
             if (!IlkKosul) {
                 AlanlarDolu = false;
@@ -2095,6 +2223,12 @@
         {
             TPTableCreatePivot(JSON.parse(localStorage.TPPivotVeri));
             TPTableCreatePivot2Data();
+        }
+    }
+    function BKTableLoadLocalData() {
+        if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null") {
+            BKTableCreatePivot(JSON.parse(localStorage.BKPivotVeri));
+            BKTableCreatePivot2Data();
         }
     }
 
@@ -2216,17 +2350,125 @@
             TPTableCreatePivot2Data();
         });
     }
+    function BKTableCreatePivotData()
+{
+    var Satirlar = Array.from(document.getElementById('BKTable').getElementsByTagName('tr')).slice(1);
+    var SeriNoListe = @Html.Raw(Json.Encode(ViewBag.Seriler));
+    var StokAdlari = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+    var IsEmirleri = @Html.Raw(Json.Encode(ViewBag.SIRANO));
 
+    var OlusturulanIsEmirleri = [];
+
+    var BKPivotVeri = [];
+    var BKPivotToplamVeri = [];
+
+        if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null") {
+            BKPivotVeri = JSON.parse(localStorage.BKPivotVeri);
+        BKPivotToplamVeri = JSON.parse(localStorage.BKPivotToplamVeri);
+
+            BKPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
+    }
+
+    var GuncelSeriData;
+
+    $.ajax({
+        url: `http://192.168.2.13:83/api/seri/exec/1`,
+        type: 'GET',
+        success: (data) => {
+            GuncelSeriData = data[0];
+        }
+    }).then(() => {
+        Satirlar.forEach((item) => {
+            var Makine = item.getElementsByTagName('select')[0].value;
+            var Stok = item.getElementsByTagName('select')[1].value;
+            var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
+            var Adet = parseInt(item.getElementsByTagName('input')[2].value);
+            var Adet2 = parseInt(item.getElementsByTagName('input')[3].value);
+            var Agirlik = parseInt(item.getElementsByTagName('input')[5].value);
+            var Girdi1 = $("#seri").val();
+            var Kalinlik = $("#kalinlik").val();
+            var Kalite = $("#kalite").val();
+            var Kaplama = $("#kaplama").val();
+
+            var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
+
+            var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
+            var Musteri = item.getElementsByTagName("select")[2].value;
+
+                var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+
+                if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                    SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                }
+
+                OlusturulanIsEmirleri.push(SonIsEmri);
+
+                var Veri = {
+                    ISEMRINO: SonIsEmri,
+                    STOKADI: StokAdi,
+                    GENISLIK: Genislik,
+                    KALINLIK: Kalinlik,
+                    KALITE: Kalite,
+                    KAPLAMA: Kaplama,
+                    ADET: Adet,
+                    GIRDI1: Girdi1,
+                    GIRDI2: GuncelSeriData.SERI_NO,
+                    ADET2: Adet2,
+                    AGIRLIK: Math.round(Agirlik)
+                };
+
+                var ToplamVeri = {
+                    STOKADI: StokAdi ,
+                    ADET: Adet2,
+                    MUSTERI: Musteri,
+                    AGIRLIK: Math.round(Agirlik)
+                };
+
+                BKPivotVeri.push(Veri);
+                BKPivotToplamVeri.push(ToplamVeri);
+
+        })
+
+        BKTableCreatePivot(BKPivotVeri);
+        var fark = BKPivotVeri.length;
+
+        if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null")
+        {
+            fark = fark - JSON.parse(localStorage.BKPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
+        }
+
+        $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
+
+        localStorage.setItem('BKPivotVeri', JSON.stringify(BKPivotVeri));
+        localStorage.setItem('BKPivotToplamVeri', JSON.stringify(BKPivotToplamVeri));
+
+        BKTableCreatePivot2Data();
+    });
+}
     function TPTableCreatePivot2Data() {
         var TPPivotToplamVeri = JSON.parse(localStorage.TPPivotToplamVeri);
 
         TPTableCreatePivot2(Grupla(TPPivotToplamVeri));
+    }
+    function BKTableCreatePivot2Data() {
+        var BKPivotToplamVeri = JSON.parse(localStorage.BKPivotToplamVeri);
+
+        BKTableCreatePivot2(Grupla(BKPivotToplamVeri));
     }
 
     function TPTableCreatePivot(PivotVeri) {
         $("#TPPivot").pivot(PivotVeri,
             {
                 rows: ["ISEMRINO", "STOKADI", "GIRDI2", "REF_ISEMRINO", "REF_STOKOLCUSU", "ADET", "AGIRLIK"],
+                sorters: {
+                    ISEMRINO: function (a, b) { return a - b; } //sort backwards
+                }
+            }, false, "tr");
+    }
+    function BKTableCreatePivot(PivotVeri) {
+        $("#BKPivot").pivot(PivotVeri,
+            {
+                rows: ["GIRDI1", "GIRDI2","ISEMRINO", "STOKADI", "KALINLIK","GENISLIK", "KALITE","KAPLAMA", "ADET","ADET2", "AGIRLIK"],
                 sorters: {
                     ISEMRINO: function (a, b) { return a - b; } //sort backwards
                 }
@@ -2239,14 +2481,52 @@
                 rows: ["MUSTERI", "STOKADI", "ADET", "AGIRLIK"]
             }, false, "tr");
     }
+    function BKTableCreatePivot2(PivotToplamVeri) {
+        $("#BKPivotTop").pivot(PivotToplamVeri,
+            {
+                rows: ["MUSTERI", "STOKADI", "ADET", "AGIRLIK"]
+            }, false, "tr");
+    }
+    function StokChangeBK(val) {
+        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+        var selectedValue = jsonObj.find(x => x.STOK_ADI == val.value);
+        var upt = $("#metraj").val().split('/')[0];
+        var agirlik = $("#agirlik").val().split('/')[0].replaceAll(".","");
+        var table = $("#BKTable");
+        var rowIndex = $(val).parent().parent().index()
+        var currentRow = table.find("tr").eq(rowIndex);
+        var makine = currentRow.find("select").eq(0).val()
+        var o = parseFloat(currentRow.find("input").eq(0).val());
+        function verileriGetir() {
+            currentRow.find("input").eq(1).val(selectedValue.EN);
+            currentRow.find("input").eq(2).val(1);
+            currentRow.find("input").eq(3).val(Math.round((parseFloat(upt) / (selectedValue.BOY / 1000)) * o))
+            currentRow.find("input").eq(5).val(parseInt(agirlik)*o)
+            BKCariGetir(rowIndex);
+        }
+        function verileriSifirla() {
+            currentRow.find("input").eq(1).val(null);
+            currentRow.find("input").eq(2).val(null);
+            currentRow.find("input").eq(3).val(null)
+            currentRow.find("input").eq(5).val(null)
+        }
+        !!makine ? verileriGetir() : verileriSifirla()
+        KaydetAktivite();
+    }
+    function oranBK(val) {
+        var table = $("#BKTable");
+        var rowIndex = $(val).parent().parent().index()
+        var currentRow = table.find("tr").eq(rowIndex);
+        currentRow.find("select").eq(1).trigger("change");
+    }
 
     function Grupla(Liste) {
-       
+
         var Grup = [];
         var Tip = $('input[name="uretim-tip"]:checked').val();
         /*Tip = (Tip == undefined) ? 'DL' : Tip;*/
         Liste.forEach(function (a) {
-           
+
             if (!this[`${a.STOKADI}${a.MUSTERI}`]) {
                 this[`${a.STOKADI}${a.MUSTERI}`] = { MUSTERI: a.MUSTERI, STOKADI: a.STOKADI, ADET: 0, AGIRLIK: 0 };
                 Grup.push(this[`${a.STOKADI}${a.MUSTERI}`]);
@@ -2258,12 +2538,16 @@
                 case 'TP':
                     this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.ADET);
                     break;
+                case 'BK':
+                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.ADET);
+                    break;
             }
             this[`${a.STOKADI}${a.MUSTERI}`].AGIRLIK += a.AGIRLIK;
         }, Object.create(null));
 
         return Grup;
     }
+
 //#endregion
 </script>
 </body>

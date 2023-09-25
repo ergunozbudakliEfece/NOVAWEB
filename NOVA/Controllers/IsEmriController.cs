@@ -959,6 +959,80 @@ namespace NOVA.Controllers
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
         }
         [HttpPost]
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult PostBKPBRF(List<IsEmriModel> isemri)
+        {
+
+            var isemridis = isemri.GroupBy(x => x.ISEMRINO).Select(x => x.First()).ToList();
+            List<SeriModel> createdlog1 = null;
+            var apiUrl2 = "http://192.168.2.13:83/api/seri/1";
+            Uri url2 = new Uri(apiUrl2);
+            WebClient client2 = new WebClient();
+            client2.Encoding = System.Text.Encoding.UTF8;
+
+            var json2 = client2.DownloadString(url2);
+            JavaScriptSerializer ser2 = new JavaScriptSerializer();
+            createdlog1 = ser2.Deserialize<List<SeriModel>>(json2);
+
+            try
+            {
+                var stokadlari = GetStokAdlari();
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                             "TEST2022",
+                                             "TEMELSET",
+                                             "",
+                                             "nova",
+                                             "Efc@+180", 0);
+
+                for (int i = 0; i < isemridis.Count(); i++)
+                {
+                    var stokkodu1 = stokadlari.Where(x => x.STOK_ADI == isemridis[i].STOKADI);
+
+                    Isemri1 = kernel.yeniIsEmri(sirket);
+                    Isemri1.IsEmriNo = isemridis[i].ISEMRINO;
+                    Isemri1.StokKodu = stokkodu1.First().STOK_KODU;
+                    Isemri1.Aciklama = isemridis[i].ADET;
+                    Isemri1.Kapali = false;
+                    Isemri1.ReceteSaklansin = true;
+                    Isemri1.ProjeKodu = "1";
+                    Isemri1.Oncelik = 0;
+                    Isemri1.DepoKodu = 45;
+                    Isemri1.CikisDepoKodu = 45;
+                    Isemri1.SeriNo = isemridis[i].GIRDI2;
+                    Isemri1.SeriNo2 = isemridis[i].GENISLIK;
+                    double mik = 0;
+                    if (isemridis[i].AGIRLIK.Contains('.'))
+                    {
+                        mik = Double.Parse(isemridis[i].AGIRLIK.Split('.')[0] + isemridis[i].AGIRLIK.Split('.')[1]);
+                    }
+                    else
+                    {
+                        mik = Double.Parse(isemridis[i].AGIRLIK);
+                    }
+                    Isemri1.Miktar = mik;
+                    Isemri1.TeslimTarihi = Convert.ToDateTime("2023-12-31");
+                    Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                    Isemri1.kayitYeni();
+                    NetRS netRS2 = kernel.yeniNetRS(sirket);
+
+                    netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR=" + isemridis[i].HAMSARF + ",MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                TempData["Hata"] = ex.Message;
+                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+            }
+
+
+
+
+
+
+            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+        }
+        [HttpPost]
         public ActionResult Post1()
         {
 
