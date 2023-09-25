@@ -876,76 +876,7 @@
         }
 
         function refreshtable() {
-            var username=@Html.Raw(Json.Encode(Request.Cookies["UserName"].Value));
-            getMusterilerAsync().then(function (data) {
-                getRandevuAsync()
-                    .then(function (result) {
-                        
-                        var musteriler = JSON.parse(data).filter(x=>x.PLASIYER==username);
-                        calendar.removeAllEvents();
-                        var d = JSON.parse(result);
-                        for (let i = 0; i < musteriler.length; i++) {
-                            var musid = d.filter(x => x.MUSTERI_ID == musteriler[i].MUSTERI_ID);
-                            if (musid.length > 0) {
-                                var musadi = musteriler.filter(x => x.MUSTERI_ID == musid[0].MUSTERI_ID);
-                                for (let a = 0; a < musid.length; a++) {
-                                    var color = "";
-                                    if (Date.parse(musid[a].PLANLANAN_TARIH) > Date.now()) {
-                                        color = "#3D85C6";
-                                    } else {
-                                        color = "#C1C1C1";
-                                    }
-                                    var randevunotu = musid[a].RANDEVU_NOTU;
-                                    if (randevunotu == null || randevunotu == "") {
-                                        randevunotu = "Not girilmemiş."
-                                    }
-                                    if (musid[a].GERCEKLESEN_TARIH != null) {
-                                        color = "#CC0000";
-                                        calendar.addEvent({
-                                            id: musid[a].MUSTERI_ID,
-                                            title: musadi[0].MUSTERI_ADI,
-                                            start: new Date(musid[a].GERCEKLESEN_TARIH),
-                                            inckey: musid[a].INCKEY,
-                                            description: randevunotu,
-                                            backgroundColor: color
-                                        });
-                                    } else {
-                                        calendar.addEvent({
-                                            id: musid[a].MUSTERI_ID,
-                                            title: musadi[0].MUSTERI_ADI,
-                                            start: new Date(musid[a].PLANLANAN_TARIH),
-                                            inckey: musid[a].INCKEY,
-                                            description: randevunotu,
-                                            backgroundColor: color
-                                        });
-                                    }
-                                }
-
-                            }
-
-
-
-                        }
-
-
-
-
-
-                    }).then(function () {
-
-                        $('#editbutton').show();
-                        $('#deletebutton').show();
-                        $('#guncellebutton').hide();
-                        $('#iptalbutton').hide();
-                        $('#not').prop("disabled", true);
-                        $('#planlanan').prop("disabled", true);
-                        $('#gerceklesen').prop("disabled", true);
-
-
-                        calendar.render();
-
-                    })
-            })
+            $('#plasiyer').trigger("change");
 
 
 
