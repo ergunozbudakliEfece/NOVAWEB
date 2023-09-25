@@ -27,7 +27,7 @@ namespace NOVA
             bundles.Add(new Bundle("~/bundles/bootstrap").Include(
                      "~/assets/vendor/js/bootstrap.js", "~/assets/vendor/js/menu.js", "~/assets/js/main.js"));
             bundles.Add(new Bundle("~/bundles/config").Include(
-                    "~/assets/vendor/js/helpers.js", "~/assets/js/config.js", "~/assets/js/mutluyillar.js", "~//cdn.jsdelivr.net/npm/sweetalert2@11"));
+                    "~/assets/vendor/js/helpers.js", "~/assets/js/config.js", "~/assets/js/mutluyillar.js", "~/assets/sweetalert/sweetalert.js"));
             bundles.Add(new StyleBundle("~/Content/test").Include(
                     "~/assets/boxicons-2.1.2/css/boxicons.css", "~/assets/boxicons-2.1.2/css/animations.css", "~/assets/boxicons-2.1.2/css/transformations.css", "~/assets/vendor/css/core.css", "~/assets/vendor/css/theme-default.css", "~/assets/css/demo.css", "~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css", "~/assets/vendor/libs/apex-charts/apex-charts.css"));
             bundles.Add(new StyleBundle("~/sevkmus").Include(
