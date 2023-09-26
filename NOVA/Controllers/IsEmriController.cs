@@ -729,7 +729,7 @@ namespace NOVA.Controllers
 
                     if (isemri[i].REF_ISEMRINO != "-")
                     {
-                        var stokkodu = stokadlari.Where(x => x.STOK_ADI == isemri[i].REF_STOKADI);
+                        var stokkodu = stokadlari.Where(x => x.STOK_ADI == isemri[i].REF_STOKOLCUSU);
 
 
                         Isemri = kernel.yeniIsEmri(sirket);
@@ -831,7 +831,7 @@ namespace NOVA.Controllers
             public string ADET { get; set; }
             public string REF_ADET { get; set; }
             public string REF_ISEMRINO { get; set; }
-            public string REF_STOKADI { get; set; }
+            public string REF_STOKOLCUSU { get; set; }
 
 
         }

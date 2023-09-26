@@ -2014,6 +2014,8 @@
                                             })
                 break;
             case 'BK':
+            case 'PB':
+            case 'RF':
                                 var lis = [];
                 lis = JSON.parse(localStorage.BKPivotVeri);
                                 $.ajax({
@@ -2115,6 +2117,15 @@
             case "DL":
                 tableId = "DLTable"
                 break;
+            case "BK":
+                tableId = "BKTable"
+                break;
+            case "RF":
+                tableId = "RFTable"
+                break;
+            case "PB":
+                tableId = "PBTable"
+                break;
 
         };
         var rows = document.getElementById(tableId).getElementsByTagName("tr").length;
@@ -2143,7 +2154,15 @@
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[3].value = "SEÇİNİZ";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[4].value = "EFECE GALVANİZ";
         }
-
+        else if (tableId == "BKTable" || tableId == "RFTable" || tableId == "PBTable") {
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[0].value = "1.00";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[1].value = "";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[2].value = "";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("input")[3].value = "";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[0].value = "SEÇİNİZ";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[1].value = "SEÇİNİZ";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[2].value = "EFECE GALVANİZ";
+        }
         for (let i = 0; i < td.length; i++) {
             if (tableId == "DLTable") {
                 if (i != 6 && i != 10)
@@ -2516,8 +2535,8 @@
                 var Stok = item.getElementsByTagName('td')[2].getElementsByTagName('select')[0].value;
                 var Miktar = item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value;
 
-                var RefMakine = item.getElementsByTagName('td')[6].getElementsByTagName('select')[0].value;
-                var RefStok = item.getElementsByTagName('td')[7].getElementsByTagName('select')[0].value;
+                var RefMakine = item.getElementsByTagName('select')[2].value;
+                var RefStok = item.getElementsByTagName('select')[3].value;
 
                 var StokAdi = StokAdlari.filter(x => x.STOK_KODU == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == Stok)[0].STOK_ADI : "-";
                 var RefStokAdi = StokAdlari.filter(x => x.STOK_KODU == RefStok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == RefStok)[0].STOK_ADI : "-";
