@@ -2626,10 +2626,10 @@
             Satirlar.forEach((item) => {
                 var Makine = item.getElementsByTagName('select')[0].value;
                 var Stok = item.getElementsByTagName('select')[1].value;
-                var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
-                var Adet = parseInt(item.getElementsByTagName('input')[2].value);
-                var Adet2 = parseInt(item.getElementsByTagName('input')[3].value);
-                var Agirlik = parseInt(item.getElementsByTagName('input')[5].value);
+                //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
+                //var Adet = parseInt(item.getElementsByTagName('input')[2].value);
+                var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
+                var Agirlik = parseInt(item.getElementsByTagName('input')[3].value);
                 var Girdi1 = $("#seri").val();
                 var Kalinlik = $("#kalinlik").val();
                 var Kalite = $("#kalite").val();
@@ -2651,11 +2651,9 @@
                     var Veri = {
                         ISEMRINO: SonIsEmri,
                         STOKADI: StokAdi,
-                        GENISLIK: Genislik,
                         KALINLIK: Kalinlik,
                         KALITE: Kalite,
                         KAPLAMA: Kaplama,
-                        ADET: Adet,
                         GIRDI1: Girdi1,
                         GIRDI2: GuncelSeriData.SERI_NO,
                         ADET2: Adet2,
@@ -2920,25 +2918,27 @@
     function BKTableCreatePivot(PivotVeri) {
         $("#BKPivot").pivot(PivotVeri,
             {
-                rows: ["GIRDI1", "GIRDI2","ISEMRINO", "STOKADI", "KALINLIK","GENISLIK", "KALITE","KAPLAMA", "ADET","ADET2", "AGIRLIK"],
+                rows: ["GIRDI1", "GIRDI2","ISEMRINO", "STOKADI", "KALINLIK", "KALITE","KAPLAMA","ADET2", "AGIRLIK"],
                 sorters: {
                     ISEMRINO: function (a, b) { return a - b; } //sort backwards
                 }
             }, false, "tr");
+        $("#BKPivot").find(".pvtAxisLabel").eq(7).text("ADET");
     }
     function PBTableCreatePivot(PivotVeri) {
         $("#PBPivot").pivot(PivotVeri,
             {
-                rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "GENISLIK", "KALITE", "KAPLAMA", "ADET", "ADET2", "AGIRLIK"],
+                rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "ADET2", "AGIRLIK"],
                 sorters: {
                     ISEMRINO: function (a, b) { return a - b; } //sort backwards
                 }
             }, false, "tr");
+        
     }
     function RFTableCreatePivot(PivotVeri) {
         $("#RFPivot").pivot(PivotVeri,
             {
-                rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "GENISLIK", "KALITE", "KAPLAMA", "ADET", "ADET2", "AGIRLIK"],
+                rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "ADET2", "AGIRLIK"],
                 sorters: {
                     ISEMRINO: function (a, b) { return a - b; } //sort backwards
                 }
@@ -3076,7 +3076,7 @@
                     this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.ADET);
                     break;
                 case 'BK':
-                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.ADET);
+                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += a.ADET;
                     break;
             }
             this[`${a.STOKADI}${a.MUSTERI}`].AGIRLIK += a.AGIRLIK;
