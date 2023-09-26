@@ -121,19 +121,36 @@ namespace NOVA.Controllers
 
             return View();
         }
-        public ActionResult IsEmri()
+        public async Task<ActionResult> IsEmri()
         {
-            if (TempData["Hata"] != null)
+            int moduleId = 27;
+
+            List<Modules> Modules = await AuthHelper.GetModules(moduleId);
+
+            if (Modules[0].ACTIVE != "1")
             {
-                ViewBag.Hata = TempData["Hata"];
+                return RedirectToAction("Maintenance", "Home");
             }
 
-            if (Request.Cookies["Id"] == null)
+            User UserData = await RoleHelper.RoleControl(Request.Cookies["Id"].Value, moduleId);
+
+            if (UserData.SELECT_AUTH != true)
             {
-                FormsAuthentication.SignOut();
-                TempData["LOG"] = "ok";
-                return RedirectToAction("Login", "Login");
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
             }
+            else
+            {
+                bool Logged = await AuthHelper.LoginLog(Request.Cookies["Id"].Value, Request.Cookies["LogId"].Value, moduleId);
+
+                if (!Logged)
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+            }
+
+            await RoleHelper.CheckRoles(this);
             //DrawImages();
             ViewBag.Makine = GetMak(1);
             if (Request.Cookies["Id"] != null)

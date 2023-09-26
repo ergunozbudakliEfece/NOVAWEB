@@ -23,6 +23,7 @@ using ServiceStack.Text;
 using System.Diagnostics;
 using Microsoft.Win32;
 using NOVA.Utils;
+using System.Web.Security;
 
 namespace NOVA.Controllers
 {
@@ -35,255 +36,42 @@ namespace NOVA.Controllers
         SerbestUSK uretim = default(SerbestUSK);
         SerbestUSK USK = default(SerbestUSK);
         // GET: Uretim
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
+            int moduleId = 26;
+
+            List<Modules> Modules = await AuthHelper.GetModules(moduleId);
+
+            if (Modules[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
+
+            User UserData = await RoleHelper.RoleControl(Request.Cookies["Id"].Value, moduleId);
+
+            if (UserData.SELECT_AUTH != true)
+            {
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                bool Logged = await AuthHelper.LoginLog(Request.Cookies["Id"].Value, Request.Cookies["LogId"].Value, moduleId);
+
+                if (!Logged)
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+            }
+
+            await RoleHelper.CheckRoles(this);
             ViewBag.Makine = GetMak();
             ViewBag.Girdi = GetGirdi();
             ViewBag.Cikti = GetCikti();
             ViewBag.Id = Request.Cookies["Id"].Value;
 
-            var x = GetPersonelById(Request.Cookies["Id"].Value.ToInt());
-            if (x.Count != 0)
-            {
-                ViewBag.PersonelBilgi = x[0];
-            }
-
-            ViewBag.Page = 1;
-            ViewBag.Name = Session["Name"];
-            ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
-            ViewBag.Id = Request.Cookies["Id"].Value.ToString();
-            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
-            var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 26);
-            if (yetkiKontrol.SELECT_AUTH != true)
-            {
-                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
-                return RedirectToAction("Index", "Home");
-            }
-            if (yetkiKontrol.UPDATE_AUTH == true)
-            {
-                ViewBag.Update = "Yetkili";
-            }
-            var yetkiKontrolSatis = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 1).USER_AUTH;
-
-            var yetkiKontrolStok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 2).USER_AUTH;
-            var yetkiKontrolUretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 3).USER_AUTH;
-            var yetkiKontrolSatinAlma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 4).USER_AUTH;
-            var yetkiKontrolFinans = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 5).USER_AUTH;
-            var yetkiKontrolMuhasebe = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 6).USER_AUTH;
-            var yetkiKontrol1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 9).USER_AUTH;
-            var kullaniciayar = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 10).USER_AUTH;
-            var kullaniciyetki = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 11).USER_AUTH;
-            var istatistik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 12).USER_AUTH;
-            var yetkiKontrolYonetim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 8).USER_AUTH;
-            var yetkiKontrolSube = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 15).USER_AUTH;
-            var yetkiKontrolSevkiyat = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 17).USER_AUTH;
-            var yetkiKontrolDetayliSip = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 16).USER_AUTH;
-            var yetkiKontrolSiparisRaporu = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 18).USER_AUTH;
-            var yetkidetaylisatinalma = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 19).USER_AUTH;
-            var yetkisaticisiparisi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 20).USER_AUTH;
-            var yetkiAnlikUretim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 26).USER_AUTH;
-            var yetkifiyatlistok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 28).USER_AUTH;
-            var yetkifiyatsizstok = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 29).USER_AUTH;
-            var ziyaretkaydi = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 30).USER_AUTH;
-            if (ziyaretkaydi != true)
-            {
-                ViewBag.DisplayZiyaretKaydi = "none";
-            }
-            else
-            {
-                ViewBag.DisplayZiyaretKaydi = "unset";
-            }
-            if (yetkifiyatsizstok != true)
-            {
-                ViewBag.DisplayFiyatsizStok = "none";
-            }
-            else
-            {
-                ViewBag.DisplayFiyatsizStok = "unset";
-            }
-            if (yetkifiyatlistok != true)
-            {
-                ViewBag.DisplayFiyatliStok = "none";
-            }
-            else
-            {
-                ViewBag.DisplayFiyatliStok = "unset";
-            }
-            if (yetkiAnlikUretim != true)
-            {
-                ViewBag.DisplayAnlıkUretim = "none";
-            }
-            else
-            {
-                ViewBag.DisplayAnlıkUretim = "unset";
-            }
-            if (yetkisaticisiparisi != true)
-            {
-                ViewBag.DisplaySaticiSiparisRaporu = "none";
-            }
-            else
-            {
-                ViewBag.DisplaySaticiSiparisRaporu = "unset";
-            }
-            if (yetkidetaylisatinalma != true)
-            {
-                ViewBag.DisplaySatinAlmaRaporu = "none";
-            }
-            else
-            {
-                ViewBag.DisplaySatinAlmaRaporu = "unset";
-            }
-            if (yetkiKontrolSiparisRaporu != true)
-            {
-                ViewBag.DisplaySiparisRaporu = "none";
-            }
-            else
-            {
-                ViewBag.DisplaySiparisRaporu = "unset";
-            }
-            if (yetkiKontrolSevkiyat != true)
-            {
-                ViewBag.DisplaySevkiyat = "none";
-            }
-            else
-            {
-                ViewBag.DisplaySevkiyat = "unset";
-            }
-            if (yetkiKontrolDetayliSip != true)
-            {
-                ViewBag.DisplaySiparis = "none";
-            }
-            else
-            {
-                ViewBag.DisplaySiparis = "unset";
-            }
-            if (yetkiKontrolSube != true)
-            {
-                ViewBag.Sube = "none";
-            }
-            else
-            {
-                ViewBag.Sube = "unset";
-            }
-            if (yetkiKontrolYonetim != true)
-            {
-                ViewBag.DisplayYonetim = "none";
-            }
-            else
-            {
-                ViewBag.DisplayYonetim = "unset";
-            }
-            if (yetkiKontrolUretim != true)
-            {
-                ViewBag.DisplayUretim = "none";
-            }
-            else
-            {
-                ViewBag.DisplayUretim = "unset";
-            }
-            if (yetkiKontrolSatinAlma != true)
-            {
-                ViewBag.DisplaySatinAlma = "none";
-            }
-            else
-            {
-                ViewBag.DisplaySatinAlma = "unset";
-            }
-            if (yetkiKontrolFinans != true)
-            {
-                ViewBag.DisplayFinans = "none";
-            }
-            else
-            {
-                ViewBag.DisplayFinans = "unset";
-            }
-            if (yetkiKontrolMuhasebe != true)
-            {
-                ViewBag.DisplayMuhasebe = "none";
-            }
-            else
-            {
-                ViewBag.DisplayMuhasebe = "unset";
-            }
-            if (yetkiKontrolStok != true)
-            {
-                ViewBag.DisplayStok = "none";
-            }
-            else
-            {
-                ViewBag.DisplayStok = "unset";
-            }
-            if (yetkiKontrolSatis != true)
-            {
-                ViewBag.DisplaySatis = "none";
-            }
-            else
-            {
-                ViewBag.DisplaySatis = "unset";
-            }
-            if (yetkiKontrol1 != true)
-            {
-                ViewBag.Display = "none";
-            }
-            else
-            {
-                ViewBag.Display = "unset";
-            }
-            if (kullaniciayar != true)
-            {
-                ViewBag.Display1 = "none";
-            }
-            else
-            {
-                ViewBag.Display1 = "unset";
-            }
-            if (kullaniciyetki != true)
-            {
-                ViewBag.Display2 = "none";
-            }
-            else
-            {
-                ViewBag.Display2 = "unset";
-            }
-            if (istatistik != true)
-            {
-                ViewBag.Display3 = "none";
-            }
-            else
-            {
-                ViewBag.Display3 = "unset";
-            }
-            var ik = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 7).USER_AUTH;
-            if (ik != true)
-            {
-                ViewBag.Display4 = "none";
-            }
-            else
-            {
-                ViewBag.Display4 = "unset";
-            }
-            var ik1 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 13).USER_AUTH;
-            if (ik1 != true)
-            {
-                ViewBag.Display5 = "none";
-            }
-            else
-            {
-                ViewBag.Display5 = "unset";
-            }
-            var ik2 = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 14).USER_AUTH;
-            if (ik2 != true)
-            {
-                ViewBag.Display6 = "none";
-            }
-            else
-            {
-                ViewBag.Display6 = "unset";
-            }
-            if (TempData["Başarı"] != null)
-            {
-                ViewBag.Message = TempData["Başarı"];
-            }
+           
             return View();
         }
         public ActionResult IsEmri()
