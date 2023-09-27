@@ -430,7 +430,8 @@
 
                                         <td style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></td>
 
-                                        <td class="text-center p-1">
+                                        <td class="text-center p-1" style="display:flex;justify-content:center;align-items:center;border:none;">
+                                            <i onclick="ReferansSecimiTemizle(this, 'TP')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color:#203289;font-size:larger;display:none;cursor:pointer;"></i>
                                             <select class="js-select tp-referans-makineler" style="width:150px" onchange="ReferansMakinesiSecimi(this, 'TP')">
                                                 <option selected disabled>SEÇİNİZ</option>
                                             </select>
@@ -1420,8 +1421,25 @@
                     td.className = table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].className;
                     td.innerHTML = table.getElementsByTagName("tr")[totaltr.length - 1].getElementsByTagName("td")[i].innerHTML;
                     tr.appendChild(td);
+                    if (i == 8) {
+                        td.replaceChildren();
+                    }
                     if (i == 0) {
                         td.innerHTML = parseInt(td.innerHTML) + 1;
+                    }
+                    if (i == 6) {
+                        var HtmlElement = StringToHtml(td.innerHTML);
+
+                        HtmlElement.getElementsByTagName('i')[0].style.display = "none";
+
+                        td.innerHTML = HtmlElement.innerHTML;
+                    }
+                    if (i == 7) {
+                        var HtmlElement = StringToHtml(td.innerHTML);
+
+                        HtmlElement.getElementsByTagName('select')[0].disabled = true;
+
+                        td.innerHTML = HtmlElement.innerHTML;
                     }
                 }
                 break;
@@ -2453,6 +2471,7 @@
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[1].value = "SEÇİNİZ";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[2].value = "SEÇİNİZ";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[3].value = "SEÇİNİZ";
+            document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName('i')[0].style.display = "none";
             document.getElementById(tableId).getElementsByTagName("tr")[1].getElementsByTagName("select")[4].value = "EFECE GALVANİZ";
         }
         else if (tableId == "BKTable" || tableId == "RFTable" || tableId == "PBTable") {
@@ -2490,8 +2509,8 @@
     function ReferansMakinesiSecimi(Satir, Tip) {
         if (Satir.value != "SEÇİNİZ") {
             document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3].removeAttribute("disabled");
+            document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
         }
-
         KaydetAktivite();
     }
 
@@ -2499,6 +2518,23 @@
     {
         KaydetAktivite();
         CariGetir(Satir);
+    }
+
+    function ReferansSecimiTemizle(Satir, Tip)
+    {
+        var SatirNo = Satir.parentNode.parentNode.rowIndex;
+
+        document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[2].value = "SEÇİNİZ";
+        document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[3].value = "SEÇİNİZ";
+        document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[3].disabled = true;
+
+        document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "none";
+
+        $('.js-select').select2("destroy");
+        $('.js-select').select2();
+
+        CariGetir(Satir);
+        KaydetAktivite();
     }
 
     //Stok değiştiğinde gerçekleşecek metot.
@@ -3236,7 +3272,7 @@
     function TPTableCreatePivot(PivotVeri) {
         $("#TPPivot").pivot(PivotVeri,
             {
-                rows: ["ISEMRINO", "STOKADI", "REF_ISEMRINO", "REF_STOKOLCUSU", "ADET", "AGIRLIK"],
+                rows: ["ISEMRINO", "STOKADI","GIRDI2", "REF_ISEMRINO", "REF_STOKOLCUSU", "ADET", "AGIRLIK"],
                 sorters: {
                     ISEMRINO: function (a, b) { return a - b; } //sort backwards
                 }
