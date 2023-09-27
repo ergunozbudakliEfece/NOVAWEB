@@ -775,6 +775,7 @@ namespace NOVA.Controllers
                         Isemri.Miktar = m2;
                         Isemri.kayitYeni();
                         NetRS netRS = kernel.yeniNetRS(sirket);
+                        
                         if (isemri[i].GİRDİ2 != "-")
                         {
                             netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemri[i].GİRDİ2 + "',DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemri[i].REF_ISEMRINO + "'");
@@ -819,7 +820,7 @@ namespace NOVA.Controllers
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
-                    netRS2.Ac("UPDATE TBLISEMRIREC SET MIKTAR=1,MIKTARSABITLE='H', DEPO_KODU='45' WHERE ISEMRINO='" + isemri[i].ISEMRINO + "'");
+                    netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemri[i].GIRDI1 +"',DEPO_KODU='45' WHERE ISEMRINO='" + isemri[i].ISEMRINO + "'");
 
                 }
             }
@@ -840,7 +841,7 @@ namespace NOVA.Controllers
         }
         public class IsEmriModel2
         {
-
+            public string GIRDI1 { get; set; }
             public string GİRDİ2 { get; set; }
             public string ISEMRINO { get; set; }
             public string STOKADI { get; set; }
@@ -1007,14 +1008,13 @@ namespace NOVA.Controllers
                     Isemri1 = kernel.yeniIsEmri(sirket);
                     Isemri1.IsEmriNo = isemridis[i].ISEMRINO;
                     Isemri1.StokKodu = stokkodu1.First().STOK_KODU;
-                    Isemri1.Aciklama = isemridis[i].ADET;
+                    Isemri1.Aciklama = isemridis[i].ADET2;
                     Isemri1.Kapali = false;
                     Isemri1.ReceteSaklansin = true;
                     Isemri1.ProjeKodu = "1";
                     Isemri1.Oncelik = 0;
                     Isemri1.DepoKodu = 45;
                     Isemri1.CikisDepoKodu = 45;
-                    Isemri1.SeriNo = isemridis[i].GIRDI2;
                     Isemri1.SeriNo2 = isemridis[i].GENISLIK;
                     double mik = 0;
                     if (isemridis[i].AGIRLIK.Contains('.'))
@@ -1030,8 +1030,7 @@ namespace NOVA.Controllers
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
-
-                    netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR=" + isemridis[i].HAMSARF + ",MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                    netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
 
                 }
             }
@@ -1380,7 +1379,7 @@ namespace NOVA.Controllers
             public string KAPLAMA { get; set; }
             public string GENISLIK { get; set; }
             public string ADET { get; set; }
-
+            public string ADET2 { get; set; }
             public string REF_ISEMRINO { get; set; }
             public string REF_STOKOLCUSU { get; set; }
             public string REF_ADET { get; set; }

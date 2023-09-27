@@ -380,7 +380,7 @@
                                 <th data-visible="false" data-field="GIR_KUR_HES_USD_FIYAT" data-sortable="true" data-halign="center">GIRILEN KURA GÖRE HESAPLANAN</th>
                             }
                             <th data-visible="false" data-field="STOKSAHASI" data-sortable="true" data-halign="center">STOK SAHASI</th>
-                            <th data-visible="false" data-field="RULOBANTGIRISTARIH" data-sortable="true" data-halign="center">STOĞA GİRİŞ TARİHİ</th>
+                            <th data-field="RULOBANTGIRISTARIH" data-sortable="true" data-halign="center" data-align="center" data-formatter="tarihFormatter">STOĞA GİRİŞ TARİHİ</th>
                             <th data-visible="false" data-field="ISEMRITARIHI" data-sortable="true" data-halign="center">İŞ EMRİ TARİHİ</th>
                             <th data-visible="false" data-field="IRSALIYENO" data-sortable="true" data-halign="center">İRSALİYE NO</th>
                             <th data-visible="false" data-field="ISEMRINO" data-sortable="true" data-halign="center">İŞ EMRİ NO</th>
@@ -1540,7 +1540,17 @@
     //    $("#baslangictarihi").val('').trigger('change');
     //    $("#bitistarihi").val('').trigger('change');
     //}
-
+    function tarihFormatter(value, index, row) {
+        if (value.length>1) {
+            var gun = value.split('.')[0].padStart(2, '0')
+            var ay = value.split('.')[1].padStart(2, '0')
+            var yil = value.split('.')[2]
+            return gun+"."+ay+"."+yil;
+        } else {
+            return value;
+        }
+        
+    }
     function filtershow() {
         $("#goster").hide();
         $("#gizle").show();
