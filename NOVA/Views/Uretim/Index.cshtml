@@ -387,7 +387,7 @@
                                 data-locale="tr-TR">
                             <thead>
                                 <tr>
-                                    <th data-formatter="oranFormatter4" data-field="ORAN" data-halign="center" data-align="center">ORAN</th>
+                                    <th data-formatter="oranFormatter4" data-field="ORAN" data-halign="center" data-align="center">GİRDİLER</th>
                                 </tr>
                             </thead>
                         </table>
@@ -1028,15 +1028,20 @@
         }
 
         function oranFormatter4(value, index, row) {
-            return '<div  data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>' + index.SERI_NO + '</span>"><p class="meter" style="height: auto;position: relative; border: 1px solid #d9dee3; border-radius: 8px; margin: 0 0.25rem;"><span style="width:' + parseFloat(value) + '%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; display:flex;align-items:center;"><span style="height:auto; color: black;font-size: small;position: absolute; right: 0; left: 0; top: 0; bottom: 0;">' + index.SERI_NO + '</span></span></span></p></div>';
+            return '<div  data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>' + index.SERI_NO + '</span>"><p class="meter" style="height: auto;position: relative; border: 1px solid #d9dee3; border-radius: 8px; margin: 0 0.25rem;"><span style="width:' + parseFloat(value) + '%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; display:flex;align-items:center;"><span style="height:auto; color: black;font-size: small;position: absolute; right: 0; left: 0; top: 0; bottom: 0;">' + index.SERI_NO + '</span></span></span></p></div>';
         }
 
         var UretimListeYedek = [];
 
-        function UretimListe()
+        $(document).ready(() => {
+            $('#UretimListeTable').bootstrapTable('destroy');
+            $('#UretimListeTable').bootstrapTable({ data: [] });
+        });
+
+        function UretimListe(value)
         {
             $.ajax({
-                url: `http://192.168.2.13:83/api/ie/hatgirdi`,
+                url: `http://192.168.2.13:83/api/ie/hatgirdi/${value}`,
                 type: 'GET',
                 success: (response) => {
                     if (JSON.stringify(response) !== JSON.stringify(UretimListeYedek))
@@ -1056,6 +1061,11 @@
                 {
                     $('#UretimListeTable').find('tbody')[0].scrollTo(0, ScrollHeight);
                 }
+
+                $('[data-bs-toggle="tooltip"]').tooltip({
+                    container: 'body',
+                    trigger: 'hover'
+                });
             });
         }
 
@@ -1243,8 +1253,7 @@
                 $('.iefiltre').hide();
                 $('#UretimeGirenlerMakine').hide();
                 $('#UretimeGirenlerTablo').hide();
-
-                UretimListe();
+                $("#UretimListeTable").show();
 
                 if ($(window).width() < 800) {
                     $("#makmobile1").show();
@@ -1288,6 +1297,7 @@
                 $('#BekleyenIsEmirleriTablo').hide();
                 $('#UretimeGirenlerMakine').hide();
                 $('#UretimeGirenlerTablo').hide();
+                $("#UretimListeTable").hide();
                 $('.iefiltre').hide();
 
                 UretimListeYedek = [];
@@ -1376,6 +1386,8 @@
                 $('#UretimeGirenlerMakine').hide();
                 $('#UretimeGirenlerTablo').hide();
 
+                $("#UretimListeTable").hide();
+
                 $('#BekleyenIsEmirleriTablo').hide();
 
                 $("input:radio[name=makine-status-ie][value='open']").prop('checked', true);
@@ -1405,6 +1417,7 @@
                 $("#scanner").hide();
                 $('#BarkodButton').hide();
 
+                $("#UretimListeTable").hide();
 
                 $('#BekleyenIsEmirleriMakine').html('');
                 $('#BekleyenIsEmirleriMakine').hide();
@@ -1433,6 +1446,8 @@
             btnid = value.id;
             var url1 = "http://192.168.2.13:83/api/ie/TOP/" + value.value;
             document.getElementById("stokadlari").replaceChildren();
+
+            UretimListe(sabit);
 
             $.getJSON(url1, function (data) {
 
@@ -1477,6 +1492,7 @@
 
             }).done(function () {
                 $("#progress").hide();
+                $("#UretimListeTable").show();
             })
 
 

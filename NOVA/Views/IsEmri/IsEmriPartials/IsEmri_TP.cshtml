@@ -1,0 +1,284 @@
+﻿<table class="table table-bordered border-dark" id="TPTable" style="display:none">
+    <tbody>
+        <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
+            <th class=""></th>
+            <th class="text-center" style="font-size: 11px;">MAKİNE</th>
+            <th class="text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
+            <th class="text-center" style="font-size: 11px;">PAKET MİKTARI</th>
+            <th class="text-center" style="font-size: 11px;">PAKET ADEDİ</th>
+            <th style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></th>
+            <th class="text-center" style="font-size: 11px">MAKİNE 1</th>
+            <th class="text-center" style="font-size: 11px">STOK ÖLÇÜLERİ</th>
+            <th style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></th>
+            <th class="text-center" style="font-size: 11px">AĞIRLIK</th>
+            <th class="text-center" style="font-size: 11px">MÜŞTERİ</th>
+        </tr>
+        <tr>
+            <td class="text-center p-1">1</td>
+
+            <td class="border-0 text-center p-1 w-auto">
+                <select class="js-select tp-makineler" style="width:150px" onchange="MachineChange(this, 'TPTable')">
+                    <option selected disabled>SEÇİNİZ</option>
+                    <option value="TP01">TP01</option>
+                </select>
+
+                <input class="border-0 text-center" id="1input" readonly style="display:none" />
+            </td>
+
+            <td class="p-1 text-center">
+                <select class="js-select" style="width:200px" onchange="StokDegistir(this, 'TP')" disabled>
+                    <option selected disabled>SEÇİNİZ</option>
+                    @foreach (var item in ViewBag.Stok_Adlari)
+                    {
+                        <option value="@item.STOK_KODU">@item.STOK_ADI</option>
+                    }
+                </select>
+            </td>
+
+            <td class="text-center p-1"><input type="number" class="border-0 text-center" style="width:120px" oninput="TPTableAgirlikHesabi(this)" /></td>
+            <td class="text-center p-1"><input type="number" class="border-0 text-center" style="width:120px" oninput="TPTableAgirlikHesabi(this)" /></td>
+
+            <td style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></td>
+
+            <td class="text-center p-1" style="display:flex;justify-content:center;align-items:center;border:none;">
+                <i onclick="ReferansSecimiTemizle(this, 'TP')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color:#203289;font-size:larger;display:none;cursor:pointer;"></i>
+                <select class="js-select tp-referans-makineler" style="width:150px" onchange="ReferansMakinesiSecimi(this, 'TP')">
+                    <option selected disabled>SEÇİNİZ</option>
+                </select>
+            </td>
+
+            <td class="text-center p-1">
+                <select class="js-select" style="width:200px" disabled onchange="ReferansStokSecimi(this, 'TP')">
+                    <option selected disabled>SEÇİNİZ</option>
+                    @foreach (var item in ViewBag.Stok_Adlari)
+                    {
+                        <option value="@item.STOK_KODU">@item.STOK_ADI</option>
+                    }
+                </select>
+            </td>
+
+            <td style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></td>
+
+            <td class="text-center p-1">
+                <input class="border-0 text-center" style="width:120px;display:none" readonly />
+                <input class="border-0 text-center" style="width:120px" readonly="">
+            </td>
+
+            <td class="text-center p-1">
+                <select class="js-select" style="width:150px">
+                    <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
+                </select>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+<script>
+    function TPTableAgirlikHesabi(Satir) {
+        var rownumber = Satir.parentNode.parentNode.rowIndex;
+        var con = document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[1].value;
+
+        var kod = document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("select")[1].value;
+
+        var miktar2input = 0;
+
+        miktar2input = document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[2].value;
+
+        if (miktar2input != "" && con != "" && kod != "SEÇİNİZ") {
+            $.getJSON("http://192.168.2.13:83/api/stok/miktar/" + kod, function (data) {
+                var miktar2 = data[0].PAY_1;
+                var mik1 = data[0].PAYDA_1;
+
+                if (con.length > 0) {
+                    if (miktar2input.length > 0) {
+                        if (rownumber === 1) {
+                            document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = Math.round(((con / miktar2) * mik1) * miktar2input);
+                        } else {
+                            document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = Math.round(((con / miktar2) * mik1) * miktar2input);
+                        }
+                    } else {
+                        document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = null;
+                    }
+                }
+                else {
+                    document.getElementById("TPTable").getElementsByTagName("tr")[rownumber].getElementsByTagName("input")[4].value = null;
+                }
+            });
+        }
+
+        KaydetAktivite();
+    }
+
+    function TPCariGetir(Satir)
+    {
+        var rowNumber = Satir.parentNode.parentNode.rowIndex;
+
+        var Cariler = @Html.Raw(Json.Encode(ViewBag.Cariler));
+        var StokKodu = document.getElementById('TPTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[3].value;
+
+        if (StokKodu == "SEÇİNİZ")
+        {
+            StokKodu = document.getElementById('TPTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[1].value;
+        }
+
+        var FiltreliCariler = Cariler.filter(x => x.STOK_KODU == StokKodu);
+
+        var CariListe = `<option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>`;
+
+        for (var i = 0; i < FiltreliCariler.length; i++) {
+            CariListe += `<option value="${FiltreliCariler[i].CARI_ISIM}">${FiltreliCariler[i].CARI_ISIM}</option>`;
+        }
+
+        document.getElementById('TPTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[4].innerHTML = CariListe;
+    }
+
+    function TPTableLoadLocalData() {
+        if (localStorage.TPPivotVeri != null && localStorage.TPPivotVeri != "null") {
+            TPTableCreatePivot(JSON.parse(localStorage.TPPivotVeri));
+            TPTableCreatePivot2Data();
+        }
+    }
+
+    function TPTableCreatePivotData()
+    {
+        var Satirlar = Array.from(document.getElementById('TPTable').getElementsByTagName('tr')).slice(1);
+        var SeriNoListe = @Html.Raw(Json.Encode(ViewBag.Seriler));
+        var StokAdlari = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+        var IsEmirleri = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+
+        var OlusturulanIsEmirleri = [];
+        var OlusturulanRefIsEmirleri = [];
+
+        var TPPivotVeri = [];
+        var TPPivotToplamVeri = [];
+
+        if (localStorage.TPPivotVeri != null && localStorage.TPPivotVeri != "null") {
+            TPPivotVeri = JSON.parse(localStorage.TPPivotVeri);
+            TPPivotToplamVeri = JSON.parse(localStorage.TPPivotToplamVeri);
+
+            TPPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
+            TPPivotVeri.filter(x => x.REF_ISEMRINO != "-").forEach((item) => { OlusturulanRefIsEmirleri.push(item.REF_ISEMRINO); });
+        }
+
+        var GuncelSeriData;
+
+        $.ajax({
+            url: `http://192.168.2.13:83/api/seri/exec/1`,
+            type: 'GET',
+            success: (data) => {
+                GuncelSeriData = data[0];
+            }
+        }).then(() => {
+            Satirlar.forEach((item) => {
+                var PaketMiktari = parseInt(item.getElementsByTagName('input')[1].value);
+                var PaketAdedi = parseInt(item.getElementsByTagName('input')[2].value);
+                var Agirlik = parseInt(item.getElementsByTagName('input')[4].value);
+                var AdetAgirlik = Agirlik / PaketAdedi;
+
+                var Makine = item.getElementsByTagName('td')[1].getElementsByTagName('select')[0].value;
+                var Stok = item.getElementsByTagName('td')[2].getElementsByTagName('select')[0].value;
+                var Miktar = item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value;
+
+                var RefMakine = item.getElementsByTagName('select')[2].value;
+                var RefStok = item.getElementsByTagName('select')[3].value;
+
+                var StokAdi = StokAdlari.filter(x => x.STOK_KODU == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == Stok)[0].STOK_ADI : "-";
+                var RefStokAdi = StokAdlari.filter(x => x.STOK_KODU == RefStok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == RefStok)[0].STOK_ADI : "-";
+
+                var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
+                var IsEmirleriRefMakine = IsEmirleri.filter(x => x.MAK_KODU == RefMakine);
+                var Musteri = item.getElementsByTagName("select")[4].value;
+
+                for (var i = 0; i < PaketAdedi; i++) {
+
+                    var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (i + 1).toString().padStart(3, '0');
+                    var SonRefIsEmri = "-";
+
+                    if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                        SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                    }
+
+                    OlusturulanIsEmirleri.push(SonIsEmri);
+
+                    if (RefMakine != "SEÇİNİZ")
+                    {
+                        var SonRefIsEmri = RefMakine + "23" + (IsEmirleriRefMakine[IsEmirleriRefMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (i + 1).toString().padStart(3, '0');
+
+                        if (OlusturulanRefIsEmirleri.includes(SonRefIsEmri)) {
+                            SonRefIsEmri = OlusturulanRefIsEmirleri[OlusturulanRefIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanRefIsEmirleri[OlusturulanRefIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                        }
+
+                        if (SeriNoListe.filter(x => x.SERI_NO == GuncelSeriData.SERI_NO).length > 0) {
+                            GuncelSeriData.SERI_NO = GuncelSeriData.SERI_NO.substring(0, 12) + (parseInt(SeriNoListe[SeriNoListe.length - 1].SERI_NO.substring(12, 15)) + 1).toString().padStart(3, '0');
+                        }
+                        else {
+                            SeriNoListe.push(GuncelSeriData);
+                        }
+
+                        OlusturulanRefIsEmirleri.push(SonRefIsEmri);
+                    }
+
+                    var Veri = {
+                        ISEMRINO: SonIsEmri,
+                        STOKADI: StokAdi,
+                        GIRDI2: RefMakine != "SEÇİNİZ" ? GuncelSeriData.SERI_NO : "-",
+                        REF_ISEMRINO: SonRefIsEmri,
+                        REF_STOKOLCUSU: RefStokAdi,
+                        ADET: PaketMiktari,
+                        AGIRLIK: Math.round(AdetAgirlik)
+                    };
+
+                    var ToplamVeri = {
+                        STOKADI: RefStokAdi == "-" ? StokAdi : RefStokAdi,
+                        ADET: PaketMiktari,
+                        MUSTERI: Musteri,
+                        AGIRLIK: Math.round(AdetAgirlik)
+                    };
+
+                    TPPivotVeri.push(Veri);
+                    TPPivotToplamVeri.push(ToplamVeri);
+                }
+            })
+
+            TPTableCreatePivot(TPPivotVeri);
+
+            var fark = TPPivotVeri.filter(x => x.REF_ISEMRINO != "-").length;
+
+            if (localStorage.TPPivotVeri != null && localStorage.TPPivotVeri != "null")
+            {
+                fark = fark - JSON.parse(localStorage.TPPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
+            }
+
+            $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
+
+            localStorage.setItem('TPPivotVeri', JSON.stringify(TPPivotVeri));
+            localStorage.setItem('TPPivotToplamVeri', JSON.stringify(TPPivotToplamVeri));
+
+            TPTableCreatePivot2Data();
+        });
+    }
+
+    function TPTableCreatePivot2Data() {
+        var TPPivotToplamVeri = JSON.parse(localStorage.TPPivotToplamVeri);
+
+        TPTableCreatePivot2(Grupla(TPPivotToplamVeri));
+    }
+
+    function TPTableCreatePivot(PivotVeri) {
+        $("#TPPivot").pivot(PivotVeri,
+            {
+                rows: ["ISEMRINO", "STOKADI", "GIRDI2", "REF_ISEMRINO", "REF_STOKOLCUSU", "ADET", "AGIRLIK"],
+                sorters: {
+                    ISEMRINO: function (a, b) { return a - b; } //sort backwards
+                }
+            }, false, "tr");
+    }
+
+    function TPTableCreatePivot2(PivotToplamVeri) {
+        $("#TPPivotTop").pivot(PivotToplamVeri,
+            {
+                rows: ["MUSTERI", "STOKADI", "ADET", "AGIRLIK"]
+            }, false, "tr");
+    }
+</script>
