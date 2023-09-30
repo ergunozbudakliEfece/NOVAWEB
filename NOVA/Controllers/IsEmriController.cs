@@ -548,10 +548,16 @@ namespace NOVA.Controllers
 
 
                     uretim.BAKIYE_DEPO = 0;
-                    uretim.OTOSERIURET();
-                    uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
                     NetRS netRS = kernel.yeniNetRS(sirket);
-                    netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + SERI_NO + "' WHERE ISEMRINO='" + ISEMRINO + "'");
+                    netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
+                    var seri = netRS.FieldByName("SERINO").AsString;
+                    if (seri == null)
+                    {
+                        uretim.OTOSERIURET();
+                        uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
+                    }
+                    
+                    netRS.Calistir("UPDATE TBLISEMRIREC SET SERINO='" + SERI_NO + "' WHERE ISEMRINO='" + ISEMRINO + "'");
 
 
                     uretim.FisUret();
@@ -776,9 +782,9 @@ namespace NOVA.Controllers
                         Isemri.kayitYeni();
                         NetRS netRS = kernel.yeniNetRS(sirket);
                         
-                        if (isemri[i].GİRDİ2 != "-")
+                        if (isemri[i].GIRDI2 != "-")
                         {
-                            netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemri[i].GİRDİ2 + "',DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemri[i].REF_ISEMRINO + "'");
+                            netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemri[i].GIRDI2 + "',DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemri[i].REF_ISEMRINO + "'");
                         }
 
 
@@ -802,9 +808,9 @@ namespace NOVA.Controllers
                     }
                     Isemri1.DepoKodu = 45;
                     Isemri1.CikisDepoKodu = 45;
-                    if (isemri[i].GİRDİ2 != "-")
+                    if (isemri[i].GIRDI2 != "-")
                     {
-                        Isemri1.SeriNo = isemri[i].GİRDİ2;
+                        Isemri1.SeriNo = isemri[i].GIRDI2;
                     }
                     double mik = 0;
                     if (isemri[i].AGIRLIK.Contains('.'))
@@ -842,7 +848,7 @@ namespace NOVA.Controllers
         public class IsEmriModel2
         {
             public string GIRDI1 { get; set; }
-            public string GİRDİ2 { get; set; }
+            public string GIRDI2 { get; set; }
             public string ISEMRINO { get; set; }
             public string STOKADI { get; set; }
             public string AGIRLIK { get; set; }

@@ -364,7 +364,7 @@
                     </div>
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="tablo">
-                    <div class="col" style="overflow-y: auto; border: 1px solid #d9dee3; padding: 10px; display: grid; grid-template-rows: repeat(auto-fill, minmax(130px, 1fr)); grid-gap: 10px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); " id="stokadlari">
+                    <div class="col" style=" overflow-y: auto; border: 1px solid #d9dee3; padding: 13px; display: grid; grid-template-columns: repeat(auto-fill,minmax(295px, 0)); grid-template-rows: repeat(auto-fill, minmax(145px, 0)); grid-gap: 3px;" id="stokadlari">
 
                     </div>
 
@@ -1041,7 +1041,7 @@
         function UretimListe(value)
         {
             $.ajax({
-                url: `http://192.168.2.13:83/api/ie/hatgirdi/${value}`,
+                url: `http://192.168.2.13:83/api/ie/hatgirdidetay/${value}`,
                 type: 'GET',
                 success: (response) => {
                     if (JSON.stringify(response) !== JSON.stringify(UretimListeYedek))
@@ -1455,6 +1455,7 @@
                     var b = document.createElement("button");
                     b.className = "mak btn btn-outline-secondary";
                     b.style.width = "295px";
+                    b.style.height = "145px";
                     b.setAttribute("data-stokkodu", data[i].STOK_KODU);
                     b.setAttribute("data-genislik", data[i].BANT_GENISLIGI);
                     b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
@@ -2010,19 +2011,31 @@
                             $("#progress2").hide();
                             $("#SiparisModal").modal('hide');
                         },
-                     success: function (data) {
-                         if(d[0].KULL_MIKTAR!=0){
-                              load(url);
-                         }else{
-                            $("#progress2").hide();
-                             Swal.fire(
-                                 'Başarılı!',
-                                 'Kayıt başarılı',
-                                 'success'
-                             )
-                             $("#SiparisModal").modal('hide');
-                             document.getElementById(btnid).onclick();
-                         }
+                             success: function (data) {
+                                 if (d[0].ISEMRINO.substring(0, 2) != 'MH') {
+                                     if (d[0].KULL_MIKTAR != 0) {
+                                         load(url);
+                                     } else {
+                                         $("#progress2").hide();
+                                         Swal.fire(
+                                             'Başarılı!',
+                                             'Kayıt başarılı',
+                                             'success'
+                                         )
+                                         $("#SiparisModal").modal('hide');
+                                         document.getElementById(btnid).onclick();
+                                     }
+                                 } else {
+                                     $("#progress2").hide();
+                                     Swal.fire(
+                                         'Başarılı!',
+                                         'Kayıt başarılı',
+                                         'success'
+                                     )
+                                     $("#SiparisModal").modal('hide');
+                                     document.getElementById(btnid).onclick();
+                                 }
+                        
 
 
 
@@ -2035,7 +2048,7 @@
                 $("#progress2").show();
                 var kontrol = $("#kontrol").is(':checked');
                 var etiket = $("#etiketyazdir").is(':checked');
-                if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "BK") {
+                if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "BK" && hat.substring(0, 2) != "MH") {
                     $.ajax({
                         url: '@Url.Action("UretimSonuKaydi", "Uretim")',
                         type: 'POST',
@@ -2057,7 +2070,7 @@
                         }
                     })
                 } else {
-                    $.getJSON("http://192.168.2.13:83/api/ie/all/" + hat + "/" + stok + "/0/H", function (data) {
+                    $.getJSON("http://192.168.2.13:83/api/ie/TOP/"+hat, function (data) {
                         var isemri = data[0].ISEMRINO;
                         var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + m1.toString().trim() + "/" + m2.toString().trim() + "/0";
 
@@ -2218,7 +2231,7 @@
                 </div>
 
                 <div class="modal-footer" style="display:flex;justify-content:center;align-items:center;">
-                    <button class="btn btn-primary" id="ModalSaveButton2" type="button" onclick="VarileriGonder()" disabled>KAYDET</button>
+                    <button class="btn btn-primary" id="ModalSaveButton2" type="button" onclick="VerileriGonder()" disabled>KAYDET</button>
                     <button class="btn btn-danger" type="button" onclick="ModalKapat2()">KAPAT</button>
                 </div>
             </div>

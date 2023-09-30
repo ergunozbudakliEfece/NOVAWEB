@@ -349,13 +349,9 @@
                                         <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" oninput="DlInputChange(this)" /></td>
                                         <td style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></td>
                                         <td class="text-center p-1">
-                                            <select class="js-select selectmakina2" style="width:100px" onchange="RefMachineChange(this)">
-
+                                            <i onclick="ReferansSecimiTemizle(this, 'DL')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color: #203289; font-size: larger; display: none; cursor: pointer; float: left"></i>
+                                            <select class="js-select selectmakina2" style="width:100px;float:left" onchange="RefMachineChange(this)">
                                                 <option selected disabled>SEÇİNİZ</option>
-
-
-
-
                                             </select>
                                         </td>
                                         <td class="text-center p-0">
@@ -955,12 +951,19 @@
                     case 'DL':
                         for (let i = 1; i < tr.length; i++) {
                             if (i == 1) {
+                                if (tr[i].getElementsByTagName("input")[2].value.length>0) {
 
-                                tr[i].getElementsByTagName("input")[0].onblur();
+                                    tr[i].getElementsByTagName("input")[0].onblur();
+                                }
                             } else {
-                                DlInputChange(tr[i].getElementsByTagName("input")[2]);
+                                if (tr[i].getElementsByTagName("input")[2].value.length > 0) {
+                                    DlInputChange(tr[i].getElementsByTagName("input")[2]);
+                                }
                             }
                         }
+                        $('#fireTable').find("tr").eq(1).find("input").eq(0).val(null)
+                        $('#fireTable').find("tr").eq(1).find("input").eq(1).val(null)
+                        $('#fireTable').find("tr").eq(1).find("input").eq(2).val(null)
                         break;
                     case 'BK':
                         var l = $("#BKTable").find("tr").length;
@@ -1213,6 +1216,7 @@
         if (val.value != "SEÇİNİZ") {
 
             document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3].removeAttribute("disabled");
+            document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
         }
         KaydetAktivite();
         }
@@ -1320,6 +1324,9 @@
                     }
                     td.className = table.getElementsByTagName("tr")[1].getElementsByTagName("td")[i].className;
                     td.innerHTML = table.getElementsByTagName("tr")[1].getElementsByTagName("td")[i].innerHTML;
+                    if (i == 7) {
+                        td.style = "";
+                    }
                     tr.appendChild(td);
                     if (i == 9) {
                         td.replaceChildren();
@@ -1418,8 +1425,8 @@
         if (search) {
             currenttr.getElementsByTagName("input")[0].value = "0.5";
 
-            if (tableId == 'DL01') {
-                table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[3].value = 1;
+            if (tableId == 'DLTable') {
+                currenttr.getElementsByTagName("input")[3].value = 1;
                 DlInputChange(currenttr.getElementsByTagName("td")[4].getElementsByTagName("input")[0])
                 currenttr.getElementsByTagName("select")[3].onchange();
             } else {
@@ -1431,7 +1438,10 @@
                 if (tableId == 'DLTable') {
                     if (i == 10 || i == 6) {
 
-                    } else {
+                    } else if (i == 7) {
+                        currenttd[i].style = "background-color:#edf0f5"
+                    }
+                    else {
 
                         currenttd[i].style = "background-color:#edf0f5"
                     }
@@ -1464,7 +1474,8 @@
                         td.innerHTML = '<input class="border-0 text-center" style="width:80px" readonly oninput="DlInputChange(this)" value="1">'
                     }
                     else if (i == 7) {
-                        td.innerHTML = '<select class="js-select" style="width:100px" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '"><option disabled="">SEÇİNİZ</option><option selected="" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '" >' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '</option></select>'
+                        
+                        td.innerHTML = '<i onclick="ReferansSecimiTemizle(this, \'DL\')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color:#203289;font-size:larger;cursor:pointer;float:left"></i>' +'<select class="js-select" style="width:100px;float: left" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '"><option disabled="">SEÇİNİZ</option><option selected="" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '" >' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '</option></select>'
                     }
                     else if (i == 8) {
                         td.innerHTML = '<select class="js-select" style="width:350px" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[3].value + '"><option disabled="">SEÇİNİZ</option><option selected="" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[3].value + '" >' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[3].value + '</option></select>'
@@ -1505,13 +1516,13 @@
 
                 }
             }
-
+            $('.js-select').select2();
             if (tableId == "DLTable") {
                 table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].setAttribute("onblur", "ParcalioranUst(this)")
                 ParcalioranAlt(table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0])
             }
 
-            $('.js-select').select2();
+            
 
     }
     else {
@@ -2322,7 +2333,13 @@
         }
         for (let i = 0; i < currenttd.length; i++) {
             if (rownum == 2) {
-                currenttd[i].removeAttribute("style");
+                if (i == 6 || i == 10) {
+
+                } else {
+                    currenttd[i].removeAttribute("style");
+                }
+                    
+                
             }
         }
         if (document.getElementById(tableId).getElementsByTagName("tr")[rownum - 1].getElementsByTagName("select")[0].value == "DL01") {
@@ -2464,21 +2481,31 @@
     function ReferansSecimiTemizle(Satir, Tip)
     {
         var SatirNo = Satir.parentNode.parentNode.rowIndex;
-
+     
         switch (Tip) {
             case "TP":
                 document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[2].value = "SEÇİNİZ";
                 document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[3].value = "SEÇİNİZ";
                 document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[3].disabled = true;
 
-                document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "none";
+                document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName('i')[0].style.display = "none";
 
                 TPCariGetir(Satir);
+                $('.js-select').select2("destroy");
+                $('.js-select').select2();
+                break;
+            case "DL":
+                document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[2].value = "SEÇİNİZ";
+                document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[3].value = "SEÇİNİZ";
+                document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[3].disabled = true;
+                document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("td")[9].innerHTML = null;
+                document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName('i')[0].style.display = "none";
+                $('.js-select').select2("destroy");
+                $('.js-select').select2();
+                document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[1].onchange();
                 break;
         };
 
-        $('.js-select').select2("destroy");
-        $('.js-select').select2();
 
         KaydetAktivite();
     }
