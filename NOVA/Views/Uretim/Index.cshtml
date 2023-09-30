@@ -1461,6 +1461,7 @@
                     b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
                     b.setAttribute("data-kul", data[i].KULL_MIKTAR);
                     b.setAttribute("data-hat", data[i].HAT_KODU);
+                    b.setAttribute("data-mik2", data[i].TOPLAM_MIKTAR2);
                     if(sabit==="TP01"){
 
                     b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
@@ -1731,19 +1732,33 @@
             isemri=value.dataset.isemri;
             max = parseInt(value.dataset.top) - parseInt(value.dataset.kul)
             max2 = parseInt(value.dataset.top2) - parseInt(value.dataset.kul2)
+            var mik2 = parseInt(value.dataset.mik2) 
             $("#miktar11").val(null);
             $("#miktar22").val(null);
             $("#miktar22").prop("disabled", true);
             $("#SiparisModal").modal('show');
-
+            $("#ModalSaveButton").prop("disabled",true)
             $("#kontrol").prop('checked', true);
             $("#etiketyazdir").prop('checked', true);
 
             if (hat == 'DL01') {
                 $("#kontrolcol").show();
-            } else {
-                $("#kontrol").prop('checked', false);
-                $("#kontrolcol").hide();
+            } else if (hat == 'MH01') {
+                $("#kontrolcol").show();
+                $("#miktar11").val(max);
+                $("#miktar22").val(mik2);
+                $("#miktar11").prop("disabled", true);
+                $("#miktar22").prop("disabled", true);
+                $("#kontrol").prop('checked', true);
+                $("#kontrol").prop('disabled', true);
+                $("#ModalSaveButton").prop("disabled", false)
+            }
+            else {
+                $("#miktar11").prop("disabled", false);
+                $("#miktar22").prop("disabled", true);
+                $("#kontrolcol").show();
+                $("#kontrol").prop('checked', true);
+                $("#kontrol").prop('disabled', true);
             }
             $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0]);
             $("#SiparisModalLabel2").html(value.innerHTML.split("<br>")[1].split("<p")[0]);

@@ -568,9 +568,9 @@ namespace NOVA.Controllers
                     var eski = netRS.FieldByName("MIKTAR").AsFloat;
                     var oran = KULL_MIKTAR.ToDouble() / eski;
                     var miktar2 = netRS.FieldByName("ACIKLAMA").AsString;
-                    var yeni = miktar2.ToDouble() * oran;
+                    //var yeni = miktar2.ToDouble() * oran;
 
-                    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
+                    //netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
                     if (ISEMRINO.Substring(0, 2) == "MH")
                     {
                         Isemri = kernel.yeniIsEmri(sirket);
