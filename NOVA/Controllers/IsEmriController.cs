@@ -826,7 +826,15 @@ namespace NOVA.Controllers
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
-                    netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemri[i].GIRDI1 +"',DEPO_KODU='45' WHERE ISEMRINO='" + isemri[i].ISEMRINO + "'");
+                    if (isemri[i].GIRDI1 != "-" && isemri[i].GIRDI1!="" && isemri[i].GIRDI1!=null)
+                    {
+                        netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemri[i].GIRDI1 + "',DEPO_KODU='45' WHERE ISEMRINO='" + isemri[i].ISEMRINO + "'");
+                    }
+                    else
+                    {
+                        netRS2.Ac("UPDATE TBLISEMRIREC SET DEPO_KODU='45' WHERE ISEMRINO='" + isemri[i].ISEMRINO + "'");
+                    }
+                   
 
                 }
             }

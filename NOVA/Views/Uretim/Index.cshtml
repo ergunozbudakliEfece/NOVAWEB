@@ -1462,11 +1462,12 @@
                     b.setAttribute("data-kul", data[i].KULL_MIKTAR);
                     b.setAttribute("data-hat", data[i].HAT_KODU);
                     b.setAttribute("data-mik2", data[i].TOPLAM_MIKTAR2);
+                    b.setAttribute("data-isemri", data[i].ISEMRINO);
                     if(sabit==="TP01"){
 
                     b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
                     b.setAttribute("data-kul2", data[i].KULL_MIKTAR2);
-                    b.setAttribute("data-isemri", data[i].ISEMRINO);
+                    
                          b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> "+data[i].SIP_CARI_ISIM+"</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || "+data[i].KULL_MIKTAR2.toLocaleString()+ " " + data[i].OLCU_BR2 + " / "+data[i].TOPLAM_MIKTAR2.toLocaleString()+ " " + data[i].OLCU_BR2 +"</span>";
                     }else{
                          b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 +"</span>";
@@ -2014,17 +2015,25 @@
                             }
                         })
         }
+        var toplam = 0;
+        var oldSipNo = null;
         function load(url) {
              $.getJSON(url,function(data){
-                        var d=data;
+                 var d = data;
+                
                          $.ajax({
                         url: '@Url.Action("TrpzUretim", "Uretim")',
-                     type: 'POST',
-                     data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2":  d[0].KULL_MIKTAR2 },
+                             type: 'POST',
+                             data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2 },
                         error: function (data) {
                             console.log(data);
                             $("#progress2").hide();
                             $("#SiparisModal").modal('hide');
+                            Swal.fire(
+                                'Başarısız!',
+                                'Kayıt başarısız,tekrar deneyin',
+                                'error'
+                            )
                         },
                              success: function (data) {
                                  console.log(data);
@@ -2068,7 +2077,7 @@
                     $.ajax({
                         url: '@Url.Action("UretimSonuKaydi", "Uretim")',
                         type: 'POST',
-                        data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": m1.toString().trim(), "mik2": m2.toString().trim(),"kontrol":kontrol, "etiket":etiket },
+                        data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(),"kontrol":kontrol, "etiket":etiket },
                         error: function (data) {
 
                             $("#progress2").hide();
@@ -2090,8 +2099,8 @@
                     //    var isemri = data[0].ISEMRINO;
                         
                     //})
-                    var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + m1.toString().trim() + "/" + m2.toString().trim() + "/0";
-
+                    var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + $("#miktar11").val().toString().trim() + "/" + $("#miktar22").val().toString().trim() + "/0";
+                   
                     load(url);
                 }
             } else {

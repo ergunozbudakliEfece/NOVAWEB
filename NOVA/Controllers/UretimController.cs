@@ -24,6 +24,7 @@ using System.Diagnostics;
 using Microsoft.Win32;
 using NOVA.Utils;
 using System.Web.Security;
+using System.Web.Helpers;
 
 namespace NOVA.Controllers
 {
@@ -557,9 +558,10 @@ namespace NOVA.Controllers
                     netRS.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
                     var karsi = netRS.FieldByName("SERI_NO").AsString;
 
-
+                    netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' AND BELGENO<>'"+ uretim.UretSon_FisNo + "' ORDER BY BELGENO DESC");
+                    var mikold = netRS.FieldByName("MIKTAR").AsFloat;
                     netRS.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
-
+                    
                     //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
                     //{
                     //    netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
@@ -576,8 +578,10 @@ namespace NOVA.Controllers
                     //var oran = KULL_MIKTAR.ToDouble() / eski;
                     //var miktar2 = netRS.FieldByName("ACIKLAMA").AsString;
                     //var yeni = miktar2.ToDouble() * oran;
-
-                    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + KULL_MIKTAR + "' WHERE ISEMRINO='" + referans + "'");
+                   
+                    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + (mikold != 0 ? mikold + KULL_MIKTAR.ToDouble() : KULL_MIKTAR.ToDouble()) +"' WHERE ISEMRINO='" + referans + "'");
+                    
+                   
 
                     if (ISEMRINO.Substring(0, 2) == "MH")
                     {
@@ -592,6 +596,8 @@ namespace NOVA.Controllers
                 catch (Exception exp)
                 {
                     sirket.LogOff();
+                    WebMail.SmtpServer = "192.168.2.13";
+                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Dertler Derya Olmuş", ISEMRINO+" sıkıntılı ayağınızı den alın!", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                     var message = exp.Message;
                     System.Diagnostics.Debug.Write(exp);
                     return $"Hata: {message}";
