@@ -488,7 +488,7 @@ namespace NOVA.Controllers
                 Marshal.ReleaseComObject(kernel);
             }
         }
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2)
+        public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2)
         {
             if (KULL_MIKTAR != "0")
             {
@@ -531,7 +531,9 @@ namespace NOVA.Controllers
                     uretim.BAKIYE_DEPO = 0;
 
                     netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
+
                     var seri = netRS.FieldByName("SERINO").AsString;
+
                     if (seri == null)
                     {
                         uretim.OTOSERIURET();
@@ -541,7 +543,8 @@ namespace NOVA.Controllers
                     {
                         uretim.SeriEkle(seri, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
                     }
-                    if (SERI_NO != null)
+
+                    if (SERI_NO != null && ISEMRINO.Substring(0, 2) != "MH")
                     {
                         netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + SERI_NO + "' WHERE ISEMRINO='" + ISEMRINO + "'");
                     }
@@ -556,21 +559,26 @@ namespace NOVA.Controllers
 
 
                     netRS.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+
                     //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
                     //{
                     //    netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                     //}
 
                     netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + ISEMRINO + "'");
+
                     netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
                     var referans = netRS.FieldByName("REFISEMRINO").AsString;
-                    netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + referans + "'");
-                    var eski = netRS.FieldByName("MIKTAR").AsFloat;
-                    var oran = KULL_MIKTAR.ToDouble() / eski;
-                    var miktar2 = netRS.FieldByName("ACIKLAMA").AsString;
+
+                    //netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + referans + "'");
+
+                    //var eski = netRS.FieldByName("MIKTAR").AsFloat;
+                    //var oran = KULL_MIKTAR.ToDouble() / eski;
+                    //var miktar2 = netRS.FieldByName("ACIKLAMA").AsString;
                     //var yeni = miktar2.ToDouble() * oran;
 
-                    //netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
+                    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + KULL_MIKTAR + "' WHERE ISEMRINO='" + referans + "'");
+
                     if (ISEMRINO.Substring(0, 2) == "MH")
                     {
                         Isemri = kernel.yeniIsEmri(sirket);
@@ -578,7 +586,6 @@ namespace NOVA.Controllers
                         Isemri.ReceteSaklansin = false;
                         Isemri.Kapali = true;
                         Isemri.kayitDuzelt();
-                       
                     }
 
                 }
@@ -587,7 +594,7 @@ namespace NOVA.Controllers
                     sirket.LogOff();
                     var message = exp.Message;
                     System.Diagnostics.Debug.Write(exp);
-                    return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+                    return $"Hata: {message}";
                 }
                 finally
                 {
@@ -621,10 +628,10 @@ namespace NOVA.Controllers
                     netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE SIPNO='" + ISEMRINO + "'");
                     netRS.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     sirket.LogOff();
-                    return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+                    return $"Hata: {e.Message}";
                 }
                 finally
                 {
@@ -636,7 +643,7 @@ namespace NOVA.Controllers
 
             }
 
-            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+            return $"Başarılı";
         }
         [HttpPost]
         public ActionResult PostTRPZ(List<IsEmriModel2> isemri)
