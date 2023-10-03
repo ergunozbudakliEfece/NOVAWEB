@@ -327,6 +327,9 @@
                         <div class="btn-group" role="group" aria-label="Basic radio toggle button group" id="makineler1" style="display:none">
 
                         </div>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group" id="makineler4" style="display:none">
+
+                        </div>
                     </div>
                 </div>
                 <div class="row  mt-3">
@@ -1218,7 +1221,24 @@
                         document.getElementById("makineler3").appendChild(input1);
                         document.getElementById("makineler3").appendChild(label1);
                     }
+                    var inputnew = document.createElement("input");
+                    inputnew.setAttribute("type", "radio");
+                    inputnew.className = "btn-check";
+                    inputnew.setAttribute("name", "btnradio");
+                    inputnew.id = "btnradio" + i + 12 + "";
+                    inputnew.setAttribute("autocomplete", "off");
+                    inputnew.setAttribute("onclick", "UretimAl()");
+                    if (data[i].HAT_KODU != "TP01") {
 
+                        inputnew.setAttribute("disabled", "");
+                    }
+                    inputnew.value = data[i].HAT_KODU;
+                    var labelnew = document.createElement("label");
+                    labelnew.className = "btn btn-outline-primary";
+                    labelnew.setAttribute("for", inputnew.id);
+                    labelnew.innerHTML = data[i].HAT_KODU;
+                    document.getElementById("makineler4").appendChild(inputnew);
+                    document.getElementById("makineler4").appendChild(labelnew);
                 }
 
             }).done(function () {
@@ -1240,7 +1260,10 @@
             tags: true
         }
         );
-
+        var uretimControl = '';
+        function UretimAl() {
+            uretimControl='TP01'
+        }
         function change(value) {
             if (value == 0) {
                 constant = 0;
@@ -1262,6 +1285,7 @@
                     $("#makineler2").show();
                     $("#makineler3").show();
                     $("#makineler").hide();
+                    $("#makineler4").hide();
                 }
                 else {
                     $("#makmobile1").hide();
@@ -1270,6 +1294,7 @@
                     $("#makineler2").hide();
                     $("#makineler3").hide();
                     $("#makineler").show();
+                    $("#makineler4").hide();
                 }
 
                 $("input:radio[name=makine-ie]").prop('checked', false);
@@ -1291,6 +1316,7 @@
                 $("#makineler2").hide();
                 $("#makineler3").hide();
                 $("#makineler").hide();
+                $("#makineler4").show();
                 $("#scanner").show();
                 $('#BarkodButton').show();
                 $('#BekleyenIsEmirleriMakine').hide();
@@ -1324,39 +1350,66 @@
             var userid =@Request.Cookies["UserId"].Value;
             var u = "";
             var u2 = "http://192.168.2.13:83/api/ie/control/" + decodedText;
-            $.getJSON(u2, function (data) {
-                if (data.length>0) {
-                    Swal.fire({
-                        text: data[0].SERI_NO + " seri numaralı ürünü " + data[0].HATKODU +" kodlu makinede üretime almayı onaylıyor musunuz?",
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Evet',
-                        cancelButtonText: "Hayır"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            u = "http://192.168.2.13:83/api/ie/hat/" + data[0].HATKODU + "/" + decodedText + "/" + userid;
-                            $.getJSON(u, function () {
+            if (uretimControl == '') {
+                $.getJSON(u2, function (data) {
+                    if (data.length > 0) {
+                        Swal.fire({
+                            text: data[0].SERI_NO + " seri numaralı ürünü " + data[0].HATKODU + " kodlu makinede üretime almayı onaylıyor musunuz?",
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Evet',
+                            cancelButtonText: "Hayır"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                u = "http://192.168.2.13:83/api/ie/hat/" + data[0].HATKODU + "/" + decodedText + "/" + userid;
+                                $.getJSON(u, function () {
 
-                            }).done(function () {
-                                Swal.fire(
-                                    'Başarılı!',
-                                    'Kayıt başarılı',
-                                    'success'
-                                )
-                            })
+                                }).done(function () {
+                                    Swal.fire(
+                                        'Başarılı!',
+                                        'Kayıt başarılı',
+                                        'success'
+                                    )
+                                })
 
-                        }
-                    })
+                            }
+                        })
 
-                } else {
-                    Swal.fire(
-                        'Uyarı!',
-                        'YOK',
-                        'error'
-                    )
-                }
-            })
+                    } else {
+                        Swal.fire(
+                            'Uyarı!',
+                            'YOK',
+                            'error'
+                        )
+                    }
+                })
+            } else {
+                Swal.fire({
+                    text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Evet',
+                    cancelButtonText: "Hayır"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        u = "http://192.168.2.13:83/api/ie/hat/TP01/" + decodedText + "/" + userid;
+                        $.getJSON(u, function () {
+
+                        }).done(function () {
+                            Swal.fire(
+                                'Başarılı!',
+                                'Kayıt başarılı',
+                                'success'
+                            )
+                        })
+
+                    }
+                })
+                
+            }
+           
 
 
         }
