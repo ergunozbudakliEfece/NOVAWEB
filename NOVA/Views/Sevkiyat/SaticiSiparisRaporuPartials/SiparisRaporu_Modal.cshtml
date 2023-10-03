@@ -1134,7 +1134,7 @@
             $("#ModalSaveButton").prop('disabled', true);
         }
         else {
-            if (Kalemler.length > 0) {
+            if (Kalemler.length > 0 && GirisDepo != -1) {
                 $("#ModalSaveButton").prop('disabled', false);
             }
             else {
@@ -1637,6 +1637,11 @@
 
         var inp = document.getElementById(id);
 
+        let DepoSorgu = new Fuse(arr, {
+            keys: ['DEPO_ISMI', 'DEPO_KODU'],
+            includeMatches: true
+        });
+
         inp.addEventListener("input", function (e) {
             var a, b, i, val = this.value.trimLeft();
 
@@ -1645,17 +1650,7 @@
             closeAllLists();
 
             if (!val) {
-                AlanlarıTemizle();
-                ButonAyarla(0);
-
-                $('#StokAdlari').prop("disabled", true);
-
-                if (id == 'GIRIS_DEPO') {
-                    GirisDepo = -1;
-                }
-                else if (id == 'CIKIS_DEPO') {
-                    CikisDepo = -1;
-                }
+                GirisDepo = -1;
 
                 return false;
             }
@@ -1670,40 +1665,37 @@
 
             var itemNumber = 0;
 
-            for (let i = 0; i < arr.length; i++) {
+            var Sorgu = DepoSorgu.search(val);
 
-                if ((arr[i].DEPO_ISMI.substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1 || arr[i].DEPO_KODU.toString().substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1) && itemNumber < 5) {
+            for (let i = 0; i < Sorgu.length; i++) {
+
+                var KodSorgu = parseInt(val.replace(",", "").replace(".", "").trim());
+
+                if ((itemNumber < 5 && isNaN(KodSorgu)) || (!isNaN(KodSorgu) && itemNumber < 1)) {
                     b = document.createElement("DIV");
 
-                    b.innerHTML = "<strong>" + arr[i].DEPO_ISMI.substr(0, val.length) + "</strong>";
-                    b.innerHTML += arr[i].DEPO_ISMI.substr(val.length);
+                    b.innerHTML = Sorgu[i].item.DEPO_ISMI;
 
-                    b.innerHTML += "<input type='hidden' kod='" + arr[i].DEPO_KODU + "' value='" + arr[i].DEPO_ISMI + "'>";
+                    b.innerHTML += "<input type='hidden' kod='" + Sorgu[i].item.DEPO_KODU + "' value='" + Sorgu[i].item.DEPO_ISMI + "'>";
 
                     b.addEventListener("click", function (e) {
                         inp.value = this.getElementsByTagName("input")[0].value;
 
                         if (inp.value.trim().length !== 0) {
-                            if (id == 'GIRIS_DEPO') {
-                                GirisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
-                            }
-                            else if (id == 'CIKIS_DEPO') {
-                                CikisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
-                            }
+                            GirisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
 
                             if (GirisDepo != -1) {
                                 if (SaveType == 0) {
-                                    $('#StokAdlari').prop("disabled", false);
+                                    ButonAyarla(1);
 
-                                    if ($('#StokAdlari').val() !== null) {
-                                        MiktarGirisKontrolu();
-                                        ButonAyarla(1);
+                                    if (document.getElementById('StokAdlari').value != '') {
+                                        document.getElementById("Miktar1").disabled = false;
+                                        document.getElementById("Miktar2").disabled = false;
                                     }
-                                }
-                                else
-                                {
-                                    $('#StokAdlari').prop("disabled", true);
-                                    $("#ModalSaveButton").prop("disabled", false);
+
+                                    document.getElementById("kalemkaydetbtn").disabled = true;
+
+                                    $('#StokAdlari').prop("disabled", false);
                                 }
                             }
 
@@ -1758,9 +1750,6 @@
                 }
             }
         }
-        document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
-        });
     }
 
     $('#GIRIS_DEPO').on("blur", (e) => {
@@ -1773,35 +1762,69 @@
                 if (FiltreliDepolar.length > 0) {
                     GirisDepo = FiltreliDepolar[0].DEPO_KODU;
 
-                    if (GirisDepo != -1)
-                    {
-                        KayitDepolariDegistir();
-
+                    if (GirisDepo != -1) {
                         if (SaveType == 0) {
-                            $('#StokAdlari').prop("disabled", false);
+                            ButonAyarla(1);
 
-                            if ($('#StokAdlari').val() !== null) {
-                                MiktarGirisKontrolu();
-                                ButonAyarla(1);
+                            if (document.getElementById('StokAdlari').value != '') {
+                                document.getElementById("Miktar1").disabled = false;
+                                document.getElementById("Miktar2").disabled = false;
                             }
-                        }
-                        else {
-                            $('#StokAdlari').prop("disabled", true);
-                            $("#ModalSaveButton").prop("disabled", false);
+
+                            document.getElementById("kalemkaydetbtn").disabled = true;
+
+                            $('#StokAdlari').prop("disabled", false);
                         }
                     }
                 }
                 else {
-                    e.target.value = null;
-                    GirisDepo = -1;
-                    ButonAyarla(0);
+                    var FiltreliDepolar = Depolar.filter(x => x.DEPO_KODU == val.toUpperCase());
 
-                    $('#StokAdlari').prop("disabled", true);
+                    if (FiltreliDepolar.length > 0) {
+                        GirisDepo = FiltreliDepolar[0].DEPO_KODU;
+
+                        $('#GIRIS_DEPO').val(FiltreliDepolar[0].DEPO_ISMI);
+
+                        if (GirisDepo != -1) {
+
+                            $('#GIRIS_DEPOautocomplete-list').html('');
+
+                            if (SaveType == 0) {
+                                ButonAyarla(1);
+
+                                if (document.getElementById('StokAdlari').value != '')
+                                {
+                                    document.getElementById("Miktar1").disabled = false;
+                                    document.getElementById("Miktar2").disabled = false;
+                                }
+
+                                document.getElementById("kalemkaydetbtn").disabled = true;
+
+
+                                $('#StokAdlari').prop("disabled", false);
+                            }
+                        }
+                    }
+                    else {
+                        e.target.value = null;
+                        GirisDepo = -1;
+                        AlanlarıTemizle();
+                        ButonAyarla(0);
+                        $('#StokAdlari').prop("disabled", true);
+                    }
                 }
+
+                KayitDepolariDegistir();
+            } else {
+                AlanlarıTemizle();
+                ButonAyarla(0);
+                $('#StokAdlari').prop("disabled", true);
             }
 
             $('#GIRIS_DEPOautocomplete-list').html('');
-        }, 100);
+            ModalKaydetButtonState();
+
+        }, 150);
     });
 
     function KayitDepolariDegistir() {

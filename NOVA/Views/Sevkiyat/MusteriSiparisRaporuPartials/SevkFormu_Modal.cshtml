@@ -896,7 +896,7 @@
                         confirmButtonColor: '#3085d6',
                     });
 
-                    SaveType = 0;
+                    KayitTipi = 0;
 
                     SiparisNo = -1;
                     KalemId = 0;
@@ -1084,6 +1084,11 @@
 
         var inp = document.getElementById(id);
 
+        let DepoSorgu = new Fuse(arr, {
+            keys: ['DEPO_ISMI', 'DEPO_KODU'],
+            includeMatches: true
+        });
+
         inp.addEventListener("input", function (e) {
             var a, b, i, val = this.value.trimLeft();
 
@@ -1092,18 +1097,7 @@
             closeAllLists();
 
             if (!val) {
-                GirisleriSifirla();
-                DurumAyarla(0);
-
-                $('#STOK_SECIM').prop("disabled", true);
-                $('#BarkodButton').prop('disabled', true);
-
-                if (id == 'GIRIS_DEPO') {
-                    GirisDepo = -1;
-                }
-                else if (id == 'CIKIS_DEPO') {
-                    CikisDepo = -1;
-                }
+                CikisDepo = -1;
 
                 return false;
             }
@@ -1118,33 +1112,37 @@
 
             var itemNumber = 0;
 
-            for (let i = 0; i < arr.length; i++) {
+            var Sorgu = DepoSorgu.search(val);
 
-                if ((arr[i].DEPO_ISMI.substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1 || arr[i].DEPO_KODU.toString().substr(0, val.length).toUpperCase().indexOf(val.toUpperCase()) > -1) && itemNumber < 5) {
+            for (let i = 0; i < Sorgu.length; i++) {
+
+                var KodSorgu = parseInt(val.replace(",", "").replace(".", "").trim());
+
+                if ((itemNumber < 5 && isNaN(KodSorgu)) || (!isNaN(KodSorgu) && itemNumber < 1)) {
                     b = document.createElement("DIV");
 
-                    b.innerHTML = "<strong>" + arr[i].DEPO_ISMI.substr(0, val.length) + "</strong>";
-                    b.innerHTML += arr[i].DEPO_ISMI.substr(val.length);
+                    b.innerHTML = Sorgu[i].item.DEPO_ISMI;
 
-                    b.innerHTML += "<input type='hidden' kod='" + arr[i].DEPO_KODU + "' value='" + arr[i].DEPO_ISMI + "'>";
+                    b.innerHTML += "<input type='hidden' kod='" + Sorgu[i].item.DEPO_KODU + "' value='" + Sorgu[i].item.DEPO_ISMI + "'>";
 
                     b.addEventListener("click", function (e) {
                         inp.value = this.getElementsByTagName("input")[0].value;
 
                         if (inp.value.trim().length !== 0) {
-                            if (id == 'GIRIS_DEPO') {
-                                GirisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
-                            }
-                            else if (id == 'CIKIS_DEPO')
-                            {
-                                CikisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
-                            }
+                            CikisDepo = parseInt(this.getElementsByTagName("input")[0].getAttribute("kod"));
 
                             if (CikisDepo != -1) {
-                                if (KayitTipi == 0)
-                                {
+                                if (KayitTipi == 0) {
+                                    DurumAyarla(0);
+
+                                    if (document.getElementById('STOK_SECIM').value != '') {
+                                        document.getElementById("MIKTAR1").disabled = false;
+                                        document.getElementById("MIKTAR2").disabled = false;
+                                    }
+
+                                    document.getElementById("eklebutton").disabled = true;
+
                                     $('#STOK_SECIM').prop("disabled", false);
-                                    $('#BarkodButton').prop('disabled', false);
                                 }
                             }
 
@@ -1199,14 +1197,10 @@
                 }
             }
         }
-        document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
-        });
     }
 
     $('#CIKIS_DEPO').on("blur", (e) => {
-        setTimeout(() =>
-        {
+        setTimeout(() => {
             var val = e.target.value.trimRight();
 
             if (val) {
@@ -1216,27 +1210,67 @@
                     CikisDepo = FiltreliDepolar[0].DEPO_KODU;
 
                     if (CikisDepo != -1) {
+                        if (KayitTipi == 0) {
+                            DurumAyarla(1);
 
-                        if (KayitTipi == 0 && Guncellenen_ID == -1)
-                        {
+                            if (document.getElementById('STOK_SECIM').value != '') {
+                                document.getElementById("MIKTAR1").disabled = false;
+                                document.getElementById("MIKTAR2").disabled = false;
+                            }
+
+                            document.getElementById("eklebutton").disabled = true;
+
                             $('#STOK_SECIM').prop("disabled", false);
-                            $('#BarkodButton').prop('disabled', false);
                         }
-                        
-                        KayitDepolariDegistir();
                     }
                 }
                 else {
-                    e.target.value = null;
-                    CikisDepo = -1;
+                    var FiltreliDepolar = Depolar.filter(x => x.DEPO_KODU == val.toUpperCase());
 
-                    $('#STOK_SECIM').prop("disabled", true);
-                    $('#BarkodButton').prop('disabled', true);
+                    if (FiltreliDepolar.length > 0) {
+                        CikisDepo = FiltreliDepolar[0].DEPO_KODU;
+
+                        $('#CIKIS_DEPO').val(FiltreliDepolar[0].DEPO_ISMI);
+
+                        if (CikisDepo != -1) {
+
+                            $('#CIKIS_DEPOautocomplete-list').html('');
+
+                            if (KayitTipi == 0) {
+                                DurumAyarla(1);
+
+                                if (document.getElementById('STOK_SECIM').value != '') {
+                                    document.getElementById("MIKTAR1").disabled = false;
+                                    document.getElementById("MIKTAR2").disabled = false;
+                                }
+
+                                document.getElementById("eklebutton").disabled = true;
+
+
+                                $('#STOK_SECIM').prop("disabled", false);
+                            }
+                        }
+                    }
+                    else {
+                        e.target.value = null;
+                        CikisDepo = -1;
+                        GirisleriSifirla();
+                        DurumAyarla(0);
+                        $('#STOK_SECIM').prop("disabled", true);
+                    }
                 }
+
+                KayitDepolariDegistir();
+            } else {
+                GirisleriSifirla();
+                DurumAyarla(0);
+                $('#STOK_SECIM').prop("disabled", true);
             }
 
             $('#CIKIS_DEPOautocomplete-list').html('');
-        }, 100);
+            ModalKaydetButtonState();
+
+        }, 150);
     });
 
     function KayitDepolariDegistir() {
