@@ -583,7 +583,7 @@ namespace NOVA.Controllers
                     
                    
 
-                    if (ISEMRINO.Substring(0, 2) == "MH")
+                    if (ISEMRINO.Substring(0, 2) == "MH" || ISEMRINO.Substring(0, 2) == "BK")
                     {
                         Isemri = kernel.yeniIsEmri(sirket);
                         Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + ISEMRINO + "\'");
