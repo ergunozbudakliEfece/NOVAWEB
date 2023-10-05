@@ -1786,7 +1786,7 @@
             isemri=value.dataset.isemri;
             max = parseInt(value.dataset.top) - parseInt(value.dataset.kul)
             max2 = parseInt(value.dataset.top2) - parseInt(value.dataset.kul2)
-            var mik2 = parseInt(value.dataset.mik2) 
+            var mik2 = parseInt(value.dataset.mik2)
             $("#miktar11").val(null);
             $("#miktar22").val(null);
             $("#miktar22").prop("disabled", true);
@@ -2071,55 +2071,58 @@
         var toplam = 0;
         var oldSipNo = null;
         function load(url) {
-             $.getJSON(url,function(data){
-                 var d = data;
-                
-                         $.ajax({
-                        url: '@Url.Action("TrpzUretim", "Uretim")',
-                             type: 'POST',
-                             data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2 },
-                        error: function (data) {
-                            console.log(data);
+            $.getJSON(url, function (data) {
+                var d = data;
+
+                $.ajax({
+                    url: '@Url.Action("TrpzUretim", "Uretim")',
+                    type: 'POST',
+                    data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2 },
+                    error: function (data) {
+                        console.log(data);
+                        $("#progress2").hide();
+                        $("#SiparisModal").modal('hide');
+                        Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (d[0].ISEMRINO.substring(0, 2) != 'MH' && d[0].ISEMRINO.substring(0, 2) != 'BK') {
+                            if (d[0].KULL_MIKTAR != 0) {
+                                load(url);
+                            } else {
+                                $("#progress2").hide();
+                                $("#SiparisModal").modal('hide');
+                                Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                                document.getElementById(btnid).onclick();
+                                TrpzBarkod(d[0].SERI_NO);
+                            }
+                        } else {
                             $("#progress2").hide();
                             $("#SiparisModal").modal('hide');
-                            Swal.fire(
-                                'Başarısız!',
-                                'Kayıt başarısız,tekrar deneyin',
-                                'error'
-                            )
-                        },
-                             success: function (data) {
-                                 console.log(data);
-                                 if (d[0].ISEMRINO.substring(0, 2) != 'MH' && d[0].ISEMRINO.substring(0, 2) != 'BK') {
-                                     if (d[0].KULL_MIKTAR != 0) {
-                                         load(url);
-                                     } else {
-                                         $("#progress2").hide();
-                                         Swal.fire(
-                                             'Başarılı!',
-                                             'Kayıt başarılı',
-                                             'success'
-                                         )
-                                         $("#SiparisModal").modal('hide');
-                                         document.getElementById(btnid).onclick();
-                                     }
-                                 } else {
-                                     $("#progress2").hide();
-                                     Swal.fire(
-                                         'Başarılı!',
-                                         'Kayıt başarılı',
-                                         'success'
-                                     )
-                                     $("#SiparisModal").modal('hide');
-                                     document.getElementById(btnid).onclick();
-                                 }
-                        
-
-
-
+                            Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                            document.getElementById(btnid).onclick();
                         }
-                    })
-        })
+                    }
+                });
+            });
+        }
+        function TrpzBarkod(BarkodNo)
+        {
+            $.ajax({
+                url: `http://192.168.2.13:83/api/seri/kontrol/${BarkodNo}`,
+                type: 'GET',
+                error: (ApiData) => { console.error(`TRPZBarkod: ${ApiData}`); },
+                success: (ApiData) => {
+                    if (ApiData.length > 0) {
+                        $.ajax({
+                            url: '@Url.Action("TrpzUretimKaydiSonuBarkodCiktisi", "Uretim")',
+                            type: 'POST',
+                            data: ApiData[0],
+                            error: (ApiData) => { console.error(`TRPZBarkod: ${ApiData}`); }
+                        });
+                    }
+                }
+            });
         }
         function ModalKaydet() {
             if (m1 != null) {
@@ -2149,9 +2152,9 @@
                         }
                     })
                 } else {
-                   
+
                     var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + $("#miktar11").val().toString().trim() + "/" + $("#miktar22").val().toString().trim() + "/0";
-                   
+
                     load(url);
                 }
             } else {
