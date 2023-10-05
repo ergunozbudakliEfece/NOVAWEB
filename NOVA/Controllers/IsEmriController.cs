@@ -953,7 +953,7 @@ namespace NOVA.Controllers
                     Isemri1.DepoKodu = 45;
                     Isemri1.CikisDepoKodu = 45;
                     Isemri1.SeriNo = isemridis[i].GIRDI2;
-                    if (isemridis[i].ISEMRINO.Substring(0, 2) != "DL")
+                    if (isemridis[i].ISEMRINO.Substring(0, 2) == "DL")
                     {
                         Isemri1.SeriNo2 = isemridis[i].GENISLIK;
                     }

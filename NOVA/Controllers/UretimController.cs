@@ -313,7 +313,7 @@ namespace NOVA.Controllers
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
 
         }
-        public void UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket)
+        public string UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket)
         {
             var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
             try
@@ -461,33 +461,29 @@ namespace NOVA.Controllers
                 {
                     var exp = e.Message;
                     System.Diagnostics.Debug.Write(exp);
+                    return $"{exp}";
                 }
-                finally
-                {
-                    Marshal.ReleaseComObject(uretim);
-                    Marshal.ReleaseComObject(sirket);
-                    kernel.FreeNetsisLibrary();
-                    Marshal.ReleaseComObject(kernel);
-                }
+
 
                 if (etiket)
                 {
-                     UretimKaydiSonuBarkodCiktisi(jsonList);
+                    UretimKaydiSonuBarkodCiktisi(jsonList);
                 }
             }
             catch (Exception e)
             {
                 var exp = e.Message;
                 Console.WriteLine(e.Message);
-                throw;
+                return $"{exp}";
             }
             finally
             {
-                Marshal.ReleaseComObject(Isemri);
+                Marshal.ReleaseComObject(uretim);
                 Marshal.ReleaseComObject(sirket);
                 kernel.FreeNetsisLibrary();
                 Marshal.ReleaseComObject(kernel);
             }
+            return $"Başarılı";
         }
         public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2)
         {
@@ -862,7 +858,7 @@ namespace NOVA.Controllers
             document.Close();
             Memory.Close();
 
-            PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
+            //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
         }
         private byte[] ImageToByteArray(System.Drawing.Image img)
         {

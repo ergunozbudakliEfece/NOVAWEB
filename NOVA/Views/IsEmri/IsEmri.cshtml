@@ -885,7 +885,7 @@
                     if (top != 0) {
                         const Toast = Swal.mixin({
                             toast: true,
-                            position: 'top-end',
+                            position: 'center',
                             showConfirmButton: false,
                             timer: 3000,
                             timerProgressBar: true,
@@ -994,7 +994,7 @@
                 if (top != 0) {
                     const Toast = Swal.mixin({
                         toast: true,
-                        position: 'top-end',
+                        position: 'center',
                         showConfirmButton: false,
                         timer: 3000,
                         timerProgressBar: true,
@@ -1528,7 +1528,7 @@
     else {
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'center',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
@@ -1575,23 +1575,36 @@
 
     function kaydet() {
         var Tip = $('input[name="uretim-tip"]:checked').val();
-
+        var TableId = "";
         switch (Tip) {
             case "TP":
                 TPTableCreatePivotData()
                 TPTableCreatePivot2Data()
                 break;
+            case "RF":
+            case "PB":
             case "BK":
-                var l = $("#BKTable").find("tr").length;
+                switch (Tip) {
+                    case "RF":
+                        TableId = "RFTable"
+                        break;
+                    case "PB":
+                        TableId = "PBTable"
+                        break;
+                    case "BK":
+                        TableId = "BKTable"
+                        break;
+                }
+                var l = $(TableId).find("tr").length;
                 if (l > 2) {
                     var sum = 0;
                     for (let i = 1; i < l; i++) {
-                        sum += parseFloat(parseFloat($("#BKTable").find("tr").eq(i).find("input").eq(0).val()).toFixed(3));
+                        sum += parseFloat(parseFloat($(TableId).find("tr").eq(i).find("input").eq(0).val()).toFixed(3));
                     }
                     if (sum != 1) {
                         const Toast = Swal.mixin({
                             toast: true,
-                            position: 'top-end',
+                            position: 'center',
                             showConfirmButton: false,
                             timer: 3000,
                             timerProgressBar: true,
@@ -1606,13 +1619,31 @@
                             title: 'Oranların toplamı 1 olmadığından kaydetme işlemi gerçekleştirilemedi.'
                         });
                     } else {
+                        if (Tip == "BK") {
+
+                            BKTableCreatePivotData()
+                            BKTableCreatePivot2Data()
+                        } else if (Tip == "RF") {
+                            RFTableCreatePivotData()
+                            RFTableCreatePivot2Data()
+                        } else {
+                            PBTableCreatePivotData()
+                            PBTableCreatePivot2Data()
+                        }
+                    }
+                } else {
+                    if (Tip == "BK") {
+
                         BKTableCreatePivotData()
                         BKTableCreatePivot2Data()
                     }
+                 else if (Tip == "RF") {
+                    RFTableCreatePivotData()
+                    RFTableCreatePivot2Data()
                 } else {
-
-                    BKTableCreatePivotData()
-                    BKTableCreatePivot2Data()
+                        PBTableCreatePivotData()
+                        PBTableCreatePivot2Data()
+                    }
                 }
                 break;
             case "DL":
@@ -1948,6 +1979,18 @@
                 document.getElementById("BKPivot").replaceChildren();
                 document.getElementById("BKPivotTop").replaceChildren();
                 break;
+            case 'RF':
+                localStorage.RFPivotVeri = null;
+                localStorage.RFPivotToplamVeri = null;
+                document.getElementById("RFPivot").replaceChildren();
+                document.getElementById("RFPivotTop").replaceChildren();
+                break;
+            case 'PB':
+                localStorage.PBPivotVeri = null;
+                localStorage.PBPivotToplamVeri = null;
+                document.getElementById("PBPivot").replaceChildren();
+                document.getElementById("PBPivotTop").replaceChildren();
+                break;
         }
     }
     function c(val) {
@@ -2140,7 +2183,7 @@
         /*mail();*/
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'center',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
@@ -2162,7 +2205,7 @@
         $("#content").hide();
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'center',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
@@ -2200,7 +2243,7 @@
         /*mail();*/
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'center',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
@@ -2222,7 +2265,7 @@
         $("#content").hide();
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'center',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
@@ -2248,8 +2291,15 @@
             case 'BK':
             case 'PB':
             case 'RF':
-                                var lis = [];
-                lis = JSON.parse(localStorage.BKPivotVeri);
+                var lis = [];
+                if (Tip == "BK") {
+                    lis = JSON.parse(localStorage.BKPivotVeri);
+                } else if (Tip == "RF") {
+                    lis = JSON.parse(localStorage.RFPivotVeri);
+                } else {
+                    lis = JSON.parse(localStorage.PBPivotVeri);
+                }
+                
                                 $.ajax({
     url: '@Url.Action("PostBKPBRF", "IsEmri")',
     type: 'POST',
@@ -2262,7 +2312,7 @@
         /*mail();*/
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'center',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
@@ -2284,7 +2334,7 @@
         $("#content").hide();
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'center',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
@@ -2565,6 +2615,12 @@
             case "BK":
                 KaydetAktiviteGenel("BK");
                 break;
+            case "RF":
+                KaydetAktiviteGenel("RF");
+                break;
+            case "PB":
+                KaydetAktiviteGenel("PB");
+                break;
 
         };
     }
@@ -2580,6 +2636,12 @@
                 break;
             case 'BK':
                 TableId = 'BKTable'
+                break;
+            case "RF":
+                TableId = 'RFTable'
+                break;
+            case "PB":
+                TableId = 'PBTable'
                 break;
         }
         var Satirlar = document.getElementById(TableId).getElementsByTagName('tr');
@@ -2611,6 +2673,8 @@
                     IkinciKosul = (RefMakine && !RefStok) || (!RefMakine && RefStok);
                     break;
                 case 'BK':
+                case 'PB':
+                case 'RF':
                     Seri = document.getElementById("seri").value.trim().length < 1 ? false : true;
                     IlkKosul = Makine && Stok && Seri && (parseInt($("#agirlik").val().split("/")[0].replaceAll(".", "")) != 0);
                     break;
@@ -2649,6 +2713,8 @@
                     this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.ADET);
                     break;
                 case 'BK':
+                case 'PB':
+                case 'RF':
                     this[`${a.STOKADI}${a.MUSTERI}`].ADET += a.ADET;
                     break;
             }
@@ -2886,48 +2952,48 @@
             Satirlar.forEach((item) => {
                 var Makine = item.getElementsByTagName('select')[0].value;
                 var Stok = item.getElementsByTagName('select')[1].value;
-                var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
-                var Adet = parseInt(item.getElementsByTagName('input')[2].value);
-                var Adet2 = parseInt(item.getElementsByTagName('input')[3].value);
-                var Agirlik = parseInt(item.getElementsByTagName('input')[5].value);
+                //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
+                //var Adet = parseInt(item.getElementsByTagName('input')[1].value);
+                var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
+                var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
                 var Girdi1 = $("#seri").val();
                 var Kalinlik = $("#kalinlik").val();
                 var Kalite = $("#kalite").val();
                 var Kaplama = $("#kaplama").val();
+                var Hamoran = $("#hamoran").val();
 
                 var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
 
                 var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
                 var Musteri = item.getElementsByTagName("select")[2].value;
 
-                    var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+                var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
-                    if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                        SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                    }
+                if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                    SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                }
 
-                    OlusturulanIsEmirleri.push(SonIsEmri);
+                OlusturulanIsEmirleri.push(SonIsEmri);
 
-                    var Veri = {
-                        ISEMRINO: SonIsEmri,
-                        STOKADI: StokAdi,
-                        GENISLIK: Genislik,
-                        KALINLIK: Kalinlik,
-                        KALITE: Kalite,
-                        KAPLAMA: Kaplama,
-                        ADET: Adet,
-                        GIRDI1: Girdi1,
-                        GIRDI2: GuncelSeriData.SERI_NO,
-                        ADET2: Adet2,
-                        AGIRLIK: Math.round(Agirlik)
-                    };
+                var Veri = {
+                    HAMORAN: Hamoran,
+                    ISEMRINO: SonIsEmri,
+                    STOKADI: StokAdi,
+                    KALINLIK: Kalinlik,
+                    KALITE: Kalite,
+                    KAPLAMA: Kaplama,
+                    GIRDI1: Girdi1,
+                    GIRDI2: GuncelSeriData.SERI_NO,
+                    ADET2: Adet2,
+                    AGIRLIK: Math.round(Agirlik)
+                };
 
-                    var ToplamVeri = {
-                        STOKADI: StokAdi ,
-                        ADET: Adet2,
-                        MUSTERI: Musteri,
-                        AGIRLIK: Math.round(Agirlik)
-                    };
+                var ToplamVeri = {
+                    STOKADI: StokAdi,
+                    ADET: Adet2,
+                    MUSTERI: Musteri,
+                    AGIRLIK: Math.round(Agirlik)
+                };
 
                     PBPivotVeri.push(Veri);
                     PBPivotToplamVeri.push(ToplamVeri);
@@ -3055,48 +3121,48 @@
             Satirlar.forEach((item) => {
                 var Makine = item.getElementsByTagName('select')[0].value;
                 var Stok = item.getElementsByTagName('select')[1].value;
-                var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
-                var Adet = parseInt(item.getElementsByTagName('input')[2].value);
-                var Adet2 = parseInt(item.getElementsByTagName('input')[3].value);
-                var Agirlik = parseInt(item.getElementsByTagName('input')[5].value);
+                //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
+                //var Adet = parseInt(item.getElementsByTagName('input')[1].value);
+                var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
+                var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
                 var Girdi1 = $("#seri").val();
                 var Kalinlik = $("#kalinlik").val();
                 var Kalite = $("#kalite").val();
                 var Kaplama = $("#kaplama").val();
+                var Hamoran = $("#hamoran").val();
 
                 var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
 
                 var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
                 var Musteri = item.getElementsByTagName("select")[2].value;
 
-                    var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+                var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
-                    if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                        SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                    }
+                if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                    SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                }
 
-                    OlusturulanIsEmirleri.push(SonIsEmri);
+                OlusturulanIsEmirleri.push(SonIsEmri);
 
-                    var Veri = {
-                        ISEMRINO: SonIsEmri,
-                        STOKADI: StokAdi,
-                        GENISLIK: Genislik,
-                        KALINLIK: Kalinlik,
-                        KALITE: Kalite,
-                        KAPLAMA: Kaplama,
-                        ADET: Adet,
-                        GIRDI1: Girdi1,
-                        GIRDI2: GuncelSeriData.SERI_NO,
-                        ADET2: Adet2,
-                        AGIRLIK: Math.round(Agirlik)
-                    };
+                var Veri = {
+                    HAMORAN: Hamoran,
+                    ISEMRINO: SonIsEmri,
+                    STOKADI: StokAdi,
+                    KALINLIK: Kalinlik,
+                    KALITE: Kalite,
+                    KAPLAMA: Kaplama,
+                    GIRDI1: Girdi1,
+                    GIRDI2: GuncelSeriData.SERI_NO,
+                    ADET2: Adet2,
+                    AGIRLIK: Math.round(Agirlik)
+                };
 
-                    var ToplamVeri = {
-                        STOKADI: StokAdi ,
-                        ADET: Adet2,
-                        MUSTERI: Musteri,
-                        AGIRLIK: Math.round(Agirlik)
-                    };
+                var ToplamVeri = {
+                    STOKADI: StokAdi,
+                    ADET: Adet2,
+                    MUSTERI: Musteri,
+                    AGIRLIK: Math.round(Agirlik)
+                };
 
                     RFPivotVeri.push(Veri);
                     RFPivotToplamVeri.push(ToplamVeri);
@@ -3117,6 +3183,8 @@
             localStorage.setItem('RFPivotToplamVeri', JSON.stringify(RFPivotToplamVeri));
 
             RFTableCreatePivot2Data();
+
+            $("#seri").val(null).trigger("input");
         });
     }
     function RFTableCreatePivot2Data() {
