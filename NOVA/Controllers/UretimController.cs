@@ -316,7 +316,7 @@ namespace NOVA.Controllers
         }
         public string UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket)
         {
-            //var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
+            var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
             try
             {
 
@@ -327,6 +327,8 @@ namespace NOVA.Controllers
                                             "",
                                             Request.Cookies["UserName"].Value,
                                             LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+
+                List<string> SeriNoListesi = new List<string>();
 
 
                 JavaScriptSerializer ser = new JavaScriptSerializer();
@@ -452,7 +454,7 @@ namespace NOVA.Controllers
                             }
                         }
 
-
+                        SeriNoListesi.Add(seri);
                     }
 
                     //Stok hareketleri gerçeklestiriliyor
@@ -469,12 +471,11 @@ namespace NOVA.Controllers
                 if (etiket)
                 {
                     List<BarkodModel> Etiketler = new List<BarkodModel>();
-
                     WebClient Client = new WebClient() { Encoding= Encoding.UTF8 };
 
-                    foreach (var item in jsonList)
+                    foreach (var item in SeriNoListesi)
                     {
-                        string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + item.SERI_NO));
+                        string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + item));
                         List<BarkodModel> Result = ser.Deserialize<List<BarkodModel>>(Response);
 
                         Etiketler.Add(Result[0]);
