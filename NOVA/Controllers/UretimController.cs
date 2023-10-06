@@ -97,11 +97,11 @@ namespace NOVA.Controllers
             {
                 var stokadlari = GetStokAdlari();
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                             "TEST2022",
-                                             "TEMELSET",
-                                             "",
-                                             "nova",
-                                             "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
                 for (int i = 0; i < isemri.Count(); i++)
                 {
@@ -239,11 +239,11 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                 "TEST2022",
-                                                 "TEMELSET",
-                                                 "",
-                                                 "nova",
-                                                 "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
                 NetRS netRS = kernel.yeniNetRS(sirket);
                 for (var i = 0; i < isemrimod.Count; i++)
                 {
@@ -265,11 +265,11 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                 "TEST2022",
-                                                 "TEMELSET",
-                                                 "",
-                                                 "nova",
-                                                 "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
                 NetRS netRS = kernel.yeniNetRS(sirket);
                 for (var i = 0; i < isemrimod.Count; i++)
                 {
@@ -291,11 +291,11 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                 "TEST2022",
-                                                 "TEMELSET",
-                                                 "",
-                                                 "nova",
-                                                 "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
                 NetRS netRS = kernel.yeniNetRS(sirket);
                 var list = GetSarfs(seri, miktar);
                 for (var i = 0; i < list.Count; i++)
@@ -321,11 +321,11 @@ namespace NOVA.Controllers
 
 
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                             "TEST2022",
-                                             "TEMELSET",
-                                             "",
-                                             "nova",
-                                             "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
 
                 JavaScriptSerializer ser = new JavaScriptSerializer();
@@ -492,17 +492,17 @@ namespace NOVA.Controllers
                 try
                 {
 
-                   
+
                     sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                "TEST2022",
-                                                "TEMELSET",
-                                                "",
-                                                "nova",
-                                                "Efc@+180", 0);
-                   
-                       
-                   
-                    
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+
+
+
+
 
                     netRS = kernel.yeniNetRS(sirket);
 
@@ -611,14 +611,14 @@ namespace NOVA.Controllers
                 try
                 {
 
-                    
-                        sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                 "TEST2022",
-                                                 "TEMELSET",
-                                                 "",
-                                                 "nova",
-                                                 "Efc@+180", 0);
-                   
+
+                    sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+
                     netRS = kernel.yeniNetRS(sirket);
                     Isemri = kernel.yeniIsEmri(sirket);
                     Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + ISEMRINO + "\'");
@@ -664,11 +664,11 @@ namespace NOVA.Controllers
             {
                 var stokadlari = GetStokAdlari();
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                             "TEST2022",
-                                             "TEMELSET",
-                                             "",
-                                             "nova",
-                                             "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
                 for (int i = 0; i < isemri.Count(); i++)
                 {

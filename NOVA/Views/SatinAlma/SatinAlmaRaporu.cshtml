@@ -306,6 +306,7 @@
                             <th data-field="SIPARIS_NO" data-halign="center" data-align="center" data-sortable="true" data-formatter="sipFormatter" data-footer-formatter="topfooterFormatter">Sipariş No</th>
                             <th data-field="TARIH" data-halign="center" data-align="center" data-sortable="true" data-formatter="tarihFormatter">Tarih</th>
                             <th data-field="TESLIM_TARIHI" data-halign="center" data-align="center" data-sortable="true" data-formatter="tarihFormatter">Termin</th>
+                            <th data-field="ACIKLAMA" data-halign="center" data-align="center" data-sortable="true" data-formatter="teslimFormatter">Açıklama</th>
                             <th data-field="STOK_ADI" data-halign="center" data-align="center" data-sortable="true" data-formatter="stokadiFormatter">Stok Adı</th>
                             <th data-field="MIKTAR" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="mik1footerFormatter">Miktar1</th>
                             <th data-field="MIKTAR2" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="mik2footerFormatter">Miktar2</th>
@@ -331,64 +332,7 @@
 
 
             </div>
-            <div class="card-body" id="card2" style="display:none">
-
-                <table id="table1"
-                       class="table"
-                       data-show-fullscreen="true"
-                       data-buttons-order="['filterTable','columns']"
-                       data-toggle="table"
-                       data-show-export="false"
-                       data-export-data-type="all"
-                       data-export-types="['excel']"
-                       data-pagination="true"
-                       data-page-size="100"
-                       data-search="true"
-                       data-show-columns="true"
-                       data-show-columns-toggle-all="true"
-                       data-locale="tr-TR"
-                       data-filter-control="true"
-                       data-filter-control-multiple-search="true"
-                       data-loading-template="loadingTemplate"
-                       data-height="700"
-                       data-mobile-responsive="true"
-                       data-show-footer="true"
-                       data-detail-view="false"
-                       data-detail-formatter="detailFormatter"
-                       data-check-on-init="true"
-                       data-trim-on-search="false"
-                       data-group-by="true"
-                       data-group-by-field="CARI_ISIM">
-                    <thead>
-                        <tr>
-                            <th data-field="SIPARIS_NO" data-halign="center" data-align="center" data-sortable="true" data-formatter="sipFormatter" data-footer-formatter="topfooterFormatter">Sipariş No</th>
-                            <th data-field="TARIH" data-halign="center" data-align="center" data-sortable="true" data-formatter="tarihFormatter">Tarih</th>
-                            <th data-field="TESLIM_TARIHI" data-halign="center" data-align="center" data-sortable="true" data-formatter="tarihFormatter">Termin</th>
-                            <th data-field="STOK_ADI" data-halign="center" data-align="center" data-sortable="true" data-formatter="stokadiFormatter">Stok Adı</th>
-                            <th data-field="MIKTAR" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="mik1footerFormatter">Miktar1</th>
-                            <th data-field="MIKTAR2" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="mik2footerFormatter">Miktar2</th>
-                            <th data-field="GERCEK_KALINLIK" data-halign="center" data-align="center" data-sortable="true">Kalınlık</th>
-                            <th data-field="GENISLIK" data-halign="center" data-align="center" data-sortable="true">Genişlik</th>
-                            <th data-field="KALITE" data-halign="center" data-align="center" data-sortable="true">Kalite</th>
-                            <th data-field="KAPLAMA_KALINLIK" data-halign="center" data-align="center" data-sortable="true">Kaplama</th>
-                            <th data-field="DOV_FIAT" data-halign="center" data-align="center" data-sortable="true" data-formatter="brutFormatter">Brüt Fiyat</th>
-                            <th data-field="SATIS_ISKONTOSU" data-halign="center" data-align="center" data-sortable="true" data-formatter="iskontoFormatter">İskonto</th>
-                            <th data-field="DOV_NET_FIYAT" data-halign="center" data-align="center" data-sortable="true" data-formatter="netFormatter">Net Fiyat</th>
-                            <th data-field="TESLIM_MIKTARI" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="ssipfooterFormatter">SSIP Teslim</th>
-                            <th data-field="BAKIYE_MIKTARI" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="ssip1footerFormatter">SSIP Bekleyen</th>
-                            <th data-field="TESLIM_YERI" data-halign="center" data-align="center" data-sortable="true" data-formatter="teslimFormatter">Teslim Yeri</th>
-                            <th data-field="TESLIMAT_ORANI" data-halign="center" data-align="center" data-sortable="true" data-formatter="surecFormatter" data-width="100" data-width-unit="px">SSIP Süreç</th>
-                            <th data-field="NET_TUTAR_KALEM" data-halign="center" data-align="center" data-sortable="true" data-formatter="nettutarFormatter2">Net Tutar</th>
-                        </tr>
-                    </thead>
-                </table>
-
-
-
-
-
-
-            </div>
+          
         </div>
      
     </div>
@@ -403,14 +347,10 @@
     var dovtipler = ["TRY"];
     $.getJSON("http://192.168.2.13:83/api/detayliSSIP", function (data) {
         $("#table").bootstrapTable("destroy").bootstrapTable( {
-            url: "http://192.168.2.13:83/api/detayliSSIP", formatColumnsToggleAll: function () {
-                return "Hepsi";
-            } });
+            data: data });
         $("#table1").bootstrapTable("destroy").bootstrapTable( {
-            url: "http://192.168.2.13:83/api/detayliSSIP", formatColumnsToggleAll: function () {
-                return "Hepsi";
-            }
-});
+            data: data
+        });
         for (let i = 0; i < data.length; i++) {
             if (!teslimyerleri.includes(data[i].TESLIM_YERI)) {
                 teslimyerleri.push(data[i].TESLIM_YERI);
@@ -587,18 +527,14 @@
             $('#table').bootstrapTable("destroy");
             $('#table1').bootstrapTable("destroy");
             $('#table').bootstrapTable({
-                data: d, formatColumnsToggleAll: function () {
-                    return "Hepsi";
-                } })
+                data: d })
             $('#table1').bootstrapTable({
-                data: d, formatColumnsToggleAll: function () {
-                    return "Hepsi";
-                } })
+                data: d })
         })
 
     }
 
-    $('#toolbar').change(function (e) {
+    $('#toolbar').on('change',function (e) {
         var filterAlgorithm = $('#teslim').val()
         var plasiyerAlgorithm = $('#cari').val()
         var dovAlgorithm = $('#dovtip').val()
@@ -620,7 +556,6 @@
                 filterAlgorithm.push("EFECE 4");
             
         }
-        dovtipler.splice(1, 1, null);
        
         $('#table').bootstrapTable('filterBy', {
             TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimyerleri),
@@ -628,12 +563,7 @@
             DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovtipler),
             STOK_ADI: (stokAlgorithm.length > 0 ? stokAlgorithm : stokadlari),
         })
-        $('#table1').bootstrapTable('filterBy', {
-            TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimyerleri),
-            CARI_KODU: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : carikodlari),
-            DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovtipler),
-            STOK_ADI: (stokAlgorithm.length > 0 ? stokAlgorithm : stokadlari),
-        })
+       
 
 
     })

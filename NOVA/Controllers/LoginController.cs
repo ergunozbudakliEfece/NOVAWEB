@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using static ServiceStack.Diagnostics.Events;
 using System.IO;
 using System.Security.Cryptography;
+using ServiceStack.Web;
 
 namespace NOVA.Controllers
 {
@@ -312,7 +313,8 @@ namespace NOVA.Controllers
                             Response.Cookies.Add(cookiename1);
                         }
 
-
+                        HttpCookie cookiep1 = new HttpCookie("UserPassword", Encrypt(model.USER_PASSWORD));
+                        Response.Cookies.Add(cookiep1);
 
                         if (!model.defurl.IsEmpty()&&model.defurl!= "~/Login/LogOff"&& model.defurl != "~/undefined/undefined")
                         {
@@ -807,6 +809,15 @@ namespace NOVA.Controllers
             };
 
             var responsenew = await httpClientnew.SendAsync(requestnew);
+            foreach (string key in Request.Cookies.AllKeys)
+            {
+                HttpCookie c = Request.Cookies[key];
+                c.Expires = DateTime.Now.AddMonths(-1);
+                if(key!="UserName"&& key != "UserPassword")
+                {
+                    Response.AppendCookie(c);
+                }
+            }
             FormsAuthentication.SignOut();
             return RedirectToAction("Login", "Login");
         }
@@ -815,6 +826,7 @@ namespace NOVA.Controllers
 
             return View("Error");
         }
+       
 
     }
 

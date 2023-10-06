@@ -195,14 +195,29 @@
                                 </div>
                                 <div class="input-group input-group">
                                     <span class="input-group-text" id="basic-addon11"><i class='bx bxs-key' style="color: #0e387a"></i></span>
-                                    <input type="password"
-                                           id="password"
-                                           class="form-control"
-                                           name="USER_PASSWORD"
-                                           value="@ViewBag.password"
-                                           placeholder="Şifrenizi giriniz.."
-                                           aria-describedby="password"
-                                           style="color: #0e387a" />
+                                    @if (ViewBag.password != null)
+                                    {
+                                        <input type="password"
+                                               id="password"
+                                               class="form-control"
+                                               name="USER_PASSWORD"
+                                               value="@NOVA.Controllers.LoginController.Decrypt(ViewBag.password)"
+                                               placeholder="Şifrenizi giriniz.."
+                                               aria-describedby="password"
+                                               style="color: #0e387a" />
+                                    }
+                                    else
+                                    {
+                                        <input type="password"
+                                               id="password"
+                                               class="form-control"
+                                               name="USER_PASSWORD"
+                                               value=""
+                                               placeholder="Şifrenizi giriniz.."
+                                               aria-describedby="password"
+                                               style="color: #0e387a" />
+                                    }
+
                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide" style="color: #0e387a"></i></span>
                                 </div>
                                 <input style="display:none" type="text" name="defurl" id="defurl"/>
@@ -216,9 +231,9 @@
                             </div>
                             <script>
                                 function wait() {
-                                    document.body.style.cursor = 'wait';
-                                    document.getElementById("content").style.display = 'unset';
-                                }
+                                               document.body.style.cursor = 'wait';
+                                               document.getElementById("content").style.display = 'unset';
+                                           }
                             </script>
 
                         </form>
@@ -263,7 +278,7 @@
     </div>
     <script>
         var currentLocation = window.location;
-        document.getElementById("defurl").value = "~/"+currentLocation.toString().split("%2f")[1] + "/"+currentLocation.toString().split("%2f")[2];
+                                           document.getElementById("defurl").value = "~/"+currentLocation.toString().split("%2f")[1] + "/"+currentLocation.toString().split("%2f")[2];
        
     </script>
 

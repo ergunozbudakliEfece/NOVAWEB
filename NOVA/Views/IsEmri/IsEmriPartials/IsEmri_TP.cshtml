@@ -171,6 +171,7 @@
             }
         }).then(() => {
             Satirlar.forEach((item) => {
+                var Cariler=@Html.Raw(Json.Encode(ViewBag.Cariler));
                 var PaketMiktari = parseInt(item.getElementsByTagName('input')[1].value);
                 var PaketAdedi = parseInt(item.getElementsByTagName('input')[2].value);
                 var Agirlik = parseInt(item.getElementsByTagName('input')[4].value);
@@ -185,11 +186,16 @@
 
                 var StokAdi = StokAdlari.filter(x => x.STOK_KODU == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == Stok)[0].STOK_ADI : "-";
                 var RefStokAdi = StokAdlari.filter(x => x.STOK_KODU == RefStok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == RefStok)[0].STOK_ADI : "-";
-                
+
                 var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
                 var IsEmirleriRefMakine = IsEmirleri.filter(x => x.MAK_KODU == RefMakine);
                 var Musteri = item.getElementsByTagName("select")[4].value;
-
+                var SipNo,Sipkont = "";
+                if (Musteri != "EFECE GALVANİZ") {
+                    var f = Cariler.filter(x => x.CARI_ISIM == Musteri)[0];
+                    SipNo = f.FISNO;
+                    Sipkont = f.SIPKONT;
+                }
                 for (var i = 0; i < PaketAdedi; i++) {
 
                     var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (i + 1).toString().padStart(3, '0');
@@ -204,7 +210,7 @@
                     if (RefMakine != "SEÇİNİZ")
                     {
                         var SonRefIsEmri = RefMakine + "23" + (IsEmirleriRefMakine[IsEmirleriRefMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (i + 1).toString().padStart(3, '0');
-                        
+
                         if (OlusturulanRefIsEmirleri.includes(SonRefIsEmri)) {
                             SonRefIsEmri = OlusturulanRefIsEmirleri[OlusturulanRefIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanRefIsEmirleri[OlusturulanRefIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                         }
@@ -227,7 +233,10 @@
                         REF_STOKOLCUSU: RefStokAdi,
                         ADET: PaketMiktari,
                         REF_ADET: PaketMiktari,
-                        AGIRLIK: Math.round(AdetAgirlik)
+                        AGIRLIK: Math.round(AdetAgirlik),
+                        SIPARIS_NO: SipNo,
+                        SIPKONT: Sipkont,
+                        MUSTERI: Musteri
                     };
 
                     var ToplamVeri = {
@@ -269,7 +278,7 @@
     function TPTableCreatePivot(PivotVeri) {
         $("#TPPivot").pivot(PivotVeri,
             {
-                rows: ["ISEMRINO", "STOKADI", "GIRDI2", "REF_ISEMRINO", "REF_STOKOLCUSU", "ADET", "AGIRLIK"],
+                rows: ["ISEMRINO", "STOKADI", "GIRDI2", "REF_ISEMRINO", "REF_STOKOLCUSU", "ADET", "AGIRLIK","MUSTERI"],
                 sorters: {
                     ISEMRINO: function (a, b) { return a - b; } //sort backwards
                 }

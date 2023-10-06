@@ -27,6 +27,8 @@ using iTextSharp.text;
 using QRCoder;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Text;
+using ServiceStack.Text;
 
 namespace NOVA.Controllers
 {
@@ -247,11 +249,11 @@ namespace NOVA.Controllers
 
 
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                             "TEST2022",
-                                             "TEMELSET",
-                                             "",
-                                             "nova",
-                                             "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
 
                 JavaScriptSerializer ser = new JavaScriptSerializer();
@@ -385,17 +387,23 @@ namespace NOVA.Controllers
                     var exp = e.Message;
                     System.Diagnostics.Debug.Write(exp);
                 }
-                finally
-                {
-                    Marshal.ReleaseComObject(uretim);
-                    Marshal.ReleaseComObject(sirket);
-                    kernel.FreeNetsisLibrary();
-                    Marshal.ReleaseComObject(kernel);
-                }
+                
 
                 if (etiket)
                 {
-                    BarkodCikti = UretimKaydiSonuBarkodCiktisi(jsonList);
+                    List<BarkodModel> Etiketler = new List<BarkodModel>();
+
+                    WebClient Client = new WebClient() { Encoding = Encoding.UTF8 };
+
+                    foreach (var item in jsonList)
+                    {
+                        string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + item.SERI_NO));
+                        List<BarkodModel> Result = ser.Deserialize<List<BarkodModel>>(Response);
+
+                        Etiketler.Add(Result[0]);
+                    }
+
+                    UretimKaydiSonuBarkodCiktisi(Etiketler);
                 }
             }
             catch (Exception e)
@@ -404,18 +412,27 @@ namespace NOVA.Controllers
                 Console.WriteLine(e.Message);
                 throw;
             }
+            finally
+            {
+                Marshal.ReleaseComObject(uretim);
+                Marshal.ReleaseComObject(sirket);
+                kernel.FreeNetsisLibrary();
+                Marshal.ReleaseComObject(kernel);
+            }
 
 
             return BarkodCikti;
         }
 
         #region BarkodPDF
-        public string UretimKaydiSonuBarkodCiktisi(List<USKModel> Data)
+        public void UretimKaydiSonuBarkodCiktisi(List<BarkodModel> Data)
         {
-            string imagepath = Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content");
             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
-            MemoryStream Memory = new MemoryStream();
+            string imagePath = Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
+            string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+
+            FileStream Memory = new FileStream(pdfPath, FileMode.Create);
             PdfWriter writer = PdfWriter.GetInstance(document, Memory);
 
             document.Open();
@@ -423,11 +440,11 @@ namespace NOVA.Controllers
             for (int i = 0; i < Data.Count; i++)
             {
                 document.NewPage();
-                iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(imagepath + "/SevkiyatDesign.png");
-                png.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
-                png.Alignment = iTextSharp.text.Image.UNDERLYING;
-                png.SetAbsolutePosition(0, 0);
-                document.Add(png);
+                iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
+                BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
+                BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
+                BackgroundImage.SetAbsolutePosition(0, 0);
+                document.Add(BackgroundImage);
 
                 PdfContentByte cb = writer.DirectContent;
 
@@ -443,43 +460,29 @@ namespace NOVA.Controllers
                 ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
                 Content.SetSimpleColumn(35, 60, 280, 260);
 
-                //iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR 1      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //Miktar1.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR)} {BosDegerKontrolu(Data[i].OLCU_BR1)}", fontNormal));
-                //Content.AddElement(Miktar1);
+                iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR        ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Miktar1.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR1.ToString())}", fontNormal));
+                Content.AddElement(Miktar1);
 
+                iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Miktar2.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR2.ToString())}", fontNormal));
+                Content.AddElement(Miktar2);
 
-                //if (Data[i].OLCU_BR1 != Data[i].OLCU_BR2)
-                //{
-                //    iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //    Miktar2.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR2)} {BosDegerKontrolu(Data[i].OLCU_BR2)}", fontNormal));
-                //    Content.AddElement(Miktar2);
+                iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ       ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Musteri.Add(new Chunk($": {BosDegerKontrolu(Data[i].SIPARIS_CARI)}", fontNormal));
+                Content.AddElement(Musteri);
 
-                //    iTextSharp.text.Paragraph BirimMiktar = new iTextSharp.text.Paragraph("BİRİM MİKTAR  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //    BirimMiktar.Add(new Chunk($": {BosDegerKontrolu(Data[i].BIRIM_MIKTAR)} {BosDegerKontrolu(Data[i].OLCU_BR1)}/{BosDegerKontrolu(Data[i].OLCU_BR2)}", fontNormal));
-                //    Content.AddElement(BirimMiktar);
-                //}
-                //else
-                //{
-                //    iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //    Miktar2.Add(new Chunk($": -", fontNormal));
-                //    Content.AddElement(Miktar2);
+                iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR.   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                MakineOperator.Add(new Chunk($": {Data[i].MAK_KODU}/{BosDegerKontrolu(Data[i].KAYITYAPANKUL)}", fontNormal));
+                Content.AddElement(MakineOperator);
 
-                //    iTextSharp.text.Paragraph BirimMiktar = new iTextSharp.text.Paragraph("BİRİM MİKTAR  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //    BirimMiktar.Add(new Chunk($": -", fontNormal));
-                //    Content.AddElement(BirimMiktar);
-                //}
+                iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY           ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Boy.Add(new Chunk($": {BosDegerKontrolu(Data[i].BOY.ToString())}", fontNormal));
+                Content.AddElement(Boy);
 
-                iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {BosDegerKontrolu(Data[i].ISEMRINO)}", fontNormal));
-                Content.AddElement(Kalinlik);
-
-                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {BosDegerKontrolu(Data[i].KULL_MIKTAR.ToString())}", fontNormal));
-                Content.AddElement(Genislik);
-
-                iTextSharp.text.Paragraph Kalite = new iTextSharp.text.Paragraph("KALİTE        ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalite.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR2.ToString())}", fontNormal));
-                Content.AddElement(Kalite);
+                iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Tarih.Add(new Chunk($": {BosDegerKontrolu(Data[i].KAYITTARIHI)}", fontNormal));
+                Content.AddElement(Tarih);
                 Content.Go();
 
                 var qrGenerator = new QRCodeGenerator();
@@ -495,8 +498,83 @@ namespace NOVA.Controllers
             }
 
             document.Close();
+            Memory.Close();
 
-            return Convert.ToBase64String(Memory.ToArray());
+            //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
+        }
+        [HttpPost]
+        public void TrpzUretimKaydiSonuBarkodCiktisi(BarkodModel Model)
+        {
+            iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
+
+            string imagePath = Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
+            string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+
+            FileStream Memory = new FileStream(pdfPath, FileMode.Create);
+            PdfWriter writer = PdfWriter.GetInstance(document, Memory);
+
+            document.Open();
+
+            iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
+            BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
+            BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
+            BackgroundImage.SetAbsolutePosition(0, 0);
+            document.Add(BackgroundImage);
+
+            PdfContentByte cb = writer.DirectContent;
+
+            iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.NORMAL);
+            iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.BOLD);
+
+            ColumnText Header = new ColumnText(cb);
+            Header.SetSimpleColumn(45, 125, 270, 335);
+            Header.AddElement(new iTextSharp.text.Paragraph(Model.SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
+            Header.Go();
+
+            ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
+            Content.SetSimpleColumn(35, 60, 280, 260);
+
+            iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR        ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Miktar1.Add(new Chunk($": {BosDegerKontrolu(Model.MIKTAR1.ToString())}", fontNormal));
+            Content.AddElement(Miktar1);
+
+            iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Miktar2.Add(new Chunk($": {BosDegerKontrolu(Model.MIKTAR2.ToString())}", fontNormal));
+            Content.AddElement(Miktar2);
+
+            iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ       ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Musteri.Add(new Chunk($": {BosDegerKontrolu(Model.SIPARIS_CARI)}", fontNormal));
+            Content.AddElement(Musteri);
+
+            iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR.   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            MakineOperator.Add(new Chunk($": {Model.MAK_KODU}/{BosDegerKontrolu(Model.KAYITYAPANKUL)}", fontNormal));
+            Content.AddElement(MakineOperator);
+
+            iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY           ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Boy.Add(new Chunk($": {BosDegerKontrolu(Model.BOY.ToString())}", fontNormal));
+            Content.AddElement(Boy);
+
+            iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Tarih.Add(new Chunk($": {BosDegerKontrolu(Model.KAYITTARIHI)}", fontNormal));
+            Content.AddElement(Tarih);
+            Content.Go();
+
+            var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(Model.SERI_NO, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
+
+            iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
+            QR.ScaleToFit(75, 75);
+            QR.Alignment = iTextSharp.text.Image.UNDERLYING;
+            QR.SetAbsolutePosition(195, 12);
+            document.Add(QR);
+
+            document.Close();
+            Memory.Close();
+
+            //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
         }
         private byte[] ImageToByteArray(System.Drawing.Image img)
         {
@@ -521,11 +599,11 @@ namespace NOVA.Controllers
 
 
                     sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                 "TEST2022",
-                                                 "TEMELSET",
-                                                 "",
-                                                 "nova",
-                                                 "Efc@+180", 0);
+                                             "TEST2022",
+                                             "TEMELSET",
+                                             "",
+                                             Request.Cookies["UserName"].Value,
+                                             LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
 
                     uretim = kernel.yeniSerbestUSK(sirket);
@@ -592,11 +670,11 @@ namespace NOVA.Controllers
                     Kernel kernel = new Kernel();
                     Sirket sirket = default(Sirket);
                     sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                 "TEST2022",
-                                                 "TEMELSET",
-                                                 "",
-                                                 "nova",
-                                                 "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
                     NetRS netRS = kernel.yeniNetRS(sirket);
                     netRS.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + ISEMRINO + "'");
                     netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
@@ -635,11 +713,11 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                 "TEST2022",
-                                                 "TEMELSET",
-                                                 "",
-                                                 "nova",
-                                                 "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
 
                 for (var i = 0; i < jsonList.Count; i++)
@@ -741,11 +819,11 @@ namespace NOVA.Controllers
             {
                 var stokadlari = GetStokAdlari();
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                             "TEST2022",
-                                             "TEMELSET",
-                                             "",
-                                             "nova",
-                                             "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
                 for (int i = 0; i < isemri.Count(); i++)
                 {
@@ -768,7 +846,7 @@ namespace NOVA.Controllers
                         Isemri.SeriNo = null;
                         Isemri.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                         Isemri.TeslimTarihi = Convert.ToDateTime("2023-12-31");
-
+                        
                         double m2 = 0;
                         if (isemri[i].AGIRLIK.Contains('.'))
                         {
@@ -822,6 +900,7 @@ namespace NOVA.Controllers
                         mik = Double.Parse(isemri[i].AGIRLIK);
                     }
                     Isemri1.Miktar = mik;
+                    
                     Isemri1.TeslimTarihi = Convert.ToDateTime("2023-12-31");
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
@@ -864,7 +943,9 @@ namespace NOVA.Controllers
             public string REF_ADET { get; set; }
             public string REF_ISEMRINO { get; set; }
             public string REF_STOKOLCUSU { get; set; }
-
+            public string SIPARIS_NO { get; set; }
+            public string SIPKONT { get; set; }
+            public string MUSTERI { get; set; }
 
         }
         [HttpPost]
@@ -886,11 +967,11 @@ namespace NOVA.Controllers
             {
                 var stokadlari = GetStokAdlari();
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                             "TEST2022",
-                                             "TEMELSET",
-                                             "",
-                                             "nova",
-                                             "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
                 for (int i = 0; i < isemridis.Count(); i++)
                 {
@@ -1009,11 +1090,11 @@ namespace NOVA.Controllers
             {
                 var stokadlari = GetStokAdlari();
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                             "TEST2022",
-                                             "TEMELSET",
-                                             "",
-                                             "nova",
-                                             "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
                 for (int i = 0; i < isemridis.Count(); i++)
                 {
@@ -1045,7 +1126,7 @@ namespace NOVA.Controllers
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
                     netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
-
+                    netRS2.Ac("UPDATE TBLISEMRIEK SET KT_SIPNO='" + isemridis[i].SIPARISNO + "' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
                 }
             }
             catch (Exception ex)
@@ -1071,11 +1152,11 @@ namespace NOVA.Controllers
 
 
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                             "TEST2022",
-                                             "TEMELSET",
-                                             "",
-                                             "nova",
-                                             "Efc@+180", 0);
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
                 USK = kernel.yeniSerbestUSK(sirket);
                 USK.IsEmrindenGetir("000000000000001");
                 USK.OTOSERIURET();
@@ -1379,6 +1460,19 @@ namespace NOVA.Controllers
             public string ADET { get; set; }
             public int DEPOKODU { get; set; }
 
+        }
+        public class BarkodModel
+        {
+            public string SERI_NO { get; set; }
+            public double MIKTAR1 { get; set; }
+            public double MIKTAR2 { get; set; }
+            public string STOK_KODU { get; set; }
+            public string GRUP_ISIM { get; set; }
+            public double BOY { get; set; }
+            public string KAYITYAPANKUL { get; set; }
+            public string KAYITTARIHI { get; set; }
+            public string SIPARIS_CARI { get; set; }
+            public string MAK_KODU { get; set; }
         }
         public class IsEmriModel
         {
