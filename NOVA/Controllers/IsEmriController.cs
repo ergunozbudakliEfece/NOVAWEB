@@ -949,7 +949,7 @@ namespace NOVA.Controllers
 
         }
         [HttpPost]
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult Post(List<IsEmriModel> isemri)
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult Post(List<IsEmriModel> isemri,bool TamamiKullanılsin)
         {
 
             var isemridis = isemri.GroupBy(x => x.ISEMRINO).Select(x => x.First()).ToList();
@@ -1010,7 +1010,15 @@ namespace NOVA.Controllers
                         Isemri.Miktar = m2;
                         Isemri.kayitYeni();
                         NetRS netRS = kernel.yeniNetRS(sirket);
-                        netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI2 + "',DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemridis[i].REF_ISEMRINO + "'");
+                        if (TamamiKullanılsin == true)
+                        {
+                            netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI2 + "',DEPO_KODU='45',MIKTAR="+ isemridis[i].HAMSARF+ ",MIKTARSABITLE='H' WHERE ISEMRINO='" + isemridis[i].REF_ISEMRINO + "'");
+                        }
+                        else
+                        {
+                            netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI2 + "',DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemridis[i].REF_ISEMRINO + "'");
+                        }
+                       
 
                     }
 
@@ -1052,8 +1060,15 @@ namespace NOVA.Controllers
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
-
-                    netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR=" + isemridis[i].HAMSARF + ",MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                    if (TamamiKullanılsin == true)
+                    {
+                        netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR=" + isemridis[i].HAMSARF + ",MIKTARSABITLE='H', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                    }
+                    else
+                    {
+                        netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR=" + isemridis[i].HAMSARF + ",MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                    }
+                    
 
                 }
             }
