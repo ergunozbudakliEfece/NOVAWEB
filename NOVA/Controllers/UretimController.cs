@@ -25,6 +25,7 @@ using Microsoft.Win32;
 using NOVA.Utils;
 using System.Web.Security;
 using System.Web.Helpers;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace NOVA.Controllers
 {
@@ -73,7 +74,7 @@ namespace NOVA.Controllers
             ViewBag.Cikti = GetCikti();
             ViewBag.Id = Request.Cookies["Id"].Value;
 
-           
+
             return View();
         }
         public ActionResult IsEmri()
@@ -315,7 +316,7 @@ namespace NOVA.Controllers
         }
         public string UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket)
         {
-            var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
+            //var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
             try
             {
 
@@ -343,131 +344,143 @@ namespace NOVA.Controllers
                 var json2 = client.DownloadString(url2);
                 List<USKModel> jsonList = ser.Deserialize<List<USKModel>>(json2);
 
-                try
-                {
+                //try
+                //{
 
-                    var ilkseri = "";
-                    var karsi = "";
-                    for (var i = 0; i < jsonList.Count; i++)
-                    {
-                        netRS = kernel.yeniNetRS(sirket);
-                        netRS.Ac("SELECT * FROM TBLISEMRIREC WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                //    var ilkseri = "";
+                //    var karsi = "";
+                //    for (var i = 0; i < jsonList.Count; i++)
+                //    {
+                //        netRS = kernel.yeniNetRS(sirket);
+                //        netRS.Ac("SELECT * FROM TBLISEMRIREC WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
 
-                        var miktarsabitle = netRS.FieldByName("MIKTARSABITLE").AsString;
-                        netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
-                        var eskimiktar = netRS.FieldByName("MIKTAR").AsFloat;
-                        if (jsonList[i].KULL_MIKTAR != eskimiktar)
-                        {
-                            if (miktarsabitle == "E")
-                            {
-                                netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + jsonList[i].KULL_MIKTAR + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
-                            }
+                //        var miktarsabitle = netRS.FieldByName("MIKTARSABITLE").AsString;
+                //        netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                //        var eskimiktar = netRS.FieldByName("MIKTAR").AsFloat;
+                //        if (jsonList[i].KULL_MIKTAR != eskimiktar)
+                //        {
+                //            if (miktarsabitle == "E")
+                //            {
+                //                netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + jsonList[i].KULL_MIKTAR + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                //            }
 
-                        }
-
-
-                        uretim = kernel.yeniSerbestUSK(sirket);
-                        uretim.IsEmrindenGetir(jsonList[i].ISEMRINO);
-                        uretim.UretSon_FisNo = uretim.SonFisNumarasi("N");
-
-                        uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
-                        uretim.BelgeTipi = TBelgeTipi.btIsEmri;
-                        uretim.Proje_Kodu = "1";
-                        uretim.UretSon_Miktar = jsonList[i].KULL_MIKTAR;
-                        if (miktarsabitle == "E")
-                        {
-                            uretim.F_Yedek1 = 1;
-                        }
-                        else
-                        {
-                            uretim.F_Yedek1 = jsonList[i].MIKTAR2;
-                        }
-
-                        uretim.UretSon_Depo = 45;
-                        uretim.I_Yedek1 = 45;
-                        uretim.I_Yedek2 = 0;
-                        uretim.OTO_YMAM_GIRDI_CIKTI = true;
-                        uretim.OTO_YMAM_STOK_KULLAN = false;
+                //        }
 
 
-                        uretim.BAKIYE_DEPO = 0;
-                        netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
-                        var seri = netRS.FieldByName("SERINO").AsString;
-                        if (seri == null)
-                        {
-                            uretim.OTOSERIURET();
-                            uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
-                        }
+                //        uretim = kernel.yeniSerbestUSK(sirket);
+                //        uretim.IsEmrindenGetir(jsonList[i].ISEMRINO);
+                //        uretim.UretSon_FisNo = uretim.SonFisNumarasi("N");
 
-                        NetRS netRS1 = kernel.yeniNetRS(sirket);
-                        uretim.FisUret();
-                        uretim.Kaydet();
-                        //if (miktarsabitle == "E")
-                        //{
-                        //    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + eskimiktar + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
-                        //}
+                //        uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                //        uretim.BelgeTipi = TBelgeTipi.btIsEmri;
+                //        uretim.Proje_Kodu = "1";
+                //        uretim.UretSon_Miktar = jsonList[i].KULL_MIKTAR;
+                //        if (miktarsabitle == "E")
+                //        {
+                //            uretim.F_Yedek1 = 1;
+                //        }
+                //        else
+                //        {
+                //            uretim.F_Yedek1 = jsonList[i].MIKTAR2;
+                //        }
 
-                        //netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2=" + jsonList[i].MIKTAR2 + " WHERE  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                        netRS1.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[0].ISEMRINO + "'");
-
-                        if (i == 0)
-                        {
-                            karsi = netRS1.FieldByName("SERI_NO").AsString;
-                        }
+                //        uretim.UretSon_Depo = 45;
+                //        uretim.I_Yedek1 = 45;
+                //        uretim.I_Yedek2 = 0;
+                //        uretim.OTO_YMAM_GIRDI_CIKTI = true;
+                //        uretim.OTO_YMAM_STOK_KULLAN = false;
 
 
+                //        uretim.BAKIYE_DEPO = 0;
+                //        netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                //        var seri = netRS.FieldByName("SERINO").AsString;
+                //        if (seri == null)
+                //        {
+                //            uretim.OTOSERIURET();
+                //            uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
+                //        }
+
+                //        NetRS netRS1 = kernel.yeniNetRS(sirket);
+                //        uretim.FisUret();
+                //        uretim.Kaydet();
+                //        //if (miktarsabitle == "E")
+                //        //{
+                //        //    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + eskimiktar + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                //        //}
+
+                //        //netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2=" + jsonList[i].MIKTAR2 + " WHERE  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                //        netRS1.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[0].ISEMRINO + "'");
+
+                //        if (i == 0)
+                //        {
+                //            karsi = netRS1.FieldByName("SERI_NO").AsString;
+                //        }
 
 
-                        //netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                        //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
-                        //{
-                        //    netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
-                        //}
-                        if (miktarsabitle != "E")
-                        {
-                            netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                            if (hatkodu != "BK01")
-                            {
-                                netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                            }
-                        }
-                        else
-                        {
-                            netRS1.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                            var karsi1 = netRS1.FieldByName("SERI_NO").AsString;
-                            netRS1.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
-                            var referans = netRS1.FieldByName("REFISEMRINO").AsString;
-                            netRS1.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + referans + "'");
-                            var eski = netRS1.FieldByName("MIKTAR").AsFloat;
-                            var oran = jsonList[i].KULL_MIKTAR / eski;
-                            var miktar2 = netRS1.FieldByName("ACIKLAMA").AsString;
-                            var yeni = miktar2.ToDouble() * oran;
-                            netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi1 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-
-                            netRS1.Ac("UPDATE TBLISEMRI SET MIKTAR='" + jsonList[i].KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
-                            if (kontrol == true)
-                            {
-                                netRS1.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
-                            }
-                        }
 
 
-                    }
+                //        //netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                //        //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
+                //        //{
+                //        //    netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                //        //}
+                //        if (miktarsabitle != "E")
+                //        {
+                //            netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                //            if (hatkodu != "BK01")
+                //            {
+                //                netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                //            }
+                //        }
+                //        else
+                //        {
+                //            netRS1.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                //            var karsi1 = netRS1.FieldByName("SERI_NO").AsString;
+                //            netRS1.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                //            var referans = netRS1.FieldByName("REFISEMRINO").AsString;
+                //            netRS1.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + referans + "'");
+                //            var eski = netRS1.FieldByName("MIKTAR").AsFloat;
+                //            var oran = jsonList[i].KULL_MIKTAR / eski;
+                //            var miktar2 = netRS1.FieldByName("ACIKLAMA").AsString;
+                //            var yeni = miktar2.ToDouble() * oran;
+                //            netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi1 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
 
-                    //Stok hareketleri gerçeklestiriliyor
-                    //uretim.kayitFisNoIleUretimSonu(uretim.UretSon_FisNo, TUretSonDepo.usdAktif,false,false);
-                }
-                catch (Exception e)
-                {
-                    var exp = e.Message;
-                    System.Diagnostics.Debug.Write(exp);
-                    return $"{exp}";
-                }
+                //            netRS1.Ac("UPDATE TBLISEMRI SET MIKTAR='" + jsonList[i].KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
+                //            if (kontrol == true)
+                //            {
+                //                netRS1.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                //            }
+                //        }
+
+
+                //    }
+
+                //    //Stok hareketleri gerçeklestiriliyor
+                //    //uretim.kayitFisNoIleUretimSonu(uretim.UretSon_FisNo, TUretSonDepo.usdAktif,false,false);
+                //}
+                //catch (Exception e)
+                //{
+                //    var exp = e.Message;
+                //    System.Diagnostics.Debug.Write(exp);
+                //    return $"{exp}";
+                //}
 
 
                 if (etiket)
                 {
-                    UretimKaydiSonuBarkodCiktisi(jsonList);
+                    List<BarkodModel> Etiketler = new List<BarkodModel>();
+
+                    WebClient Client = new WebClient() { Encoding= Encoding.UTF8 };
+
+                    foreach (var item in jsonList)
+                    {
+                        string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + item.SERI_NO));
+                        List<BarkodModel> Result = ser.Deserialize<List<BarkodModel>>(Response);
+
+                        Etiketler.Add(Result[0]);
+                    }
+
+                    UretimKaydiSonuBarkodCiktisi(Etiketler);
                 }
             }
             catch (Exception e)
@@ -478,10 +491,10 @@ namespace NOVA.Controllers
             }
             finally
             {
-                Marshal.ReleaseComObject(uretim);
-                Marshal.ReleaseComObject(sirket);
-                kernel.FreeNetsisLibrary();
-                Marshal.ReleaseComObject(kernel);
+                //Marshal.ReleaseComObject(uretim);
+                //Marshal.ReleaseComObject(sirket);
+                //kernel.FreeNetsisLibrary();
+                //Marshal.ReleaseComObject(kernel);
             }
             return $"Başarılı";
         }
@@ -554,10 +567,10 @@ namespace NOVA.Controllers
                     netRS.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
                     var karsi = netRS.FieldByName("SERI_NO").AsString;
 
-                    netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' AND BELGENO<>'"+ uretim.UretSon_FisNo + "' ORDER BY BELGENO DESC");
+                    netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' AND BELGENO<>'" + uretim.UretSon_FisNo + "' ORDER BY BELGENO DESC");
                     var mikold = netRS.FieldByName("MIKTAR").AsFloat;
                     netRS.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
-                    
+
                     //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
                     //{
                     //    netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
@@ -574,10 +587,10 @@ namespace NOVA.Controllers
                     //var oran = KULL_MIKTAR.ToDouble() / eski;
                     //var miktar2 = netRS.FieldByName("ACIKLAMA").AsString;
                     //var yeni = miktar2.ToDouble() * oran;
-                   
-                    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + (mikold != 0 ? mikold + KULL_MIKTAR.ToDouble() : KULL_MIKTAR.ToDouble()) +"' WHERE ISEMRINO='" + referans + "'");
-                    
-                   
+
+                    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + (mikold != 0 ? mikold + KULL_MIKTAR.ToDouble() : KULL_MIKTAR.ToDouble()) + "' WHERE ISEMRINO='" + referans + "'");
+
+
 
                     if (ISEMRINO.Substring(0, 2) == "MH" || ISEMRINO.Substring(0, 2) == "BK")
                     {
@@ -593,7 +606,7 @@ namespace NOVA.Controllers
                 {
                     sirket.LogOff();
                     WebMail.SmtpServer = "192.168.2.13";
-                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Dertler Derya Olmuş", ISEMRINO+" sıkıntılı ayağınızı den alın!", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Dertler Derya Olmuş", ISEMRINO + " sıkıntılı ayağınızı den alın!", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                     var message = exp.Message;
                     System.Diagnostics.Debug.Write(exp);
                     return $"Hata: {message}";
@@ -768,15 +781,14 @@ namespace NOVA.Controllers
             return RedirectToAction("Index");
         }
         #region BarkodPDF
-        public void UretimKaydiSonuBarkodCiktisi(List<USKModel> Data)
+        public void UretimKaydiSonuBarkodCiktisi(List<BarkodModel> Data)
         {
-            string imagepath = Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content");
             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
-            string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{ DateTime.UtcNow.ToUnixTime()}.pdf");
+            string imagePath = Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
+            string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
 
             FileStream Memory = new FileStream(pdfPath, FileMode.Create);
-            //MemoryStream Memory = new MemoryStream();
             PdfWriter writer = PdfWriter.GetInstance(document, Memory);
 
             document.Open();
@@ -784,11 +796,11 @@ namespace NOVA.Controllers
             for (int i = 0; i < Data.Count; i++)
             {
                 document.NewPage();
-                iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(imagepath + "/SevkiyatDesign.png");
-                png.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
-                png.Alignment = iTextSharp.text.Image.UNDERLYING;
-                png.SetAbsolutePosition(0, 0);
-                document.Add(png);
+                iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
+                BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
+                BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
+                BackgroundImage.SetAbsolutePosition(0, 0);
+                document.Add(BackgroundImage);
 
                 PdfContentByte cb = writer.DirectContent;
 
@@ -804,43 +816,29 @@ namespace NOVA.Controllers
                 ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
                 Content.SetSimpleColumn(35, 60, 280, 260);
 
-                //iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR 1      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //Miktar1.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR)} {BosDegerKontrolu(Data[i].OLCU_BR1)}", fontNormal));
-                //Content.AddElement(Miktar1);
+                iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR        ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Miktar1.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR1.ToString())}", fontNormal));
+                Content.AddElement(Miktar1);
 
+                iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Miktar2.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR2.ToString())}", fontNormal));
+                Content.AddElement(Miktar2);
 
-                //if (Data[i].OLCU_BR1 != Data[i].OLCU_BR2)
-                //{
-                //    iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //    Miktar2.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR2)} {BosDegerKontrolu(Data[i].OLCU_BR2)}", fontNormal));
-                //    Content.AddElement(Miktar2);
+                iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ       ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Musteri.Add(new Chunk($": {BosDegerKontrolu(Data[i].SIPARIS_CARI)}", fontNormal));
+                Content.AddElement(Musteri);
 
-                //    iTextSharp.text.Paragraph BirimMiktar = new iTextSharp.text.Paragraph("BİRİM MİKTAR  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //    BirimMiktar.Add(new Chunk($": {BosDegerKontrolu(Data[i].BIRIM_MIKTAR)} {BosDegerKontrolu(Data[i].OLCU_BR1)}/{BosDegerKontrolu(Data[i].OLCU_BR2)}", fontNormal));
-                //    Content.AddElement(BirimMiktar);
-                //}
-                //else
-                //{
-                //    iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //    Miktar2.Add(new Chunk($": -", fontNormal));
-                //    Content.AddElement(Miktar2);
+                iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR.   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                MakineOperator.Add(new Chunk($": {Data[i].MAK_KODU}/{BosDegerKontrolu(Data[i].KAYITYAPANKUL)}", fontNormal));
+                Content.AddElement(MakineOperator);
 
-                //    iTextSharp.text.Paragraph BirimMiktar = new iTextSharp.text.Paragraph("BİRİM MİKTAR  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //    BirimMiktar.Add(new Chunk($": -", fontNormal));
-                //    Content.AddElement(BirimMiktar);
-                //}
+                iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY           ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Boy.Add(new Chunk($": {BosDegerKontrolu(Data[i].BOY.ToString())}", fontNormal));
+                Content.AddElement(Boy);
 
-                iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {BosDegerKontrolu(Data[i].ISEMRINO)}", fontNormal));
-                Content.AddElement(Kalinlik);
-
-                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {BosDegerKontrolu(Data[i].KULL_MIKTAR.ToString())}", fontNormal));
-                Content.AddElement(Genislik);
-
-                iTextSharp.text.Paragraph Kalite = new iTextSharp.text.Paragraph("KALİTE        ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalite.Add(new Chunk($": {BosDegerKontrolu(Data[i].MIKTAR2.ToString())}", fontNormal));
-                Content.AddElement(Kalite);
+                iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Tarih.Add(new Chunk($": {BosDegerKontrolu(Data[i].KAYITTARIHI)}", fontNormal));
+                Content.AddElement(Tarih);
                 Content.Go();
 
                 var qrGenerator = new QRCodeGenerator();
@@ -860,6 +858,96 @@ namespace NOVA.Controllers
 
             //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
         }
+
+        [HttpPost]
+        public void TrpzUretimKaydiSonuBarkodCiktisi(BarkodModel Model)
+        {
+            iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
+
+            string imagePath = Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
+            string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+
+            FileStream Memory = new FileStream(pdfPath, FileMode.Create);
+            PdfWriter writer = PdfWriter.GetInstance(document, Memory);
+
+            document.Open();
+
+            iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
+            BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
+            BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
+            BackgroundImage.SetAbsolutePosition(0, 0);
+            document.Add(BackgroundImage);
+
+            PdfContentByte cb = writer.DirectContent;
+
+            iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.NORMAL);
+            iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.BOLD);
+
+            ColumnText Header = new ColumnText(cb);
+            Header.SetSimpleColumn(45, 125, 270, 335);
+            Header.AddElement(new iTextSharp.text.Paragraph(Model.SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
+            Header.Go();
+
+            ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
+            Content.SetSimpleColumn(35, 60, 280, 260);
+
+            iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR        ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Miktar1.Add(new Chunk($": {BosDegerKontrolu(Model.MIKTAR1.ToString())}", fontNormal));
+            Content.AddElement(Miktar1);
+
+            iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Miktar2.Add(new Chunk($": {BosDegerKontrolu(Model.MIKTAR2.ToString())}", fontNormal));
+            Content.AddElement(Miktar2);
+
+            iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ       ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Musteri.Add(new Chunk($": {BosDegerKontrolu(Model.SIPARIS_CARI)}", fontNormal));
+            Content.AddElement(Musteri);
+
+            iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR.   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            MakineOperator.Add(new Chunk($": {Model.MAK_KODU}/{BosDegerKontrolu(Model.KAYITYAPANKUL)}", fontNormal));
+            Content.AddElement(MakineOperator);
+
+            iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY           ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Boy.Add(new Chunk($": {BosDegerKontrolu(Model.BOY.ToString())}", fontNormal));
+            Content.AddElement(Boy);
+
+            iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Tarih.Add(new Chunk($": {BosDegerKontrolu(Model.KAYITTARIHI)}", fontNormal));
+            Content.AddElement(Tarih);
+            Content.Go();
+
+            var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(Model.SERI_NO, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
+
+            iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
+            QR.ScaleToFit(75, 75);
+            QR.Alignment = iTextSharp.text.Image.UNDERLYING;
+            QR.SetAbsolutePosition(195, 12);
+            document.Add(QR);
+
+            document.Close();
+            Memory.Close();
+
+            //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
+        }
+
+        public class BarkodModel
+        {
+            public string SERI_NO { get; set; }
+            public double MIKTAR1 { get; set; }
+            public double MIKTAR2 { get; set; }
+            public string STOK_KODU { get; set; }
+            public string GRUP_ISIM { get; set; }
+            public double BOY { get; set; }
+            public string KAYITYAPANKUL { get; set; }
+            public string KAYITTARIHI { get; set; }
+            public string SIPARIS_CARI { get; set; }
+            public string MAK_KODU { get; set; }
+        }
+
         private byte[] ImageToByteArray(System.Drawing.Image img)
         {
             using (var stream = new MemoryStream())
