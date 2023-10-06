@@ -26,6 +26,9 @@ using NOVA.Utils;
 using System.Web.Security;
 using System.Web.Helpers;
 using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml;
+using System.Globalization;
+using Newtonsoft.Json;
 
 namespace NOVA.Controllers
 {
@@ -814,6 +817,7 @@ namespace NOVA.Controllers
                 ColumnText Header = new ColumnText(cb);
                 Header.SetSimpleColumn(45, 125, 270, 335);
                 Header.AddElement(new iTextSharp.text.Paragraph(Data[i].SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
+                Header.AddElement(new Paragraph(Data[i].STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
                 Header.Go();
 
                 ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
@@ -832,8 +836,16 @@ namespace NOVA.Controllers
                 Content.AddElement(Miktar1);
 
                 iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Miktar2.Add(new Chunk($": {MiktarFormat(Data[i].MIKTAR2, Data[i].OLCU_BR1)}", fontNormal));
+                Miktar2.Add(new Chunk($": {MiktarFormat(Data[i].MIKTAR2, Data[i].OLCU_BR2)}", fontNormal));
                 Content.AddElement(Miktar2);
+
+                iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Kalinlik.Add(new Chunk($": {Data[i].KALINLIK}", fontNormal));
+                Content.AddElement(Kalinlik);
+
+                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENISLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Genislik.Add(new Chunk($": {Data[i].GENISLIK}", fontNormal));
+                Content.AddElement(Genislik);
 
                 iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
                 Metraj.Add(new Chunk($": {MetrajFormat(Data[i].METRAJ, "M")}", fontNormal));
@@ -878,6 +890,7 @@ namespace NOVA.Controllers
         [HttpPost]
         public string TrpzUretimKaydiSonuBarkodCiktisi(BarkodModel Model)
         {
+            System.Diagnostics.Debug.WriteLine("METRAJ: " + Model.METRAJ);
             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
             string imagePath = Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
@@ -903,6 +916,7 @@ namespace NOVA.Controllers
             ColumnText Header = new ColumnText(cb);
             Header.SetSimpleColumn(45, 125, 270, 335);
             Header.AddElement(new iTextSharp.text.Paragraph(Model.SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
+            Header.AddElement(new Paragraph(Model.STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
             Header.Go();
 
             ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
@@ -921,11 +935,19 @@ namespace NOVA.Controllers
             Content.AddElement(Miktar1);
 
             iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Miktar2.Add(new Chunk($": {MiktarFormat(Model.MIKTAR2, Model.OLCU_BR1)}", fontNormal));
+            Miktar2.Add(new Chunk($": {MiktarFormat(Model.MIKTAR2, Model.OLCU_BR2)}", fontNormal));
             Content.AddElement(Miktar2);
 
+            iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Kalinlik.Add(new Chunk($": {Model.KALINLIK}", fontNormal));
+            Content.AddElement(Kalinlik);
+
+            iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENISLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Genislik.Add(new Chunk($": {Model.GENISLIK}", fontNormal));
+            Content.AddElement(Genislik);
+
             iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Metraj.Add(new Chunk($": {MetrajFormat(Model.METRAJ, "M")}", fontNormal));
+            Metraj.Add(new Chunk($": {Model.METRAJ}", fontNormal));
             Content.AddElement(Metraj);
 
             iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH/SAAT  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -967,17 +989,20 @@ namespace NOVA.Controllers
         public class BarkodModel
         {
             public string SERI_NO { get; set; }
+            public string STOK_ADI { get; set; }
             public double MIKTAR1 { get; set; }
-            public string OLCU_BR1 { get; set; }    
+            public string OLCU_BR1 { get; set; }
             public double MIKTAR2 { get; set; }
-            public string OLCU_BR2 { get; set; }    
+            public string OLCU_BR2 { get; set; }
             public string STOK_KODU { get; set; }
+            public double GENISLIK { get; set; }
             public string GRUP_ISIM { get; set; }
             public double BOY { get; set; }
             public string KAYITYAPANKUL { get; set; }
             public string KAYITTARIHI { get; set; }
             public string SIPARIS_CARI { get; set; }
             public string MAK_KODU { get; set; }
+            public string KALINLIK { get; set; }
             public double METRAJ { get; set; }
 
             public bool ETIKET_ONIZLEME { get; set; }
@@ -1006,23 +1031,24 @@ namespace NOVA.Controllers
         private string TarihFormat(string Tarih)
         {
             if(string.IsNullOrEmpty(Tarih))
+            {
                 return "-";
+            }
 
             return DateTime.Parse(Tarih).ToString("dd/MM/yyyy HH:mm:ff");
         }
         private string MiktarFormat(double Miktar, string OlcuBirimi) 
         {
             if(Miktar == 0)
+            {
                 return "-";
+            }
 
-            return $"{Miktar} {OlcuBirimi}";
+            return $"{Miktar.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
         }
         private string MetrajFormat(double Metraj, string Olcubirimi)
         {
-            if (Metraj == 0)
-                return "-";
-
-            return $"{Metraj.ToString("F")} {Olcubirimi}";
+            return $"{Metraj.ToString("c", new CultureInfo("tr-TR"))} {Olcubirimi}";
         }
         #endregion
         public List<HatModel> UretimTipi(string hatKodu)
