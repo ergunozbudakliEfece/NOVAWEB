@@ -465,7 +465,7 @@ namespace NOVA.Controllers
                 {
                     var exp = e.Message;
                     System.Diagnostics.Debug.Write(exp);
-                    return $"{exp}";
+                    //return $"Hata: {exp}";
                 }
 
 
@@ -489,7 +489,7 @@ namespace NOVA.Controllers
             {
                 var exp = e.Message;
                 Console.WriteLine(e.Message);
-                return $"{exp}";
+                //return $"Hata: {exp}";
             }
             finally
             {
@@ -835,6 +835,10 @@ namespace NOVA.Controllers
                 Miktar2.Add(new Chunk($": {MiktarFormat(Data[i].MIKTAR2, Data[i].OLCU_BR1)}", fontNormal));
                 Content.AddElement(Miktar2);
 
+                iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Metraj.Add(new Chunk($": {MetrajFormat(Data[i].METRAJ, "M")}", fontNormal));
+                Content.AddElement(Metraj);
+
                 iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH/SAAT  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
                 Tarih.Add(new Chunk($": {TarihFormat(Data[i].KAYITTARIHI)}", fontNormal));
                 Content.AddElement(Tarih);
@@ -920,6 +924,10 @@ namespace NOVA.Controllers
             Miktar2.Add(new Chunk($": {MiktarFormat(Model.MIKTAR2, Model.OLCU_BR1)}", fontNormal));
             Content.AddElement(Miktar2);
 
+            iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            Metraj.Add(new Chunk($": {MetrajFormat(Model.METRAJ, "M")}", fontNormal));
+            Content.AddElement(Metraj);
+
             iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH/SAAT  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
             Tarih.Add(new Chunk($": {TarihFormat(Model.KAYITTARIHI)}", fontNormal));
             Content.AddElement(Tarih);
@@ -970,6 +978,7 @@ namespace NOVA.Controllers
             public string KAYITTARIHI { get; set; }
             public string SIPARIS_CARI { get; set; }
             public string MAK_KODU { get; set; }
+            public double METRAJ { get; set; }
 
             public bool ETIKET_ONIZLEME { get; set; }
         }
@@ -1007,6 +1016,13 @@ namespace NOVA.Controllers
                 return "-";
 
             return $"{Miktar} {OlcuBirimi}";
+        }
+        private string MetrajFormat(double Metraj, string Olcubirimi)
+        {
+            if (Metraj == 0)
+                return "-";
+
+            return $"{Metraj.ToString("F")} {Olcubirimi}";
         }
         #endregion
         public List<HatModel> UretimTipi(string hatKodu)
