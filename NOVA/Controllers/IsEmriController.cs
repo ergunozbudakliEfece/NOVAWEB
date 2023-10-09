@@ -414,6 +414,7 @@ namespace NOVA.Controllers
             }
             finally
             {
+                sirket.LogOff();
                 Marshal.ReleaseComObject(uretim);
                 Marshal.ReleaseComObject(sirket);
                 kernel.FreeNetsisLibrary();
@@ -924,6 +925,10 @@ namespace NOVA.Controllers
                 var msg = ex.Message;
                 return View("Index");
             }
+            finally
+            {
+                sirket.LogOff();
+            }
 
 
 
@@ -949,7 +954,7 @@ namespace NOVA.Controllers
 
         }
         [HttpPost]
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult Post(List<IsEmriModel> isemri,bool TamamiKullanılsin)
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult Post(List<IsEmriModel> isemri,bool TamamiKullanilsin)
         {
 
             var isemridis = isemri.GroupBy(x => x.ISEMRINO).Select(x => x.First()).ToList();
@@ -1010,9 +1015,10 @@ namespace NOVA.Controllers
                         Isemri.Miktar = m2;
                         Isemri.kayitYeni();
                         NetRS netRS = kernel.yeniNetRS(sirket);
-                        if (TamamiKullanılsin == true)
+                        if (TamamiKullanilsin == true)
                         {
-                            netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI2 + "',DEPO_KODU='45',MIKTAR="+ isemridis[i].HAMSARF+ ",MIKTARSABITLE='H' WHERE ISEMRINO='" + isemridis[i].REF_ISEMRINO + "'");
+                            netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI2 + "',DEPO_KODU='45',MIKTAR=" + m2 + ",MIKTARSABITLE='E'  WHERE ISEMRINO='" + isemridis[i].REF_ISEMRINO + "'");
+                            
                         }
                         else
                         {
@@ -1060,7 +1066,7 @@ namespace NOVA.Controllers
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
-                    if (TamamiKullanılsin == true)
+                    if (TamamiKullanilsin == true)
                     {
                         netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR=" + isemridis[i].HAMSARF + ",MIKTARSABITLE='H', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
                     }
@@ -1078,7 +1084,10 @@ namespace NOVA.Controllers
                 TempData["Hata"] = ex.Message;
                 return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
             }
-
+            finally
+            {
+                sirket.LogOff();
+            }
 
 
 
@@ -1087,7 +1096,7 @@ namespace NOVA.Controllers
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
         }
         [HttpPost]
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult PostBKPBRF(List<IsEmriModel> isemri)
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult PostBKPBRF(List<IsEmriModel> isemri, bool TamamiKullanilsin)
         {
 
             var isemridis = isemri.GroupBy(x => x.ISEMRINO).Select(x => x.First()).ToList();
@@ -1140,8 +1149,19 @@ namespace NOVA.Controllers
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
-                    netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
-                    netRS2.Ac("UPDATE TBLISEMRIEK SET KT_SIPNO='" + isemridis[i].SIPARISNO + "' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                    if (isemridis[i].SIPARISNO != null)
+                    {
+                        netRS2.Ac("UPDATE TBLISEMRIEK SET KT_SIPNO='" + isemridis[i].SIPARISNO + "' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                    }
+                    if (TamamiKullanilsin == true)
+                    {
+                        netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',DEPO_KODU='45',MIKTAR=" + mik +",MIKTARSABITLE='E' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+
+                    }
+                    else
+                    {
+                        netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "', DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                    }
                 }
             }
             catch (Exception ex)
@@ -1150,9 +1170,10 @@ namespace NOVA.Controllers
                 TempData["Hata"] = ex.Message;
                 return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
             }
-
-
-
+            finally
+            {
+                sirket.LogOff();
+            }
 
 
 

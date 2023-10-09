@@ -2029,9 +2029,8 @@
             $("#RFTable").hide();
             $("#RFPivot").hide();
             $("#RFPivotTop").hide();
-            if (localStorage.DLlist != null && localStorage.DLlist != undefined && localStorage.DLlist != "null") {
-                $("#tamamidiv").show();
-            }
+            $("#tamamidiv").hide();
+            $("#tamami").prop("checked",false);
         }
         else if (val.value == "TP")
         {
@@ -2059,6 +2058,7 @@
             $("#RFPivot").hide();
             $("#RFPivotTop").hide();
             $("#tamamidiv").hide();
+            $("#tamami").prop("checked", false);
             TPTableLoadLocalData();
         }
         else if (val.value == "BK") {
@@ -2085,7 +2085,11 @@
             $("#RFTable").hide();
             $("#RFPivot").hide();
             $("#RFPivotTop").hide();
-            $("#tamamidiv").hide();
+            $("#tamami").prop("checked", false);
+            if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != undefined && localStorage.BKPivotVeri != "null") {
+
+                $("#tamamidiv").show();
+            }
             BKTableLoadLocalData();
         }
         else if (val.value == "PB")
@@ -2212,6 +2216,7 @@
             title: 'Veriler başarılı bir şekilde Netsis\'e aktarıldı.'
         });
         $("#seri").val(null);
+        $("#tamamidiv").hide();
         document.getElementById("genislikalti").value = 0;
     },
     error: function () {
@@ -2314,6 +2319,7 @@
             case 'PB':
             case 'RF':
                 var lis = [];
+                var TamamiAktarilsin = $("#tamami").is(":checked");
                 if (Tip == "BK") {
                     lis = JSON.parse(localStorage.BKPivotVeri);
                 } else if (Tip == "RF") {
@@ -2323,9 +2329,9 @@
                 }
 
                                 $.ajax({
-    url: '@Url.Action("PostBKPBRF", "IsEmri")',
-    type: 'POST',
-    data: { isemri: lis },
+                                     url: '@Url.Action("PostBKPBRF", "IsEmri")',
+                                    type: 'POST',
+                                    data: { isemri: lis, TamamiKullanilsin: TamamiAktarilsin },
     success: function () {
 
         $("#content").hide();
@@ -2852,6 +2858,7 @@
             })
 
             BKTableCreatePivot(BKPivotVeri);
+           
             var fark = BKPivotVeri.length;
 
             if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null")
@@ -2866,6 +2873,7 @@
 
             BKTableCreatePivot2Data();
             $("#seri").val(null).trigger("input");
+            $("#tamamidiv").show();
         });
     }
     function BKTableCreatePivot2Data() {
