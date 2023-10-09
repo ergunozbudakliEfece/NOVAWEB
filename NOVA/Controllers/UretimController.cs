@@ -843,11 +843,11 @@ namespace NOVA.Controllers
                 Content.AddElement(Miktar2);
 
                 iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {Data[i].KALINLIK}", fontNormal));
+                Kalinlik.Add(new Chunk($": {BosDegerKontrolu(Data[i].KALINLIK)}", fontNormal));
                 Content.AddElement(Kalinlik);
 
                 iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {Data[i].GENISLIK}", fontNormal));
+                Genislik.Add(new Chunk($": {BosDegerKontrolu(Data[i].GENISLIK)}", fontNormal));
                 Content.AddElement(Genislik);
 
                 iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -955,11 +955,11 @@ namespace NOVA.Controllers
                 Content.AddElement(Miktar2);
 
                 iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {Model.KALINLIK}", fontNormal));
+                Kalinlik.Add(new Chunk($": {BosDegerKontrolu(Model.KALINLIK)}", fontNormal));
                 Content.AddElement(Kalinlik);
 
                 iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {Model.GENISLIK}", fontNormal));
+                Genislik.Add(new Chunk($": {BosDegerKontrolu(Model.GENISLIK)}", fontNormal));
                 Content.AddElement(Genislik);
 
                 iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -1048,6 +1048,10 @@ namespace NOVA.Controllers
         private string BosDegerKontrolu(string Deger)
         {
             return string.IsNullOrEmpty(Deger) ? "-" : Deger;
+        }
+        private string BosDegerKontrolu(double Deger)
+        {
+            return Deger == 0 ? "-" : Deger.ToString();
         }
         private string TarihFormat(string Tarih)
         {
