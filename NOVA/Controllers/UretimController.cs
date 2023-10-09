@@ -831,7 +831,7 @@ namespace NOVA.Controllers
                 Content.AddElement(GrupIsim);
 
                 iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Boy.Add(new Chunk($": {MiktarFormat(Data[i].BOY, "MM")}", fontNormal));
+                Boy.Add(new Chunk($": {BosDegerKontrolu(((int)Data[i].BOY).ToString())} MM", fontNormal));
                 Content.AddElement(Boy);
 
                 iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -943,7 +943,7 @@ namespace NOVA.Controllers
                 Content.AddElement(GrupIsim);
 
                 iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Boy.Add(new Chunk($": {MiktarFormat(Model.BOY, "MM")}", fontNormal));
+                Boy.Add(new Chunk($": {BosDegerKontrolu(((int)Model.BOY).ToString())} MM", fontNormal));
                 Content.AddElement(Boy);
 
                 iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
