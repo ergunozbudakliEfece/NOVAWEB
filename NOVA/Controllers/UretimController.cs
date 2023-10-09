@@ -405,6 +405,7 @@ namespace NOVA.Controllers
                         {
                             uretim.OTOSERIURET();
                             uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
+                           
                         }
 
                         NetRS netRS1 = kernel.yeniNetRS(sirket);
@@ -417,7 +418,7 @@ namespace NOVA.Controllers
 
                         //netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2=" + jsonList[i].MIKTAR2 + " WHERE  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                         netRS1.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[0].ISEMRINO + "'");
-
+                        seri = netRS1.FieldByName("SERI_NO").AsString;
                         if (i == 0)
                         {
                             karsi = netRS1.FieldByName("SERI_NO").AsString;
@@ -497,6 +498,7 @@ namespace NOVA.Controllers
             }
             finally
             {
+                sirket.LogOff();
                 Marshal.ReleaseComObject(uretim);
                 Marshal.ReleaseComObject(sirket);
                 kernel.FreeNetsisLibrary();
