@@ -892,110 +892,117 @@ namespace NOVA.Controllers
         public string TrpzUretimKaydiSonuBarkodCiktisi(string BARKOD_NO, bool ETIKET_ONIZLEME)
         {
 
-            WebClient Client = new WebClient() { Encoding = Encoding.UTF8 };
-
-            string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + BARKOD_NO));
-            List<BarkodModel> Result = new JavaScriptSerializer().Deserialize<List<BarkodModel>>(Response);
-
-            if (Result.Count < 1)
-                return "";
-
-            BarkodModel Model = Result[0];
-
-            System.Diagnostics.Debug.WriteLine("METRAJ: " + Model.METRAJ);
-            iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
-
-            string imagePath = Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
-            string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
-
-            FileStream Memory = new FileStream(pdfPath, FileMode.Create);
-            PdfWriter writer = PdfWriter.GetInstance(document, Memory);
-
-            document.Open();
-
-            iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
-            BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
-            BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
-            BackgroundImage.SetAbsolutePosition(0, 0);
-            document.Add(BackgroundImage);
-
-            PdfContentByte cb = writer.DirectContent;
-
-            iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.NORMAL);
-            iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
-            iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.BOLD);
-
-            ColumnText Header = new ColumnText(cb);
-            Header.SetSimpleColumn(45, 125, 270, 335);
-            Header.AddElement(new iTextSharp.text.Paragraph(Model.SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
-            Header.AddElement(new Paragraph(Model.STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
-            Header.Go();
-
-            ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
-            Content.SetSimpleColumn(35, 60, 280, 260);
-
-            iTextSharp.text.Paragraph GrupIsim = new iTextSharp.text.Paragraph("GRUP İSİM   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            GrupIsim.Add(new Chunk($": {BosDegerKontrolu(Model.GRUP_ISIM)}", fontNormal));
-            Content.AddElement(GrupIsim);
-
-            iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Boy.Add(new Chunk($": {MiktarFormat(Model.BOY, "MM")}", fontNormal));
-            Content.AddElement(Boy);
-
-            iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Miktar1.Add(new Chunk($": {MiktarFormat(Model.MIKTAR1, Model.OLCU_BR1)}", fontNormal));
-            Content.AddElement(Miktar1);
-
-            iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Miktar2.Add(new Chunk($": {MiktarFormat(Model.MIKTAR2, Model.OLCU_BR2)}", fontNormal));
-            Content.AddElement(Miktar2);
-
-            iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Kalinlik.Add(new Chunk($": {Model.KALINLIK}", fontNormal));
-            Content.AddElement(Kalinlik);
-
-            iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Genislik.Add(new Chunk($": {Model.GENISLIK}", fontNormal));
-            Content.AddElement(Genislik);
-
-            iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Metraj.Add(new Chunk($": {MetrajFormat(Model.METRAJ, "M")}", fontNormal));
-            Content.AddElement(Metraj);
-
-            iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH/SAAT  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Tarih.Add(new Chunk($": {TarihFormat(Model.KAYITTARIHI)}", fontNormal));
-            Content.AddElement(Tarih);
-
-            iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR. ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            MakineOperator.Add(new Chunk($": {BosDegerKontrolu(Model.MAK_KODU)}/{BosDegerKontrolu(Model.KAYITYAPANKUL)}", fontNormal));
-            Content.AddElement(MakineOperator);
-
-            iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ     ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Musteri.Add(new Chunk($": {BosDegerKontrolu(Model.SIPARIS_CARI)}", fontNormal));
-            Content.AddElement(Musteri);
-            Content.Go();
-
-            var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(Model.SERI_NO, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qrCodeData);
-            System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
-
-            iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
-            QR.ScaleToFit(75, 75);
-            QR.Alignment = iTextSharp.text.Image.UNDERLYING;
-            QR.SetAbsolutePosition(195, 12);
-            document.Add(QR);
-
-            document.Close();
-            Memory.Close();
-
-            //Eğer önizleme kapalıysa direkt yazdır.
-            if (!ETIKET_ONIZLEME) 
+            try
             {
-                //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
-            }
+                WebClient Client = new WebClient() { Encoding = Encoding.UTF8 };
 
-            return ToBase64String(pdfPath);
+                string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + BARKOD_NO));
+                List<BarkodModel> Result = new JavaScriptSerializer().Deserialize<List<BarkodModel>>(Response);
+
+                if (Result.Count < 1)
+                    return "";
+
+                BarkodModel Model = Result[0];
+
+                System.Diagnostics.Debug.WriteLine("METRAJ: " + Model.METRAJ);
+                iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
+
+                string imagePath = Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
+                string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+
+                FileStream Memory = new FileStream(pdfPath, FileMode.Create);
+                PdfWriter writer = PdfWriter.GetInstance(document, Memory);
+
+                document.Open();
+
+                iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
+                BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
+                BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
+                BackgroundImage.SetAbsolutePosition(0, 0);
+                document.Add(BackgroundImage);
+
+                PdfContentByte cb = writer.DirectContent;
+
+                iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.NORMAL);
+                iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.BOLD);
+
+                ColumnText Header = new ColumnText(cb);
+                Header.SetSimpleColumn(45, 125, 270, 335);
+                Header.AddElement(new iTextSharp.text.Paragraph(Model.SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
+                Header.AddElement(new Paragraph(Model.STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
+                Header.Go();
+
+                ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
+                Content.SetSimpleColumn(35, 60, 280, 260);
+
+                iTextSharp.text.Paragraph GrupIsim = new iTextSharp.text.Paragraph("GRUP İSİM   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                GrupIsim.Add(new Chunk($": {BosDegerKontrolu(Model.GRUP_ISIM)}", fontNormal));
+                Content.AddElement(GrupIsim);
+
+                iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Boy.Add(new Chunk($": {MiktarFormat(Model.BOY, "MM")}", fontNormal));
+                Content.AddElement(Boy);
+
+                iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Miktar1.Add(new Chunk($": {MiktarFormat(Model.MIKTAR1, Model.OLCU_BR1)}", fontNormal));
+                Content.AddElement(Miktar1);
+
+                iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Miktar2.Add(new Chunk($": {MiktarFormat(Model.MIKTAR2, Model.OLCU_BR2)}", fontNormal));
+                Content.AddElement(Miktar2);
+
+                iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Kalinlik.Add(new Chunk($": {Model.KALINLIK}", fontNormal));
+                Content.AddElement(Kalinlik);
+
+                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Genislik.Add(new Chunk($": {Model.GENISLIK}", fontNormal));
+                Content.AddElement(Genislik);
+
+                iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Metraj.Add(new Chunk($": {MetrajFormat(Model.METRAJ, "M")}", fontNormal));
+                Content.AddElement(Metraj);
+
+                iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH/SAAT  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Tarih.Add(new Chunk($": {TarihFormat(Model.KAYITTARIHI)}", fontNormal));
+                Content.AddElement(Tarih);
+
+                iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR. ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                MakineOperator.Add(new Chunk($": {BosDegerKontrolu(Model.MAK_KODU)}/{BosDegerKontrolu(Model.KAYITYAPANKUL)}", fontNormal));
+                Content.AddElement(MakineOperator);
+
+                iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ     ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                Musteri.Add(new Chunk($": {BosDegerKontrolu(Model.SIPARIS_CARI)}", fontNormal));
+                Content.AddElement(Musteri);
+                Content.Go();
+
+                var qrGenerator = new QRCodeGenerator();
+                var qrCodeData = qrGenerator.CreateQrCode(Model.SERI_NO, QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+                System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
+
+                iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
+                QR.ScaleToFit(75, 75);
+                QR.Alignment = iTextSharp.text.Image.UNDERLYING;
+                QR.SetAbsolutePosition(195, 12);
+                document.Add(QR);
+
+                document.Close();
+                Memory.Close();
+
+                //Eğer önizleme kapalıysa direkt yazdır.
+                if (!ETIKET_ONIZLEME)
+                {
+                    //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
+                }
+
+                return ToBase64String(pdfPath);
+            }
+            catch(Exception e)
+            {
+                return e.Message;
+            }
         }
 
         public class BarkodModel
