@@ -1681,7 +1681,8 @@
     } else {
         DLList = [];
         DLListTop = [];
-    }
+                    }
+    var Cariler = @Html.Raw(Json.Encode(ViewBag.Cariler));
     for (let i = 1; i < tr.length; i++) {
         var adet = tr[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
         var oran = tr[i].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value;
@@ -1699,12 +1700,18 @@
         var kalinlik = document.getElementById("kalinlik").value;
         var kaplama = document.getElementById("kaplama").value;
         var kalite = document.getElementById("kalite").value;
-        var siparisno = "";
+        var siparisno, Sipkont = "";
+
+        var musteri = tr[i].getElementsByTagName("select")[tr[i].getElementsByTagName("select").length - 1].value;
+        if (Musteri != "EFECE GALVANİZ") {
+            var f = Cariler.filter(x => x.CARI_ISIM == musteri)[0];
+            siparisno = f.FISNO;
+            Sipkont = f.SIPKONT;
+        }
         var genislik = tr[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value;
         var refagirlik = tr[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value;
 
         var refstokolcusu = tr[i].getElementsByTagName("select")[3].value;
-        var musteri = tr[i].getElementsByTagName("select")[tr[i].getElementsByTagName("select").length - 1].value;
         var sonrefisemri = "-";
         for (let a = 0; a < adet; a++) {
             var refadet = tr[i].getElementsByTagName("td")[9].innerHTML;
@@ -2002,6 +2009,7 @@
                 document.getElementById("PBPivotTop").replaceChildren();
                 break;
         }
+        $("#tamamidiv").hide();
     }
     function c(val) {
         if (val.value == "DL") {
@@ -2179,7 +2187,7 @@
         $(".js-select").trigger("change");
         KaydetAktivite();
     }
-   
+
     function netsisaktar() {
         var TamamiAktarilsin = $("#tamami").is(":checked");
         $("#content").show();
@@ -2216,6 +2224,7 @@
             title: 'Veriler başarılı bir şekilde Netsis\'e aktarıldı.'
         });
         $("#seri").val(null);
+
         $("#tamamidiv").hide();
         document.getElementById("genislikalti").value = 0;
     },
@@ -2283,7 +2292,8 @@
                 title: 'Veriler başarılı bir şekilde Netsis\'e aktarıldı.'
             });
         }
-       
+
+        $("#tamamidiv").hide();
         $("#seri").val(null);
         document.getElementById("genislikalti").value = 0;
     },
@@ -2354,6 +2364,8 @@
             icon: 'success',
             title: 'Veriler başarılı bir şekilde Netsis\'e aktarıldı.'
         });
+
+        $("#tamamidiv").hide();
         $("#seri").val(null);
         document.getElementById("genislikalti").value = 0;
     },
@@ -2783,98 +2795,106 @@
         var Satirlar = Array.from(document.getElementById('BKTable').getElementsByTagName('tr')).slice(1);
         var SeriNoListe = @Html.Raw(Json.Encode(ViewBag.Seriler));
         var StokAdlari = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-        var IsEmirleri = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+        var IsEmirleri = null;
+            $.ajax({
+                url: `http://192.168.2.13:83/api/isemri/max`,
+                type: 'GET',
+                success: (data) => {
+                    IsEmirleri = data;
+                }
+            }).then(function () {
+                var OlusturulanIsEmirleri = [];
 
-        var OlusturulanIsEmirleri = [];
+                var BKPivotVeri = [];
+                var BKPivotToplamVeri = [];
 
-        var BKPivotVeri = [];
-        var BKPivotToplamVeri = [];
+                if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null") {
+                    BKPivotVeri = JSON.parse(localStorage.BKPivotVeri);
+                    BKPivotToplamVeri = JSON.parse(localStorage.BKPivotToplamVeri);
 
-            if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null") {
-                BKPivotVeri = JSON.parse(localStorage.BKPivotVeri);
-            BKPivotToplamVeri = JSON.parse(localStorage.BKPivotToplamVeri);
+                    BKPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
+                }
 
-                BKPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
-        }
+                var GuncelSeriData;
 
-        var GuncelSeriData;
+                $.ajax({
+                    url: `http://192.168.2.13:83/api/seri/exec/1`,
+                    type: 'GET',
+                    success: (data) => {
+                        GuncelSeriData = data[0];
+                    }
+                }).then(() => {
+                    Satirlar.forEach((item) => {
+                        var Makine = item.getElementsByTagName('select')[0].value;
+                        var Stok = item.getElementsByTagName('select')[1].value;
+                        //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
+                        //var Adet = parseInt(item.getElementsByTagName('input')[2].value);
+                        var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
+                        var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
+                        var Girdi1 = $("#seri").val();
+                        var Kalinlik = $("#kalinlik").val();
+                        var Kalite = $("#kalite").val();
+                        var Kaplama = $("#kaplama").val();
+                        var Hamoran = $("#hamoran").val();
 
-        $.ajax({
-            url: `http://192.168.2.13:83/api/seri/exec/1`,
-            type: 'GET',
-            success: (data) => {
-                GuncelSeriData = data[0];
-            }
-        }).then(() => {
-            Satirlar.forEach((item) => {
-                var Makine = item.getElementsByTagName('select')[0].value;
-                var Stok = item.getElementsByTagName('select')[1].value;
-                //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
-                //var Adet = parseInt(item.getElementsByTagName('input')[2].value);
-                var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
-                var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
-                var Girdi1 = $("#seri").val();
-                var Kalinlik = $("#kalinlik").val();
-                var Kalite = $("#kalite").val();
-                var Kaplama = $("#kaplama").val();
-                var Hamoran = $("#hamoran").val();
+                        var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
 
-                var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
+                        var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
+                        var Musteri = item.getElementsByTagName("select")[2].value;
 
-                var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
-                var Musteri = item.getElementsByTagName("select")[2].value;
+                        var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
-                    var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+                        if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                            SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                        }
 
-                    if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                        SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                        OlusturulanIsEmirleri.push(SonIsEmri);
+
+                        var Veri = {
+                            HAMORAN: Hamoran,
+                            ISEMRINO: SonIsEmri,
+                            STOKADI: StokAdi,
+                            KALINLIK: Kalinlik,
+                            KALITE: Kalite,
+                            KAPLAMA: Kaplama,
+                            GIRDI1: Girdi1,
+                            GIRDI2: GuncelSeriData.SERI_NO,
+                            ADET2: Adet2,
+                            AGIRLIK: Math.round(Agirlik)
+                        };
+
+                        var ToplamVeri = {
+                            STOKADI: StokAdi,
+                            ADET: Adet2,
+                            MUSTERI: Musteri,
+                            AGIRLIK: Math.round(Agirlik)
+                        };
+
+                        BKPivotVeri.push(Veri);
+                        BKPivotToplamVeri.push(ToplamVeri);
+
+                    })
+
+                    BKTableCreatePivot(BKPivotVeri);
+
+                    var fark = BKPivotVeri.length;
+
+                    if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null") {
+                        fark = fark - JSON.parse(localStorage.BKPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
                     }
 
-                    OlusturulanIsEmirleri.push(SonIsEmri);
+                    $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
 
-                var Veri = {
-                        HAMORAN:Hamoran,
-                        ISEMRINO: SonIsEmri,
-                        STOKADI: StokAdi,
-                        KALINLIK: Kalinlik,
-                        KALITE: Kalite,
-                        KAPLAMA: Kaplama,
-                        GIRDI1: Girdi1,
-                        GIRDI2: GuncelSeriData.SERI_NO,
-                        ADET2: Adet2,
-                        AGIRLIK: Math.round(Agirlik)
-                    };
+                    localStorage.setItem('BKPivotVeri', JSON.stringify(BKPivotVeri));
+                    localStorage.setItem('BKPivotToplamVeri', JSON.stringify(BKPivotToplamVeri));
 
-                    var ToplamVeri = {
-                        STOKADI: StokAdi ,
-                        ADET: Adet2,
-                        MUSTERI: Musteri,
-                        AGIRLIK: Math.round(Agirlik)
-                    };
-
-                    BKPivotVeri.push(Veri);
-                    BKPivotToplamVeri.push(ToplamVeri);
-
+                    BKTableCreatePivot2Data();
+                    $("#seri").val(null).trigger("input");
+                    $("#tamamidiv").show();
+                });
             })
 
-            BKTableCreatePivot(BKPivotVeri);
-           
-            var fark = BKPivotVeri.length;
 
-            if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null")
-            {
-                fark = fark - JSON.parse(localStorage.BKPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
-            }
-
-            $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
-
-            localStorage.setItem('BKPivotVeri', JSON.stringify(BKPivotVeri));
-            localStorage.setItem('BKPivotToplamVeri', JSON.stringify(BKPivotToplamVeri));
-
-            BKTableCreatePivot2Data();
-            $("#seri").val(null).trigger("input");
-            $("#tamamidiv").show();
-        });
     }
     function BKTableCreatePivot2Data() {
         var BKPivotToplamVeri = JSON.parse(localStorage.BKPivotToplamVeri);
@@ -2956,95 +2976,106 @@
         var Satirlar = Array.from(document.getElementById('PBTable').getElementsByTagName('tr')).slice(1);
         var SeriNoListe = @Html.Raw(Json.Encode(ViewBag.Seriler));
         var StokAdlari = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-        var IsEmirleri = @Html.Raw(Json.Encode(ViewBag.SIRANO));
-
-        var OlusturulanIsEmirleri = [];
-
-        var PBPivotVeri = [];
-        var PBPivotToplamVeri = [];
-
-            if (localStorage.PBPivotVeri != null && localStorage.PBPivotVeri != "null") {
-                PBPivotVeri = JSON.parse(localStorage.PBPivotVeri);
-                PBPivotToplamVeri = JSON.parse(localStorage.PBPivotToplamVeri);
-
-                PBPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
-             }
-
-        var GuncelSeriData;
-
+         var IsEmirleri = null;
         $.ajax({
-            url: `http://192.168.2.13:83/api/seri/exec/1`,
+            url: `http://192.168.2.13:83/api/isemri/max`,
             type: 'GET',
             success: (data) => {
-                GuncelSeriData = data[0];
+                IsEmirleri = data;
             }
-        }).then(() => {
-            Satirlar.forEach((item) => {
-                var Makine = item.getElementsByTagName('select')[0].value;
-                var Stok = item.getElementsByTagName('select')[1].value;
-                //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
-                //var Adet = parseInt(item.getElementsByTagName('input')[1].value);
-                var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
-                var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
-                var Girdi1 = $("#seri").val();
-                var Kalinlik = $("#kalinlik").val();
-                var Kalite = $("#kalite").val();
-                var Kaplama = $("#kaplama").val();
-                var Hamoran = $("#hamoran").val();
+        }).then(function () {
 
-                var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
 
-                var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
-                var Musteri = item.getElementsByTagName("select")[2].value;
+var OlusturulanIsEmirleri = [];
 
-                var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+var PBPivotVeri = [];
+var PBPivotToplamVeri = [];
 
-                if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                    SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                }
+    if (localStorage.PBPivotVeri != null && localStorage.PBPivotVeri != "null") {
+        PBPivotVeri = JSON.parse(localStorage.PBPivotVeri);
+        PBPivotToplamVeri = JSON.parse(localStorage.PBPivotToplamVeri);
 
-                OlusturulanIsEmirleri.push(SonIsEmri);
+        PBPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
+     }
 
-                var Veri = {
-                    HAMORAN: Hamoran,
-                    ISEMRINO: SonIsEmri,
-                    STOKADI: StokAdi,
-                    KALINLIK: Kalinlik,
-                    KALITE: Kalite,
-                    KAPLAMA: Kaplama,
-                    GIRDI1: Girdi1,
-                    GIRDI2: GuncelSeriData.SERI_NO,
-                    ADET2: Adet2,
-                    AGIRLIK: Math.round(Agirlik)
-                };
+var GuncelSeriData;
 
-                var ToplamVeri = {
-                    STOKADI: StokAdi,
-                    ADET: Adet2,
-                    MUSTERI: Musteri,
-                    AGIRLIK: Math.round(Agirlik)
-                };
+$.ajax({
+    url: `http://192.168.2.13:83/api/seri/exec/1`,
+    type: 'GET',
+    success: (data) => {
+        GuncelSeriData = data[0];
+    }
+}).then(() => {
+    Satirlar.forEach((item) => {
+        var Makine = item.getElementsByTagName('select')[0].value;
+        var Stok = item.getElementsByTagName('select')[1].value;
+        //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
+        //var Adet = parseInt(item.getElementsByTagName('input')[1].value);
+        var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
+        var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
+        var Girdi1 = $("#seri").val();
+        var Kalinlik = $("#kalinlik").val();
+        var Kalite = $("#kalite").val();
+        var Kaplama = $("#kaplama").val();
+        var Hamoran = $("#hamoran").val();
 
-                    PBPivotVeri.push(Veri);
-                    PBPivotToplamVeri.push(ToplamVeri);
+        var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
 
-            })
+        var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
+        var Musteri = item.getElementsByTagName("select")[2].value;
 
-            PBTableCreatePivot(PBPivotVeri);
-            var fark = PBPivotVeri.length;
+        var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
-            if (localStorage.PBPivotVeri != null && localStorage.PBPivotVeri != "null")
-            {
-                fark = fark - JSON.parse(localStorage.PBPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
-            }
+        if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+            SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+        }
 
-            $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
+        OlusturulanIsEmirleri.push(SonIsEmri);
 
-            localStorage.setItem('PBPivotVeri', JSON.stringify(PBPivotVeri));
-            localStorage.setItem('PBPivotToplamVeri', JSON.stringify(PBPivotToplamVeri));
+        var Veri = {
+            HAMORAN: Hamoran,
+            ISEMRINO: SonIsEmri,
+            STOKADI: StokAdi,
+            KALINLIK: Kalinlik,
+            KALITE: Kalite,
+            KAPLAMA: Kaplama,
+            GIRDI1: Girdi1,
+            GIRDI2: GuncelSeriData.SERI_NO,
+            ADET2: Adet2,
+            AGIRLIK: Math.round(Agirlik)
+        };
 
-            PBTableCreatePivot2Data();
-        });
+        var ToplamVeri = {
+            STOKADI: StokAdi,
+            ADET: Adet2,
+            MUSTERI: Musteri,
+            AGIRLIK: Math.round(Agirlik)
+        };
+
+            PBPivotVeri.push(Veri);
+            PBPivotToplamVeri.push(ToplamVeri);
+
+    })
+
+    PBTableCreatePivot(PBPivotVeri);
+    var fark = PBPivotVeri.length;
+
+    if (localStorage.PBPivotVeri != null && localStorage.PBPivotVeri != "null")
+    {
+        fark = fark - JSON.parse(localStorage.PBPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
+    }
+
+    $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
+
+    localStorage.setItem('PBPivotVeri', JSON.stringify(PBPivotVeri));
+    localStorage.setItem('PBPivotToplamVeri', JSON.stringify(PBPivotToplamVeri));
+
+    PBTableCreatePivot2Data();
+});
+
+        })
+
     }
     function PBTableCreatePivot2Data() {
         var PBPivotToplamVeri = JSON.parse(localStorage.PBPivotToplamVeri);
@@ -3125,97 +3156,106 @@
         var Satirlar = Array.from(document.getElementById('RFTable').getElementsByTagName('tr')).slice(1);
         var SeriNoListe = @Html.Raw(Json.Encode(ViewBag.Seriler));
         var StokAdlari = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-        var IsEmirleri = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+        var IsEmirleri = null;
+        $.ajax({
+            url: `http://192.168.2.13:83/api/isemri/max`,
+            type: 'GET',
+            success: (data) => {
+                IsEmirleri = data;
+            }
+        }).then(function () {
+            var OlusturulanIsEmirleri = [];
 
-        var OlusturulanIsEmirleri = [];
-
-        var RFPivotVeri = [];
-        var RFPivotToplamVeri = [];
+            var RFPivotVeri = [];
+            var RFPivotToplamVeri = [];
 
             if (localStorage.RFPivotVeri != null && localStorage.RFPivotVeri != "null") {
                 RFPivotVeri = JSON.parse(localStorage.RFPivotVeri);
-            RFPivotToplamVeri = JSON.parse(localStorage.RFPivotToplamVeri);
+                RFPivotToplamVeri = JSON.parse(localStorage.RFPivotToplamVeri);
 
                 RFPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
-        }
-
-        var GuncelSeriData;
-
-        $.ajax({
-            url: `http://192.168.2.13:83/api/seri/exec/1`,
-            type: 'GET',
-            success: (data) => {
-                GuncelSeriData = data[0];
             }
-        }).then(() => {
-            Satirlar.forEach((item) => {
-                var Makine = item.getElementsByTagName('select')[0].value;
-                var Stok = item.getElementsByTagName('select')[1].value;
-                //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
-                //var Adet = parseInt(item.getElementsByTagName('input')[1].value);
-                var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
-                var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
-                var Girdi1 = $("#seri").val();
-                var Kalinlik = $("#kalinlik").val();
-                var Kalite = $("#kalite").val();
-                var Kaplama = $("#kaplama").val();
-                var Hamoran = $("#hamoran").val();
 
-                var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
+            var GuncelSeriData;
 
-                var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
-                var Musteri = item.getElementsByTagName("select")[2].value;
-
-                var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
-
-                if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                    SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+            $.ajax({
+                url: `http://192.168.2.13:83/api/seri/exec/1`,
+                type: 'GET',
+                success: (data) => {
+                    GuncelSeriData = data[0];
                 }
+            }).then(() => {
+                Satirlar.forEach((item) => {
+                    var Makine = item.getElementsByTagName('select')[0].value;
+                    var Stok = item.getElementsByTagName('select')[1].value;
+                    //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
+                    //var Adet = parseInt(item.getElementsByTagName('input')[1].value);
+                    var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
+                    var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
+                    var Girdi1 = $("#seri").val();
+                    var Kalinlik = $("#kalinlik").val();
+                    var Kalite = $("#kalite").val();
+                    var Kaplama = $("#kaplama").val();
+                    var Hamoran = $("#hamoran").val();
 
-                OlusturulanIsEmirleri.push(SonIsEmri);
+                    var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
 
-                var Veri = {
-                    HAMORAN: Hamoran,
-                    ISEMRINO: SonIsEmri,
-                    STOKADI: StokAdi,
-                    KALINLIK: Kalinlik,
-                    KALITE: Kalite,
-                    KAPLAMA: Kaplama,
-                    GIRDI1: Girdi1,
-                    GIRDI2: GuncelSeriData.SERI_NO,
-                    ADET2: Adet2,
-                    AGIRLIK: Math.round(Agirlik)
-                };
+                    var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
+                    var Musteri = item.getElementsByTagName("select")[2].value;
 
-                var ToplamVeri = {
-                    STOKADI: StokAdi,
-                    ADET: Adet2,
-                    MUSTERI: Musteri,
-                    AGIRLIK: Math.round(Agirlik)
-                };
+                    var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+
+                    if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                        SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                    }
+
+                    OlusturulanIsEmirleri.push(SonIsEmri);
+
+                    var Veri = {
+                        HAMORAN: Hamoran,
+                        ISEMRINO: SonIsEmri,
+                        STOKADI: StokAdi,
+                        KALINLIK: Kalinlik,
+                        KALITE: Kalite,
+                        KAPLAMA: Kaplama,
+                        GIRDI1: Girdi1,
+                        GIRDI2: GuncelSeriData.SERI_NO,
+                        ADET2: Adet2,
+                        AGIRLIK: Math.round(Agirlik)
+                    };
+
+                    var ToplamVeri = {
+                        STOKADI: StokAdi,
+                        ADET: Adet2,
+                        MUSTERI: Musteri,
+                        AGIRLIK: Math.round(Agirlik)
+                    };
 
                     RFPivotVeri.push(Veri);
                     RFPivotToplamVeri.push(ToplamVeri);
 
-            })
+                })
 
-            RFTableCreatePivot(RFPivotVeri);
-            var fark = RFPivotVeri.length;
+                RFTableCreatePivot(RFPivotVeri);
+                var fark = RFPivotVeri.length;
 
-            if (localStorage.RFPivotVeri != null && localStorage.RFPivotVeri != "null")
-            {
-                fark = fark - JSON.parse(localStorage.RFPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
-            }
+                if (localStorage.RFPivotVeri != null && localStorage.RFPivotVeri != "null") {
+                    fark = fark - JSON.parse(localStorage.RFPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
+                }
 
-            $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
+                $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
 
-            localStorage.setItem('RFPivotVeri', JSON.stringify(RFPivotVeri));
-            localStorage.setItem('RFPivotToplamVeri', JSON.stringify(RFPivotToplamVeri));
+                localStorage.setItem('RFPivotVeri', JSON.stringify(RFPivotVeri));
+                localStorage.setItem('RFPivotToplamVeri', JSON.stringify(RFPivotToplamVeri));
 
-            RFTableCreatePivot2Data();
+                RFTableCreatePivot2Data();
 
-            $("#seri").val(null).trigger("input");
-        });
+                $("#seri").val(null).trigger("input");
+            });
+
+        })
+
+       
     }
     function RFTableCreatePivot2Data() {
         var RFPivotToplamVeri = JSON.parse(localStorage.RFPivotToplamVeri);
