@@ -29,6 +29,7 @@ using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml;
 using System.Globalization;
 using Newtonsoft.Json;
+using System.Runtime.ConstrainedExecution;
 
 namespace NOVA.Controllers
 {
@@ -843,7 +844,7 @@ namespace NOVA.Controllers
                 Kalinlik.Add(new Chunk($": {Data[i].KALINLIK}", fontNormal));
                 Content.AddElement(Kalinlik);
 
-                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENISLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
                 Genislik.Add(new Chunk($": {Data[i].GENISLIK}", fontNormal));
                 Content.AddElement(Genislik);
 
@@ -856,7 +857,7 @@ namespace NOVA.Controllers
                 Content.AddElement(Tarih);
 
                 iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR. ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                MakineOperator.Add(new Chunk($": {Data[i].MAK_KODU}/{BosDegerKontrolu(Data[i].KAYITYAPANKUL)}", fontNormal));
+                MakineOperator.Add(new Chunk($": {BosDegerKontrolu(Data[i].MAK_KODU)}/{BosDegerKontrolu(Data[i].KAYITYAPANKUL)}", fontNormal));
                 Content.AddElement(MakineOperator);
 
                 iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ     ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -888,8 +889,19 @@ namespace NOVA.Controllers
         }
 
         [HttpPost]
-        public string TrpzUretimKaydiSonuBarkodCiktisi(BarkodModel Model)
+        public string TrpzUretimKaydiSonuBarkodCiktisi(string BARKOD_NO, bool ETIKET_ONIZLEME)
         {
+
+            WebClient Client = new WebClient() { Encoding = Encoding.UTF8 };
+
+            string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + BARKOD_NO));
+            List<BarkodModel> Result = new JavaScriptSerializer().Deserialize<List<BarkodModel>>(Response);
+
+            if (Result.Count < 1)
+                return "";
+
+            BarkodModel Model = Result[0];
+
             System.Diagnostics.Debug.WriteLine("METRAJ: " + Model.METRAJ);
             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
@@ -942,12 +954,12 @@ namespace NOVA.Controllers
             Kalinlik.Add(new Chunk($": {Model.KALINLIK}", fontNormal));
             Content.AddElement(Kalinlik);
 
-            iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENISLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
             Genislik.Add(new Chunk($": {Model.GENISLIK}", fontNormal));
             Content.AddElement(Genislik);
 
             iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Metraj.Add(new Chunk($": {Model.METRAJ}", fontNormal));
+            Metraj.Add(new Chunk($": {MetrajFormat(Model.METRAJ, "M")}", fontNormal));
             Content.AddElement(Metraj);
 
             iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH/SAAT  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -955,7 +967,7 @@ namespace NOVA.Controllers
             Content.AddElement(Tarih);
 
             iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR. ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            MakineOperator.Add(new Chunk($": {Model.MAK_KODU}/{BosDegerKontrolu(Model.KAYITYAPANKUL)}", fontNormal));
+            MakineOperator.Add(new Chunk($": {BosDegerKontrolu(Model.MAK_KODU)}/{BosDegerKontrolu(Model.KAYITYAPANKUL)}", fontNormal));
             Content.AddElement(MakineOperator);
 
             iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ     ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -978,7 +990,7 @@ namespace NOVA.Controllers
             Memory.Close();
 
             //Eğer önizleme kapalıysa direkt yazdır.
-            if (!Model.ETIKET_ONIZLEME) 
+            if (!ETIKET_ONIZLEME) 
             {
                 //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
             }
@@ -1046,9 +1058,14 @@ namespace NOVA.Controllers
 
             return $"{Miktar.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
         }
-        private string MetrajFormat(double Metraj, string Olcubirimi)
+        private string MetrajFormat(double Metraj, string OlcuBirimi)
         {
-            return $"{Metraj.ToString("c", new CultureInfo("tr-TR"))} {Olcubirimi}";
+            if(Metraj == 0)
+            {
+                return "-";
+            }
+
+            return $"{Metraj.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
         }
         #endregion
         public List<HatModel> UretimTipi(string hatKodu)
