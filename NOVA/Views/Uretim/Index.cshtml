@@ -1135,9 +1135,9 @@
         var genislik = 0;
         var countResults = 0;
 
-        $(window).on('resize', () => {
-            change(constant);
-        });
+        //$(window).on('resize', () => {
+        //    change(constant);
+        //});
         var html5QrcodeScanner = null;
         $(document).ready(function () {
             $('#BekleyenIsEmirleriTable').bootstrapTable('destroy');
@@ -1427,7 +1427,7 @@
                 $("#scanner").hide();
                 $('#BarkodButton').hide();
                 $('.iefiltre').hide();
-
+                $('#makineler4').hide();
                 $('#UretimeGirenlerMakine').hide();
                 $('#UretimeGirenlerTablo').hide();
 
@@ -1472,7 +1472,7 @@
                 UretimListeYedek = [];
 
                 $('#UretimeGirenlerMakine').show();
-
+                $('#makineler4').hide();
                 if (html5QrcodeScanner != null) {
                     html5QrcodeScanner.clear();
                 }
@@ -1779,6 +1779,7 @@
             max = parseInt(value.dataset.top) - parseInt(value.dataset.kul)
             max2 = parseInt(value.dataset.mik2)
             var mik2 = parseInt(value.dataset.mik2)
+            var seri = value.dataset.isemri;
             $("#miktar11").val(null);
             $("#miktar22").val(null);
             $("#miktar22").prop("disabled", true);
@@ -1799,7 +1800,7 @@
 
             $("#etiket-onizleme").prop('checked', false);
             $("#etiket-onizleme").prop('disabled', false);
-
+            $('#normal').prop('checked', true);
             if (hat == 'DL01') {
                 $("#kontrolcol").show();
             } else if (hat == 'MH01') {
@@ -1816,7 +1817,7 @@
                 $("#miktar11").prop("disabled", false);
                 $("#miktar22").prop("disabled", true);
                 $("#kontrolcol").show();
-                $("#kontrol").prop('checked', true);
+                $("#kontrol").prop('checked', false);
                 $("#kontrol").prop('disabled', true);
             }
             $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0]);
@@ -2228,6 +2229,22 @@
                     <div class="centercontent" id="content2" style="display:unset">
                         <div class="heart"><img id="progress2" src="~/images/novasaydam.png" style="max-width:15vw;display:none" /></div>
                     </div>
+                    <div class="row float-end">
+                        <div class="col d-flex">
+                            <div class="btn-group me-2" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" class="btn-check" name="normal" id="normal" checked="checked" onclick="uretimGroupChange(this.value)" value="0" autocomplete="off">
+                                <label class="btn btn-outline-primary openlbl" for="normal">NORMAL</label>
+
+                                <input type="radio" class="btn-check" name="normal" id="ikincikalite" value="1" onclick="uretimGroupChange(this.value)" autocomplete="off">
+                                <label class="btn btn-outline-primary" for="ikincikalite">İKİNCİ KALİTE</label>
+
+                                <input type="radio" class="btn-check" name="normal" id="hurda" value="2" onclick="uretimGroupChange(this.value)" autocomplete="off">
+                                <label class="btn btn-outline-primary" for="hurda">HURDA</label>
+
+                            </div>
+                            <i onclick="showmodal2(this)" id="modalicon" class="bi bi-file-earmark-text-fill float-end" style="color:#17a2b8; font-size: x-large; cursor: pointer"></i>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col">
                             <div id="kontrolcol" style="display:none" class="form-check form-switch mb-2">
@@ -2243,10 +2260,9 @@
                                 <label class="form-check-label" for="etiket-onizleme">Etiket Önizle</label>
                             </div>
                         </div>
-                        <div class="col">
-                            <i onclick="showmodal2(this)" id="modalicon" class="bi bi-file-earmark-text-fill float-end" style="color:#17a2b8; font-size: x-large; cursor: pointer"></i>
-                        </div>
+                       
                     </div>
+
                     <div class="row text-center mt-1">
                         <div class="col">
                             <label class="modal-title" id="SiparisModalLabel" style="font-weight:bold">SATICI SİPARİŞ RAPORU</label>
@@ -2598,6 +2614,23 @@
 
             constant = 0;
 
+        }
+        function uretimGroupChange(value) {
+            switch (value) {
+                case '0':
+                    $('#miktar11').prop('disabled', false);
+                    $('#miktar22').prop('disabled', true);
+                    $('#miktar22').val(null);
+                    $('#miktar22').attr('onkeyup', 'keychange2()');
+                    break;
+                case '1':
+                    $('#miktar11').prop('disabled', true);
+                    $('#miktar22').prop('disabled', false);
+                    $('#miktar22').removeAttr('onkeyup');
+                    break;
+                case '2':
+                    break;
+            }
         }
 
     </script>

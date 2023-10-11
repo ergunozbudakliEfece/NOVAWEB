@@ -401,31 +401,45 @@ namespace NOVA.Controllers
                         uretim.BAKIYE_DEPO = 0;
                         netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                         var seri = netRS.FieldByName("SERINO").AsString;
+                        var ACIK1 ="";
+                        var ACIK2 = "";
+                        var SERI_NO_3 = "";
+                        var SERI_NO_4 = "";
                         if (seri == null)
                         {
                             uretim.OTOSERIURET();
                             uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
-                           
+                            seri = uretim.SeriOku(0).Seri1;
                         }
-
+                        
                         NetRS netRS1 = kernel.yeniNetRS(sirket);
                         uretim.FisUret();
                         uretim.Kaydet();
+                        
                         //if (miktarsabitle == "E")
                         //{
                         //    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + eskimiktar + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                         //}
 
                         //netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2=" + jsonList[i].MIKTAR2 + " WHERE  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                        netRS1.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[0].ISEMRINO + "'");
-                        seri = netRS1.FieldByName("SERI_NO").AsString;
+                        netRS1.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                        if (seri == null)
+                        {
+                            seri = netRS1.FieldByName("SERI_NO").AsString;
+                        }
+                       
                         if (i == 0)
                         {
                             karsi = netRS1.FieldByName("SERI_NO").AsString;
                         }
+                        netRS1.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='C' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
 
-
-
+                        var seri_no = netRS1.FieldByName("SERI_NO").AsString;
+                        netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + seri_no + "' AND GCKOD='G'");
+                        ACIK1 = netRS.FieldByName("ACIK1").AsString;
+                        ACIK2 = netRS.FieldByName("ACIK2").AsString;
+                        SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                        SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
 
                         //netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                         //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
@@ -435,14 +449,16 @@ namespace NOVA.Controllers
                         if (miktarsabitle != "E")
                         {
                             netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            netRS1.Ac("UPDATE TBLSERITRA SET ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G'");
                             if (hatkodu != "BK01")
                             {
                                 netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                                netRS1.Ac("UPDATE TBLSERITRA SET ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                             }
                         }
                         else
                         {
-                            netRS1.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            netRS1.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                             var karsi1 = netRS1.FieldByName("SERI_NO").AsString;
                             netRS1.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                             var referans = netRS1.FieldByName("REFISEMRINO").AsString;
@@ -452,7 +468,8 @@ namespace NOVA.Controllers
                             var miktar2 = netRS1.FieldByName("ACIKLAMA").AsString;
                             var yeni = miktar2.ToDouble() * oran;
                             netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi1 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-
+                            netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2='1' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='C'");
+                            netRS1.Ac("UPDATE TBLSERITRA SET ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G'");
                             netRS1.Ac("UPDATE TBLISEMRI SET MIKTAR='" + jsonList[i].KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
                             if (kontrol == true)
                             {
@@ -584,8 +601,12 @@ namespace NOVA.Controllers
                     //{
                     //    netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                     //}
-
-                    netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + ISEMRINO + "'");
+                    netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + SERI_NO + "' AND GCKOD='G'");
+                    var ACIK1 = netRS.FieldByName("ACIK1").AsString;
+                    var ACIK2 = netRS.FieldByName("ACIK2").AsString;
+                    var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                    var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
+                    netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "',ACIK1='"+ACIK1+"',ACIK2='"+ACIK2+ "',SERI_NO_3='"+ SERI_NO_3 + "',SERI_NO_4='"+ SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + ISEMRINO + "'");
 
                     netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
                     var referans = netRS.FieldByName("REFISEMRINO").AsString;
@@ -649,8 +670,13 @@ namespace NOVA.Controllers
                     Isemri.kayitDuzelt();
                     netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
                     var karsi = netRS.FieldByName("SERI_NO").AsString;
-                    netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE SIPNO='" + ISEMRINO + "'");
-                    netRS.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+                    netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + SERI_NO + "' AND GCKOD='G'");
+                    var ACIK1 = netRS.FieldByName("ACIK1").AsString;
+                    var ACIK2 = netRS.FieldByName("ACIK2").AsString;
+                    var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                    var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
+                    netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "',ACIK1='"+ACIK1+"',ACIK2='"+ACIK2+ "',SERI_NO_3='"+ SERI_NO_3 + "',SERI_NO_4='"+ SERI_NO_4 + "' WHERE SIPNO='" + ISEMRINO + "'");
+                    netRS.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "',ACIK1='"+ACIK1+"',ACIK2='"+ACIK2+ "',SERI_NO_3='"+ SERI_NO_3 + "',SERI_NO_4='"+ SERI_NO_4 + "' WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
                 }
                 catch (Exception e)
                 {
@@ -831,7 +857,7 @@ namespace NOVA.Controllers
                 Content.AddElement(GrupIsim);
 
                 iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Boy.Add(new Chunk($": {BosDegerKontrolu(((int)Data[i].BOY).ToString())} MM", fontNormal));
+                Boy.Add(new Chunk($": {DegerFormat((int)Data[i].BOY, "BOY")}", fontNormal));
                 Content.AddElement(Boy);
 
                 iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -847,7 +873,7 @@ namespace NOVA.Controllers
                 Content.AddElement(Kalinlik);
 
                 iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {BosDegerKontrolu(Data[i].GENISLIK)}", fontNormal));
+                Genislik.Add(new Chunk($": {DegerFormat(Data[i].GENISLIK,"GENISLIK")}", fontNormal));
                 Content.AddElement(Genislik);
 
                 iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -888,6 +914,22 @@ namespace NOVA.Controllers
             }
 
             return ToBase64String(pdfPath);
+        }
+        private string DegerFormat(double Deger,string Tip)
+        {
+            if (Deger == 0)
+            {
+
+                return "-";
+            }
+            else
+            {
+                if (Tip == "BOY")
+                    return Deger.ToString() + " MM";
+                else
+                    return Deger.ToString();
+            }
+            
         }
 
         [HttpPost]
@@ -943,7 +985,7 @@ namespace NOVA.Controllers
                 Content.AddElement(GrupIsim);
 
                 iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Boy.Add(new Chunk($": {BosDegerKontrolu(((int)Model.BOY).ToString())} MM", fontNormal));
+                Boy.Add(new Chunk($": {DegerFormat(((int)Model.BOY),"BOY")}", fontNormal));
                 Content.AddElement(Boy);
 
                 iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -959,7 +1001,7 @@ namespace NOVA.Controllers
                 Content.AddElement(Kalinlik);
 
                 iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {BosDegerKontrolu(Model.GENISLIK)}", fontNormal));
+                Genislik.Add(new Chunk($": {DegerFormat(Model.GENISLIK,"GENISLIK")}", fontNormal));
                 Content.AddElement(Genislik);
 
                 iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -1051,7 +1093,7 @@ namespace NOVA.Controllers
         }
         private string BosDegerKontrolu(double Deger)
         {
-            return Deger == 0 ? "-" : Deger.ToString();
+            return Deger == 0|| Deger == 0.0 ? "-" : Deger.ToString();
         }
         private string TarihFormat(string Tarih)
         {
