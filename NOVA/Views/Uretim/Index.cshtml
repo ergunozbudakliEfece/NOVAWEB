@@ -1578,6 +1578,31 @@
             }
             if (m1 > max) {
                 $("#miktar11").val(max)
+                
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'center',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+                if (bant) {
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Bant miktarından dolayı değer ' + max + ' olarak güncellendi'
+                    });
+                } else {
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Paket miktarından dolayı değer ' + max + ' olarak güncellendi'
+                    });
+                }
+                
+
             }
             if (m1 == 0) {
                 $("#miktar11").val(null);
@@ -1623,75 +1648,85 @@
         }
         var max = 0;
         var max2 = 0;
+        var bant = false;
         var listIsemri = null;
         var isemri="";
-        async function stokadichange(value) {
+         function stokadichange(value) {
             max = parseInt(value.dataset.top) - parseInt(value.dataset.kul)
             var stokkodu = value.dataset.stokkodu;
             var hat = value.dataset.hat;
             var genislik = value.dataset.genislik;
             var url = "http://192.168.2.13:83/api/ie/All/" + hat + "/" + stokkodu + "/" + (genislik == "null" ? "0" : genislik);
-
-            $.getJSON(url, function (data) {
-                listIsemri = data;
-            })
-            await Swal.fire({
-                title: value.innerHTML.split("<br>")[0] + '<i onclick="openother()" class="bi bi-file-earmark-text-fill float-end" style="color:#17a2b8;font-size:x-large;"></i>' + "<br>" + value.innerHTML.split("<br>")[1].split("<p")[0],
-                html: '<table id="tab1" class="table table-borderless inp"><tr><th>Miktar1</th><th>Miktar2</th></tr><tr><td><input onfocus="inputclick()" onkeyup="keychange1()" class="form-control text-center"  type="number"  id="miktar11" max="' + max + '" placeholder="Maksimum: ' + max.toLocaleString() + '"></td>' +
-                    '<td><input disabled class="form-control text-center" onfocus="inputclick()" onkeyup="keychange2()" type="number" id="miktar22  max="' + max2 + '" placeholder="Maksimum: ' + max2.toLocaleString() + '"></td></tr></table>',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Kaydet',
-                cancelButtonText: 'İptal',
-                showClass: {
-                    popup: 'pop2 animate__animated animate__zoomIn'
-                },
-                hideClass: {
-                    popup: 'pop2 animate__animated animate__zoomOut'
-                }
-            }).then((result) => {
-                $("#progress").show();
-                if (result.isConfirmed) {
-                    if (m1 != null) {
-                        var stokkodu = value.dataset.stokkodu;
-                        var hat = value.dataset.hat;
-                        var genislik = value.dataset.genislik;
-                        $.ajax({
-                            url: '@Url.Action("UretimSonuKaydı", "Uretim")',
-                            type: 'POST',
-                            data: { "hatkodu": hat, "stokkodu": stokkodu, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": m1.toString().trim(), "mik2": m2.toString().trim() },
-                            error: function (data) {
-                                alert(JSON.stringify(data));
-                                $("#progress").hide();
-                            },
-                            success: function (data) {
-                                $("#progress").hide();
-                                Swal.fire(
-                                    'Başarılı!',
-                                    'Kayıt başarılı',
-                                    'success'
-                                )
-                                document.getElementById(btnid).onclick();
-                            }
-                        })
-                    } else {
-                        Swal.fire(
-                            'Başarısız!',
-                            'Eksik bileşen',
-                            'warning'
-                        )
-                    }
-
-
-
-
+            $.getJSON("http://192.168.2.13:83/api/ie/bakiye/"+hat, function (d) {
+                if (max < parseFloat(d[0].MAK_KULLANILABILIR)) {
+                    max = d[0].MAK_KULLANILABILIR;
+                    bant = true;
                 } else {
+                    bant = false;
+                }
+            }).done(function () {
+                $.getJSON(url, function (data) {
+    listIsemri = data;
+})
+ Swal.fire({
+    title: value.innerHTML.split("<br>")[0] + '<i onclick="openother()" class="bi bi-file-earmark-text-fill float-end" style="color:#17a2b8;font-size:x-large;"></i>' + "<br>" + value.innerHTML.split("<br>")[1].split("<p")[0],
+    html: '<table id="tab1" class="table table-borderless inp"><tr><th>Miktar1</th><th>Miktar2</th></tr><tr><td><input onfocus="inputclick()" onkeyup="keychange1()" class="form-control text-center"  type="number"  id="miktar11" max="' + max + '" placeholder="Maksimum: ' + max.toLocaleString() + '"></td>' +
+        '<td><input disabled class="form-control text-center" onfocus="inputclick()" onkeyup="keychange2()" type="number" id="miktar22  max="' + max2 + '" placeholder="Maksimum: ' + max2.toLocaleString() + '"></td></tr></table>',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Kaydet',
+    cancelButtonText: 'İptal',
+    showClass: {
+        popup: 'pop2 animate__animated animate__zoomIn'
+    },
+    hideClass: {
+        popup: 'pop2 animate__animated animate__zoomOut'
+    }
+}).then((result) => {
+    $("#progress").show();
+    if (result.isConfirmed) {
+        if (m1 != null) {
+            var stokkodu = value.dataset.stokkodu;
+            var hat = value.dataset.hat;
+            var genislik = value.dataset.genislik;
+            $.ajax({
+                url: '@Url.Action("UretimSonuKaydı", "Uretim")',
+                type: 'POST',
+                data: { "hatkodu": hat, "stokkodu": stokkodu, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": m1.toString().trim(), "mik2": m2.toString().trim() },
+                error: function (data) {
+                    alert(JSON.stringify(data));
                     $("#progress").hide();
-                    constant = 0;
-                    $('body').trigger('click');
+                },
+                success: function (data) {
+                    $("#progress").hide();
+                    Swal.fire(
+                        'Başarılı!',
+                        'Kayıt başarılı',
+                        'success'
+                    )
+                    document.getElementById(btnid).onclick();
                 }
             })
+        } else {
+            Swal.fire(
+                'Başarısız!',
+                'Eksik bileşen',
+                'warning'
+            )
+        }
+
+
+
+
+    } else {
+        $("#progress").hide();
+        constant = 0;
+        $('body').trigger('click');
+    }
+})
+            })
+
 
         }
     </script>
@@ -1778,54 +1813,71 @@
             isemri=value.dataset.isemri;
             max = parseInt(value.dataset.top) - parseInt(value.dataset.kul)
             max2 = parseInt(value.dataset.mik2)
-            var mik2 = parseInt(value.dataset.mik2)
-            var seri = value.dataset.isemri;
-            $("#miktar11").val(null);
-            $("#miktar22").val(null);
-            $("#miktar22").prop("disabled", true);
-            $("#SiparisModal").modal('show');
-            $("#ModalSaveButton").prop("disabled",true)
-            $("#kontrol").prop('checked', true);
-            $("#etiketyazdir").prop('checked', true);
-
-            $("#etiketyazdir").change(() => {
-                var EtiketYazdir = $('#etiketyazdir').is(':checked');
-
-                $("#etiket-onizleme").prop('disabled', !EtiketYazdir);
-
-                if (EtiketYazdir == false) {
-                    $("#etiket-onizleme").prop('checked', false);
+            $.getJSON("http://192.168.2.13:83/api/ie/bakiye/" + hat, function (d) {
+                
+                if (max > parseFloat(d[0].MAK_KULLANILABILIR)) {
+                    max = d[0].MAK_KULLANILABILIR;
+                    bant = true;
+                } else {
+                    bant = false;
                 }
-            });
-
-            $("#etiket-onizleme").prop('checked', false);
-            $("#etiket-onizleme").prop('disabled', false);
-            $('#normal').prop('checked', true);
-            if (hat == 'DL01') {
-                $("#kontrolcol").show();
-            } else if (hat == 'MH01') {
-                $("#kontrolcol").show();
-                $("#miktar11").val(max);
-                $("#miktar22").val(mik2);
-                $("#miktar11").prop("disabled", true);
+            }).done(function () {
+                var mik2 = parseInt(value.dataset.mik2)
+                var seri = value.dataset.isemri;
+                $("#miktar11").val(null);
+                $("#miktar22").val(null);
                 $("#miktar22").prop("disabled", true);
+                $("#SiparisModal").modal('show');
+                $("#ModalSaveButton").prop("disabled", true)
                 $("#kontrol").prop('checked', true);
-                $("#kontrol").prop('disabled', true);
-                $("#ModalSaveButton").prop("disabled", false)
-            }
-            else {
-                $("#miktar11").prop("disabled", false);
-                $("#miktar22").prop("disabled", true);
-                $("#kontrolcol").show();
-                $("#kontrol").prop('checked', false);
-                $("#kontrol").prop('disabled', true);
-            }
-            $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0]);
-            $("#SiparisModalLabel2").html(value.innerHTML.split("<br>")[1].split("<p")[0]);
-            document.getElementById("modalicon").setAttribute("data-hat", hat);
-            document.getElementById("modalicon").setAttribute("data-stok", stok);
-            document.getElementById("modalicon").setAttribute("data-genislik", genislik);
-            constant = 0;
+                $("#etiketyazdir").prop('checked', true);
+
+                $("#etiketyazdir").change(() => {
+                    var EtiketYazdir = $('#etiketyazdir').is(':checked');
+
+                    $("#etiket-onizleme").prop('disabled', !EtiketYazdir);
+
+                    if (EtiketYazdir == false) {
+                        $("#etiket-onizleme").prop('checked', false);
+                    }
+                });
+
+                $("#etiket-onizleme").prop('checked', false);
+                $("#etiket-onizleme").prop('disabled', false);
+                $('#normal').prop('checked', true);
+                if (hat == 'DL01') {
+                    $("#kontrolcol").show();
+                } else if (hat == 'MH01') {
+                    $("#kontrolcol").show();
+                    $("#miktar11").val(max);
+                    $("#miktar22").val(mik2);
+                    $("#miktar11").prop("disabled", true);
+                    $("#miktar22").prop("disabled", true);
+                    $("#kontrol").prop('checked', true);
+                    $("#kontrol").prop('disabled', true);
+                    $("#ModalSaveButton").prop("disabled", false)
+                } else if(hat=='PB01'){
+                    $("#miktar11").prop("disabled", false);
+                    $("#miktar22").prop("disabled", true);
+                    $("#kontrolcol").show();
+                    $("#kontrol").prop('checked', false);
+                    $("#kontrol").prop('disabled', true);
+                }
+                else {
+                    $("#miktar11").prop("disabled", false);
+                    $("#miktar22").prop("disabled", true);
+                    $("#kontrolcol").show();
+                    $("#kontrol").prop('checked', true);
+                    $("#kontrol").prop('disabled', true);
+                }
+                $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0]);
+                $("#SiparisModalLabel2").html(value.innerHTML.split("<br>")[1].split("<p")[0]);
+                document.getElementById("modalicon").setAttribute("data-hat", hat);
+                document.getElementById("modalicon").setAttribute("data-stok", stok);
+                document.getElementById("modalicon").setAttribute("data-genislik", genislik);
+                constant = 0;
+            })
+            
 
 
         }
@@ -2077,13 +2129,14 @@
         var toplam = 0;
         var oldSipNo = null;
         function load(url) {
+            var kontrol = $("#kontrol").is(':checked');
             $.getJSON(url, function (data) {
                 var d = data;
 
                 $.ajax({
                     url: '@Url.Action("TrpzUretim", "Uretim")',
                     type: 'POST',
-                    data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2 },
+                    data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2,"kontrol":kontrol },
                     error: function (data) {
                         console.log(data);
                         $("#progress2").hide();
@@ -2103,7 +2156,7 @@
 
                                 if ($("#etiketyazdir").is(':checked'))
                                 {
-                                    TrpzBarkod(d[0].SERI_NO);
+                                    TrpzBarkod(data);
                                 }
                             }
                         } else {

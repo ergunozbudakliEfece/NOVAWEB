@@ -524,8 +524,9 @@ namespace NOVA.Controllers
 
             return Etiket;
         }
-        public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2)
+        public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2,bool kontrol)
         {
+            var seri = "";
             if (KULL_MIKTAR != "0")
             {
                 try
@@ -568,7 +569,7 @@ namespace NOVA.Controllers
 
                     netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
 
-                    var seri = netRS.FieldByName("SERINO").AsString;
+                    seri = netRS.FieldByName("SERINO").AsString;
 
                     if (seri == null)
                     {
@@ -630,6 +631,9 @@ namespace NOVA.Controllers
                         Isemri.Kapali = true;
                         Isemri.kayitDuzelt();
                     }
+                    netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+                    seri = netRS.FieldByName("SERI_NO").AsString;
+                   
 
                 }
                 catch (Exception exp)
@@ -663,13 +667,18 @@ namespace NOVA.Controllers
                                             LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
                     netRS = kernel.yeniNetRS(sirket);
-                    Isemri = kernel.yeniIsEmri(sirket);
-                    Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + ISEMRINO + "\'");
-                    Isemri.ReceteSaklansin = false;
-                    Isemri.Kapali = true;
-                    Isemri.kayitDuzelt();
+                    if (kontrol)
+                    {
+                        Isemri = kernel.yeniIsEmri(sirket);
+                        Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + ISEMRINO + "\'");
+                        Isemri.ReceteSaklansin = false;
+                        Isemri.Kapali = true;
+                        Isemri.kayitDuzelt();
+                    }
+                   
                     netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
                     var karsi = netRS.FieldByName("SERI_NO").AsString;
+                    seri = netRS.FieldByName("SERI_NO").AsString;
                     netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + SERI_NO + "' AND GCKOD='G'");
                     var ACIK1 = netRS.FieldByName("ACIK1").AsString;
                     var ACIK2 = netRS.FieldByName("ACIK2").AsString;
@@ -693,7 +702,7 @@ namespace NOVA.Controllers
 
             }
 
-            return $"Başarılı";
+            return seri;
         }
         [HttpPost]
         public ActionResult PostTRPZ(List<IsEmriModel2> isemri)
