@@ -2241,6 +2241,7 @@
                             if (data.trim().length > 0 && etiketOnizleme && etiket) {
                                 EtiketOnizle(data);
                             }
+                            console.log(data);
                         }
                     })
                 } else {
@@ -2675,14 +2676,21 @@
                     $('#miktar22').prop('disabled', true);
                     $('#miktar22').val(null);
                     $('#miktar22').attr('onkeyup', 'keychange2()');
-                    /*$('#ModalSaveButton').attr('onclick', 'ModalKaydet()')*/
+                    $('#ModalSaveButton').attr('onclick', 'ModalKaydet()')
+                    $("#etiketyazdir").prop('disabled', false);
+                    $("#etiket-onizleme").prop('disabled', false);
+                    $("#etiket-onizleme").prop('checked', false);
                     break;
                 case '1':
                     $('#miktar11').prop('disabled', true);
                     $('#miktar22').prop('disabled', false);
                     $('#miktar22').removeAttr('onkeyup');
                     $('#miktar22').attr('onkeyup', 'ikinciKaliteKeyUp()')
-                    /*$('#ModalSaveButton').attr('onclick', 'ikinciKaliteKaydet()')*/
+                    $('#ModalSaveButton').attr('onclick', 'ikinciKaliteKaydet()')
+                    $("#etiketyazdir").prop('disabled', true);
+                    $("#etiketyazdir").prop('checked', false);
+                    $("#etiket-onizleme").prop('disabled', true);
+                    $("#etiket-onizleme").prop('checked', false);
                     break;
                 case '2':
                     break;
@@ -2711,10 +2719,12 @@
         }
         function ikinciKaliteKaydet() {
             $("#progress2").show();
+
+            var stokadi = $('#SiparisModalLabel').html();
             $.ajax({
      url: '@Url.Action("IkinciKalite", "Uretim")',
      type: 'POST',
-     data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim() },
+     data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(),"stokadi":stokadi },
      error: function (data) {
          console.log(data);
          $("#progress2").hide();

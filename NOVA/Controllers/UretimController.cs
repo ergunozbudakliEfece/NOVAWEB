@@ -528,11 +528,12 @@ namespace NOVA.Controllers
 
             return Etiket;
         }
-        public string IkinciKalite(string hatkodu, string stokkodu, string genislik, string mik1, string mik2)
+        public string IkinciKalite(string hatkodu, string stokkodu, string genislik, string mik1, string mik2,string stokadi)
         {
+            var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
+            var Etiket = "";
             try
             {
-
 
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
                                             "TEST2022",
@@ -567,16 +568,38 @@ namespace NOVA.Controllers
                     for (var i = 0; i < jsonList.Count; i++)
                     {
                         netRS = kernel.yeniNetRS(sirket);
+                        netRS.Ac("SELECT * FROM TBLISEMRIREC WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+
+                        var miktarsabitle = netRS.FieldByName("MIKTARSABITLE").AsString;
+                        netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                        var eskimiktar = netRS.FieldByName("MIKTAR").AsFloat;
+                        if (jsonList[i].KULL_MIKTAR != eskimiktar)
+                        {
+                            if (miktarsabitle == "E")
+                            {
+                                netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + jsonList[i].KULL_MIKTAR + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                            }
+
+                        }
+
+                        
+
                         uretim = kernel.yeniSerbestUSK(sirket);
+                        uretim.IsEmrindenGetir(jsonList[i].ISEMRINO);
                         uretim.UretSon_FisNo = uretim.SonFisNumarasi("N");
-                        uretim.UretSon_Mamul = "IKINCIKALITE";
+
                         uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                         uretim.BelgeTipi = TBelgeTipi.btIsEmri;
                         uretim.Proje_Kodu = "1";
                         uretim.UretSon_Miktar = jsonList[i].KULL_MIKTAR;
-                       
-                        uretim.F_Yedek1 = jsonList[i].MIKTAR2;
-                        
+                        if (miktarsabitle == "E")
+                        {
+                            uretim.F_Yedek1 = 1;
+                        }
+                        else
+                        {
+                            uretim.F_Yedek1 = jsonList[i].MIKTAR2;
+                        }
 
                         uretim.UretSon_Depo = 45;
                         uretim.I_Yedek1 = 45;
@@ -586,17 +609,116 @@ namespace NOVA.Controllers
 
 
                         uretim.BAKIYE_DEPO = 0;
-                        uretim.OTOSERIURET();
-                        uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
-                        var seri = uretim.SeriOku(0).Seri1;
-                        
+                        netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                        var seri = netRS.FieldByName("SERINO").AsString;
+                        var ACIK1 = "";
+                        var ACIK2 = "";
+                        var SERI_NO_3 = "";
+                        var SERI_NO_4 = "";
+                        if (seri == null)
+                        {
+                            uretim.OTOSERIURET();
+                            uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
+                            seri = uretim.SeriOku(0).Seri1;
+                        }
 
+                        NetRS netRS1 = kernel.yeniNetRS(sirket);
                         uretim.FisUret();
                         uretim.Kaydet();
 
-                        
+                        //if (miktarsabitle == "E")
+                        //{
+                        //    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + eskimiktar + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                        //}
 
+                        //netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2=" + jsonList[i].MIKTAR2 + " WHERE  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                        netRS1.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                        if (seri == null)
+                        {
+                            seri = netRS1.FieldByName("SERI_NO").AsString;
+                        }
+
+                        if (i == 0)
+                        {
+                            karsi = netRS1.FieldByName("SERI_NO").AsString;
+                        }
+                        netRS1.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='C' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+
+                        var seri_no = netRS1.FieldByName("SERI_NO").AsString;
+                        netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + seri_no + "' AND GCKOD='G'");
+                        ACIK1 = netRS.FieldByName("ACIK1").AsString;
+                        ACIK2 = netRS.FieldByName("ACIK2").AsString;
+                        SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                        SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
+
+                        //netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                        //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
+                        //{
+                        //    netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                        //}
+                        if (miktarsabitle != "E")
+                        {
+                            netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            netRS1.Ac("UPDATE TBLSERITRA SET ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G'");
+                            if (hatkodu != "BK01")
+                            {
+                                netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                                netRS1.Ac("UPDATE TBLSERITRA SET ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            }
+                        }
+                        else
+                        {
+                            netRS1.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            var karsi1 = netRS1.FieldByName("SERI_NO").AsString;
+                            netRS1.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                            var referans = netRS1.FieldByName("REFISEMRINO").AsString;
+                            netRS1.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + referans + "'");
+                            var eski = netRS1.FieldByName("MIKTAR").AsFloat;
+                            var oran = jsonList[i].KULL_MIKTAR / eski;
+                            var miktar2 = netRS1.FieldByName("ACIKLAMA").AsString;
+                            var yeni = miktar2.ToDouble() * oran;
+                            netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi1 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2='1' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='C'");
+                            netRS1.Ac("UPDATE TBLSERITRA SET ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G'");
+                            netRS1.Ac("UPDATE TBLISEMRI SET MIKTAR='" + jsonList[i].KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
+                            
+                        }
+                        netRS.Ac("SELECT MAX(FISNO) AS FISNO FROM TEST2022..TBLSTHAR");
+                        var fisno= (netRS.FieldByName("FISNO").AsString.Substring(1, netRS.FieldByName("FISNO").AsString.Count()-1).ToInt()+1).ToString().PadLeft(14,'0');
+                        var fisno2 = (netRS.FieldByName("FISNO").AsString.Substring(1, netRS.FieldByName("FISNO").AsString.Count()-1).ToInt() + 2).ToString().PadLeft(14, '0');
+                        netRS.Ac("SELECT * FROM TEST2022..TBLSTHAR WHERE FISNO='"+ uretim.UretSon_FisNo + "'");
+                        var fiyat = netRS.FieldByName("STHAR_BF").AsString;
                         SeriNoListesi.Add(seri);
+                        StokHareket stok = kernel.yeniStokHareket(sirket);
+                        stok.Stok_Kodu = uretim.UretSon_Mamul;
+                        stok.Sthar_Aciklama = stokadi + "-" +uretim.UretSon_FisNo;
+                        stok.Fisno ="Z"+fisno;
+                        stok.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                        stok.Proje_Kodu = "1";
+                        stok.Sthar_Gckod = "C";
+                        stok.Sthar_Bf = fiyat.ToDouble();
+                        stok.Sthar_Nf = fiyat.ToDouble();
+                        stok.Sthar_Gcmik = jsonList[i].KULL_MIKTAR;
+                        stok.Sthar_Gcmik2= jsonList[i].MIKTAR2;
+                        stok.DEPO_KODU = 45;
+                        stok.Sthar_Htur = "A";
+                        stok.kayitYeni();
+                        StokHareket stok2 = kernel.yeniStokHareket(sirket);
+                        stok2.Stok_Kodu = "IKINCIKALITE";
+                        stok2.Sthar_Aciklama = stokadi+"-" + uretim.UretSon_FisNo;
+                        stok2.Fisno = "Z" + fisno2;
+                        stok2.Sthar_Bf = fiyat.ToDouble();
+                        stok2.Sthar_Nf = fiyat.ToDouble();
+                        stok2.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                        stok2.Proje_Kodu = "1";
+                        stok2.Sthar_Gckod = "G";
+                        stok2.Sthar_Gcmik = stok.Sthar_Gcmik;
+                        stok2.Sthar_Gcmik2 = jsonList[i].MIKTAR2;
+                        stok2.DEPO_KODU = 45;
+                        stok2.Sthar_Htur = "A";
+                        stok2.kayitYeni();
+
+
                     }
 
                     //Stok hareketleri gerçeklestiriliyor
@@ -609,8 +731,6 @@ namespace NOVA.Controllers
                     //return $"Hata: {exp}";
                 }
 
-
-                
             }
             catch (Exception e)
             {
@@ -626,6 +746,7 @@ namespace NOVA.Controllers
                 kernel.FreeNetsisLibrary();
                 Marshal.ReleaseComObject(kernel);
             }
+
             return "BAŞARILI";
         }
         public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2,bool kontrol)
@@ -1021,9 +1142,17 @@ namespace NOVA.Controllers
             document.Close();
             Memory.Close();
 
-            if (!ETIKET_ONIZLEME) 
+            if (!ETIKET_ONIZLEME)
             {
-                PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
+                try
+                {
+
+                    PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
             }
 
             return ToBase64String(pdfPath);
