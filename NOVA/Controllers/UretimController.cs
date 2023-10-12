@@ -502,7 +502,10 @@ namespace NOVA.Controllers
                         string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + item));
                         List<BarkodModel> Result = ser.Deserialize<List<BarkodModel>>(Response);
 
-                        Etiketler.Add(Result[0]);
+                        if(Result.Count > 0) 
+                        {
+                            Etiketler.Add(Result[0]);
+                        }
                     }
 
                     Etiket = UretimKaydiSonuBarkodCiktisi(Etiketler, onizleme);
