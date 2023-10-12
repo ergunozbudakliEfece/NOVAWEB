@@ -334,7 +334,7 @@ namespace NOVA.Controllers
                                             LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
 
                 List<string> SeriNoListesi = new List<string>();
-
+                
 
                 JavaScriptSerializer ser = new JavaScriptSerializer();
                 if (genislik == "")
@@ -373,7 +373,8 @@ namespace NOVA.Controllers
 
                         }
 
-
+                        StokHareket stok = kernel.yeniStokHareket(sirket);
+                        
                         uretim = kernel.yeniSerbestUSK(sirket);
                         uretim.IsEmrindenGetir(jsonList[i].ISEMRINO);
                         uretim.UretSon_FisNo = uretim.SonFisNumarasi("N");
@@ -523,6 +524,106 @@ namespace NOVA.Controllers
             }
 
             return Etiket;
+        }
+        public string IkinciKalite(string hatkodu, string stokkodu, string genislik, string mik1, string mik2)
+        {
+            try
+            {
+
+
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+
+                List<string> SeriNoListesi = new List<string>();
+
+
+                JavaScriptSerializer ser = new JavaScriptSerializer();
+                if (genislik == "")
+                {
+                    genislik = "0";
+                }
+                var apiUrl2 = "http://192.168.2.13:83/api/ie/USK/" + hatkodu + "/" + stokkodu + "/0/" + mik1 + "/" + mik2 + "/" + genislik;
+
+                //Connect API
+                Uri url2 = new Uri(apiUrl2);
+                WebClient client = new WebClient();
+                client.Encoding = System.Text.Encoding.UTF8;
+
+                var json2 = client.DownloadString(url2);
+                List<USKModel> jsonList = ser.Deserialize<List<USKModel>>(json2);
+
+                try
+                {
+
+                    var ilkseri = "";
+                    var karsi = "";
+                    for (var i = 0; i < jsonList.Count; i++)
+                    {
+                        netRS = kernel.yeniNetRS(sirket);
+                        uretim = kernel.yeniSerbestUSK(sirket);
+                        uretim.UretSon_FisNo = uretim.SonFisNumarasi("N");
+                        uretim.UretSon_Mamul = "IKINCIKALITE";
+                        uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                        uretim.BelgeTipi = TBelgeTipi.btIsEmri;
+                        uretim.Proje_Kodu = "1";
+                        uretim.UretSon_Miktar = jsonList[i].KULL_MIKTAR;
+                       
+                        uretim.F_Yedek1 = jsonList[i].MIKTAR2;
+                        
+
+                        uretim.UretSon_Depo = 45;
+                        uretim.I_Yedek1 = 45;
+                        uretim.I_Yedek2 = 0;
+                        uretim.OTO_YMAM_GIRDI_CIKTI = true;
+                        uretim.OTO_YMAM_STOK_KULLAN = false;
+
+
+                        uretim.BAKIYE_DEPO = 0;
+                        uretim.OTOSERIURET();
+                        uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
+                        var seri = uretim.SeriOku(0).Seri1;
+                        
+
+                        uretim.FisUret();
+                        uretim.Kaydet();
+
+                        
+
+                        SeriNoListesi.Add(seri);
+                    }
+
+                    //Stok hareketleri gerçeklestiriliyor
+                    //uretim.kayitFisNoIleUretimSonu(uretim.UretSon_FisNo, TUretSonDepo.usdAktif,false,false);
+                }
+                catch (Exception e)
+                {
+                    var exp = e.Message;
+                    System.Diagnostics.Debug.Write(exp);
+                    //return $"Hata: {exp}";
+                }
+
+
+                
+            }
+            catch (Exception e)
+            {
+                var exp = e.Message;
+                Console.WriteLine(e.Message);
+                //return $"Hata: {exp}";
+            }
+            finally
+            {
+                sirket.LogOff();
+                Marshal.ReleaseComObject(uretim);
+                Marshal.ReleaseComObject(sirket);
+                kernel.FreeNetsisLibrary();
+                Marshal.ReleaseComObject(kernel);
+            }
+            return "BAŞARILI";
         }
         public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2,bool kontrol)
         {
@@ -919,7 +1020,7 @@ namespace NOVA.Controllers
 
             if (!ETIKET_ONIZLEME) 
             {
-                //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
+                PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
             }
 
             return ToBase64String(pdfPath);

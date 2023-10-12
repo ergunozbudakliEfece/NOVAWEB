@@ -17,14 +17,27 @@
     <link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
-
+    <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
+    
     <style>
+        .thead {
+            position: sticky !important;
+            top: 0 !important;
+        }
+
+        .layout-wrapper, .layout-container {
+            width: 90% !important;
+            display: flex !important;
+            flex: 1 1 auto !important;
+            align-items: stretch !important;
+        }
+
         .th-inner {
             white-space: unset !important;
         }
 
-        #qr-reader1__dashboard_section{
-            padding:0 !important
+        #qr-reader1__dashboard_section {
+            padding: 0 !important
         }
 
         #html5-qrcode-button-camera-stop {
@@ -241,9 +254,7 @@
             }
         }
 
-        .fixed-table-pagination {
-            display: none !important;
-        }
+
 
         .kare {
             width: 15px;
@@ -268,9 +279,20 @@
                 height: 945px;
             }
         }
+
         @@media screen and (min-width:801px) and (max-width:1199px) {
             #qr-reader1 {
                 margin-top: 35% !important
+            }
+        }
+
+        @@media screen and (max-width:1201px) {
+            #qr-reader1 {
+                margin-top: 35% !important
+            }
+
+            .tableClass {
+                max-height: 1600px !important;
             }
         }
     </style>
@@ -289,6 +311,14 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 5;
+        }
+
+        body {
+            padding: 0 0 0 4rem !important;
+        }
+
+        .foot {
+            display: none !important;
         }
     </style>
 </head>
@@ -324,7 +354,7 @@
                     <div class="col d-flex justify-content-center align-items-center">
                         <div id="BekleyenIsEmirleriMakine" style="max-width: 65vw; width: 65vw; display: none;"> </div>
                         <div id="UretimeGirenlerMakine" style="max-width: 65vw; width: 65vw; display: none;"> </div>
-                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group" id="makineler">
+                        <div class="btn-group" style="max-width: 65vw; width: 65vw; grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) ); display: grid; grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group" id="makineler">
 
                         </div>
                         <div class="btn-group" role="group" aria-label="Basic radio toggle button group" id="makineler1" style="display:none">
@@ -375,118 +405,128 @@
                     </div>
 
                     <div class="col-sm-auto">
-                        <table id="UretimListeTable"
-                               class="table"
-                               data-show-refresh="false"
-                               data-show-toggle="false"
-                               data-show-fullscreen="false"
-                               data-show-columns="false"
-                               data-show-columns-toggle-all="false"
-                               data-detail-view="false"
-                               data-detail-view-by-click="false"
-                               data-show-export="false"
-                               data-click-to-select="false"
-                               data-show-pagination-switch="false"
-                               data-pagination="false"
-                               data-show-footer="false"
-                               data-mobile-responsive="false"
-                               data-locale="tr-TR">
-                            <thead>
-                                <tr>
-                                    <th data-formatter="oranFormatter4" data-field="ORAN" data-halign="center" data-align="center">GİRDİLER</th>
-                                </tr>
-                            </thead>
-                        </table>
+                        <div class="tableClass" style="max-height:680px">
+                            <table id="UretimListeTable"
+                                   class="table"
+                                   data-show-refresh="false"
+                                   data-show-toggle="false"
+                                   data-show-fullscreen="false"
+                                   data-show-columns="false"
+                                   data-show-columns-toggle-all="false"
+                                   data-detail-view="false"
+                                   data-detail-view-by-click="false"
+                                   data-show-export="false"
+                                   data-click-to-select="false"
+                                   data-show-pagination-switch="false"
+                                   data-pagination="false"
+                                   data-show-footer="false"
+                                   data-mobile-responsive="false"
+                                   data-locale="tr-TR"
+                                   data-sticky-header="true">
+                                <thead>
+                                    <tr>
+                                        <th data-formatter="oranFormatter4" data-field="ORAN" data-halign="center" data-align="center">GİRDİLER</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="BekleyenIsEmirleriTablo">
                     <div class="table-responsive">
-                        <table id="BekleyenIsEmirleriTable"
-                               class="table"
-                               data-toolbar="#toolbar1"
-                               data-search="true"
-                               data-show-refresh="false"
-                               data-show-toggle="false"
-                               data-show-fullscreen="false"
-                               data-show-columns="false"
-                               data-show-columns-toggle-all="false"
-                               data-detail-view="true"
-                               data-detail-view-by-click="true"
-                               data-show-export="false"
-                               data-click-to-select="true"
-                               data-minimum-count-columns="2"
-                               data-show-pagination-switch="false"
-                               data-pagination="false"
-                               data-id-field="id"
-                               data-show-footer="false"
-                               data-mobile-responsive="true"
-                               data-row-style="rowFormatter"
-                               data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
-                               data-locale="tr-TR">
-                            <thead>
-                                <tr>
-                                    <th data-field="TARIH" data-halign="center" data-align="center" data-sortable="true">TARİH</th>
-                                    <th data-field="HAM_SERINO" data-halign="center" data-align="center" data-sortable="true">HAM SERINO</th>
-                                    <th data-field="HAM_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">HAM STOK KODU</th>
-                                    <th data-field="HAM_ADI" data-halign="center" data-align="center" data-sortable="true">HAM ADI</th>
-                                    <th data-field="HAM_DETAY" data-width="150" data-halign="center" data-align="center" data-sortable="true">HAM DETAY</th>
-                                    <th data-field="HAM_GENISLIK" data-halign="center" data-align="center" data-sortable="true">HAM GENISLIK</th>
-                                    <th data-field="HAM_KALINLIK" data-halign="center" data-align="center" data-sortable="true">HAM KALINLIK</th>
-                                    <th data-field="HAM_FIRMA_SERI" data-halign="center" data-align="center" data-sortable="true">HAM FIRMA SERI</th>
-                                    <th data-field="ACIKLAMA_4" data-halign="center" data-align="center" data-sortable="true">ACIKLAMA 4</th>
-                                    <th data-field="ACIKLAMA_5" data-halign="center" data-align="center" data-sortable="true">ACIKLAMA 5</th>
-                                    <th data-field="HAM_KALITE" data-halign="center" data-align="center" data-sortable="true">HAM KALITE</th>
-                                    <th data-field="HAM_KAP_KALINLIK" data-halign="center" data-align="center" data-sortable="true">HAM KAP KALINLIK</th>
-                                    <th data-field="HAM_MIKTAR" data-halign="center" data-align="center" data-sortable="true">HAM MIKTAR</th>
-                                    <th data-field="USTISEMRI" data-halign="center" data-align="center" data-sortable="true">USTISEMRI</th>
-                                    <th data-field="ALT_ISEMRI" data-halign="center" data-align="center" data-sortable="true">ALT ISEMRI</th>
-                                    <th data-field="SIRA" data-halign="center" data-align="center" data-sortable="true">SIRA</th>
-                                    <th data-field="URT_SERINO" data-halign="center" data-align="center" data-sortable="true">URT SERINO</th>
-                                    <th data-field="URT_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">URT STOK KODU</th>
-                                    <th data-field="URT_STOK_ADI" data-halign="center" data-align="center" data-sortable="true">URT STOK ADI</th>
-                                    <th data-field="URT_GENISLIK" data-halign="center" data-align="center" data-sortable="true">URT GENISLIK</th>
-                                    <th data-field="IE_MIKTAR2" data-halign="center" data-align="center" data-sortable="true" data-formatter="MiktarFormatter">IE MIKTAR2</th>
-                                    <th data-field="IE_MIKTAR" data-halign="center" data-align="center" data-sortable="true" data-formatter="MiktarFormatter">IE MIKTAR</th>
-                                    <th data-field="REFISEMRINO" data-halign="center" data-align="center" data-sortable="true">REFISEMRINO</th>
-                                    <th data-field="REF_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">REF_STOK_KODU</th>
-                                    <th data-field="REF_STOK_ADI" data-halign="center" data-align="center" data-sortable="true">REF_STOK_ADI</th>
-                                </tr>
-                            </thead>
-                        </table>
+                        <div class="tableClass" style="max-height:680px">
+                            <table id="BekleyenIsEmirleriTable"
+                                   class="table"
+                                   data-toolbar="#toolbar1"
+                                   data-search="true"
+                                   data-show-refresh="false"
+                                   data-show-toggle="false"
+                                   data-show-fullscreen="false"
+                                   data-show-columns="false"
+                                   data-show-columns-toggle-all="false"
+                                   data-detail-view="true"
+                                   data-detail-view-by-click="true"
+                                   data-show-export="false"
+                                   data-click-to-select="true"
+                                   data-minimum-count-columns="2"
+                                   data-show-pagination-switch="false"
+                                   data-pagination="false"
+                                   data-id-field="id"
+                                   data-show-footer="false"
+                                   data-mobile-responsive="true"
+                                   data-row-style="rowFormatter"
+                                   data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
+                                   data-locale="tr-TR"
+                                   data-sticky-header="true">
+                                <thead>
+                                    <tr>
+                                        <th data-field="TARIH" data-halign="center" data-align="center" data-sortable="true">TARİH</th>
+                                        <th data-field="HAM_SERINO" data-halign="center" data-align="center" data-sortable="true">HAM SERINO</th>
+                                        <th data-field="HAM_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">HAM STOK KODU</th>
+                                        <th data-field="HAM_ADI" data-halign="center" data-align="center" data-sortable="true">HAM ADI</th>
+                                        <th data-field="HAM_DETAY" data-width="150" data-halign="center" data-align="center" data-sortable="true">HAM DETAY</th>
+                                        <th data-field="HAM_GENISLIK" data-halign="center" data-align="center" data-sortable="true">HAM GENISLIK</th>
+                                        <th data-field="HAM_KALINLIK" data-halign="center" data-align="center" data-sortable="true">HAM KALINLIK</th>
+                                        <th data-field="HAM_FIRMA_SERI" data-halign="center" data-align="center" data-sortable="true">HAM FIRMA SERI</th>
+                                        <th data-field="ACIKLAMA_4" data-halign="center" data-align="center" data-sortable="true">ACIKLAMA 4</th>
+                                        <th data-field="ACIKLAMA_5" data-halign="center" data-align="center" data-sortable="true">ACIKLAMA 5</th>
+                                        <th data-field="HAM_KALITE" data-halign="center" data-align="center" data-sortable="true">HAM KALITE</th>
+                                        <th data-field="HAM_KAP_KALINLIK" data-halign="center" data-align="center" data-sortable="true">HAM KAP KALINLIK</th>
+                                        <th data-field="HAM_MIKTAR" data-halign="center" data-align="center" data-sortable="true">HAM MIKTAR</th>
+                                        <th data-field="USTISEMRI" data-halign="center" data-align="center" data-sortable="true">USTISEMRI</th>
+                                        <th data-field="ALT_ISEMRI" data-halign="center" data-align="center" data-sortable="true">ALT ISEMRI</th>
+                                        <th data-field="SIRA" data-halign="center" data-align="center" data-sortable="true">SIRA</th>
+                                        <th data-field="URT_SERINO" data-halign="center" data-align="center" data-sortable="true">URT SERINO</th>
+                                        <th data-field="URT_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">URT STOK KODU</th>
+                                        <th data-field="URT_STOK_ADI" data-halign="center" data-align="center" data-sortable="true">URT STOK ADI</th>
+                                        <th data-field="URT_GENISLIK" data-halign="center" data-align="center" data-sortable="true">URT GENISLIK</th>
+                                        <th data-field="IE_MIKTAR2" data-halign="center" data-align="center" data-sortable="true" data-formatter="MiktarFormatter">IE MIKTAR2</th>
+                                        <th data-field="IE_MIKTAR" data-halign="center" data-align="center" data-sortable="true" data-formatter="MiktarFormatter">IE MIKTAR</th>
+                                        <th data-field="REFISEMRINO" data-halign="center" data-align="center" data-sortable="true">REFISEMRINO</th>
+                                        <th data-field="REF_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">REF_STOK_KODU</th>
+                                        <th data-field="REF_STOK_ADI" data-halign="center" data-align="center" data-sortable="true">REF_STOK_ADI</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="UretimeGirenlerTablo">
                     <div class="table-responsive">
-                        <table id="UretimeGirenlerTable"
-                               class="table"
-                               data-search="true"
-                               data-show-refresh="false"
-                               data-show-toggle="false"
-                               data-show-fullscreen="false"
-                               data-show-columns="false"
-                               data-show-columns-toggle-all="false"
-                               data-detail-view="false"
-                               data-detail-view-by-click="false"
-                               data-show-export="false"
-                               data-click-to-select="true"
-                               data-show-pagination-switch="false"
-                               data-pagination="false"
-                               data-id-field="id"
-                               data-show-footer="false"
-                               data-mobile-responsive="true"
-                               data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
-                               data-locale="tr-TR">
-                            <thead>
-                                <tr>
-                                    <th data-formatter="oranFormatter3" data-width="50" data-field="ORAN" data-halign="center" data-align="center">%</th>
-                                    <th data-field="SERI_NO" data-halign="center" data-align="center">SERI_NO</th>
-                                    <th data-formatter="intFormatter" data-field="SERI_MIKTAR" data-halign="center" data-align="center">SERI_MIKTAR</th>
-                                    <th data-formatter="intFormatter" data-field="URETILEN" data-halign="center" data-align="center">URETILEN</th>
-                                    <th data-formatter="intFormatter" data-field="SERI_BAKIYE" data-halign="center" data-align="center">SERI_BAKIYE</th>
-                                    <th data-formatter="oranFormatter2" data-field="ORAN" data-halign="center" data-align="center">ORAN</th>
-                                </tr>
-                            </thead>
-                        </table>
+                        <div class="tableClass" style="max-height:680px">
+                            <table id="UretimeGirenlerTable"
+                                   class="table"
+                                   data-search="true"
+                                   data-show-refresh="false"
+                                   data-show-toggle="false"
+                                   data-show-fullscreen="false"
+                                   data-show-columns="false"
+                                   data-show-columns-toggle-all="false"
+                                   data-detail-view="false"
+                                   data-detail-view-by-click="false"
+                                   data-show-export="false"
+                                   data-click-to-select="true"
+                                   data-show-pagination-switch="false"
+                                   data-pagination="true"
+                                   data-id-field="id"
+                                   data-show-footer="false"
+                                   data-mobile-responsive="true"
+                                   data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
+                                   data-locale="tr-TR"
+                                   data-page-size="20"
+                                   data-sticky-header="true">
+                                <thead>
+                                    <tr>
+                                        <th data-formatter="oranFormatter3" data-width="50" data-field="ORAN" data-halign="center" data-align="center">%</th>
+                                        <th data-field="SERI_NO" data-halign="center" data-align="center">SERI_NO</th>
+                                        <th data-formatter="intFormatter" data-field="SERI_MIKTAR" data-halign="center" data-align="center">SERI_MIKTAR</th>
+                                        <th data-formatter="intFormatter" data-field="URETILEN" data-halign="center" data-align="center">URETILEN</th>
+                                        <th data-formatter="intFormatter" data-field="SERI_BAKIYE" data-halign="center" data-align="center">SERI_BAKIYE</th>
+                                        <th data-formatter="oranFormatter2" data-field="ORAN" data-halign="center" data-align="center">ORAN</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
 
                 </div>
@@ -1170,52 +1210,6 @@
                     label.innerHTML = data[i].HAT_KODU;
                     document.getElementById("makineler").appendChild(input);
                     document.getElementById("makineler").appendChild(label);
-                    if (i / 4 < 1) {
-                        var input1 = document.createElement("input");
-                        input1.setAttribute("type", "radio");
-                        input1.className = "btn-check";
-                        input1.setAttribute("name", "btnradio");
-                        input1.id = "btnradiomobile" + i + 2 + "";
-                        input1.setAttribute("autocomplete", "off");
-                        input1.setAttribute("onclick", "c(this)");
-                        input1.value = data[i].HAT_KODU;
-                        var label1 = document.createElement("label");
-                        label1.className = "btn btn-outline-primary";
-                        label1.setAttribute("for", input.id);
-                        label1.innerHTML = data[i].HAT_KODU;
-                        document.getElementById("makineler1").appendChild(input1);
-                        document.getElementById("makineler1").appendChild(label1);
-                    } else if (i / 4 <= 2 && i / 4 > 1) {
-                        var input1 = document.createElement("input");
-                        input1.setAttribute("type", "radio");
-                        input1.className = "btn-check";
-                        input1.setAttribute("name", "btnradio");
-                        input1.id = "btnradiomobile" + i + 2 + "";
-                        input1.setAttribute("autocomplete", "off");
-                        input1.setAttribute("onclick", "c(this)");
-                        input1.value = data[i].HAT_KODU;
-                        var label1 = document.createElement("label");
-                        label1.className = "btn btn-outline-primary";
-                        label1.setAttribute("for", input.id);
-                        label1.innerHTML = data[i].HAT_KODU;
-                        document.getElementById("makineler2").appendChild(input1);
-                        document.getElementById("makineler2").appendChild(label1);
-                    } else {
-                        var input1 = document.createElement("input");
-                        input1.setAttribute("type", "radio");
-                        input1.className = "btn-check";
-                        input1.setAttribute("name", "btnradio");
-                        input1.id = "btnradiomobile" + i + 2 + "";
-                        input1.setAttribute("autocomplete", "off");
-                        input1.setAttribute("onclick", "c(this)");
-                        input1.value = data[i].HAT_KODU;
-                        var label1 = document.createElement("label");
-                        label1.className = "btn btn-outline-primary";
-                        label1.setAttribute("for", input.id);
-                        label1.innerHTML = data[i].HAT_KODU;
-                        document.getElementById("makineler3").appendChild(input1);
-                        document.getElementById("makineler3").appendChild(label1);
-                    }
                     var inputnew = document.createElement("input");
                     inputnew.setAttribute("type", "radio");
                     inputnew.className = "btn-check";
@@ -1852,6 +1846,7 @@
                 $('#normal').prop('checked', true);
                 if (hat == 'DL01') {
                     $("#kontrolcol").show();
+                    $("#kontrol").prop('disabled', false);
                 } else if (hat == 'MH01') {
                     $("#kontrolcol").show();
                     $("#miktar11").val(max);
@@ -2680,17 +2675,59 @@
                     $('#miktar22').prop('disabled', true);
                     $('#miktar22').val(null);
                     $('#miktar22').attr('onkeyup', 'keychange2()');
+                    /*$('#ModalSaveButton').attr('onclick', 'ModalKaydet()')*/
                     break;
                 case '1':
                     $('#miktar11').prop('disabled', true);
                     $('#miktar22').prop('disabled', false);
                     $('#miktar22').removeAttr('onkeyup');
+                    $('#miktar22').attr('onkeyup', 'ikinciKaliteKeyUp()')
+                    /*$('#ModalSaveButton').attr('onclick', 'ikinciKaliteKaydet()')*/
                     break;
                 case '2':
                     break;
             }
         }
+        function ikinciKaliteKeyUp() {
+            var m2 = $('#miktar22').val();
+            if (m2 != null && m2 != '') {
+                $.getJSON("http://192.168.2.13:83/api/ie/ikinci/" + hat + "/" + stok + "/0/" + m2 + "/0", function (data) {
+                    if (data.length<2) {
+                        $('#miktar11').val(data[0].KULL_MIKTAR)
+                    } else {
+                        var sum = 0;
+                        for (let i = 0; i < data.length; i++) {
+                            sum += data[i].KULL_MIKTAR
+                        }
+                        $('#miktar11').val(sum)
+                    }
+                    $('#ModalSaveButton').prop("disabled", false);
+                })
+            } else {
+                $('#miktar11').val(null)
+                $('#ModalSaveButton').prop("disabled", true);
+            }
 
+        }
+        function ikinciKaliteKaydet() {
+            $("#progress2").show();
+            $.ajax({
+     url: '@Url.Action("IkinciKalite", "Uretim")',
+     type: 'POST',
+     data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim() },
+     error: function (data) {
+         console.log(data);
+         $("#progress2").hide();
+         $("#SiparisModal").modal('hide');
+     },
+     success: function (data) {
+         $("#progress2").hide();
+         $("#SiparisModal").modal('hide');
+         Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+         document.getElementById(btnid).onclick();
+     }
+ })
+        }
     </script>
 </body>
 
