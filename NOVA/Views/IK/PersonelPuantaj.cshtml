@@ -179,13 +179,13 @@
 
 </head>
 <body>
-    <div class="centercontent" id="content">
+    <div class="centercontent" id="content" style="display:none">
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
     </div>
     <div class="container-fluid text-center">
         <div class="row" style="margin-bottom:-20vh;">
             <div class="col text-center">
-                <select class="form-control" style="width:20vw" id="select" onchange="change()">
+                <select class="form-control" style="width:20vw" id="select" onchange="change(this)">
                 </select>
             </div>
         </div>
@@ -475,6 +475,7 @@
 
         }
         var tumizinler = null;
+        var len = null;
         var izinler = [];
         var izinlercodes = [];
         $(document).ready(function () {
@@ -523,37 +524,38 @@
         });
         var personaldata = null;
         var list = [];
-        function change() {
-            if (event.currentTarget.value != null) {
+        function change(e) {
+            if (e.value != null && e.value!="") {
                 $("#content").show();
-            }
-            list = [];
-            var val = document.getElementById("select").value;
-            var name = document.getElementById("select2-select-container").innerHTML;
-            var myData = [];
-            var url = "http://192.168.2.13:83/api/attendance/find/" + val;
-            personaldata = null;
-            $.getJSON(url, function (data) {
+                list = [];
+                var val = e.value;
+                var name = document.getElementById("select2-select-container").innerHTML;
+                var myData = [];
+                var url = "http://192.168.2.13:83/api/attendance/find/" + val;
+                personaldata = null;
+                $.getJSON(url, function (data) {
 
-                personaldata = data;
-                for (let i = 0; i < data.length; i++) {
-                    myData.push(new Date(data[i].START_DATE).getTime())
-                }
+                    personaldata = data;
+                    for (let i = 0; i < data.length; i++) {
+                        myData.push(new Date(data[i].START_DATE).getTime())
+                    }
 
-            }).done(function () {
-                $('#github_chart_1').github_graph({
-                    data: myData,
-                    texts: ['', ''],
-                    userid: val,
-                    userName: name,
-                    userData: personaldata,
-                    colors: ['#eeeeee', '#d6e685', '#8cc665', '#d6e685', '#44a340'],
-                    month_names: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
-                    h_days: ['Pzt','Sal', 'Çar', 'Per','Cum','Cmt','Paz']
+                }).done(function () {
+                    $('#github_chart_1').github_graph({
+                        data: myData,
+                        texts: ['', ''],
+                        userid: val,
+                        userName: name,
+                        userData: personaldata,
+                        colors: ['#eeeeee', '#d6e685', '#8cc665', '#d6e685', '#44a340'],
+                        month_names: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+                        h_days: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
 
+                    })
+                    $("#content").hide();
                 })
-                $("#content").hide();
-            })
+            }
+            
 
         }
         function deleteizin(value) {
@@ -1104,6 +1106,7 @@
             })
 
         }
+        
         function eklesat1(value) {
              var mesai = personaldata.filter(x => x.DATE === value);
              var userid = $("#select").val();
@@ -1138,7 +1141,7 @@
 
              }
 
-
+            len = document.getElementsByClassName("izin");
                      Swal.fire({
                          title: value.split("-")[2] + "-" + value.split("-")[1] + "-" + value.split("-")[0],
                          html: '<select class="swal2-select" onchange="duzenlemesaichange('+ff+')" id="izinselect" style="display: flex;width:80%">' + options + '</select></br>' +
@@ -1156,6 +1159,7 @@
                          }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    
                     izindegistir()
                 }
             })
@@ -1413,10 +1417,6 @@
                                 c = false;
                             }
                         }).done(function () {
-                             bas = mes[b].getElementsByTagName("input")[0].value;
-                            bit = mes[b].getElementsByTagName("input")[1].value;
-                            inc = mes[b].getElementsByTagName("td")[0].innerHTML;
-                            incend = mes[b].getElementsByTagName("td")[1].innerHTML;
                             if (c == true) {
                                 var d = { START_INCKEY: inc, END_INCKEY: incend, USER_ID: userid, DATE: tarih, START_DATE: tarih + " " + bas, END_DATE: tarih + " " + bit, OFFDAY_CODE: null, CONFIRM_CODE: 1 }
 
@@ -1472,41 +1472,31 @@
 
             if (list != null && list.length > 0) {
 
-                var c = true;
-                var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
-                var iz = document.getElementsByClassName("izin");
-                var userid = $("#select").val();
+                const c = true;
+                const tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
+                const iz = document.getElementsByClassName("izin");
+                const userid = $("#select").val();
                 for (let b = 0; b < iz.length; b++) {
 
-                    var bas = iz[b].getElementsByTagName("input")[0].value;
-                    var bit = iz[b].getElementsByTagName("input")[1].value;
-                    var inc = iz[b].getElementsByTagName("td")[0].innerHTML;
-                    var minute = (new Date("1970-01-01T" + bas).getHours() * 60) + (new Date("1970-01-01T" + bas).getMinutes())
-                    var minute1 = (new Date("1970-01-01T" + bit).getHours() * 60) + (new Date("1970-01-01T" + bit).getMinutes())
-                    var url = 'http://192.168.2.13:83/api/attendance/addcontrol/' + userid + '/' + tarih + '/' + minute + '/' + minute1 + '/' + inc + '/' + 0
-                    var l = list.filter(x => x.INCKEY == inc);
+                    const bas = iz[b].getElementsByTagName("input")[0].value;
+                    const bit = iz[b].getElementsByTagName("input")[1].value;
+                    const inc = iz[b].getElementsByTagName("td")[0].innerHTML;
+                    const minute = (new Date("1970-01-01T" + bas).getHours() * 60) + (new Date("1970-01-01T" + bas).getMinutes())
+                    const minute1 = (new Date("1970-01-01T" + bit).getHours() * 60) + (new Date("1970-01-01T" + bit).getMinutes())
+                    const url = 'http://192.168.2.13:83/api/attendance/addcontrol/' + userid + '/' + tarih + '/' + minute + '/' + minute1 + '/' + inc + '/' + 0
+                    const l = list.filter(x => x.INCKEY == inc);
+                    const code = $("#izinselect").val();
                     if (l[0].MAX != minute || l[0].MIN != minute1) {
-                        inc = iz[b].getElementsByTagName("td")[0].innerHTML;
-                        incend = iz[b].getElementsByTagName("td")[1].innerHTML;
-                        url = 'http://192.168.2.13:83/api/attendance/addcontrol/' + userid + '/' + tarih + '/' + minute + '/' + minute1 + '/' + inc + '/' + 0
-
                         $.getJSON(url, function (data) {
                             if (data[0].RESULT != 'True') {
                                 c = false;
                             }
                         }).done(function () {
                             if (c == true) {
-
-                                var code = $("#izinselect").val();
-                                var userid = document.getElementById("select").value;
-                                var len = document.getElementsByClassName("izin");
-                                var baslangic = null;
-                                var bitis = null;
-                                var inckey = null;
                                 for (let i = 0; i < len.length; i++) {
-                                    baslangic = tarih + " " + document.getElementsByClassName("izin")[i].getElementsByTagName("input")[0].value;
-                                    bitis = tarih + " " + document.getElementsByClassName("izin")[i].getElementsByTagName("input")[1].value;
-                                    inckey = document.getElementsByClassName("izin")[i].getElementsByTagName("td")[5].innerHTML;
+                                    const baslangic = tarih + " " + document.getElementsByClassName("izin")[i].getElementsByTagName("input")[0].value;
+                                    const bitis = tarih + " " + document.getElementsByClassName("izin")[i].getElementsByTagName("input")[1].value;
+                                    const inckey = document.getElementsByClassName("izin")[i].getElementsByTagName("td")[5].innerHTML;
                                     if (code != 21) {
                                         baslangic = null;
                                         bitis = null;
@@ -1561,7 +1551,7 @@
             var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
                     var code = $("#izinselect").val();
             var userid = document.getElementById("select").value;
-            var len = document.getElementsByClassName("izin");
+            len = document.getElementsByClassName("izin");
             var baslangic =null;
             var bitis = null;
             var inckey = null;

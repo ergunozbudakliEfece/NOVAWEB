@@ -30,6 +30,7 @@ using DocumentFormat.OpenXml;
 using System.Globalization;
 using Newtonsoft.Json;
 using System.Runtime.ConstrainedExecution;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace NOVA.Controllers
 {
@@ -318,9 +319,15 @@ namespace NOVA.Controllers
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
 
         }
-        public string UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket, bool onizleme)
+        public string UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket, bool onizleme,string fark)
         {
             var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
+            var stokadi = GetStokAdlari().FirstOrDefault(x => x.STOK_KODU == stokkodu);
+            var f = 0;
+            if(fark!=null && fark != "")
+            {
+                f = fark.ToInt();
+            }
             var Etiket = "";
             try
             {
@@ -490,7 +497,10 @@ namespace NOVA.Controllers
                     System.Diagnostics.Debug.Write(exp);
                     //return $"Hata: {exp}";
                 }
-
+                if (f != 0)
+                {
+                    IkinciKalite(hatkodu, stokkodu,genislik,f.ToString(), "0", stokadi.STOK_ADI, "hurda");
+                }
 
                 if (etiket)
                 {
@@ -528,7 +538,7 @@ namespace NOVA.Controllers
 
             return Etiket;
         }
-        public string IkinciKalite(string hatkodu, string stokkodu, string genislik, string mik1, string mik2,string stokadi)
+        public string IkinciKalite(string hatkodu, string stokkodu, string genislik, string mik1, string mik2,string stokadi,string tip)
         {
             var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
             var Etiket = "";
@@ -704,7 +714,7 @@ namespace NOVA.Controllers
                         stok.Sthar_Htur = "A";
                         stok.kayitYeni();
                         StokHareket stok2 = kernel.yeniStokHareket(sirket);
-                        stok2.Stok_Kodu = "IKINCIKALITE";
+                        stok2.Stok_Kodu = tip=="ikinci"?"IKINCIKALITE":"HURDA";
                         stok2.Sthar_Aciklama = stokadi+"-" + uretim.UretSon_FisNo;
                         stok2.Fisno = "Z" + fisno2;
                         stok2.Sthar_Bf = fiyat.ToDouble();

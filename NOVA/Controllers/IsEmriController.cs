@@ -243,6 +243,7 @@ namespace NOVA.Controllers
         public string UretimSonuKaydı(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket)
         {
             var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
+            
             string BarkodCikti = null;
             try
             {

@@ -1826,11 +1826,13 @@
                 $("#miktar11").val(null);
                 $("#miktar22").val(null);
                 $("#miktar22").prop("disabled", true);
+                $("#miktar11").prop("disabled", false);
                 $("#SiparisModal").modal('show');
                 $("#ModalSaveButton").prop("disabled", true)
                 $("#kontrol").prop('checked', true);
                 $("#etiketyazdir").prop('checked', true);
-
+                $('#miktar22').attr('onkeyup', 'keychange2()');
+                $('#ModalSaveButton').attr('onclick', 'ModalKaydet()')
                 $("#etiketyazdir").change(() => {
                     var EtiketYazdir = $('#etiketyazdir').is(':checked');
 
@@ -1847,6 +1849,7 @@
                 if (hat == 'DL01') {
                     $("#kontrolcol").show();
                     $("#kontrol").prop('disabled', false);
+                    $('#ikinciDiv').hide();
                 } else if (hat == 'MH01') {
                     $("#kontrolcol").show();
                     $("#miktar11").val(max);
@@ -1856,12 +1859,14 @@
                     $("#kontrol").prop('checked', true);
                     $("#kontrol").prop('disabled', true);
                     $("#ModalSaveButton").prop("disabled", false)
+                    $('#ikinciDiv').show();
                 } else if(hat=='PB01'){
                     $("#miktar11").prop("disabled", false);
                     $("#miktar22").prop("disabled", true);
                     $("#kontrolcol").show();
                     $("#kontrol").prop('checked', false);
                     $("#kontrol").prop('disabled', true);
+                    $('#ikinciDiv').show();
                 }
                 else {
                     $("#miktar11").prop("disabled", false);
@@ -1869,6 +1874,7 @@
                     $("#kontrolcol").show();
                     $("#kontrol").prop('checked', true);
                     $("#kontrol").prop('disabled', true);
+                    $('#ikinciDiv').show();
                 }
                 $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0]);
                 $("#SiparisModalLabel2").html(value.innerHTML.split("<br>")[1].split("<p")[0]);
@@ -2219,6 +2225,7 @@
         function ModalKaydet() {
             if (m1 != null) {
                 $("#progress2").show();
+                var fark = max-$("#miktar11").val();
                 var kontrol = $("#kontrol").is(':checked');
                 var etiket = $("#etiketyazdir").is(':checked');
                 var etiketOnizleme = $("#etiket-onizleme").is(':checked');
@@ -2226,7 +2233,7 @@
                     $.ajax({
                         url: '@Url.Action("UretimSonuKaydi", "Uretim")',
                         type: 'POST',
-                        data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(), "kontrol": kontrol, "etiket": etiket, "onizleme": etiketOnizleme },
+                        data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(), "kontrol": kontrol, "etiket": etiket, "onizleme": etiketOnizleme, "fark": fark.toString().trim() },
                         error: function (data) {
                             console.log(data);
                             $("#progress2").hide();
@@ -2285,7 +2292,7 @@
                     </div>
                     <div class="row float-end">
                         <div class="col d-flex">
-                            <div class="btn-group me-2" role="group" aria-label="Basic radio toggle button group">
+                            <div class="btn-group me-2" role="group" aria-label="Basic radio toggle button group" id="ikinciDiv">
                                 <input type="radio" class="btn-check" name="normal" id="normal" checked="checked" onclick="uretimGroupChange(this.value)" value="0" autocomplete="off">
                                 <label class="btn btn-outline-primary openlbl" for="normal">NORMAL</label>
 
@@ -2672,9 +2679,10 @@
         function uretimGroupChange(value) {
             switch (value) {
                 case '0':
+                    $("#miktar11").val(null);
+                    $("#miktar22").val(null);
                     $('#miktar11').prop('disabled', false);
                     $('#miktar22').prop('disabled', true);
-                    $('#miktar22').val(null);
                     $('#miktar22').attr('onkeyup', 'keychange2()');
                     $('#ModalSaveButton').attr('onclick', 'ModalKaydet()')
                     $("#etiketyazdir").prop('disabled', false);
@@ -2682,17 +2690,30 @@
                     $("#etiket-onizleme").prop('checked', false);
                     break;
                 case '1':
+                    $("#miktar11").val(null);
+                    $("#miktar22").val(null);
                     $('#miktar11').prop('disabled', true);
                     $('#miktar22').prop('disabled', false);
                     $('#miktar22').removeAttr('onkeyup');
                     $('#miktar22').attr('onkeyup', 'ikinciKaliteKeyUp()')
-                    $('#ModalSaveButton').attr('onclick', 'ikinciKaliteKaydet()')
+                    $('#ModalSaveButton').attr('onclick', 'ikinciKaliteKaydet(\'ikinci\')')
                     $("#etiketyazdir").prop('disabled', true);
                     $("#etiketyazdir").prop('checked', false);
                     $("#etiket-onizleme").prop('disabled', true);
                     $("#etiket-onizleme").prop('checked', false);
                     break;
                 case '2':
+                    $("#miktar11").val(null);
+                    $("#miktar22").val(null);
+                    $('#miktar11').prop('disabled', true);
+                    $('#miktar22').prop('disabled', false);
+                    $('#miktar22').removeAttr('onkeyup');
+                    $('#miktar22').attr('onkeyup', 'ikinciKaliteKeyUp()')
+                    $('#ModalSaveButton').attr('onclick', 'ikinciKaliteKaydet(\'hurda\')')
+                    $("#etiketyazdir").prop('disabled', true);
+                    $("#etiketyazdir").prop('checked', false);
+                    $("#etiket-onizleme").prop('disabled', true);
+                    $("#etiket-onizleme").prop('checked', false);
                     break;
             }
         }
@@ -2717,14 +2738,13 @@
             }
 
         }
-        function ikinciKaliteKaydet() {
+        function ikinciKaliteKaydet(e) {
             $("#progress2").show();
-
-            var stokadi = $('#SiparisModalLabel').html();
+            var stokadi = $('#SiparisModalLabel').html().substring(3, $('#SiparisModalLabel').html().length - 4);
             $.ajax({
      url: '@Url.Action("IkinciKalite", "Uretim")',
      type: 'POST',
-     data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(),"stokadi":stokadi },
+     data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(),"stokadi":stokadi ,"tip":e},
      error: function (data) {
          console.log(data);
          $("#progress2").hide();
