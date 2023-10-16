@@ -1064,8 +1064,8 @@ namespace NOVA.Controllers
         {
             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
-            string imagePath = Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
-            string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+            string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
+            string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
 
             FileStream Memory = new FileStream(pdfPath, FileMode.Create);
             PdfWriter writer = PdfWriter.GetInstance(document, Memory);
@@ -1090,7 +1090,7 @@ namespace NOVA.Controllers
                 ColumnText Header = new ColumnText(cb);
                 Header.SetSimpleColumn(45, 125, 270, 335);
                 Header.AddElement(new iTextSharp.text.Paragraph(Data[i].SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
-                Header.AddElement(new Paragraph(Data[i].STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
+                Header.AddElement(new iTextSharp.text.Paragraph(Data[i].STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
                 Header.Go();
 
                 ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
@@ -1203,8 +1203,8 @@ namespace NOVA.Controllers
                 System.Diagnostics.Debug.WriteLine("METRAJ: " + Model.METRAJ);
                 iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
-                string imagePath = Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
-                string pdfPath = Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+                string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
+                string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
 
                 FileStream Memory = new FileStream(pdfPath, FileMode.Create);
                 PdfWriter writer = PdfWriter.GetInstance(document, Memory);
@@ -1226,7 +1226,7 @@ namespace NOVA.Controllers
                 ColumnText Header = new ColumnText(cb);
                 Header.SetSimpleColumn(45, 125, 270, 335);
                 Header.AddElement(new iTextSharp.text.Paragraph(Model.SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
-                Header.AddElement(new Paragraph(Model.STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
+                Header.AddElement(new iTextSharp.text.Paragraph(Model.STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
                 Header.Go();
 
                 ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
