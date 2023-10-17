@@ -704,12 +704,13 @@
             $("#rehberSec").modal("show");
             $("#urunler").bootstrapTable("destroy").bootstrapTable({
                 url: 'http://192.168.2.13:83/api/seri/serirehber'
-            }).on('click-row.bs.table', function (e, row, $element) {
-                $("#seri").val(row.SERI_NO).trigger("input");
-                $("#rehberSec").modal("hide");
-            });
+            })
 
-        }
+    }
+    function rehberAktar(seri) {
+        $("#seri").val(seri).trigger("input");
+        $("#rehberSec").modal("hide");
+    }
         function ModalKapat() {
             $("#rehberSec").modal("hide");
         }
@@ -1058,6 +1059,7 @@
     var takiplist = [];
     var takiplist2 = null;
     var DLList = null;
+    var OldStokAdi = null;
     var Stoklar = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
     $(document).on('select2:open', () => {
         document.querySelector('.select2-search__field').focus();
@@ -1206,54 +1208,63 @@
             $.getJSON("http://192.168.2.13:83/api/ie/besleme", function (data) {
                 var d = data.filter(x => x.HAT_KODU == val.value);
 
-                $(".js-select").select2('destroy');
-                if (document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2].value == "SEÇİNİZ") {
+
+                if (OldStokAdi != $("#stokadi").val()) {
+                    $(".js-select").select2('destroy');
+                    if (document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2].value == "SEÇİNİZ") {
 
 
-                    var $sel2 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2];
-                    $sel2.replaceChildren();
-                    var opt = document.createElement("option");
-                    opt.value = "SEÇİNİZ";
-                    opt.text = "SEÇİNİZ";
-                    opt.setAttribute("selected", "");
-                    opt.setAttribute("disabled", "");
-                    $sel2.appendChild(opt);
-                    for (let i = 0; i < d.length; i++) {
-                        var opt1 = document.createElement("option");
-                        opt1.value = d[i].HAT_KODU2;
-                        opt1.text = d[i].HAT_KODU2;
-                        $sel2.appendChild(opt1);
+                        var $sel2 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2];
+                        $sel2.replaceChildren();
+                        var opt = document.createElement("option");
+                        opt.value = "SEÇİNİZ";
+                        opt.text = "SEÇİNİZ";
+                        opt.setAttribute("selected", "");
+                        opt.setAttribute("disabled", "");
+                        $sel2.appendChild(opt);
+                        for (let i = 0; i < d.length; i++) {
+                            var opt1 = document.createElement("option");
+                            opt1.value = d[i].HAT_KODU2;
+                            opt1.text = d[i].HAT_KODU2;
+                            $sel2.appendChild(opt1);
+                        }
+
+
+
                     }
 
-
-
+                    $(".js-select").select2();
                 }
 
-                $(".js-select").select2();
                 KaydetAktivite();
             }).done(function () {
                 if (val.value.substring(0, 2) != "TP") {
                     if (hamkod != null) {
-                        var url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/" + val.value.substring(0, 2)
-                        $.getJSON(url, function (d1) {
-                            var $sel3 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1];
-                            $sel3.replaceChildren();
-                            var opt2 = document.createElement("option");
-                            opt2.value = "SEÇİNİZ";
-                            opt2.text = "SEÇİNİZ";
-                            opt2.setAttribute("selected", "");
-                            opt2.setAttribute("disabled", "");
-                            $sel3.appendChild(opt2);
-                            for (let i = 0; i < d1.length; i++) {
-                                var opt3 = document.createElement("option");
-                                opt3.value = d1[i].STOK_ADI;
-                                opt3.text = d1[i].STOK_ADI;
-                                $sel3.appendChild(opt3);
-                            }
-                        })
+                        if (OldStokAdi != $("#stokadi").val()) {
+                            var url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/" + val.value
+                            $.getJSON(url, function (d1) {
+                                var $sel3 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1];
+                                $sel3.replaceChildren();
+                                var opt2 = document.createElement("option");
+                                opt2.value = "SEÇİNİZ";
+                                opt2.text = "SEÇİNİZ";
+                                opt2.setAttribute("selected", "");
+                                opt2.setAttribute("disabled", "");
+                                $sel3.appendChild(opt2);
+                                for (let i = 0; i < d1.length; i++) {
+                                    var opt3 = document.createElement("option");
+                                    opt3.value = d1[i].STOK_ADI;
+                                    opt3.text = d1[i].STOK_ADI;
+                                    $sel3.appendChild(opt3);
+                                }
+                            })
+
+                        }
                     }
                 } else {
-                    var url = "http://192.168.2.13:83/api/seri/receteden/0/" + val.value.substring(0, 2)
+
+
+                    var url = "http://192.168.2.13:83/api/seri/receteden/0/" + val.value
                     $.getJSON(url, function (d1) {
                         var $sel3 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1];
                         $sel3.replaceChildren();
@@ -1270,8 +1281,9 @@
                             $sel3.appendChild(opt3);
                         }
                     })
+
                 }
-                
+
 
             })
         }
@@ -1283,8 +1295,8 @@
             document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
             var s = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].value;
             var stokkodu = Stoklar.filter(x => x.STOK_ADI == s)[0].STOK_KODU;
-            
-            var url = "http://192.168.2.13:83/api/seri/receteden/" + stokkodu + "/" + val.value.substring(0, 2)
+            if (OldStokAdi != $("#stokadi").val()) {
+                var url = "http://192.168.2.13:83/api/seri/receteden/" + stokkodu + "/" + val.value
                 $.getJSON(url, function (d1) {
                     var $sel3 = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
                     $sel3.replaceChildren();
@@ -1301,8 +1313,20 @@
                         $sel3.appendChild(opt3);
                     }
                 })
-            
-        }
+            }
+            } else {
+
+                var $sel3 = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
+                $sel3.replaceChildren();
+                var opt2 = document.createElement("option");
+                opt2.value = "SEÇİNİZ";
+                opt2.text = "SEÇİNİZ";
+                opt2.setAttribute("selected", "");
+                opt2.setAttribute("disabled", "");
+                $sel3.appendChild(opt2);
+            }
+           
+        
         KaydetAktivite();
         }
     function DlInputChange(val) {
@@ -1343,7 +1367,9 @@
      function StokChange(val) {
 
      KaydetAktivite();
-     DLCariGetir(val.parentNode.parentNode.rowIndex);
+         DLCariGetir(val.parentNode.parentNode.rowIndex);
+         if(document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2].value!="SEÇİNİZ")
+         document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2].onchange();
       }
     function oran(val) {
         var tr = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.parentNode.rowIndex];
@@ -1856,6 +1882,7 @@
         }
         DLListTop.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: (refstokolcusu == "-" ? stokadi : refstokolcusu), KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: (refadet == 0 || refadet == '-' ?adet: (refadet*adet)) });
         var fark = DLList.length;
+        OldStokAdi = $("#stokadi").val();
         siralist = [];
         if (localStorage.DLlist != null && localStorage.DLlist != "null") {
 
@@ -2060,7 +2087,7 @@
 
     }
     function sil() {
-
+        OldStokAdi = null;
         var Tip = $('input[name="uretim-tip"]:checked').val();
         var TableId = "";
         switch (Tip) {
@@ -2658,7 +2685,8 @@
                     document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
                     var s = document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].value;
                     
-                    var url = "http://192.168.2.13:83/api/seri/receteden/" + s + "/" + Satir.value.substring(0, 2)
+                    var url = "http://192.168.2.13:83/api/seri/receteden/" + s + "/" + Satir.value
+                   
                     $.getJSON(url, function (d1) {
                         var $sel3 = document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
                         $sel3.replaceChildren();
@@ -2758,7 +2786,8 @@
         CariListe += `<option value="${FiltreliCariler[i].CARI_ISIM}">${FiltreliCariler[i].CARI_ISIM}</option>`;
         }
 
-     document.getElementById('DLTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[4].innerHTML = CariListe;
+        document.getElementById('DLTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[4].innerHTML = CariListe;
+       
     }
 
     //String olarak gelen veriyi, html element olarak geriye döner.
