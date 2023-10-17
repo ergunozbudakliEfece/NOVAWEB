@@ -1543,6 +1543,7 @@ namespace NOVA.Controllers
             public string ISEMRINO { get; set; }
             public double KULL_MIKTAR { get; set; }
             public double MIKTAR2 { get; set; }
+            public double FIRE { get; set; }
         }
     }
 }

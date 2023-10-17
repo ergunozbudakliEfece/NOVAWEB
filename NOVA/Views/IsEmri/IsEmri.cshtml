@@ -731,7 +731,7 @@
             }).done(function () {
                 var b = jsonObj.find(x => x.SERI_NO === seri.value);
                 var top = 0;
-
+                hamkod = b.STOK_KODU;
                 if (localStorage.DLlist != "null" && localStorage.DLlist != null) {
                     var j = JSON.parse(localStorage.DLlist);
                     var son = j.filter(x => x.GIRDI1 == seri.value);
@@ -858,10 +858,13 @@
                         case 'DL':
                             for (let i = 1; i < tr.length; i++) {
                                 if (i == 1) {
-
+                                    MachineChange(tr[i].getElementsByTagName("select")[0], 'DLTable')
                                     tr[i].getElementsByTagName("input")[0].onblur();
+
                                 } else {
+                                    MachineChange(tr[i].getElementsByTagName("select")[0], 'DLTable')
                                     DlInputChange(tr[i].getElementsByTagName("input")[2]);
+
                                 }
                             }
                             break;
@@ -971,7 +974,9 @@
                                     DlInputChange(tr[i].getElementsByTagName("input")[2]);
                                 }
                             }
+                            MachineChange(tr[i].getElementsByTagName("select")[0], 'DLTable')
                         }
+
                         $('#fireTable').find("tr").eq(1).find("input").eq(0).val(null)
                         $('#fireTable').find("tr").eq(1).find("input").eq(1).val(null)
                         $('#fireTable').find("tr").eq(1).find("input").eq(2).val(null)
@@ -1053,6 +1058,7 @@
     var takiplist = [];
     var takiplist2 = null;
     var DLList = null;
+    var Stoklar = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
     $(document).on('select2:open', () => {
         document.querySelector('.select2-search__field').focus();
     });
@@ -1192,13 +1198,15 @@
             getPivot();
         }
         $("#btnradio12").prop("checked", true).trigger("click");
-        })
+    })
+    var hamkod = null;
     function MachineChange(val, tableId) {
         if (val.value != "SEÇİNİZ") {
             document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].removeAttribute("disabled");
             $.getJSON("http://192.168.2.13:83/api/ie/besleme", function (data) {
                 var d = data.filter(x => x.HAT_KODU == val.value);
-                $(".selectmakina2").select2('destroy');
+
+                $(".js-select").select2('destroy');
                 if (document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2].value == "SEÇİNİZ") {
 
 
@@ -1217,9 +1225,54 @@
                         $sel2.appendChild(opt1);
                     }
 
+
+
                 }
-                $(".selectmakina2").select2();
+
+                $(".js-select").select2();
                 KaydetAktivite();
+            }).done(function () {
+                if (val.value.substring(0, 2) != "TP") {
+                    if (hamkod != null) {
+                        var url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/" + val.value.substring(0, 2)
+                        $.getJSON(url, function (d1) {
+                            var $sel3 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1];
+                            $sel3.replaceChildren();
+                            var opt2 = document.createElement("option");
+                            opt2.value = "SEÇİNİZ";
+                            opt2.text = "SEÇİNİZ";
+                            opt2.setAttribute("selected", "");
+                            opt2.setAttribute("disabled", "");
+                            $sel3.appendChild(opt2);
+                            for (let i = 0; i < d1.length; i++) {
+                                var opt3 = document.createElement("option");
+                                opt3.value = d1[i].STOK_ADI;
+                                opt3.text = d1[i].STOK_ADI;
+                                $sel3.appendChild(opt3);
+                            }
+                        })
+                    }
+                } else {
+                    var url = "http://192.168.2.13:83/api/seri/receteden/0/" + val.value.substring(0, 2)
+                    $.getJSON(url, function (d1) {
+                        var $sel3 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1];
+                        $sel3.replaceChildren();
+                        var opt2 = document.createElement("option");
+                        opt2.value = "SEÇİNİZ";
+                        opt2.text = "SEÇİNİZ";
+                        opt2.setAttribute("selected", "");
+                        opt2.setAttribute("disabled", "");
+                        $sel3.appendChild(opt2);
+                        for (let i = 0; i < d1.length; i++) {
+                            var opt3 = document.createElement("option");
+                            opt3.value = d1[i].MAMUL_KODU;
+                            opt3.text = d1[i].STOK_ADI;
+                            $sel3.appendChild(opt3);
+                        }
+                    })
+                }
+                
+
             })
         }
         }
@@ -1228,6 +1281,27 @@
 
             document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3].removeAttribute("disabled");
             document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
+            var s = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].value;
+            var stokkodu = Stoklar.filter(x => x.STOK_ADI == s)[0].STOK_KODU;
+            
+            var url = "http://192.168.2.13:83/api/seri/receteden/" + stokkodu + "/" + val.value.substring(0, 2)
+                $.getJSON(url, function (d1) {
+                    var $sel3 = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
+                    $sel3.replaceChildren();
+                    var opt2 = document.createElement("option");
+                    opt2.value = "SEÇİNİZ";
+                    opt2.text = "SEÇİNİZ";
+                    opt2.setAttribute("selected", "");
+                    opt2.setAttribute("disabled", "");
+                    $sel3.appendChild(opt2);
+                    for (let i = 0; i < d1.length; i++) {
+                        var opt3 = document.createElement("option");
+                        opt3.value = d1[i].STOK_ADI;
+                        opt3.text = d1[i].STOK_ADI;
+                        $sel3.appendChild(opt3);
+                    }
+                })
+            
         }
         KaydetAktivite();
         }
@@ -1416,21 +1490,30 @@
 
 
         if (tableId == 'DLTable') {
+          
+            for (let i = 0; i < 4; i++) {
+                var val = currenttr.getElementsByTagName("select")[i].value;
+                
+                if (val == "SEÇİNİZ") {
+                    search = false;
+                }
+            }
+           
+            if (currenttd[4].getElementsByTagName("input")[0].value == null || currenttd[4].getElementsByTagName("input")[0].value == "") {
+
+                search = false
+            }
+            
+        } else {
             for (let i = 0; i < 3; i++) {
                 var val = currenttr.getElementsByTagName("select")[i].value;
-
-                if (val == "SEÇİNİZ" || val == "SEÇİNİZ") {
+               
+                
+                if (val == "SEÇİNİZ") {
                     search = false;
                 }
             }
-        } else {
-            for (let i = 0; i < 2; i++) {
-                var val = currenttr.getElementsByTagName("select")[i].value;
-                var val1 = currenttr.getElementsByTagName("input")[i+1].value;
-                if (val == "SEÇİNİZ" || val == "SEÇİNİZ" || val1==null) {
-                    search = false;
-                }
-            }
+           
         }
 
         if (search) {
@@ -1486,10 +1569,10 @@
                     }
                     else if (i == 7) {
 
-                        td.innerHTML = '<i onclick="ReferansSecimiTemizle(this, \'DL\')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color:#203289;font-size:larger;cursor:pointer;float:left"></i>' +'<select class="js-select" style="width:100px;float: left" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '"><option disabled="">SEÇİNİZ</option><option selected="" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '" >' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '</option></select>'
+                        td.innerHTML = '<i onclick="ReferansSecimiTemizle(this, \'DL\')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color:#203289;font-size:larger;cursor:pointer;float:left"></i>' + '<select class="js-select" style="width:100px;float: left" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '" onchange="RefMachineChange(this)"><option disabled="">SEÇİNİZ</option><option selected="" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '" >' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[2].value + '</option></select>'
                     }
                     else if (i == 8) {
-                        td.innerHTML = '<select class="js-select" style="width:350px" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[3].value + '"><option disabled="">SEÇİNİZ</option><option selected="" value="' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[3].value + '" >' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[3].value + '</option></select>'
+                        td.innerHTML = '<select class="js-select" style="width:350px">' + table.getElementsByTagName("tr")[rownum].getElementsByTagName("select")[3].innerHTML + '</select>'
                     }
                     else {
                         td.innerHTML = td.innerHTML = table.getElementsByTagName("tr")[rownum].getElementsByTagName("td")[i].innerHTML;
@@ -1532,7 +1615,7 @@
                 table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].setAttribute("onblur", "ParcalioranUst(this)")
                 ParcalioranAlt(table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0])
             }
-
+            
 
 
     }
@@ -2042,10 +2125,24 @@
             $("#RFPivot").hide();
             $("#RFPivotTop").hide();
             $("#tamamidiv").hide();
-            $("#tamami").prop("checked",false);
+            $("#tamami").prop("checked", false);
+            if ($("#seri").val() != null && $("#seri").val()!="") {
+
+                MachineChange(document.getElementById("DLTable").getElementsByTagName("tr")[1].getElementsByTagName("select")[0], "DLTable");
+            } else {
+                document.getElementById("DLTable").getElementsByTagName("tr")[1].getElementsByTagName("select")[1].replaceChildren();
+                var opt = document.createElement("option");
+                opt.value = "SEÇİNİZ";
+                opt.text = "SEÇİNİZ";
+                opt.setAttribute("selected", "");
+                opt.setAttribute("disabled", "");
+                document.getElementById("DLTable").getElementsByTagName("tr")[1].getElementsByTagName("select")[1].appendChild(opt);
+            }
+
         }
         else if (val.value == "TP")
-        {
+        {   
+            hamkod = null;
             $("#HammaddeCard").hide();
             $("#addRw").show();
             $("#removeRw").show();
@@ -2201,7 +2298,7 @@
     }
 
     function netsisaktar() {
-       
+
         $("#content").show();
         document.body.style.cursor = 'wait';
         var Tip = $('input[name="uretim-tip"]:checked').val();
@@ -2559,6 +2656,25 @@
                 case "TP":
                     document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3].removeAttribute("disabled");
                     document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
+                    var s = document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].value;
+                    
+                    var url = "http://192.168.2.13:83/api/seri/receteden/" + s + "/" + Satir.value.substring(0, 2)
+                    $.getJSON(url, function (d1) {
+                        var $sel3 = document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
+                        $sel3.replaceChildren();
+                        var opt2 = document.createElement("option");
+                        opt2.value = "SEÇİNİZ";
+                        opt2.text = "SEÇİNİZ";
+                        opt2.setAttribute("selected", "");
+                        opt2.setAttribute("disabled", "");
+                        $sel3.appendChild(opt2);
+                        for (let i = 0; i < d1.length; i++) {
+                            var opt3 = document.createElement("option");
+                            opt3.value = d1[i].MAMUL_KODU;
+                            opt3.text = d1[i].STOK_ADI;
+                            $sel3.appendChild(opt3);
+                        }
+                    })
                     break;
             };
 
@@ -3267,7 +3383,7 @@ $.ajax({
 
         })
 
-       
+
     }
     function RFTableCreatePivot2Data() {
         var RFPivotToplamVeri = JSON.parse(localStorage.RFPivotToplamVeri);

@@ -31,6 +31,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using System.Runtime.ConstrainedExecution;
 using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace NOVA.Controllers
 {
@@ -380,7 +381,7 @@ namespace NOVA.Controllers
 
                         }
 
-                        StokHareket stok = kernel.yeniStokHareket(sirket);
+                       
                         
                         uretim = kernel.yeniSerbestUSK(sirket);
                         uretim.IsEmrindenGetir(jsonList[i].ISEMRINO);
@@ -419,8 +420,43 @@ namespace NOVA.Controllers
                             uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
                             seri = uretim.SeriOku(0).Seri1;
                         }
-                        
                         NetRS netRS1 = kernel.yeniNetRS(sirket);
+                        if (f != 0)
+                        {
+                            netRS1.Ac("SELECT MAX(FISNO) AS FISNO FROM TEST2022..TBLSTHAR WHERE FISNO LIKE 'Z%'");
+                            var fisno = (netRS1.FieldByName("FISNO").AsString.Substring(1, netRS1.FieldByName("FISNO").AsString.Count() - 1).ToInt() + 1).ToString().PadLeft(14, '0');
+                            var fisno2 = (netRS1.FieldByName("FISNO").AsString.Substring(1, netRS1.FieldByName("FISNO").AsString.Count() - 1).ToInt() + 2).ToString().PadLeft(14, '0');
+                            StokHareket stok = kernel.yeniStokHareket(sirket);
+                            stok.Stok_Kodu = uretim.UretSon_Mamul;
+                            stok.Sthar_Aciklama = stokadi.STOK_ADI + "-" + uretim.UretSon_FisNo;
+                            stok.Fisno = "Z" + fisno;
+                            stok.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                            stok.Proje_Kodu = "1";
+                            stok.Sthar_Gckod = "C";
+                            stok.Sthar_Bf = 0;
+                            stok.Sthar_Nf = 0;
+                            stok.Sthar_Gcmik = jsonList[i].FIRE;
+                            stok.Sthar_Gcmik2 = 0;
+                            stok.DEPO_KODU = 45;
+                            stok.Sthar_Htur = "A";
+                            stok.kayitYeni();
+                            StokHareket stok2 = kernel.yeniStokHareket(sirket);
+                            stok2.Stok_Kodu = "HURDA";
+                            stok2.Sthar_Aciklama = stokadi.STOK_ADI + "-" + uretim.UretSon_FisNo;
+                            stok2.Fisno = "Z" + fisno2;
+                            stok2.Sthar_Bf = 0;
+                            stok2.Sthar_Nf = 0;
+                            stok2.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                            stok2.Proje_Kodu = "1";
+                            stok2.Sthar_Gckod = "G";
+                            stok2.Sthar_Gcmik = jsonList[i].FIRE;
+                            stok2.Sthar_Gcmik2 = 0;
+                            stok2.DEPO_KODU = 45;
+                            stok2.Sthar_Htur = "A";
+                            stok2.kayitYeni();
+                        }
+                        
+                       
                         uretim.FisUret();
                         uretim.Kaydet();
                         
@@ -497,10 +533,7 @@ namespace NOVA.Controllers
                     System.Diagnostics.Debug.Write(exp);
                     //return $"Hata: {exp}";
                 }
-                if (f != 0)
-                {
-                    IkinciKalite(hatkodu, stokkodu,genislik,f.ToString(), "0", stokadi.STOK_ADI, "hurda");
-                }
+                
 
                 if (etiket)
                 {
@@ -1083,9 +1116,9 @@ namespace NOVA.Controllers
 
                 PdfContentByte cb = writer.DirectContent;
 
-                iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.NORMAL);
-                iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 13, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
 
                 ColumnText Header = new ColumnText(cb);
                 Header.SetSimpleColumn(45, 125, 270, 335);
@@ -1094,7 +1127,7 @@ namespace NOVA.Controllers
                 Header.Go();
 
                 ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
-                Content.SetSimpleColumn(35, 60, 280, 260);
+                Content.SetSimpleColumn(35, 70, 280, 270);
 
                 iTextSharp.text.Paragraph GrupIsim = new iTextSharp.text.Paragraph("GRUP İSİM   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
                 GrupIsim.Add(new Chunk($": {BosDegerKontrolu(Data[i].GRUP_ISIM)}", fontNormal));
@@ -1219,9 +1252,9 @@ namespace NOVA.Controllers
 
                 PdfContentByte cb = writer.DirectContent;
 
-                iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.NORMAL);
-                iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 13, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
 
                 ColumnText Header = new ColumnText(cb);
                 Header.SetSimpleColumn(45, 125, 270, 335);
@@ -1230,7 +1263,7 @@ namespace NOVA.Controllers
                 Header.Go();
 
                 ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
-                Content.SetSimpleColumn(35, 60, 280, 260);
+                Content.SetSimpleColumn(35, 70, 280, 270);
 
                 iTextSharp.text.Paragraph GrupIsim = new iTextSharp.text.Paragraph("GRUP İSİM   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
                 GrupIsim.Add(new Chunk($": {BosDegerKontrolu(Model.GRUP_ISIM)}", fontNormal));
