@@ -1,0 +1,97 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_MES.cshtml";
+}
+
+<div class="header">
+    <div class="options">
+        <div class="machine-option">
+            <select class="form-select form-select-sm shadow-none" onchange="PageChange(this.value)">
+                <option selected value="All">Tüm Makineler</option>
+                <option disabled value="DL">DL</option>
+                <option disabled value="PB">PB</option>
+                <option disabled value="RF">RF</option>
+                <option disabled value="SM">SM</option>
+                <option disabled value="MH">MH</option>
+                <option disabled value="BK">BK</option>
+            </select>
+        </div>
+        <div class="timer-option">
+            <select class="form-select form-select-sm shadow-none" onchange="ChangeIntervalTime(this.value)">
+                <option value="30000" selected>30 Saniye</option>
+                <option value="60000">1 Dakika</option>
+                <option value="300000">5 Dakika</option>
+            </select>
+        </div>
+        <button id="RefreshButton" type="button" class="btn home-button" onclick="RefreshPage()"><i class="bi bi-arrow-clockwise"></i></button>
+    </div>
+    <button id="HomeButton" type="button" class="btn home-button" onclick="window.location.href = '/';"><i class="bi bi-house-fill"></i></button>
+</div>
+<div class="content">
+    @Html.Partial("Partials/MES/ALL")
+</div>
+
+<script>
+    var CurrentPage = "All";
+    var Interval = 0;
+
+    $(document).ready(() => {
+        PageChange("All");
+
+        tippy('#RefreshButton', {
+            content: 'Yenile',
+        });
+
+        tippy('#HomeButton', {
+            content: 'Ana Sayfa',
+        });
+    });
+
+    function PageChange(MachineName) {
+        $(`#nova-loader`).fadeIn('fast');
+
+        $(`#${CurrentPage}`)
+            .fadeOut('fast')
+            .promise()
+            .done(() =>
+            {
+                CurrentPage = MachineName;
+
+                switch (MachineName)
+                {
+                    case "All":
+                        AllPage();
+                        break;
+                    case "DL":
+                        DLPage()
+                        break;
+                }
+
+                ChangeIntervalTime($('.timer-option').find('select').val());
+            });
+    }
+
+    function RefreshPage()
+    {
+        PageChange(CurrentPage);
+    }
+
+    function ChangeIntervalTime(Time)
+    {
+        clearInterval(Interval);
+
+        switch (CurrentPage) {
+            case "All":
+                Interval = setInterval(FetchAllData, Time);
+                break;
+            case "DL":
+                Interval = setInterval(FetchDLData, Time);
+                break;
+        }
+    }
+
+    async function ShowError(Message)
+    {
+        $(`#nova-loader`).fadeOut('fast');
+        alert(Message);
+    }
+</script>

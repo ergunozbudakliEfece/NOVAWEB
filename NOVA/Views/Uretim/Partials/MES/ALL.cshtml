@@ -1,0 +1,86 @@
+﻿<style>
+    .all-machines {
+        height: calc(100svh - 45px - 3.75rem);
+        max-width: -moz-available;
+        max-width: -webkit-fill-available;
+        max-width: fill-available;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        overflow-x: auto;
+    }
+
+        .all-machines .machine {
+            height: 95%;
+            width: 265px;
+            min-width: 230px;
+            background-color: var(--empty-header-color);
+            border-radius: var(--empty-border-radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            padding: 1rem;
+            border: var(--bs-border-width) solid var(--empty-border-color);
+        }
+
+    .machine-title {
+        font-size: large;
+        font-weight: 500;
+    }
+
+    .info-box {
+        width: 100%;
+        position: relative;
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+        color: var(--empty-text-color);
+        border: var(--bs-border-width) solid var(--empty-border-color);
+        border-radius: var(--empty-border-radius);
+    }
+
+        .info-box > span {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-size: smaller;
+            background-color: var(--empty-header-color);
+        }
+</style>
+
+<div id="All" class="page all-machines" style="display: none;">
+    <div class="machine shadow">
+        <div class="machine-title">DL01</div>
+        <hr class="horizontal-line" />
+
+        <div class="info-box">
+            <span>OPERATÖR</span>
+
+            <div class="info d-flex justify-content-start align-items-center gap-3">
+                <img src="" class="rounded-1" height="50" width="50" />
+                <div class="d-flex flex-column justify-content-center">
+                    <span>Operatör Adı</span>
+                    <span>18.10.2023 09:27</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function AllPage() {
+        await FetchAllData();
+
+        $(`#nova-loader`).fadeOut('fast');
+        $(`#All`).fadeIn();
+    }
+
+    async function FetchAllData() {
+        try {
+            var response = await axios('https://api.github.com/users/hadley/orgs');
+        }
+        catch (e) {
+            ShowError("Bir hata oluştu.");
+        }
+    }
+</script>

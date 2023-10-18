@@ -1656,5 +1656,13 @@ namespace NOVA.Controllers
             public string HES_SARF { get; set; }
         }
 
+        #region MES
+
+        public async Task<ActionResult> MES()
+        {
+            return View();
+        }
+
+        #endregion
     }
 }
