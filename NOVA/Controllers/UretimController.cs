@@ -428,7 +428,7 @@ namespace NOVA.Controllers
                             var fisno2 = (netRS1.FieldByName("FISNO").AsString.Substring(1, netRS1.FieldByName("FISNO").AsString.Count() - 1).ToInt() + 2).ToString().PadLeft(14, '0');
                             StokHareket stok = kernel.yeniStokHareket(sirket);
                             stok.Stok_Kodu = uretim.UretSon_Mamul;
-                            stok.Sthar_Aciklama = stokadi.STOK_ADI + "-" + uretim.UretSon_FisNo;
+                            stok.Sthar_Aciklama = stokadi.STOK_ADI + "-" + uretim.UretSon_FisNo + "-" + jsonList[i].ISEMRINO.Substring(0, 4);
                             stok.Fisno = "Z" + fisno;
                             stok.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                             stok.Proje_Kodu = "1";
@@ -442,7 +442,7 @@ namespace NOVA.Controllers
                             stok.kayitYeni();
                             StokHareket stok2 = kernel.yeniStokHareket(sirket);
                             stok2.Stok_Kodu = "HURDA";
-                            stok2.Sthar_Aciklama = stokadi.STOK_ADI + "-" + uretim.UretSon_FisNo;
+                            stok2.Sthar_Aciklama = stokadi.STOK_ADI + "-" + uretim.UretSon_FisNo+"-"+ jsonList[i].ISEMRINO.Substring(0,4);
                             stok2.Fisno = "Z" + fisno2;
                             stok2.Sthar_Bf = 0;
                             stok2.Sthar_Nf = 0;
@@ -734,7 +734,7 @@ namespace NOVA.Controllers
                         SeriNoListesi.Add(seri);
                         StokHareket stok = kernel.yeniStokHareket(sirket);
                         stok.Stok_Kodu = uretim.UretSon_Mamul;
-                        stok.Sthar_Aciklama = stokadi + "-" +uretim.UretSon_FisNo;
+                        stok.Sthar_Aciklama = stokadi + "-" +uretim.UretSon_FisNo + "-" + jsonList[i].ISEMRINO.Substring(0, 4);
                         stok.Fisno ="Z"+fisno;
                         stok.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                         stok.Proje_Kodu = "1";
@@ -748,7 +748,7 @@ namespace NOVA.Controllers
                         stok.kayitYeni();
                         StokHareket stok2 = kernel.yeniStokHareket(sirket);
                         stok2.Stok_Kodu = tip=="ikinci"?"IKINCIKALITE":"HURDA";
-                        stok2.Sthar_Aciklama = stokadi+"-" + uretim.UretSon_FisNo;
+                        stok2.Sthar_Aciklama = stokadi+"-" + uretim.UretSon_FisNo + "-" + jsonList[i].ISEMRINO.Substring(0, 4);
                         stok2.Fisno = "Z" + fisno2;
                         stok2.Sthar_Bf = fiyat.ToDouble();
                         stok2.Sthar_Nf = fiyat.ToDouble();
@@ -907,10 +907,11 @@ namespace NOVA.Controllers
                 catch (Exception exp)
                 {
                     sirket.LogOff();
-                    WebMail.SmtpServer = "192.168.2.13";
-                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Dertler Derya Olmuş", ISEMRINO + " sıkıntılı ayağınızı den alın!", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                     var message = exp.Message;
                     System.Diagnostics.Debug.Write(exp);
+                    WebMail.SmtpServer = "192.168.2.13";
+                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Dertler Derya Olmuş", "<p><b>"+ISEMRINO + "</b> sıkıntılı ayağınızı den alın!</p><p>Sıkıntı: "+message+"</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                    
                     return $"Hata: {message}";
                 }
                 finally
@@ -1185,18 +1186,18 @@ namespace NOVA.Controllers
             document.Close();
             Memory.Close();
 
-            if (!ETIKET_ONIZLEME)
-            {
-                try
-                {
+            //if (!ETIKET_ONIZLEME)
+            //{
+            //    try
+            //    {
 
-                    PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message;
-                }
-            }
+            //        PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        return ex.Message;
+            //    }
+            //}
 
             return ToBase64String(pdfPath);
         }

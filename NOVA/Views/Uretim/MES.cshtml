@@ -7,16 +7,33 @@
         <div class="machine-option">
             <select class="form-select form-select-sm shadow-none" onchange="PageChange(this.value)">
                 <option selected value="All">Tüm Makineler</option>
-                <option disabled value="DL">DL</option>
-                <option disabled value="PB">PB</option>
-                <option disabled value="RF">RF</option>
-                <option disabled value="SM">SM</option>
-                <option disabled value="MH">MH</option>
-                <option disabled value="BK">BK</option>
+                <option disabled value="BK01">BK01</option>
+                <option disabled value="DL01">DL01</option>
+                <option disabled value="PB01">PB01</option>
+                <option disabled value="PB02">PB02</option>
+                <option disabled value="RF01">RF01</option>
+                <option disabled value="RF02">RF02</option>
+                <option disabled value="RF03">RF03</option>
+                <option disabled value="SM01">SM01</option>
+                <option disabled value="SM02">SM02</option>
+                <option disabled value="SM03">SM03</option>
+                <option disabled value="TP01">TP01</option>
+                <option disabled value="MH01">MH01</option>
             </select>
+        </div>
+        <div class="machine-visible">
+            <button class="btn" onclick="ToggleMachineFilter()">
+                <span>Filtrele</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+
+            <div class="machine-list shadow-lg" style="display:none;">
+
+            </div>
         </div>
         <div class="timer-option">
             <select class="form-select form-select-sm shadow-none" onchange="ChangeIntervalTime(this.value)">
+                <option value="5000">5 Saniye</option>
                 <option value="30000" selected>30 Saniye</option>
                 <option value="60000">1 Dakika</option>
                 <option value="300000">5 Dakika</option>
@@ -30,12 +47,61 @@
     @Html.Partial("Partials/MES/ALL")
 </div>
 
+<style>
+    .machine-visible {
+        position: relative;
+        height: 2rem;
+        padding: 0;
+    }
+
+        .machine-visible button {
+            height: 100%;
+            width: 7rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--empty-text-color);
+            background-color: var(--empty-bg-color);
+            border: var(--bs-border-width) solid var(--empty-border-color);
+            border-radius: 0.25rem;
+        }
+
+            .machine-visible button:hover {
+                color: var(--empty-text-color);
+                background-color: var(--empty-bg-color);
+                border: var(--bs-border-width) solid var(--empty-border-color);
+                border-radius: 0.25rem;
+            }
+
+        .machine-visible .machine-list {
+            position: absolute;
+            top: 2.2rem;
+            width: 7rem;
+            height: 200px;
+            padding: 0.5rem;
+            z-index: 50;
+            background-color: var(--empty-bg-color);
+            border: var(--bs-border-width) solid var(--empty-border-color);
+            border-radius: 0.25rem;
+            overflow-y: auto;
+        }
+
+            .machine-visible .machine-list::-webkit-scrollbar {
+                width: 5px;
+            }
+</style>
+
 <script>
     var CurrentPage = "All";
     var Interval = 0;
+    var Machines = [];
 
     $(document).ready(() => {
         PageChange("All");
+
+        CreateMachineFilter();
+        MachineFilterFromLocalStorage();
+
 
         tippy('#RefreshButton', {
             content: 'Yenile',
@@ -46,23 +112,26 @@
         });
     });
 
+    $(document).click(function (e) {
+        if ($(e.target).parents(".machine-visible").length === 0) {
+            $(".machine-visible .machine-list").hide();
+        }
+    });
+
     function PageChange(MachineName) {
         $(`#nova-loader`).fadeIn('fast');
 
         $(`#${CurrentPage}`)
             .fadeOut('fast')
             .promise()
-            .done(() =>
-            {
+            .done(() => {
                 CurrentPage = MachineName;
 
-                switch (MachineName)
-                {
+                switch (MachineName) {
                     case "All":
                         AllPage();
                         break;
                     case "DL":
-                        DLPage()
                         break;
                 }
 
@@ -70,13 +139,11 @@
             });
     }
 
-    function RefreshPage()
-    {
+    function RefreshPage() {
         PageChange(CurrentPage);
     }
 
-    function ChangeIntervalTime(Time)
-    {
+    function ChangeIntervalTime(Time) {
         clearInterval(Interval);
 
         switch (CurrentPage) {
@@ -89,9 +156,124 @@
         }
     }
 
-    async function ShowError(Message)
-    {
+    async function ShowError(Message) {
         $(`#nova-loader`).fadeOut('fast');
         alert(Message);
+    }
+
+    function ToggleMachineFilter() {
+        $('.machine-visible .machine-list').toggle();
+    }
+
+
+    async function CreateMachineFilter() {
+        try {
+            var Response = await axios('http://192.168.2.13:83/api/makine/makineler');
+
+            Machines = Response.data;
+
+            var MachineFilter = '';
+
+            Response.data?.forEach((item) => {
+
+                var Check = item.HAT_KODU.includes('SM') ? '' : 'checked';
+
+                if (localStorage.getItem("MachineFilter") !== null) {
+                    var FilterSettings = JSON.parse(localStorage.getItem("MachineFilter"));
+
+                    Check = FilterSettings[item.HAT_KODU] !== undefined ? (FilterSettings[item.HAT_KODU] ? 'checked' : '') : Check;
+                }
+
+
+                MachineFilter += `<div class="form-check">
+                                    <input class="form-check-input machine-filter" ${Check} type="checkbox" value="" id="${item.HAT_KODU}Check">
+                                    <label class="form-check-label" for="${item.HAT_KODU}Check">
+                                        ${item.HAT_KODU}
+                                    </label>
+                                  </div>`;
+            });
+
+            $('.machine-visible .machine-list').html(MachineFilter);
+
+            $('.machine-filter').on('change', MachineFilterChange);
+        }
+        catch (e) {
+            ShowError("Bir hata oluştu.");
+        }
+    }
+
+    function MachineFilterChange() {
+        var BK01 = $('#BK01Check').is(':checked');
+        var DL01 = $('#DL01Check').is(':checked');
+        var PB01 = $('#PB01Check').is(':checked');
+        var PB02 = $('#PB02Check').is(':checked');
+        var RF01 = $('#RF01Check').is(':checked');
+        var RF02 = $('#RF02Check').is(':checked');
+        var RF03 = $('#RF03Check').is(':checked');
+        var SM01 = $('#SM01Check').is(':checked');
+        var SM02 = $('#SM02Check').is(':checked');
+        var SM03 = $('#SM03Check').is(':checked');
+        var TP01 = $('#TP01Check').is(':checked');
+        var MH01 = $('#MH01Check').is(':checked');
+
+        var FilterSettings = {
+            "BK01": BK01,
+            "DL01": DL01,
+            "PB01": PB01,
+            "PB02": PB02,
+            "RF01": RF01,
+            "RF02": RF02,
+            "RF03": RF03,
+            "SM01": SM01,
+            "SM02": SM02,
+            "SM03": SM03,
+            "TP01": TP01,
+            "MH01": MH01
+        }
+
+        localStorage.setItem("MachineFilter", JSON.stringify(FilterSettings));
+
+        MachineFilterApply();
+    }
+
+    function MachineFilterFromLocalStorage() {
+        if (localStorage.getItem("MachineFilter") !== null) {
+            var FilterSettings = JSON.parse(localStorage.getItem("MachineFilter"));
+
+            $('#BK01Check').prop('checked', FilterSettings.BK01);
+            $('#DL01Check').prop('checked', FilterSettings.DL01);
+            $('#PB01Check').prop('checked', FilterSettings.PB01);
+            $('#PB02Check').prop('checked', FilterSettings.PB02);
+            $('#RF01Check').prop('checked', FilterSettings.RF01);
+            $('#RF02Check').prop('checked', FilterSettings.RF02);
+            $('#RF03Check').prop('checked', FilterSettings.RF03);
+            $('#SM01Check').prop('checked', FilterSettings.SM01);
+            $('#SM02Check').prop('checked', FilterSettings.SM02);
+            $('#SM03Check').prop('checked', FilterSettings.SM03);
+            $('#TP01Check').prop('checked', FilterSettings.TP01);
+            $('#MH01Check').prop('checked', FilterSettings.MH01);
+        }
+    }
+
+    function MachineFilterApply() {
+        if (localStorage.getItem("MachineFilter") !== null) {
+            var FilterSettings = JSON.parse(localStorage.getItem("MachineFilter"));
+
+            $('#BK01').css('display', FilterSettings.BK01 ? 'flex' : 'none');
+            $('#DL01').css('display', FilterSettings.DL01 ? 'flex' : 'none');
+            $('#PB01').css('display', FilterSettings.PB01 ? 'flex' : 'none');
+            $('#PB02').css('display', FilterSettings.PB02 ? 'flex' : 'none');
+            $('#RF01').css('display', FilterSettings.RF01 ? 'flex' : 'none');
+            $('#RF02').css('display', FilterSettings.RF02 ? 'flex' : 'none');
+            $('#RF03').css('display', FilterSettings.RF03 ? 'flex' : 'none');
+            $('#SM01').css('display', FilterSettings.SM01 ? 'flex' : 'none');
+            $('#SM02').css('display', FilterSettings.SM02 ? 'flex' : 'none');
+            $('#SM03').css('display', FilterSettings.SM03 ? 'flex' : 'none');
+            $('#TP01').css('display', FilterSettings.TP01 ? 'flex' : 'none');
+            $('#MH01').css('display', FilterSettings.MH01 ? 'flex' : 'none');
+        }
+        else {
+            MachineFilterChange();
+        }
     }
 </script>

@@ -886,8 +886,6 @@
 
                                 $("#BKTable").find("select").eq(1).trigger("change");
                             }
-
-
                             break;
                         case 'PB':
                             $("#PBTable").find("select").eq(1).trigger("change");
@@ -994,19 +992,23 @@
                                     $("#BKTable").find("tr").eq(a).find("input").eq(0).trigger("blur");
                                 }
                             }
+                            KaydetAktivite()
                         } else {
                             $("#BKTable").find("select").eq(0).trigger("change");
                             $("#BKTable").find("select").eq(1).trigger("change");
+                            KaydetAktivite()
                         }
 
                         break;
                     case 'PB':
                         $("#PBTable").find("select").eq(0).trigger("change");
                         $("#PBTable").find("select").eq(1).trigger("change");
+                        KaydetAktivite()
                         break;
                     case 'RF':
                         $("#RFTable").find("select").eq(0).trigger("change");
                         $("#RFTable").find("select").eq(1).trigger("change");
+                        KaydetAktivite()
                         break;
                 }
                 KaydetAktivite()
@@ -1068,7 +1070,17 @@
     });
 
     $(document).ready(function () {
-        $(".js-select").select2();
+        $(".js-select").select2(
+            {
+                "language": {
+                    "noResults": function () {
+                        return "Sonuç bulunamadı.";
+                    }
+                },
+                escapeMarkup: function (markup) {
+                    return markup;
+                }
+            });
         var tpl = $.pivotUtilities.aggregatorTemplates;
         function drawPivot() {
 
@@ -1231,11 +1243,21 @@
                             $sel2.appendChild(opt1);
                         }
 
+                        
 
+                    } 
 
-                    }
-
-                    $(".js-select").select2();
+                    $(".js-select").select2(
+                        {
+                            "language": {
+                            "noResults": function () {
+                            return "Sonuç bulunamadı.";
+                        }
+                    },
+                        escapeMarkup: function (markup) {
+                            return markup;
+                        }
+                        });
                 }
 
                 KaydetAktivite();
@@ -1260,6 +1282,7 @@
                                     $sel3.appendChild(opt3);
                                 }
                             })
+                            OldStokAdi = null;
 
                         }
                     }
@@ -1491,7 +1514,17 @@
 
         }
         table.getElementsByTagName("tbody")[0].appendChild(tr);
-        $('.js-select').select2();
+        $('.js-select').select2(
+            {
+                "language": {
+                    "noResults": function () {
+                        return "Sonuç bulunamadı.";
+                    }
+                },
+                escapeMarkup: function (markup) {
+                    return markup;
+                }
+            });;
         KaydetAktivite();
     }
     function addRow1(value) {
@@ -1638,7 +1671,17 @@
 
                 }
             }
-            $('.js-select').select2();
+            $('.js-select').select2(
+                {
+                    "language": {
+                        "noResults": function () {
+                            return "Sonuç bulunamadı.";
+                        }
+                    },
+                    escapeMarkup: function (markup) {
+                        return markup;
+                    }
+                });
             if (tableId == "DLTable") {
                 table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].setAttribute("onblur", "ParcalioranUst(this)")
                 ParcalioranAlt(table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0])
@@ -1765,7 +1808,7 @@
                 } else {
                         PBTableCreatePivotData()
                         PBTableCreatePivot2Data()
-                    }
+                       }
                 }
                 break;
             case "DL":
@@ -1903,7 +1946,7 @@
 
         $(function () {
             document.getElementById("DLPivot").replaceChildren();
-            $("#tamamidiv").show()
+            $("#tamamidiv").hide()
             $("#DLPivot").pivot(
                 takiplist,
                 {
@@ -2229,6 +2272,7 @@
                 $("#tamamidiv").show();
             }
             BKTableLoadLocalData();
+            
         }
         else if (val.value == "PB")
         {
@@ -2661,7 +2705,17 @@
             }
         }
 
-        $(".js-select").select2("destroy").select2();
+        $(".js-select").select2("destroy").select2(
+            {
+                "language": {
+                    "noResults": function () {
+                        return "Sonuç bulunamadı.";
+                    }
+                },
+                escapeMarkup: function (markup) {
+                    return markup;
+                }
+            });;
 
         if (tableId=="DLTable")
             $("#seri").val(null).trigger("input");
@@ -2740,7 +2794,17 @@
 
                 TPCariGetir(Satir);
                 $('.js-select').select2("destroy");
-                $('.js-select').select2();
+                $('.js-select').select2(
+                    {
+                        "language": {
+                            "noResults": function () {
+                                return "Sonuç bulunamadı.";
+                            }
+                        },
+                        escapeMarkup: function (markup) {
+                            return markup;
+                        }
+                    });;
                 break;
             case "DL":
                 document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[2].value = "SEÇİNİZ";
@@ -2749,7 +2813,17 @@
                 document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("td")[9].innerHTML = null;
                 document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName('i')[0].style.display = "none";
                 $('.js-select').select2("destroy");
-                $('.js-select').select2();
+                $('.js-select').select2(
+                    {
+                        "language": {
+                            "noResults": function () {
+                                return "Sonuç bulunamadı.";
+                            }
+                        },
+                        escapeMarkup: function (markup) {
+                            return markup;
+                        }
+                    });;
                 document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[SatirNo].getElementsByTagName("select")[1].onchange();
                 break;
         };
@@ -3048,8 +3122,18 @@
                     localStorage.setItem('BKPivotToplamVeri', JSON.stringify(BKPivotToplamVeri));
 
                     BKTableCreatePivot2Data();
-                    $("#seri").val(null).trigger("input");
+                    $("#seri").val(null);
+                    $("#stokadi").html("");
+                    $("#adet").val(null);
+                    $("#kalinlik").val(null);
+                    $("#genislik").val(null);
+                    $("#kaplama").val(null);
+                    $("#kalite").val(null);
+                    $("#metraj").val(null);
+                    $("#agirlik").val(null);
+                    $("#tamami").prop('disabled',false);
                     $("#tamamidiv").show();
+                    KaydetAktivite()
                 });
             })
 
@@ -3231,6 +3315,16 @@ $.ajax({
     localStorage.setItem('PBPivotToplamVeri', JSON.stringify(PBPivotToplamVeri));
 
     PBTableCreatePivot2Data();
+    $("#seri").val(null);
+    $("#stokadi").html("");
+    $("#adet").val(null);
+    $("#kalinlik").val(null);
+    $("#genislik").val(null);
+    $("#kaplama").val(null);
+    $("#kalite").val(null);
+    $("#metraj").val(null);
+    $("#agirlik").val(null);
+    KaydetAktivite()
 });
 
         })
@@ -3409,7 +3503,17 @@ $.ajax({
 
                 RFTableCreatePivot2Data();
 
-                $("#seri").val(null).trigger("input");
+                $("#seri").val(null);
+                $("#stokadi").html("");
+                $("#adet").val(null);
+                $("#kalinlik").val(null);
+                $("#genislik").val(null);
+                $("#kaplama").val(null);
+                $("#kalite").val(null);
+                $("#metraj").val(null);
+                $("#agirlik").val(null);
+                $("#tamamidiv").hide();
+                KaydetAktivite();
             });
 
         })

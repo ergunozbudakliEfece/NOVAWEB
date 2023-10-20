@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Kiota.Abstractions;
 //using NetOpenX50;
 using NOVA.Models;
 using NOVA.Utils;
@@ -34,6 +35,10 @@ namespace NOVA.Controllers
         public ActionResult Maintenance()
         {
             return View();
+        }
+        public string GetDate()
+        {
+            return DateTime.Now.ToLocalTime().ToString();
         }
         public ActionResult Test()
         {

@@ -13,19 +13,19 @@
         .all-machines .machine {
             height: 95%;
             width: 265px;
-            min-width: 230px;
+            min-width: 265px;
             background-color: var(--empty-header-color);
             border-radius: var(--empty-border-radius);
             display: flex;
             flex-direction: column;
             justify-content: start;
             align-items: center;
-            padding: 1rem;
+            padding: 0.5rem;
             border: var(--bs-border-width) solid var(--empty-border-color);
         }
 
     .machine-title {
-        font-size: large;
+        font-size: x-large;
         font-weight: 500;
     }
 
@@ -33,7 +33,8 @@
         width: 100%;
         position: relative;
         padding: 0.75rem;
-        margin: 0.5rem 0;
+        margin: 0.7rem 0;
+        background-color: var(--empty-infobox-color);
         color: var(--empty-text-color);
         border: var(--bs-border-width) solid var(--empty-border-color);
         border-radius: var(--empty-border-radius);
@@ -44,43 +45,274 @@
             top: -10px;
             left: 10px;
             font-size: smaller;
-            background-color: var(--empty-header-color);
+            background: linear-gradient(0deg, var(--empty-infobox-color) 0 50%, var(--empty-header-color) 50% 100%);
         }
+
+        .info-box > .info {
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+            line-height: 1rem;
+            text-align: center;
+        }
+
+        .marquee-inner span{
+          height:50%;
+        }
+        .marquee-wrapper .marquee-block{
+          width: 200px;
+          height: 150px;
+          overflow: hidden;
+          box-sizing: border-box;
+          position: relative;
+        }
+        .marquee-inner{
+          display: block;
+          height: 200%;
+          width:200px;
+          position: absolute;
+        }
+        .marquee-inner.to-right{
+          animation: marqueeBottom 6s linear infinite;
+        }
+        @@keyframes marqueeBottom{
+          0% {
+            top: 0%;
+          }
+            100% {
+                top: -100%;
+            }
+        }
+
 </style>
 
 <div id="All" class="page all-machines" style="display: none;">
-    <div class="machine shadow">
-        <div class="machine-title">DL01</div>
-        <hr class="horizontal-line" />
 
-        <div class="info-box">
-            <span>OPERATÖR</span>
-
-            <div class="info d-flex justify-content-start align-items-center gap-3">
-                <img src="" class="rounded-1" height="50" width="50" />
-                <div class="d-flex flex-column justify-content-center">
-                    <span>Operatör Adı</span>
-                    <span>18.10.2023 09:27</span>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
-    async function AllPage() {
+    async function AllPage()
+    {
+        await CreateMachines();
+
         await FetchAllData();
 
         $(`#nova-loader`).fadeOut('fast');
         $(`#All`).fadeIn();
+
+        MachineFilterApply();
     }
 
-    async function FetchAllData() {
+    async function CreateMachines()
+    {
         try {
-            var response = await axios('https://api.github.com/users/hadley/orgs');
+            var Response = await axios('http://192.168.2.13:83/api/makine/makineler');
+
+            var Machines = '';
+
+            Response.data?.forEach((item) =>
+            {
+                Machines += MachineTemplate(item.HAT_KODU);
+            });
+
+            $('#All').html(Machines);
         }
         catch (e) {
             ShowError("Bir hata oluştu.");
         }
+    }
+
+    function MachineTemplate(Machine) {
+        return `<div id="${Machine}" class="machine shadow">
+                <div class="machine-title">${Machine}</div>
+                <hr class="horizontal-line" />
+                <div class="machine-content">
+
+                </div>
+            </div>`;
+    }
+
+    async function FetchAllData() {
+        try {
+            var Response = await axios('http://192.168.2.13:83/api/makine/mes');
+
+            UpdateMachineData(Response.data);
+        }
+        catch (e) {
+            ShowError("Bir hata oluştu.");
+        }
+    }
+
+    function UpdateMachineData(Data)
+    {
+        Data?.forEach((item) =>
+        {
+            var Content;
+
+            if (item.GIRDI_SERI_NO !== null)
+            {
+                switch (item.HATKODU)
+                {
+                    case "DL01":
+                        Content = RuloAciciBox(item) + Operator1Box(item) + KombinasyonBox(item) + UretilenBox(item) + Operator2Box(item);
+                        break;
+                    default:
+                        Content = RuloAciciBox(item) + Operator1Box(item) + UretilenBox(item) + Operator2Box(item);
+                        break;
+                }
+            }
+            else
+            {
+                Content = "Bilgi Bulunamadı."
+            }
+
+            $(`#${item.HATKODU} .machine-content`).html(Content);
+        });
+
+        MachineFilterApply();
+    }
+
+    function RuloAciciBox(Data)
+    {
+        var RuloAcici = Data.SERI_NO !== null ?
+                        `<div class="info-box">
+                            <span>RULO AÇICI</span>
+                            <div class="info">
+                                <span><b>${Data.GIRDI_SERI_NO}</b></span>
+                                <span>${Data.GIRDI_STOK_KODU}</span>
+                                <span>${Data.GIRDI_STOK_ADI}</span>
+                                <span>${Data.GIRDI_KALINLIK} - ${Data.GIRDI_GENISLIK} - ${Data.GIRDI_KALITE} - ${Data.GIRDI_KAPLAMA}</span>
+                                <span>${moment(Data.GIRDI_KAYIT_TARIHI).format('DD.MM.YYYY HH:mm:ss')}</span>
+                            </div>
+                        </div>`
+                        :
+                        `<div class="info-box">
+                            <span>RULO AÇICI</span>
+                            <div class="info">
+                                <span>Bilgi Bulunamadı.</span>
+                            </div>
+                        </div>`;
+
+        return RuloAcici;
+    }
+
+    function KombinasyonBox(Data)
+    {
+        var Content = '';
+
+        Data.SERI_KOMBINASYON?.split(",").forEach((item) =>
+        {
+            Content += `<div class="marquee-item">
+				            <p class="text-white">${item}</p>
+                        </div>`
+        });
+
+        var Kombinasyon = Data.SERI_KOMBINASYON !== null ?
+            `<div class="info-box">
+                    <span>KOMBİNASYON</span>
+                    <div class="info">
+                        <div class="marquee-wrapper">
+		<div class="marquee-block">
+			<div class="marquee-inner to-right">
+				<span>
+					${Content}
+				</span>
+				<span>
+					${Content}
+				</span>
+			</div>
+		</div>
+	</div>
+                    
+                        
+                    </div>
+            </div>`
+            :
+            `<div class="info-box">
+                    <span>KOMBİNASYON</span>
+                    <div class="info">
+                        <span>Bilgi Bulunamadı.</span>
+                    </div>
+                </div>`;
+
+        return Kombinasyon;
+    }
+
+    function UretilenBox(Data)
+    {
+        var RuloAcici = Data.GIRDI_SERI_NO !== null ?
+            `<div class="info-box">
+                    <span>ÜRETİLEN</span>
+                    <div class="info">
+                        <span><b>${Data.IE_STOK_KODU}</b></span>
+                        <span>${Data.IE_STOK_ADI}</span>
+                        <span>${Data.SU_TARIH}</span>
+                    </div>
+                </div>`
+            :
+            `<div class="info-box">
+                    <span>ÜRETİLEN</span>
+                    <div class="info">
+                        <span>Bilgi Bulunamadı.</span>
+                    </div>
+                </div>`;
+
+        return RuloAcici;
+    }
+
+    function Operator1Box(Data)
+    {
+        var OperatorBox = Data.OPERATOR1 !== null ?
+                        `<div class="info-box">
+                                <span>OPERATÖR 1</span>
+                                <div class="d-flex justify-content-start align-items-center gap-3">
+                                    <img src="/assets/img/avatars/${Data.OPERATOR1}.png" class="rounded-circle" height="50" width="50" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                                    <div class="d-flex flex-column justify-content-center">
+                                        <span>${Data.OPERATOR1_NAME}</span>
+                                    </div>
+                                </div>
+                            </div>`
+                        :
+                        `<div class="info-box">
+                                <span>OPERATÖR 1</span>
+                                <div class="d-flex justify-content-start align-items-center gap-3">
+                                    <img src="/assets/img/avatars/10000.png" class="rounded-circle" height="50" width="50" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                                    <div class="d-flex flex-column justify-content-center">
+                                        <span>Bilgi Bulunamadı.</span>
+                                    </div>
+                                </div>
+                            </div>`
+                        ;
+
+        return OperatorBox;
+    }
+
+    function Operator2Box(Data) {
+        var OperatorBox = Data.OPERATOR2 !== null ?
+                        `<div class="info-box">
+                            <span>OPERATÖR 2</span>
+                            <div class="d-flex justify-content-start align-items-center gap-3">
+                                <img src="/assets/img/avatars/${Data.OPERATOR2}.png" class="rounded-circle" height="50" width="50" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                                <div class="d-flex flex-column justify-content-center">
+                                    <span>${Data.OPERATOR2_NAME}</span>
+                                </div>
+                            </div>
+                        </div>`
+                        :
+                        `<div class="info-box">
+                            <span>OPERATÖR 2</span>
+                            <div class="d-flex justify-content-start align-items-center gap-3">
+                                <img src="/assets/img/avatars/10000.png" class="rounded-circle" height="50" width="50" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                                <div class="d-flex flex-column justify-content-center">
+                                    <span>Bilgi Bulunamadı.</span>
+                                </div>
+                            </div>
+                        </div>`
+                        ;
+
+        return OperatorBox;
     }
 </script>
