@@ -1,0 +1,233 @@
+﻿<style>
+    .all-machines {
+        height: calc(100svh - 45px - 3.75rem);
+        max-width: -moz-available;
+        max-width: -webkit-fill-available;
+        max-width: fill-available;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+    }
+
+        .all-machines .machine {
+            height: 100%;
+            width: 265px;
+            min-width: 265px;
+            background-color: var(--empty-header-color);
+            border-radius: var(--empty-border-radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            padding: 0.5rem;
+            border: var(--bs-border-width) solid var(--empty-border-color);
+        }
+
+    .machine-content {
+        width: 100%;
+        overflow: hidden;
+        overflow-y: auto;
+    }
+
+    .machine-title {
+        font-size: x-large;
+        font-weight: 500;
+    }
+
+    .info-box {
+        width: 100%;
+        position: relative;
+        padding: 0.75rem;
+        margin: 0.7rem 0;
+        background-color: var(--empty-infobox-color);
+        color: var(--empty-text-color);
+        border: var(--bs-border-width) solid var(--empty-border-color);
+        border-radius: var(--empty-border-radius);
+    }
+
+        .info-box > span {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            font-size: smaller;
+            background: linear-gradient(0deg, var(--empty-infobox-color) 0 50%, var(--empty-header-color) 50% 100%);
+        }
+
+        .info-box > .info {
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            gap: 0.5rem;
+            line-height: 1rem;
+            text-align: center;
+        }
+</style>
+
+<div id="All" class="page all-machines" style="display: none;">
+    @Html.Partial("Partials/MES/AllMachines/BK01")
+    @Html.Partial("Partials/MES/AllMachines/DL01")
+    @Html.Partial("Partials/MES/AllMachines/PB01")
+    @Html.Partial("Partials/MES/AllMachines/PB02")
+    @Html.Partial("Partials/MES/AllMachines/RF01")
+    @Html.Partial("Partials/MES/AllMachines/RF02")
+    @Html.Partial("Partials/MES/AllMachines/RF03")
+    @Html.Partial("Partials/MES/AllMachines/SM01")
+    @Html.Partial("Partials/MES/AllMachines/SM02")
+    @Html.Partial("Partials/MES/AllMachines/SM03")
+    @Html.Partial("Partials/MES/AllMachines/TP01")
+    @Html.Partial("Partials/MES/AllMachines/MH01")
+</div>
+
+<script>
+    async function AllPage()
+    {
+        await FetchAllData();
+
+        $(`#nova-loader`).fadeOut('fast');
+        $(`#All`).fadeIn();
+
+        MachineFilterApply();
+    }
+
+    async function FetchAllData() {
+        try {
+            var Response = await axios('http://192.168.2.13:83/api/makine/mes');
+
+            UpdateBK01(Response.data.filter(x => x.HATKODU == "BK01")[0]);
+            UpdateDL01(Response.data.filter(x => x.HATKODU == "DL01")[0]);
+            UpdatePB01(Response.data.filter(x => x.HATKODU == "PB01")[0]);
+            UpdatePB02(Response.data.filter(x => x.HATKODU == "PB02")[0]);
+            UpdateRF01(Response.data.filter(x => x.HATKODU == "RF01")[0]);
+            UpdateRF02(Response.data.filter(x => x.HATKODU == "RF02")[0]);
+            UpdateRF03(Response.data.filter(x => x.HATKODU == "RF03")[0]);
+            UpdateSM01(Response.data.filter(x => x.HATKODU == "SM01")[0]);
+            UpdateSM02(Response.data.filter(x => x.HATKODU == "SM02")[0]);
+            UpdateSM03(Response.data.filter(x => x.HATKODU == "SM03")[0]);
+            UpdateTP01(Response.data.filter(x => x.HATKODU == "TP01")[0]);
+            UpdateMH01(Response.data.filter(x => x.HATKODU == "MH01")[0]);
+        }
+        catch (e) {
+            ShowError("Bir hata oluştu.");
+        }
+    }
+
+    function RuloAciciBox(Data)
+    {
+        var RuloAcici = Data.GIRDI_SERI_NO !== null ?
+                    `   <span><b>${Data.GIRDI_SERI_NO}</b></span>
+                        <span>${Data.GIRDI_STOK_KODU}</span>
+                        <span>${Data.GIRDI_STOK_ADI}</span>
+                        <span>${Data.GIRDI_KALINLIK} - ${Data.GIRDI_GENISLIK} - ${Data.GIRDI_KALITE} - ${Data.GIRDI_KAPLAMA}</span>
+                        <span>${moment(Data.GIRDI_KAYIT_TARIHI).format('DD.MM.YYYY HH:mm:ss')}</span>`
+                        :
+                        `<span>Bilgi Bulunamadı.</span>`;
+
+        return RuloAcici;
+    }
+
+    function UretilecekIsEmriBox(Data)
+    {
+        var UretilecekIsEmri = Data.IE_ISEMRINO !== null ?
+            `<span><b>${Data.IE_ISEMRINO}</b></span>
+            <span>${Data.IE_STOK_KODU}</span>
+            <span>${Data.IE_STOK_ADI}</span>
+            <span>${Data.IE_MIKTAR}</span>
+            <span>${Data.IE_MIKTAR2}</span>`
+            :
+            `<span>Bilgi Bulunamadı.</span>`;
+
+        return UretilecekIsEmri;
+    }
+
+    function KombinasyonBox(Data)
+    {
+        var Content = '';
+
+        Data.SERI_KOMBINASYON?.split(",").forEach((item) =>
+        {
+            Content += `<span>${item}</span>`
+        });
+
+        var Kombinasyon = Data.SERI_KOMBINASYON !== null ? `${Content}` : `<span>Bilgi Bulunamadı.</span>`;
+
+        return Kombinasyon;
+    }
+
+    function UretilenBox(Data)
+    {
+        var Uretilen = Data.SRT_SERI_NO !== null ?
+            `
+            <span><b>${Data.SRT_SERI_NO}</b></span>
+            <span>${Data.SRT_IE_NO}</span>
+            <span>${Data.SRT_STOK_KODU}</span>
+            <span>${Data.SRT_STOK_ADI}</span>
+            <span>${Data.SRT_MIKTAR} KG</span>
+            <span>${Data.SRT_MIKTAR2} AD</span>
+            <span>${moment(Data.SU_TARIH).format('DD.MM.YYYY HH:mm:ss')}</span>`
+            :
+            `<span>Bilgi Bulunamadı.</span>`;
+
+        return Uretilen;
+    }
+
+    function Operator1Box(Data)
+    {
+        var OperatorBox = Data.OPERATOR1 !== null ?
+                        `<div class="d-flex justify-content-start align-items-center gap-2">
+                            <img src="/assets/img/avatars/${Data.OPERATOR1}.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                            <span>${Data.OPERATOR1_NAME}</span>
+                        </div>`
+                        :
+                        `<div class="d-flex justify-content-start align-items-center gap-2">
+                            <img src="/assets/img/avatars/10000.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                            <span>Bilgi Bulunamadı.</span>
+                        </div>`
+                        ;
+
+        return OperatorBox;
+    }
+
+    function Operator2Box(Data) {
+        var OperatorBox = Data.OPERATOR2 !== null ?
+            `<div class="d-flex justify-content-start align-items-center gap-2">
+                            <img src="/assets/img/avatars/${Data.OPERATOR2}.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                            <span>${Data.OPERATOR2_NAME}</span>
+                        </div>`
+            :
+            `<div class="d-flex justify-content-start align-items-center gap-2">
+                            <img src="/assets/img/avatars/10000.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                            <span>Bilgi Bulunamadı.</span>
+                        </div>`
+            ;
+
+        return OperatorBox;
+    }
+
+    function GunlukOzetBox(Data) {
+        var Ozet =
+            `
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                    <span><b>MİKTAR</b></span>
+                    <span>${IsNull(Data.GUNLUK_TOPLAM_MIKTAR)}</span>
+                </div>    
+                <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                    <span><b>HURDA</b></span>
+                    <span>${IsNull(Data.GUN_TOPLAM_HURDA)}</span>
+                </div>    
+                <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                    <span><b>2. KALİTE</b></span>
+                    <span>${IsNull(Data.GUN_TOPLAM_KALITE2)}</span>
+                </div>`;
+
+        return Ozet;
+    }
+
+    function IsNull(Value)
+    {
+        return Value === null ? '-' : Value;
+    }
+</script>

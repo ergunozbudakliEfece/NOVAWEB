@@ -343,8 +343,9 @@
                     <label class="btn btn-outline-primary" for="uretimegirenlerrd">ÜRETİME GİRENLER</label>
                 </div>
             </div>
-            <div class="col-sm-auto d-flex" id="barkodbuttoncol">
-                <button type="button" id="BarkodButton" onclick="BarkodModal()" class="btn btn-primary showmodal" style="width:50px;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Barkod</span>"><i class="bi bi-qr-code-scan"></i></button>
+            <div class="col-sm-auto gap-1 d-flex" id="barkodbuttoncol">
+                <button type="button" id="BarkodButton" onclick="BarkodModal()" class="btn btn-primary showmodal" style="width:50px;display:flex;justify-content:center;align-items:center" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Barkod</span>"><i class="bi bi-qr-code-scan"></i></button>
+                <button id="RefreshButton" type="button" class="btn btn-primary" onclick="ResetControl()" style="width:50px;display:flex;justify-content:center;align-items:center"><i class="bi bi-arrow-clockwise"></i></button>
             </div>
         </div>
 
@@ -1255,6 +1256,8 @@
             uretimControl='TP01'
         }
         function change(value) {
+            $("#btnradio1112").prop("checked", false);
+            uretimControl = '';
             if (value == 0) {
                 constant = 0;
                 KapatilacakIsEmirleri = [];
@@ -1263,6 +1266,7 @@
                 $("#tablo").show();
                 $("#scanner").hide();
                 $('#BarkodButton').hide();
+                $('#RefreshButton').hide();
                 $('#BekleyenIsEmirleriMakine').hide();
                 $('#BekleyenIsEmirleriTablo').hide();
                 $('.iefiltre').hide();
@@ -1301,6 +1305,7 @@
             {
                 KapatilacakIsEmirleri = [];
                 constant = 1;
+                
                 $("#label").html("Girdi")
                 $('#isemirlerinikapatbtn').hide();
                 $("#tablo").hide();
@@ -1313,6 +1318,7 @@
                 $("#makineler4").show();
                 $("#scanner").show();
                 $('#BarkodButton').show();
+                $('#RefreshButton').show();
                 $('#BekleyenIsEmirleriMakine').hide();
                 $('#BekleyenIsEmirleriTablo').hide();
                 $('#UretimeGirenlerMakine').hide();
@@ -1366,41 +1372,64 @@
                                         'success'
                                     )
                                 })
+                                uretimControl = '';
 
                             }
                         })
 
                     } else {
                         Swal.fire(
-                            'Uyarı!',
-                            'YOK',
+                            'Karekodunu okutmuş olduğunuz ürün için iş emri kaydı bulunmamaktadır!',
+                            'Ürünü TP01 için üretime almak istiyorsanız, lütfen yukarıdaki butonlardan TP\'yi seçiniz.',
                             'error'
-                        )
+                        ).then((result) => {
+                            if (result.isConfirmed) {
+                                lastResult = 0;
+                            }
+                        })
+                        uretimControl = '';
                     }
                 })
             } else {
-                Swal.fire({
-                    text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Evet',
-                    cancelButtonText: "Hayır"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        u = "http://192.168.2.13:83/api/ie/hat/TP01/" + decodedText + "/" + userid;
-                        $.getJSON(u, function () {
+                u = "http://192.168.2.13:83/api/seri/kontrol/" + decodedText
+                $.getJSON(u, function (data) {
+                   
+                    if (data.length != 0) {
+                        Swal.fire({
+                            text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Evet',
+                            cancelButtonText: "Hayır"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                u = "http://192.168.2.13:83/api/ie/hat/TP01/" + decodedText + "/" + userid;
+                                $.getJSON(u, function () {
 
-                        }).done(function () {
-                            Swal.fire(
-                                'Başarılı!',
-                                'Kayıt başarılı',
-                                'success'
-                            )
+                                }).done(function () {
+                                    Swal.fire(
+                                        'Başarılı!',
+                                        'Kayıt başarılı',
+                                        'success'
+                                    )
+                                })
+
+                            }
                         })
-
+                    } else {
+                        Swal.fire(
+                            'Başarısız!',
+                            'Okutmuş olduğunuz barkod numarası bulunamamaktadır!',
+                            'warning'
+                        ).then((result) => {
+                            if (result.isConfirmed) {
+                                lastResult = 0;
+                            }
+                        })
                     }
                 })
+                
 
             }
 
@@ -1429,6 +1458,7 @@
                 $("#makineler").hide();
                 $("#scanner").hide();
                 $('#BarkodButton').hide();
+                $('#RefreshButton').hide();
                 $('.iefiltre').hide();
                 $('#makineler4').hide();
                 $('#UretimeGirenlerMakine').hide();
@@ -1466,7 +1496,7 @@
                 $("#makineler").hide();
                 $("#scanner").hide();
                 $('#BarkodButton').hide();
-
+                $('#RefreshButton').hide();
                 $("#UretimListeTable").hide();
 
                 $('#BekleyenIsEmirleriMakine').html('');
@@ -2773,6 +2803,10 @@
          document.getElementById(btnid).onclick();
      }
  })
+        }
+        function ResetControl() {
+            uretimControl = "";
+            $("#btnradio1112").prop("checked", false);
         }
     </script>
 </body>
