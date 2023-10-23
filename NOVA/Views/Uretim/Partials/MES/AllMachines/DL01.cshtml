@@ -21,14 +21,9 @@
         <div class="info-box kombinasyon">
             <span>KOMBİNASYON</span>
             <div class="info" style="height:60px;overflow:hidden;position:relative;">
-                <marquee behavior="scroll" direction="up" height="80px" scrollamount="2" scrolldelay="0" style="position:absolute;top:-10px;" >
-                    <div class="d-flex flex-column justify-content-center align-items-center kombinasyon-scroll">
-                        <span>a</span>
-                        <span>b</span>
-                        <span>c</span>
-                        <span>d</span>
-                        <span>e</span>
-                        <span>f</span>
+                <marquee class="marq" behavior="scroll" direction="up" height="80px" scrollamount="2" scrolldelay="0" onmouseover="this.stop();" onmouseout="this.start();">
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        <div class=" d-flex flex-column justify-content-center align-items-start kombinasyon-scroll"></div>
                     </div>
                 </marquee>
             </div>
@@ -52,10 +47,26 @@
     </div>
 </div>
 
+<style>
+    .marq {
+        position: absolute;
+        top: -10px;
+    }
+</style>
+
 
 <script>
     function UpdateDL01(Data)
     {
+        if (KombinasyonBox(Data) == '<span>Bilgi Bulunamadı.</span>') {
+            $('#DL01 .kombinasyon .info .marq').hide();
+            $('#DL01 .kombinasyon .info').html('<span>Bilgi Bulunamadı.</span>');
+            $('#DL01 .kombinasyon .info').css('height', '25px');
+        }
+        else {
+            $('#DL01 .kombinasyon .info .marq').show();
+        }
+
         $('#DL01 .rulo-acici .info').html(RuloAciciBox(Data));
         $('#DL01 .operator1 .info').html(Operator1Box(Data));
         $('#DL01 .uretilecek-is-emri .info').html(UretilecekIsEmriBox(Data));

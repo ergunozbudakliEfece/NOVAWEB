@@ -571,6 +571,56 @@ namespace NOVA.Controllers
 
             return Etiket;
         }
+        public string Hurda(string hatkodu,string stokkodu,string mik1)
+        {
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                           "TEST2022",
+                                           "TEMELSET",
+                                           "",
+                                           Request.Cookies["UserName"].Value,
+                                           LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                var stokadi = GetStokAdlari().Find(x => x.STOK_KODU == stokkodu).STOK_ADI;
+                netRS.Ac("SELECT MAX(FISNO) AS FISNO FROM TEST2022..TBLSTHAR");
+                var fisno = (netRS.FieldByName("FISNO").AsString.Substring(1, netRS.FieldByName("FISNO").AsString.Count() - 1).ToInt() + 1).ToString().PadLeft(14, '0');
+                StokHareket stok = kernel.yeniStokHareket(sirket);
+                stok.Stok_Kodu = stokkodu;
+                stok.Sthar_Aciklama = stokadi;
+                stok.Fisno = "Z" + fisno;
+                stok.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                stok.Proje_Kodu = "1";
+                stok.Sthar_Gckod = "C";
+                stok.Sthar_Bf = 0;
+                stok.Sthar_Nf = 0;
+                stok.Sthar_Gcmik = mik1.ToDouble();
+                stok.Sthar_Gcmik2 = 0;
+                stok.DEPO_KODU = 45;
+                stok.Sthar_Htur = "A";
+                stok.kayitYeni();
+                StokHareket stok2 = kernel.yeniStokHareket(sirket);
+                stok2.Stok_Kodu = "HURDA";
+                stok2.Sthar_Aciklama = stokadi;
+                stok2.Fisno = "Z" + fisno;
+                stok2.Sthar_Bf = 0;
+                stok2.Sthar_Nf = 0;
+                stok2.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                stok2.Proje_Kodu = "1";
+                stok2.Sthar_Gckod = "G";
+                stok2.Sthar_Gcmik = stok.Sthar_Gcmik;
+                stok2.Sthar_Gcmik2 = 0;
+                stok2.DEPO_KODU = 45;
+                stok2.Sthar_Htur = "A";
+                stok2.kayitYeni();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+            return "BAŞARILI";
+        }
         public string IkinciKalite(string hatkodu, string stokkodu, string genislik, string mik1, string mik2,string stokadi,string tip)
         {
             var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;

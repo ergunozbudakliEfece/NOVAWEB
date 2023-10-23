@@ -1,6 +1,6 @@
 ﻿<style>
     .all-machines {
-        height: calc(100svh - 45px - 3.75rem);
+        height: calc(100svh - 45px - 4.50rem);
         max-width: -moz-available;
         max-width: -webkit-fill-available;
         max-width: fill-available;
@@ -32,7 +32,7 @@
     }
 
     .machine-title {
-        font-size: x-large;
+        font-size: larger;
         font-weight: 500;
     }
 
@@ -56,10 +56,10 @@
         }
 
         .info-box > .info {
-            display:flex;
-            flex-direction:column;
-            justify-content:center;
-            align-items:center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             gap: 0.5rem;
             line-height: 1rem;
             text-align: center;
@@ -82,8 +82,7 @@
 </div>
 
 <script>
-    async function AllPage()
-    {
+    async function AllPage() {
         await FetchAllData();
 
         $(`#nova-loader`).fadeOut('fast');
@@ -114,58 +113,53 @@
         }
     }
 
-    function RuloAciciBox(Data)
-    {
+    function RuloAciciBox(Data) {
         var RuloAcici = Data.GIRDI_SERI_NO !== null ?
-                    `   <span><b>${Data.GIRDI_SERI_NO}</b></span>
+            `   <span><b>${Data.GIRDI_SERI_NO}</b></span>
                         <span>${Data.GIRDI_STOK_KODU}</span>
                         <span>${Data.GIRDI_STOK_ADI}</span>
                         <span>${Data.GIRDI_KALINLIK} - ${Data.GIRDI_GENISLIK} - ${Data.GIRDI_KALITE} - ${Data.GIRDI_KAPLAMA}</span>
                         <span>${moment(Data.GIRDI_KAYIT_TARIHI).format('DD.MM.YYYY HH:mm:ss')}</span>`
-                        :
-                        `<span>Bilgi Bulunamadı.</span>`;
+            :
+            `<span>Bilgi Bulunamadı.</span>`;
 
         return RuloAcici;
     }
 
-    function UretilecekIsEmriBox(Data)
-    {
+    function UretilecekIsEmriBox(Data) {
         var UretilecekIsEmri = Data.IE_ISEMRINO !== null ?
             `<span><b>${Data.IE_ISEMRINO}</b></span>
             <span>${Data.IE_STOK_KODU}</span>
             <span>${Data.IE_STOK_ADI}</span>
-            <span>${Data.IE_MIKTAR}</span>
-            <span>${Data.IE_MIKTAR2}</span>`
+            <span>${NumFormat(Data.IE_MIKTAR, "KG")}</span>
+            <span>${NumFormat(Data.IE_MIKTAR2, "AD")}</span>`
             :
             `<span>Bilgi Bulunamadı.</span>`;
 
         return UretilecekIsEmri;
     }
 
-    function KombinasyonBox(Data)
-    {
+    function KombinasyonBox(Data) {
         var Content = '';
 
-        Data.SERI_KOMBINASYON?.split(",").forEach((item) =>
-        {
+        Data.SERI_KOMBINASYON?.split(",").forEach((item) => {
             Content += `<span>${item}</span>`
         });
 
-        var Kombinasyon = Data.SERI_KOMBINASYON !== null ? `${Content}` : `<span>Bilgi Bulunamadı.</span>`;
+        var Kombinasyon = Data.SERI_KOMBINASYON !== null ? ` ${Content}` : `<span>Bilgi Bulunamadı.</span>`;
 
         return Kombinasyon;
     }
 
-    function UretilenBox(Data)
-    {
+    function UretilenBox(Data) {
         var Uretilen = Data.SRT_SERI_NO !== null ?
             `
             <span><b>${Data.SRT_SERI_NO}</b></span>
             <span>${Data.SRT_IE_NO}</span>
             <span>${Data.SRT_STOK_KODU}</span>
             <span>${Data.SRT_STOK_ADI}</span>
-            <span>${Data.SRT_MIKTAR} KG</span>
-            <span>${Data.SRT_MIKTAR2} AD</span>
+            <span>${NumFormat(Data.SRT_MIKTAR, 'KG')}</span>
+            <span>${NumFormat(Data.SRT_MIKTAR2, 'AD')}</span>
             <span>${moment(Data.SU_TARIH).format('DD.MM.YYYY HH:mm:ss')}</span>`
             :
             `<span>Bilgi Bulunamadı.</span>`;
@@ -173,19 +167,18 @@
         return Uretilen;
     }
 
-    function Operator1Box(Data)
-    {
+    function Operator1Box(Data) {
         var OperatorBox = Data.OPERATOR1 !== null ?
-                        `<div class="d-flex justify-content-start align-items-center gap-2">
+            `<div class="d-flex justify-content-start align-items-center gap-2">
                             <img src="/assets/img/avatars/${Data.OPERATOR1}.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
                             <span>${Data.OPERATOR1_NAME}</span>
                         </div>`
-                        :
-                        `<div class="d-flex justify-content-start align-items-center gap-2">
+            :
+            `<div class="d-flex justify-content-start align-items-center gap-2">
                             <img src="/assets/img/avatars/10000.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
                             <span>Bilgi Bulunamadı.</span>
                         </div>`
-                        ;
+            ;
 
         return OperatorBox;
     }
@@ -209,25 +202,28 @@
     function GunlukOzetBox(Data) {
         var Ozet =
             `
-            <div class="d-flex justify-content-center align-items-center gap-3">
+            <div class="d-flex justify-content-center align-items-center gap-3" style="font-size:small;">
                 <div class="d-flex flex-column justify-content-center align-items-center gap-1">
                     <span><b>MİKTAR</b></span>
-                    <span>${IsNull(Data.GUNLUK_TOPLAM_MIKTAR)}</span>
-                </div>    
+                    <span>${NumFormat(Data.GUNLUK_TOPLAM_MIKTAR, 'KG')}</span>
+                </div>
                 <div class="d-flex flex-column justify-content-center align-items-center gap-1">
                     <span><b>HURDA</b></span>
-                    <span>${IsNull(Data.GUN_TOPLAM_HURDA)}</span>
-                </div>    
+                    <span>${NumFormat(Data.GUN_TOPLAM_HURDA, 'KG')}</span>
+                </div>
                 <div class="d-flex flex-column justify-content-center align-items-center gap-1">
                     <span><b>2. KALİTE</b></span>
-                    <span>${IsNull(Data.GUN_TOPLAM_KALITE2)}</span>
+                    <span>${NumFormat(Data.GUN_TOPLAM_KALITE2, 'KG')}</span>
                 </div>`;
 
         return Ozet;
     }
 
-    function IsNull(Value)
-    {
+    function IsNull(Value) {
         return Value === null ? '-' : Value;
+    }
+
+    function NumFormat(Value, Unit = '') {
+        return Value !== null ? `${parseFloat(Value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${Unit}` : '-';
     }
 </script>

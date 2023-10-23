@@ -1305,7 +1305,7 @@
             {
                 KapatilacakIsEmirleri = [];
                 constant = 1;
-                
+
                 $("#label").html("Girdi")
                 $('#isemirlerinikapatbtn').hide();
                 $("#tablo").hide();
@@ -1393,7 +1393,7 @@
             } else {
                 u = "http://192.168.2.13:83/api/seri/kontrol/" + decodedText
                 $.getJSON(u, function (data) {
-                   
+
                     if (data.length != 0) {
                         Swal.fire({
                             text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
@@ -1429,7 +1429,7 @@
                         })
                     }
                 })
-                
+
 
             }
 
@@ -1531,6 +1531,8 @@
 
             $.getJSON(url1, function (data) {
 
+
+
                 for (let i = 0; i < data.length; i++) {
                     var b = document.createElement("button");
                     b.className = "mak btn btn-outline-secondary";
@@ -1546,7 +1548,7 @@
                     if(sabit==="TP01"){
 
                         b.setAttribute("data-kul2", data[i].KULL_MIKTAR2);
-                    b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
+                        b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
 
                          b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> "+data[i].SIP_CARI_ISIM+"</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || "+data[i].KULL_MIKTAR2.toLocaleString()+ " " + data[i].OLCU_BR2 + " / "+data[i].TOPLAM_MIKTAR2.toLocaleString()+ " " + data[i].OLCU_BR2 +"</span>";
                     }else{
@@ -1572,6 +1574,28 @@
 
                     document.getElementById("stokadlari").appendChild(b);
                 }
+                var b = document.createElement("button");
+                b.className = "mak btn btn-outline-secondary";
+                b.style.width = "295px";
+                b.style.height = "145px";
+                b.innerHTML = "<b>İKİNCİ KALİTE</b></br>";
+                b.setAttribute("onclick", "showhurdamodal(this)");
+                b.setAttribute("data-tip", 'İKİNCİ KALİTE');
+                b.setAttribute("data-stokkodu", data[0].STOK_KODU);
+                b.setAttribute("data-genislik", data[0].BANT_GENISLIGI);
+                b.setAttribute("data-hat", data[0].HAT_KODU);
+                document.getElementById("stokadlari").appendChild(b);
+                b = document.createElement("button");
+                b.className = "mak btn btn-outline-secondary";
+                b.style.width = "295px";
+                b.style.height = "145px";
+                b.innerHTML = "<b>HURDA</b></br>";
+                b.setAttribute("data-stokkodu", data[0].STOK_KODU);
+                b.setAttribute("data-tip", 'HURDA');
+                b.setAttribute("data-genislik", data[0].BANT_GENISLIGI);
+                b.setAttribute("data-hat", data[0].HAT_KODU);
+                b.setAttribute("onclick", "showhurdamodal(this)");
+                document.getElementById("stokadlari").appendChild(b);
 
             }).done(function () {
                 $("#progress").hide();
@@ -1613,7 +1637,7 @@
             }
             if (m1 > max) {
                 $("#miktar11").val(max)
-                
+
                 const Toast = Swal.mixin({
                     toast: true,
                     position: 'center',
@@ -1638,7 +1662,7 @@
                         text: 'İş emrindeki üretilebilir miktar ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
                     });
                 }
-                
+
 
             }
             if (m1 == 0) {
@@ -1843,6 +1867,18 @@
             let myModal = new bootstrap.Modal(mid);
             myModal.show();
         }
+        function showhurdamodal(value) {
+            hat = value.dataset.hat;
+            stok = value.dataset.stokkodu;
+            $("#HurdaLabel").html(value.dataset.tip);
+            if (value.dataset.tip == 'HURDA') {
+
+                $("#hurdamiktar2div").hide();
+            } else {
+                $("#hurdamiktar2div").show();
+            }
+            $('#HurdaModal').modal('show');
+        }
         function showmodal(value) {
             hat = value.dataset.hat;
             stok = value.dataset.stokkodu;
@@ -1851,7 +1887,7 @@
             max = parseInt(value.dataset.top) - parseInt(value.dataset.kul)
             max2 = parseInt(value.dataset.mik2)
             $.getJSON("http://192.168.2.13:83/api/ie/bakiye/" + hat, function (d) {
-                
+
                 if (max > parseFloat(d[0].MAK_KULLANILABILIR)) {
                     max = d[0].MAK_KULLANILABILIR;
                     bant = true;
@@ -1921,7 +1957,7 @@
                 document.getElementById("modalicon").setAttribute("data-genislik", genislik);
                 constant = 0;
             })
-            
+
 
 
         }
@@ -1948,7 +1984,12 @@
 
 
         }
+        function HurdaModalKapat() {
+            $("#HurdaModal").modal('hide');
+            constant = 0;
 
+
+        }
         function ModalKapat2() {
             $("#SiparisModal2").modal('hide');
             constant = 0;
@@ -2367,7 +2408,7 @@
                                 <label class="form-check-label" for="etiket-onizleme">Etiket Önizle</label>
                             </div>
                         </div>
-                       
+
                     </div>
 
                     <div class="row text-center mt-1">
@@ -2480,6 +2521,44 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal fade" id="HurdaModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true"">
+
+        <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 50%;top:20vh">
+            <div class="modal-content" style="max-height:45vh;">
+                <div class="container-fluid mt-3">
+                    <div class="centercontent" id="content2" style="display:unset">
+                        <div class="heart"><img id="progress2" src="~/images/novasaydam.png" style="max-width:15vw;display:none" /></div>
+                    </div>
+                    <div class="row text-center mt-1">
+                        <div class="col">
+                            <label class="modal-title" id="HurdaLabel" style="font-weight:bold">HURDA</label>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+
+                            <input placeholder="Miktar 1" class="form-control text-center" type="number" id="hurdamiktar1">
+
+
+                        </div>
+                        <div class="col" id="hurdamiktar2div">
+
+
+                            <input class="form-control text-center" placeholder="Miktar 2"  type="number" id="hurdamiktar2">
+
+                        </div>
+                    </div>
+
+
+                    <div class="modal-footer mt-1" style="display:flex;justify-content:center;align-items:center;">
+                        <button class="btn btn-primary" id="ModalSaveButton" type="button" onclick="HurdaModalKaydet()" disabled>KAYDET</button>
+                        <button class="btn btn-danger" type="button" onclick="HurdaModalKapat()">KAPAT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     <div class="modal fade" id="QRModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 90% !important">
