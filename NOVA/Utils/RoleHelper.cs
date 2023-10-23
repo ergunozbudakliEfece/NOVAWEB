@@ -69,6 +69,7 @@ namespace NOVA.Utils
                     bool? yetkiMalKabulForm = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 41).USER_AUTH;
                     bool? yetkiSevkMalKabul = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 42).USER_AUTH;
                     bool? depoTransfer = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 44).USER_AUTH;
+                    bool? mes = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 45).USER_AUTH;
                     #endregion
 
                     #region SetViewBag
@@ -112,6 +113,7 @@ namespace NOVA.Utils
                     Controller.ViewBag.DisplayMalKabulForm = yetkiMalKabulForm is true ? "unset" : "none";
                     Controller.ViewBag.DisplaySevkMalKabul = yetkiSevkMalKabul is true ? "unset" : "none";
                     Controller.ViewBag.DisplayDepoTransfer = depoTransfer is true ? "unset" : "none";
+                    Controller.ViewBag.DisplayMES = mes is true ? "unset" : "none";
                     #endregion
                 }
             }
