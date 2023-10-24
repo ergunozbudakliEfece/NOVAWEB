@@ -13,8 +13,8 @@
 
         .all-machines .machine {
             height: 100%;
-            width: 265px;
-            min-width: 265px;
+            width: 280px;
+            min-width: 280px;
             background-color: var(--empty-header-color);
             border-radius: var(--empty-border-radius);
             display: flex;
@@ -202,18 +202,20 @@
     function GunlukOzetBox(Data) {
         var Ozet =
             `
-            <div class="d-flex justify-content-center align-items-center gap-3" style="font-size:small;">
+            <div class="d-flex justify-content-center align-items-start gap-3" style="font-size:small;">
                 <div class="d-flex flex-column justify-content-center align-items-center gap-1">
-                    <span><b>MİKTAR</b></span>
+                    <span><b>ÜR. MİKTAR</b></span>
                     <span>${NumFormat(Data.GUNLUK_TOPLAM_MIKTAR, 'KG')}</span>
                 </div>
                 <div class="d-flex flex-column justify-content-center align-items-center gap-1">
                     <span><b>HURDA</b></span>
                     <span>${NumFormat(Data.GUN_TOPLAM_HURDA, 'KG')}</span>
+                    ${CalcRate(Data.GUN_TOPLAM_HURDA, Data.GUNLUK_TOPLAM_MIKTAR)}
                 </div>
                 <div class="d-flex flex-column justify-content-center align-items-center gap-1">
                     <span><b>2. KALİTE</b></span>
                     <span>${NumFormat(Data.GUN_TOPLAM_KALITE2, 'KG')}</span>
+                    ${CalcRate(Data.GUN_TOPLAM_KALITE2, Data.GUNLUK_TOPLAM_MIKTAR)}
                 </div>`;
 
         return Ozet;
@@ -224,6 +226,17 @@
     }
 
     function NumFormat(Value, Unit = '') {
-        return Value !== null ? `${parseFloat(Value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${Unit}` : '-';
+        return (Value !== null && Value !== 0) ? `${parseFloat(Value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${Unit}` : '-';
+    }
+
+    function CalcRate(Numerator, Denominator)
+    {
+        if (Numerator !== null && Numerator !== 0)
+        {
+            var Rate = parseFloat(((Numerator) / (Denominator)) * 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            return `<span>${Rate}%</span>` 
+        }
+
+        return '';
     }
 </script>
