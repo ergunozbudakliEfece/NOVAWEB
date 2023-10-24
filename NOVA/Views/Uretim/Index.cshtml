@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 @{
     Layout = "/Views/Shared/_Layout_isemri.cshtml";
 }
@@ -18,7 +18,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
     <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
-    
+
     <style>
         .thead {
             position: sticky !important;
@@ -1200,7 +1200,7 @@
                     var input = document.createElement("input");
                     input.setAttribute("type", "radio");
                     input.className = "btn-check";
-                    input.setAttribute("name", "btnradio");
+                    input.setAttribute("name", "btnradio btn-makineler");
                     input.id = "btnradio" + i + 2 + "";
                     input.setAttribute("autocomplete", "off");
                     input.setAttribute("onclick", "c(this)");
@@ -1526,54 +1526,53 @@
             btnid = value.id;
             var url1 = "http://192.168.2.13:83/api/ie/TOP/" + value.value;
             document.getElementById("stokadlari").replaceChildren();
-
             UretimListe(sabit);
 
             $.getJSON(url1, function (data) {
+                if (data.length > 0) {
+                    for (let i = 0; i < data.length; i++) {
+                        var b = document.createElement("button");
+                        b.className = "mak btn btn-outline-secondary";
+                        b.style.width = "295px";
+                        b.style.height = "145px";
+                        b.setAttribute("data-stokkodu", data[i].STOK_KODU);
+                        b.setAttribute("data-genislik", data[i].BANT_GENISLIGI);
+                        b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
+                        b.setAttribute("data-kul", data[i].KULL_MIKTAR);
+                        b.setAttribute("data-hat", data[i].HAT_KODU);
+                        b.setAttribute("data-mik2", data[i].TOPLAM_MIKTAR2);
+                        b.setAttribute("data-isemri", data[i].ISEMRINO);
+                        if (sabit === "TP01") {
 
+                            b.setAttribute("data-kul2", data[i].KULL_MIKTAR2);
+                            b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
 
+                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].SIP_CARI_ISIM + "</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                        } else {
+                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                        }
 
-                for (let i = 0; i < data.length; i++) {
-                    var b = document.createElement("button");
-                    b.className = "mak btn btn-outline-secondary";
-                    b.style.width = "295px";
-                    b.style.height = "145px";
-                    b.setAttribute("data-stokkodu", data[i].STOK_KODU);
-                    b.setAttribute("data-genislik", data[i].BANT_GENISLIGI);
-                    b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
-                    b.setAttribute("data-kul", data[i].KULL_MIKTAR);
-                    b.setAttribute("data-hat", data[i].HAT_KODU);
-                    b.setAttribute("data-mik2", data[i].TOPLAM_MIKTAR2);
-                    b.setAttribute("data-isemri", data[i].ISEMRINO);
-                    if(sabit==="TP01"){
+                        b.setAttribute("onclick", "showmodal(this)");
+                        var p = document.createElement("p");
+                        p.className = "meter mt-1";
+                        p.style = "height:auto";
+                        var span1 = document.createElement("span");
+                        span1.style = "width:" + data[i].ORAN + "%";
+                        var span2 = document.createElement("span");
+                        span2.className = "progress";
+                        span2.id = "progress-msip";
+                        var span3 = document.createElement("span");
+                        span3.style = "margin-bottom:10px;text-align:end;color:black";
+                        span3.innerHTML = data[i].ORAN + "%";
+                        span2.appendChild(span3);
+                        span1.appendChild(span2);
+                        p.appendChild(span1);
+                        b.appendChild(p);
 
-                        b.setAttribute("data-kul2", data[i].KULL_MIKTAR2);
-                        b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
-
-                         b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> "+data[i].SIP_CARI_ISIM+"</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || "+data[i].KULL_MIKTAR2.toLocaleString()+ " " + data[i].OLCU_BR2 + " / "+data[i].TOPLAM_MIKTAR2.toLocaleString()+ " " + data[i].OLCU_BR2 +"</span>";
-                    }else{
-                        b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                        document.getElementById("stokadlari").appendChild(b);
                     }
-
-                    b.setAttribute("onclick", "showmodal(this)");
-                    var p = document.createElement("p");
-                    p.className = "meter mt-1";
-                    p.style = "height:auto";
-                    var span1 = document.createElement("span");
-                    span1.style = "width:" + data[i].ORAN + "%";
-                    var span2 = document.createElement("span");
-                    span2.className = "progress";
-                    span2.id = "progress-msip";
-                    var span3 = document.createElement("span");
-                    span3.style = "margin-bottom:10px;text-align:end;color:black";
-                    span3.innerHTML = data[i].ORAN + "%";
-                    span2.appendChild(span3);
-                    span1.appendChild(span2);
-                    p.appendChild(span1);
-                    b.appendChild(p);
-
-                    document.getElementById("stokadlari").appendChild(b);
                 }
+               
                 var b = document.createElement("button");
                 b.className = "mak btn btn-outline-secondary";
                 b.style.width = "295px";
@@ -1581,19 +1580,19 @@
                 b.innerHTML = "<b>İKİNCİ KALİTE</b></br>";
                 b.setAttribute("onclick", "showhurdamodal(this)");
                 b.setAttribute("data-tip", 'İKİNCİ KALİTE');
-                b.setAttribute("data-stokkodu", data[0].STOK_KODU);
-                b.setAttribute("data-genislik", data[0].BANT_GENISLIGI);
-                b.setAttribute("data-hat", data[0].HAT_KODU);
+                b.setAttribute("data-stokkodu", (data.length > 0 ?data[0].STOK_KODU:'-'));
+                b.setAttribute("data-genislik", (data.length > 0 ?data[0].BANT_GENISLIGI:'-'));
+                b.setAttribute("data-hat", (data.length > 0 ?data[0].HAT_KODU:'-'));
                 document.getElementById("stokadlari").appendChild(b);
                 b = document.createElement("button");
                 b.className = "mak btn btn-outline-secondary";
                 b.style.width = "295px";
                 b.style.height = "145px";
                 b.innerHTML = "<b>HURDA</b></br>";
-                b.setAttribute("data-stokkodu", data[0].STOK_KODU);
+                b.setAttribute("data-stokkodu", (data.length>0?data[0].STOK_KODU:'-'));
                 b.setAttribute("data-tip", 'HURDA');
-                b.setAttribute("data-genislik", data[0].BANT_GENISLIGI);
-                b.setAttribute("data-hat", data[0].HAT_KODU);
+                b.setAttribute("data-genislik", (data.length > 0 ?data[0].BANT_GENISLIGI:'-'));
+                b.setAttribute("data-hat", (data.length > 0 ?data[0].HAT_KODU:'-'));
                 b.setAttribute("onclick", "showhurdamodal(this)");
                 document.getElementById("stokadlari").appendChild(b);
 
@@ -2522,7 +2521,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="HurdaModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true"">
+    <div class="modal fade" id="HurdaModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true" ">
 
         <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 50%;top:20vh">
             <div class="modal-content" style="max-height:45vh;">
@@ -2545,14 +2544,14 @@
                         <div class="col" id="hurdamiktar2div">
 
 
-                            <input class="form-control text-center" placeholder="Miktar 2"  type="number" id="hurdamiktar2">
+                            <input class="form-control text-center" placeholder="Miktar 2" type="number" id="hurdamiktar2">
 
                         </div>
                     </div>
 
 
                     <div class="modal-footer mt-1" style="display:flex;justify-content:center;align-items:center;">
-                        <button class="btn btn-primary" id="ModalSaveButton" type="button" onclick="HurdaModalKaydet()" disabled>KAYDET</button>
+                        <button class="btn btn-primary" id="ModalSaveButton" type="button" onclick="HurdaModalKaydet()">KAYDET</button>
                         <button class="btn btn-danger" type="button" onclick="HurdaModalKapat()">KAPAT</button>
                     </div>
                 </div>
@@ -2887,13 +2886,80 @@
             uretimControl = "";
             $("#btnradio1112").prop("checked", false);
         }
+        function HurdaModalKaydet() {
+            $("#progress2").show();
+            var miktar = $('#hurdamiktar1').val();
+            HurdaLoop(miktar);
+        }
+
+        function HurdaLoop(miktar) {
+            var Tip = $('input[name="btnradio btn-makineler"]:checked').val();
+            $.getJSON("http://192.168.2.13:83/api/uretim/" + Tip, function (data) {
+                var m = data[0].MIKTAR
+                if (miktar <= m) {
+                    $.ajax({
+                        url: '@Url.Action("Hurda", "Uretim")',
+                        type: 'POST',
+                        data: { "hatkodu": Tip, "mik1": miktar, "stokkodu": data[0].STOK_KODU },
+                        error: function (data) {
+                            console.log(data);
+                            $("#progress2").hide();
+                            $("#SiparisModal").modal('hide');
+                        },
+                        success: function (data) {
+                            if (data == "BAŞARILI") {
+                                $("#progress2").hide();
+                                $("#SiparisModal").modal('hide');
+                                Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                                document.getElementById(btnid).onclick();
+                                HurdaModalKapat()
+                            } else {
+                                $("#progress2").hide();
+                                $("#SiparisModal").modal('hide');
+                                Swal.fire('Başarısız!', 'Kayıt başarısız', 'error');
+                                document.getElementById(btnid).onclick();
+                                HurdaModalKapat()
+                            }
+
+                        }
+                    })
+                } else {
+                    $.getJSON("http://192.168.2.13:83/api/uretim/" + Tip, function (data) {
+                        if (data.length > 0) {
+                            var m = data[0].MIKTAR
+                            if (miktar <= m) {
+                                $.ajax({
+                                    url: '@Url.Action("Hurda", "Uretim")',
+                                    type: 'POST',
+                                    data: { "hatkodu": Tip, "mik1": m, "stokkodu": data[0].STOK_KODU },
+                                    error: function (data) {
+                                        console.log(data);
+                                        $("#progress2").hide();
+                                        $("#SiparisModal").modal('hide');
+                                    },
+                                    success: function (data) {
+                                        miktar = miktar - m
+                                        if (miktar > 0) {
+                                            HurdaLoop(miktar);
+                                        } else {
+                                            $("#progress2").hide();
+                                            $("#SiparisModal").modal('hide');
+                                            Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                                            document.getElementById(btnid).onclick();
+                                            HurdaModalKapat()
+                                        }
+                                    }
+                                })
+
+                            }
+                        
+                        }
+
+                    })
+                }
+            })
+        }
     </script>
 </body>
 
 </html>
-
-
-
-
-
-

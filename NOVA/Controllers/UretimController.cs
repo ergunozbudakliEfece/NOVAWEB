@@ -421,7 +421,7 @@ namespace NOVA.Controllers
                             seri = uretim.SeriOku(0).Seri1;
                         }
                         NetRS netRS1 = kernel.yeniNetRS(sirket);
-                        if (f != 0)
+                        if (f != 0 && hatkodu=="DL01")
                         {
                             netRS1.Ac("SELECT MAX(FISNO) AS FISNO FROM TEST2022..TBLSTHAR WHERE FISNO LIKE 'Z%'");
                             var fisno = (netRS1.FieldByName("FISNO").AsString.Substring(1, netRS1.FieldByName("FISNO").AsString.Count() - 1).ToInt() + 1).ToString().PadLeft(14, '0');
@@ -571,8 +571,9 @@ namespace NOVA.Controllers
 
             return Etiket;
         }
-        public string Hurda(string hatkodu,string stokkodu,string mik1)
+        public string Hurda(string hatkodu, string mik1, string stokkodu)
         {
+            
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
@@ -582,11 +583,12 @@ namespace NOVA.Controllers
                                            Request.Cookies["UserName"].Value,
                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
                 var stokadi = GetStokAdlari().Find(x => x.STOK_KODU == stokkodu).STOK_ADI;
+                netRS = kernel.yeniNetRS(sirket);
                 netRS.Ac("SELECT MAX(FISNO) AS FISNO FROM TEST2022..TBLSTHAR");
                 var fisno = (netRS.FieldByName("FISNO").AsString.Substring(1, netRS.FieldByName("FISNO").AsString.Count() - 1).ToInt() + 1).ToString().PadLeft(14, '0');
                 StokHareket stok = kernel.yeniStokHareket(sirket);
                 stok.Stok_Kodu = stokkodu;
-                stok.Sthar_Aciklama = stokadi;
+                stok.Sthar_Aciklama = "HURDA";
                 stok.Fisno = "Z" + fisno;
                 stok.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                 stok.Proje_Kodu = "1";
@@ -616,10 +618,19 @@ namespace NOVA.Controllers
             catch (Exception)
             {
 
-                throw;
+                return "HATA";
             }
            
             return "BAŞARILI";
+        }
+        public class HurdaModel
+        {
+            public string INCKEY { get; set; }
+            public string STOK_KODU { get; set; }
+            public string SERI_NO { get; set; }
+            public string HAT_KODU { get; set; }
+            public string MIKTAR { get; set; }
+            public string MIKTAR2 { get; set; }
         }
         public string IkinciKalite(string hatkodu, string stokkodu, string genislik, string mik1, string mik2,string stokadi,string tip)
         {

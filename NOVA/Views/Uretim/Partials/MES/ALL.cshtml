@@ -1,0 +1,405 @@
+﻿<style>
+    .all-machines {
+        height: calc(100svh - 45px - 3.75rem);
+        max-width: -moz-available;
+        max-width: -webkit-fill-available;
+        max-width: fill-available;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+    }
+
+        .all-machines .machine {
+            height: 100%;
+            width: 265px;
+            min-width: 265px;
+            background-color: var(--empty-header-color);
+            border-radius: var(--empty-border-radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            padding: 0.5rem;
+            border: var(--bs-border-width) solid var(--empty-border-color);
+        }
+
+        .machine-content{
+            width:100%;
+        }
+
+    .machine-title {
+        font-size: x-large;
+        font-weight: 500;
+    }
+
+    .info-box {
+        width: 100%;
+        position: relative;
+        padding: 0.75rem;
+        margin: 0.7rem 0;
+        background-color: var(--empty-infobox-color);
+        color: var(--empty-text-color);
+        border: var(--bs-border-width) solid var(--empty-border-color);
+        border-radius: var(--empty-border-radius);
+    }
+
+        .info-box > span {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            font-size: smaller;
+            background: linear-gradient(0deg, var(--empty-infobox-color) 0 50%, var(--empty-header-color) 50% 100%);
+        }
+
+        .info-box > .info {
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            gap: 0.5rem;
+            line-height: 1rem;
+            text-align: center;
+        }
+</style>
+
+<div id="All" class="page all-machines" style="display: none;">
+
+</div>
+
+<script>
+    async function AllPage()
+    {
+        await CreateMachines();
+
+        await FetchAllData();
+
+        $(`#nova-loader`).fadeOut('fast');
+        $(`#All`).fadeIn();
+
+        MachineFilterApply();
+    }
+
+    async function CreateMachines()
+    {
+        try {
+            var Response = await axios('http://192.168.2.13:83/api/makine/makineler');
+
+            var Machines = '';
+
+            Response.data?.forEach((item) =>
+            {
+                Machines += MachineTemplate(item.HAT_KODU);
+            });
+
+            $('#All').html(Machines);
+        }
+        catch (e) {
+            ShowError("Bir hata oluştu.");
+        }
+    }
+
+    function MachineTemplate(Machine) {
+        return `<div id="${Machine}" class="machine shadow">
+                <div class="machine-title">${Machine}</div>
+                <hr class="horizontal-line" />
+                <div class="machine-content">
+
+                </div>
+            </div>`;
+    }
+
+    async function FetchAllData() {
+        try {
+            var Response = await axios('http://192.168.2.13:83/api/makine/mes');
+
+            UpdateMachineData(Response.data);
+        }
+        catch (e) {
+            ShowError("Bir hata oluştu.");
+        }
+    }
+
+    function UpdateMachineData(Data)
+    {
+        Data?.forEach((item) =>
+        {
+            var Content;
+
+            if (item.GIRDI_SERI_NO !== null || item.YILLIK_TOPLAM_MIKTAR !== null)
+            {
+                switch (item.HATKODU)
+                {
+                    case "DL01":
+                        Content = RuloAciciBox(item) + Operator1Box(item) + UretilecekIsEmriBox(item) + KombinasyonBox(item) + UretilenBox(item) + Operator2Box(item) + OzetBox(item);
+                        break;
+                    case "BK01":
+                    case "MH01":
+                    case "PB01":
+                    case "PB02":
+                    case "RF01":
+                    case "RF02":
+                    case "RF03":
+                    case "SM01":
+                    case "SM02":
+                    case "SM03":
+                        Content = RuloAciciBox(item) + Operator1Box(item) + UretilecekIsEmriBox(item) + UretilenBox(item) + Operator2Box(item) + OzetBox(item);
+                        break;
+                    case "TP01":
+                        Content = RuloAciciBox(item) + Operator1Box(item) + UretilenBox(item) + Operator2Box(item) + OzetBox(item);
+                        break;
+                }
+            }
+            else
+            {
+                Content = "Bilgi Bulunamadı."
+            }
+
+            $(`#${item.HATKODU} .machine-content`).html(Content);
+        });
+
+        MachineFilterApply();
+    }
+
+    function RuloAciciBox(Data)
+    {
+        var RuloAcici = Data.GIRDI_SERI_NO !== null ?
+                        `<div class="info-box">
+                            <span>RULO AÇICI</span>
+                            <div class="info">
+                                <span><b>${Data.GIRDI_SERI_NO}</b></span>
+                                <span>${Data.GIRDI_STOK_KODU}</span>
+                                <span>${Data.GIRDI_STOK_ADI}</span>
+                                <span>${Data.GIRDI_KALINLIK} - ${Data.GIRDI_GENISLIK} - ${Data.GIRDI_KALITE} - ${Data.GIRDI_KAPLAMA}</span>
+                                <span>${moment(Data.GIRDI_KAYIT_TARIHI).format('DD.MM.YYYY HH:mm:ss')}</span>
+                            </div>
+                        </div>`
+                        :
+                        `<div class="info-box">
+                            <span>RULO AÇICI</span>
+                            <div class="info">
+                                <span>Bilgi Bulunamadı.</span>
+                            </div>
+                        </div>`;
+
+        return RuloAcici;
+    }
+
+    function UretilecekIsEmriBox(Data)
+    {
+        var UretilecekIsEmri = Data.IE_ISEMRINO !== null ?
+            `<div class="info-box">
+                    <span>ÜRETİLECEK İŞ EMRİ</span>
+                    <div class="info">
+                        <span><b>${Data.IE_ISEMRINO}</b></span>
+                        <span>${Data.IE_STOK_KODU}</span>
+                        <span>${Data.IE_STOK_ADI}</span>
+                        <span>${Data.IE_MIKTAR}</span>
+                        <span>${Data.IE_MIKTAR2}</span>
+                    </div>
+                </div>`
+            :
+            `<div class="info-box">
+                    <span>ÜRETİLECEK İŞ EMRİ</span>
+                    <div class="info">
+                        <span>Bilgi Bulunamadı.</span>
+                    </div>
+                </div>`;
+
+        return UretilecekIsEmri;
+    }
+
+    function KombinasyonBox(Data)
+    {
+        var Content = '';
+
+        Data.SERI_KOMBINASYON?.split(",").forEach((item) =>
+        {
+            Content += `<span>${item}</span>`
+        });
+
+        var Kombinasyon = Data.SERI_KOMBINASYON !== null ?
+            `<div class="info-box">
+                    <span>KOMBİNASYON</span>
+                    <div class="info" style="height:75px; overflow:hidden;">
+					    ${Content}
+                    </div>
+            </div>`
+            :
+            `<div class="info-box">
+                    <span>KOMBİNASYON</span>
+                    <div class="info">
+                        <span>Bilgi Bulunamadı.</span>
+                    </div>
+                </div>`;
+
+        return Kombinasyon;
+    }
+
+    function UretilenBox(Data)
+    {
+        var Uretilen = Data.SRT_SERI_NO !== null ?
+            `<div class="info-box">
+                    <span>ÜRETİLEN</span>
+                    <div class="info">
+                        <span><b>${Data.SRT_SERI_NO}</b></span>
+                        <span>${Data.SRT_IE_NO}</span>
+                        <span>${Data.SRT_STOK_KODU}</span>
+                        <span>${Data.SRT_STOK_ADI}</span>
+                        <span>${Data.SRT_MIKTAR}</span>
+                        <span>${Data.SRT_MIKTAR2}</span>
+                        <span>${moment(Data.SU_TARIH).format('DD.MM.YYYY HH:mm:ss')}</span>
+                    </div>
+                </div>`
+            :
+            `<div class="info-box">
+                    <span>ÜRETİLEN</span>
+                    <div class="info">
+                        <span>Bilgi Bulunamadı.</span>
+                    </div>
+                </div>`;
+
+        return Uretilen;
+    }
+
+    function Operator1Box(Data)
+    {
+        var OperatorBox = Data.OPERATOR1 !== null ?
+                        `<div class="info-box">
+                                <span>OPERATÖR 1</span>
+                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                    <img src="/assets/img/avatars/${Data.OPERATOR1}.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                                    <div class="d-flex flex-column justify-content-center">
+                                        <span>${Data.OPERATOR1_NAME}</span>
+                                    </div>
+                                </div>
+                            </div>`
+                        :
+                        `<div class="info-box">
+                                <span>OPERATÖR 1</span>
+                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                    <img src="/assets/img/avatars/10000.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                                    <div class="d-flex flex-column justify-content-center">
+                                        <span>Bilgi Bulunamadı.</span>
+                                    </div>
+                                </div>
+                            </div>`
+                        ;
+
+        return OperatorBox;
+    }
+
+    function Operator2Box(Data) {
+        var OperatorBox = Data.OPERATOR2 !== null ?
+                        `<div class="info-box">
+                            <span>OPERATÖR 2</span>
+                            <div class="d-flex justify-content-start align-items-center gap-2">
+                                <img src="/assets/img/avatars/${Data.OPERATOR2}.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                                <div class="d-flex flex-column justify-content-center">
+                                    <span>${Data.OPERATOR2_NAME}</span>
+                                </div>
+                            </div>
+                        </div>`
+                        :
+                        `<div class="info-box">
+                            <span>OPERATÖR 2</span>
+                            <div class="d-flex justify-content-start align-items-center gap-2">
+                                <img src="/assets/img/avatars/10000.png" class="rounded-circle" height="35" width="35" onerror="javascript:this.src='/assets/img/avatars/10000.png'" />
+                                <div class="d-flex flex-column justify-content-center">
+                                    <span>Bilgi Bulunamadı.</span>
+                                </div>
+                            </div>
+                        </div>`
+                        ;
+
+        return OperatorBox;
+    }
+
+    function OzetBox(Data)
+    {
+        var Ozet = GunlukOzetBox(Data);
+
+        return Ozet;
+    }
+
+    function GunlukOzetBox(Data) {
+        var Ozet =
+            `<div class="info-box">
+                    <span>GÜNLÜK ÖZET</span>
+                    <div class="info">
+                        <div class="d-flex justify-content-center align-items-center gap-3">
+                            <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                                <span><b>MİKTAR</b></span>
+                                <span>${IsNull(Data.GUNLUK_TOPLAM_MIKTAR)}</span>
+                            </div>    
+                            <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                                <span><b>HURDA</b></span>
+                                <span>${IsNull(Data.GUN_TOPLAM_HURDA)}</span>
+                            </div>    
+                            <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                                <span><b>2. KALİTE</b></span>
+                                <span>${IsNull(Data.GUN_TOPLAM_KALITE2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+        return Ozet;
+    }
+
+    function AylikOzetBox(Data) {
+        var Ozet =
+            `<div class="info-box">
+                <span>AYLIK ÖZET</span>
+                <div class="info">
+                    <div class="d-flex justify-content-center align-items-center gap-3">
+                        <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                            <span><b>MİKTAR</b></span>
+                            <span>${IsNull(Data.AYLIK_TOPLAM_MIKTAR)}</span>
+                        </div>    
+                        <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                            <span><b>HURDA</b></span>
+                            <span>${IsNull(Data.AY_TOPLAM_HURDA)}</span>
+                        </div>    
+                        <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                            <span><b>2. KALİTE</b></span>
+                            <span>${IsNull(Data.AY_TOPLAM_KALITE2)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        return Ozet;
+    }
+
+    function YillikOzetBox(Data) {
+        var Ozet =
+            `<div class="info-box">
+                <span>YILLIK ÖZET</span>
+                <div class="info">
+                    <div class="d-flex justify-content-center align-items-center gap-3">
+                        <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                            <span><b>MİKTAR</b></span>
+                            <span>${IsNull(Data.YILLIK_TOPLAM_MIKTAR)}</span>
+                        </div>    
+                        <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                            <span><b>HURDA</b></span>
+                            <span>${IsNull(Data.YIL_TOPLAM_HURDA)}</span>
+                        </div>    
+                        <div class="d-flex flex-column justify-content-center align-items-center gap-1">
+                            <span><b>2. KALİTE</b></span>
+                            <span>${IsNull(Data.YIL_TOPLAM_KALITE2)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        return Ozet;
+    }
+
+    function IsNull(Value)
+    {
+        return Value === null ? '-' : Value;
+    }
+</script>
