@@ -40,6 +40,7 @@
             </select>
         </div>
         <button id="RefreshButton" type="button" class="btn home-button" onclick="RefreshPage()"><i class="bi bi-arrow-clockwise"></i></button>
+        <button id="SummaryButton" type="button" class="btn home-button" onclick="ToggleSummaryView()"><i class="bi bi-eye-slash-fill"></i></button>
     </div>
     <button id="HomeButton" type="button" class="btn home-button" onclick="window.location.href = '/';"><i class="bi bi-house-fill"></i></button>
 </div>
@@ -96,6 +97,8 @@
     var Interval = 0;
     var Machines = [];
 
+    var SummaryTooltip;
+
     $(document).ready(() => {
         PageChange("All");
 
@@ -110,6 +113,12 @@
         tippy('#HomeButton', {
             content: 'Ana Sayfa',
         });
+
+        SummaryTooltip = tippy('#SummaryButton', {
+            content: 'Özetleri Gizle'
+        });
+
+        SetSummaryView();
     });
 
     $(document).click(function (e) {
@@ -117,6 +126,47 @@
             $(".machine-visible .machine-list").hide();
         }
     });
+
+    function ToggleSummaryView()
+    {
+        var SummaryView = localStorage.getItem("SummaryView") === null ? false : (localStorage.getItem("SummaryView") === 'true');
+
+        SummaryView = !SummaryView;
+
+        localStorage.setItem("SummaryView", SummaryView);
+
+        SetSummaryView();
+    }
+
+    function SetSummaryView()
+    {
+        var SummaryView = localStorage.getItem("SummaryView") === null ? false : (localStorage.getItem("SummaryView") === 'true');
+
+        SummaryTooltip[0].setContent(SummaryView ? 'Özetleri Gizle' : 'Özetleri Göster');
+
+        $('#SummaryData').css('display', (SummaryView ? 'unset' : 'none'));
+
+        $('#SummaryButton').find('i').removeClass();
+        $('#SummaryButton').find('i').addClass((SummaryView ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'));
+    }
+
+    $('#SummaryButton').hover(
+        () => {
+            var SummaryView = localStorage.getItem("SummaryView") === null ? false : (localStorage.getItem("SummaryView") === 'true');
+
+            SummaryTooltip[0].setContent(SummaryView ? 'Özetleri Gizle' : 'Özetleri Göster');
+
+            $('#SummaryButton').find('i').removeClass();
+            $('#SummaryButton').find('i').addClass((!SummaryView ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'));
+        }
+        ,() => {
+            var SummaryView = localStorage.getItem("SummaryView") === null ? false : (localStorage.getItem("SummaryView") === 'true');
+
+            SummaryTooltip[0].setContent(SummaryView ? 'Özetleri Gizle' : 'Özetleri Göster');
+
+            $('#SummaryButton').find('i').removeClass();
+            $('#SummaryButton').find('i').addClass((SummaryView ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'));
+        });
 
     function PageChange(MachineName) {
         $(`#nova-loader`).fadeIn('fast');
