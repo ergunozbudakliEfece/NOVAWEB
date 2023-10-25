@@ -573,20 +573,27 @@ namespace NOVA.Controllers
         }
         public string Hurda(string hatkodu, string mik1, string stokkodu)
         {
-            
-            try
-            {
-                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+            Kernel kernel1 = new Kernel();
+            NetRS netRS1 = default(NetRS);
+            Sirket sirket1 = kernel1.yeniSirket(TVTTipi.vtMSSQL,
                                            "TEST2022",
                                            "TEMELSET",
                                            "",
                                            Request.Cookies["UserName"].Value,
                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
-                var stokadi = GetStokAdlari().Find(x => x.STOK_KODU == stokkodu).STOK_ADI;
-                netRS = kernel.yeniNetRS(sirket);
-                netRS.Ac("SELECT MAX(FISNO) AS FISNO FROM TEST2022..TBLSTHAR");
-                var fisno = (netRS.FieldByName("FISNO").AsString.Substring(1, netRS.FieldByName("FISNO").AsString.Count() - 1).ToInt() + 1).ToString().PadLeft(14, '0');
-                StokHareket stok = kernel.yeniStokHareket(sirket);
+
+            try
+            {
+                var stoklar = GetStokAdlari();
+                var stokadi = stoklar.Find(x => x.STOK_KODU == stokkodu).STOK_ADI;
+                netRS1 = kernel1.yeniNetRS(sirket1);
+                var a=netRS1.Ac("SELECT MAX(FISNO) AS FISNO FROM TEST2022.dbo.TBLSTHAR WHERE FISNO LIKE 'Z%'");
+                
+                var f = netRS1.FieldByName("FISNO").AsString;
+               
+                var fisno = (f.Substring(1, f.Count() - 1).ToInt() + 1).ToString().PadLeft(14, '0');
+               
+                StokHareket stok = kernel.yeniStokHareket(sirket1);
                 stok.Stok_Kodu = stokkodu;
                 stok.Sthar_Aciklama = "HURDA";
                 stok.Fisno = "Z" + fisno;
@@ -600,7 +607,7 @@ namespace NOVA.Controllers
                 stok.DEPO_KODU = 45;
                 stok.Sthar_Htur = "A";
                 stok.kayitYeni();
-                StokHareket stok2 = kernel.yeniStokHareket(sirket);
+                StokHareket stok2 = kernel.yeniStokHareket(sirket1);
                 stok2.Stok_Kodu = "HURDA";
                 stok2.Sthar_Aciklama = stokadi;
                 stok2.Fisno = "Z" + fisno;
@@ -615,10 +622,14 @@ namespace NOVA.Controllers
                 stok2.Sthar_Htur = "A";
                 stok2.kayitYeni();
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
-                return "HATA";
+                return e.Message;
+            }
+            finally
+            {
+                sirket1.LogOff();
             }
            
             return "BAŞARILI";

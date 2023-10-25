@@ -1352,7 +1352,7 @@
             var u2 = "http://192.168.2.13:83/api/ie/control/" + decodedText;
             if (uretimControl == '') {
                 $.getJSON(u2, function (data) {
-                    if (data.length > 0) {
+                    if (data.length > 0 && data[0].HG_CONTROL=='TRUE') {
                         Swal.fire({
                             text: data[0].SERI_NO + " seri numaralı ürünü " + data[0].HATKODU + " kodlu makinede üretime almayı onaylıyor musunuz?",
                             showCancelButton: true,
@@ -1391,10 +1391,10 @@
                     }
                 })
             } else {
-                u = "http://192.168.2.13:83/api/seri/kontrol/" + decodedText
+                u = "http://192.168.2.13:83/api/ie/tpcontrol/" + decodedText
                 $.getJSON(u, function (data) {
 
-                    if (data.length != 0) {
+                    if (data.length != 0 && data[0].HG_CONTROL=='True') {
                         Swal.fire({
                             text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
                             showCancelButton: true,
@@ -2526,8 +2526,8 @@
         <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 50%;top:20vh">
             <div class="modal-content" style="max-height:45vh;">
                 <div class="container-fluid mt-3">
-                    <div class="centercontent" id="content2" style="display:unset">
-                        <div class="heart"><img id="progress2" src="~/images/novasaydam.png" style="max-width:15vw;display:none" /></div>
+                    <div class="centercontent" id="content7" style="display:unset">
+                        <div class="heart"><img id="progress7" src="~/images/novasaydam.png" style="max-width:15vw;display:none" /></div>
                     </div>
                     <div class="row text-center mt-1">
                         <div class="col">
@@ -2887,7 +2887,7 @@
             $("#btnradio1112").prop("checked", false);
         }
         function HurdaModalKaydet() {
-            $("#progress2").show();
+            $("#progress7").show();
             var miktar = $('#hurdamiktar1').val();
             HurdaLoop(miktar);
         }
@@ -2895,68 +2895,72 @@
         function HurdaLoop(miktar) {
             var Tip = $('input[name="btnradio btn-makineler"]:checked').val();
             $.getJSON("http://192.168.2.13:83/api/uretim/" + Tip, function (data) {
-                var m = data[0].MIKTAR
-                if (miktar <= m) {
-                    $.ajax({
-                        url: '@Url.Action("Hurda", "Uretim")',
-                        type: 'POST',
-                        data: { "hatkodu": Tip, "mik1": miktar, "stokkodu": data[0].STOK_KODU },
-                        error: function (data) {
-                            console.log(data);
-                            $("#progress2").hide();
-                            $("#SiparisModal").modal('hide');
-                        },
-                        success: function (data) {
-                            if (data == "BAŞARILI") {
-                                $("#progress2").hide();
+                if (data.length > 0) {
+                    var m = data[0].MIKTAR
+                    if (miktar <= m) {
+                        $.ajax({
+                            url: '@Url.Action("Hurda", "Uretim")',
+                            type: 'POST',
+                            data: { "hatkodu": Tip, "mik1": miktar, "stokkodu": data[0].STOK_KODU },
+                            error: function (data) {
+                                console.log(data);
+                                $("#progress7").hide();
                                 $("#SiparisModal").modal('hide');
-                                Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
-                                document.getElementById(btnid).onclick();
-                                HurdaModalKapat()
-                            } else {
-                                $("#progress2").hide();
-                                $("#SiparisModal").modal('hide');
-                                Swal.fire('Başarısız!', 'Kayıt başarısız', 'error');
-                                document.getElementById(btnid).onclick();
-                                HurdaModalKapat()
-                            }
+                            },
+                            success: function (data) {
+                                if (data == "BAŞARILI") {
+                                    $("#progress7").hide();
+                                    $("#SiparisModal").modal('hide');
+                                    Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                                    document.getElementById(btnid).onclick();
+                                    HurdaModalKapat()
+                                } else {
+                                    $("#progress7").hide();
+                                    $("#SiparisModal").modal('hide');
+                                    Swal.fire('Başarısız!', data, 'error');
+                                    document.getElementById(btnid).onclick();
+                                    HurdaModalKapat()
+                                }
 
-                        }
-                    })
-                } else {
-                    $.getJSON("http://192.168.2.13:83/api/uretim/" + Tip, function (data) {
-                        if (data.length > 0) {
-                            var m = data[0].MIKTAR
-                            if (miktar <= m) {
-                                $.ajax({
-                                    url: '@Url.Action("Hurda", "Uretim")',
-                                    type: 'POST',
-                                    data: { "hatkodu": Tip, "mik1": m, "stokkodu": data[0].STOK_KODU },
-                                    error: function (data) {
-                                        console.log(data);
-                                        $("#progress2").hide();
-                                        $("#SiparisModal").modal('hide');
-                                    },
-                                    success: function (data) {
-                                        miktar = miktar - m
-                                        if (miktar > 0) {
-                                            HurdaLoop(miktar);
-                                        } else {
+                            }
+                        })
+                    } else {
+                        $.getJSON("http://192.168.2.13:83/api/uretim/" + Tip, function (data) {
+                            if (data.length > 0) {
+                                var m = data[0].MIKTAR
+                                if (miktar <= m) {
+                                    $.ajax({
+                                        url: '@Url.Action("Hurda", "Uretim")',
+                                        type: 'POST',
+                                        data: { "hatkodu": Tip, "mik1": m, "stokkodu": data[0].STOK_KODU },
+                                        error: function (data) {
+                                            console.log(data);
                                             $("#progress2").hide();
                                             $("#SiparisModal").modal('hide');
-                                            Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
-                                            document.getElementById(btnid).onclick();
-                                            HurdaModalKapat()
+                                        },
+                                        success: function (data) {
+                                            miktar = miktar - m
+                                            if (miktar > 0) {
+                                                HurdaLoop(miktar);
+                                            } else {
+                                                $("#progress2").hide();
+                                                $("#SiparisModal").modal('hide');
+                                                Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                                                document.getElementById(btnid).onclick();
+                                                HurdaModalKapat()
+                                            }
                                         }
-                                    }
-                                })
+                                    })
+
+                                }
 
                             }
-                        
-                        }
 
-                    })
+                        })
+                    }
+                
                 }
+
             })
         }
     </script>
