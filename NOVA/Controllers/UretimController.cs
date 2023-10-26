@@ -267,6 +267,30 @@ namespace NOVA.Controllers
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
 
         }
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult IsEmriniAc(string isemri)
+        {
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                NetRS netRS = kernel.yeniNetRS(sirket);
+                netRS.Ac("UPDATE TBLISEMRI SET KAPALI='H' WHERE ISEMRINO='" + isemri + "'");
+                
+            }
+            catch (Exception)
+            {
+
+                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+            }
+
+
+            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+
+        }
         public Microsoft.AspNetCore.Mvc.StatusCodeResult IsEmirleriniAc(List<IsEmriMod> isemrimod)
         {
             try
@@ -910,26 +934,48 @@ namespace NOVA.Controllers
                     netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
 
                     seri = netRS.FieldByName("SERINO").AsString;
+                    var Stokkodu = netRS.FieldByName("STOK_KODU").AsString;
 
-                    if (seri == null)
+                    NetRS SeriNoTakipRS = kernel.yeniNetRS(sirket);
+
+                    SeriNoTakipRS.Ac($"SELECT * FROM TBLSTSABIT WHERE STOK_KODU='{Stokkodu}'");
+
+                    var SeriNoTakip = SeriNoTakipRS.FieldByName("GIRIS_SERI").AsString;
+
+                    if (SeriNoTakip == "E")
                     {
-                        uretim.OTOSERIURET();
-                        uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
+                        if (seri == null)
+                        {
+                            uretim.OTOSERIURET();
+                            uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
+                        }
+                        else
+                        {
+                            uretim.SeriEkle(seri, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
+                        }
                     }
-                    else
-                    {
-                        uretim.SeriEkle(seri, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
-                    }
+                    
 
                     if (SERI_NO != null && ISEMRINO.Substring(0, 2) != "MH")
                     {
                         netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + SERI_NO + "' WHERE ISEMRINO='" + ISEMRINO + "'");
                     }
-
-
+                    if (ISEMRINO == "TP0123000001001" || ISEMRINO == "TP0123000001002")
+                    {
+                        netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE GCKOD='G' AND SERI_NO='" + SERI_NO + "'");
+                        var seritraStok= netRS.FieldByName("STOK_KODU").AsString;
+                        netRS.Ac("UPDATE TBLISEMRIREC SET HAM_KODU='"+seritraStok+"' WHERE ISEMRINO='" + ISEMRINO + "'");
+                        netRS.Ac("UPDATE TBLISEMRI SET KAPALI='H' WHERE ISEMRINO='" + ISEMRINO + "'");
+                    }
+                    
                     uretim.FisUret();
                     uretim.Kaydet();
-                    //netRS.Ac("UPDATE TBLISEMRIREC SET SERINO=NULL WHERE ISEMRINO='" + ISEMRINO + "'");
+                    if(ISEMRINO== "TP0123000001001" || ISEMRINO == "TP0123000001002")
+                    {
+                        netRS.Ac("UPDATE TBLISEMRIREC SET HAM_KODU='HURDA',SERINO=NULL WHERE ISEMRINO='" + ISEMRINO + "'");
+                        netRS.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + ISEMRINO + "'");
+                    }
+                   
 
                     netRS.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
                     var karsi = netRS.FieldByName("SERI_NO").AsString;

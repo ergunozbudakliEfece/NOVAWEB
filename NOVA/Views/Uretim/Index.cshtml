@@ -1352,7 +1352,7 @@
             var u2 = "http://192.168.2.13:83/api/ie/control/" + decodedText;
             if (uretimControl == '') {
                 $.getJSON(u2, function (data) {
-                    if (data.length > 0 && data[0].HG_CONTROL=='TRUE') {
+                    if (data.length > 0 && data[0].HG_CONTROL =='True') {
                         Swal.fire({
                             text: data[0].SERI_NO + " seri numaralı ürünü " + data[0].HATKODU + " kodlu makinede üretime almayı onaylıyor musunuz?",
                             showCancelButton: true,
@@ -1876,6 +1876,8 @@
             } else {
                 $("#hurdamiktar2div").show();
             }
+            $("#hurdamiktar1").val(null);
+            $("#hurdamiktar2").val(null);
             $('#HurdaModal').modal('show');
         }
         function showmodal(value) {
@@ -2527,7 +2529,7 @@
             <div class="modal-content" style="max-height:45vh;">
                 <div class="container-fluid mt-3">
                     <div class="centercontent" id="content7" style="display:unset">
-                        <div class="heart"><img id="progress7" src="~/images/novasaydam.png" style="max-width:15vw;display:none" /></div>
+                        <div class="heart"><img id="progress7" src="/images/novasaydam.png" style="max-width:15vw;display:none" /></div>
                     </div>
                     <div class="row text-center mt-1">
                         <div class="col">
@@ -2551,7 +2553,7 @@
 
 
                     <div class="modal-footer mt-1" style="display:flex;justify-content:center;align-items:center;">
-                        <button class="btn btn-primary" id="ModalSaveButton" type="button" onclick="HurdaModalKaydet()">KAYDET</button>
+                        <button class="btn btn-primary" id="ModalSaveButton" type="button" onclick="HurdaKaliteKayit()">KAYDET</button>
                         <button class="btn btn-danger" type="button" onclick="HurdaModalKapat()">KAPAT</button>
                     </div>
                 </div>
@@ -2886,11 +2888,7 @@
             uretimControl = "";
             $("#btnradio1112").prop("checked", false);
         }
-        function HurdaModalKaydet() {
-            $("#progress7").show();
-            var miktar = $('#hurdamiktar1').val();
-            HurdaLoop(miktar);
-        }
+
 
         function HurdaLoop(miktar) {
             var Tip = $('input[name="btnradio btn-makineler"]:checked').val();
@@ -2958,10 +2956,62 @@
 
                         })
                     }
-                
+
                 }
 
             })
+        }
+
+        function HurdaKaliteKayit() {
+            var miktar = $('#hurdamiktar1').val();
+
+            if (miktar.length > 0) {
+                $("#progress7").show();
+                var url = "";
+                var Tip = $('#HurdaLabel').html();
+                var is = "";
+                if (Tip == "HURDA") {
+                    url = "//192.168.2.13:83/api/ie/USK/TP01/HURDA/TP0123000001001/" + miktar + "/0/0";
+                    is = 'TP0123000001001'
+                } else {
+                    url = "//192.168.2.13:83/api/ie/USK/TP01/IKINCIKALITE/TP0123000001002/" + miktar + "/0/0";
+                    is = 'TP0123000001002'
+                }
+                $.getJSON(url, function (data) {
+                    var d = data;
+
+                    $.ajax({
+                        url: '@Url.Action("TrpzUretim", "Uretim")',
+                        type: 'POST',
+                        data: { "stokkodu": stok, "ISEMRINO": is, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": false },
+                        error: function (data) {
+
+                            $("#progress7").hide();
+                            $("#SiparisModal").modal('hide');
+                            Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
+                        },
+                        success: function (data) {
+                            $("#progress7").hide();
+                            $("#HurdaModal").modal('hide');
+                            if (data.substring(0, 4) != 'HATA') {
+                                Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                            } else {
+                                Swal.fire('Başarısız!', data, 'error');
+                            }
+
+
+                            document.getElementById(btnid).onclick();
+
+                        }
+                    });
+                });
+            
+
+
+            } else {
+                Swal.fire('Uyarı!', 'Miktar girilmedi!', 'warning');
+            }
+
         }
     </script>
 </body>
