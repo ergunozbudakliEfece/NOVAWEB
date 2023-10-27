@@ -42,7 +42,7 @@
         <button id="RefreshButton" type="button" class="btn home-button" onclick="RefreshPage()"><i class="bi bi-arrow-clockwise"></i></button>
         <button id="SummaryButton" type="button" class="btn home-button" onclick="ToggleSummaryView()"><i class="bi bi-eye-slash-fill"></i></button>
     </div>
-    <button id="HomeButton" type="button" class="btn home-button" onclick="window.location.href = '/';"><i class="bi bi-house-fill"></i></button>
+    <button id="HomeButton" type="button" class="btn home-button"><i class="bi bi-house-fill"></i></button>
 </div>
 <div class="content">
     @Html.Partial("Partials/MES/AllMachines/_MainPartial")
@@ -120,6 +120,21 @@
 
         SetSummaryView();
     });
+
+    $('#HomeButton').on("mousedown mouseup click focus blur", function (e) {
+        if (e.which == 1) {
+            e.preventDefault();
+            GoHome();
+        }
+        else if (e.which == 2) {
+            e.preventDefault();
+            window.open(new URL(location.href).origin, '_blank');
+        }
+    });
+
+    function GoHome() {
+        window.location.href = '/';
+    }
 
     $(document).click(function (e) {
         if ($(e.target).parents(".machine-visible").length === 0) {
