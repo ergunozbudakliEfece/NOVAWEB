@@ -2218,11 +2218,13 @@
             var kontrol = $("#kontrol").is(':checked');
             $.getJSON(url, function (data) {
                 var d = data;
-
+               
+                var hurdamik = $("#hurdamik").val();
+              
                 $.ajax({
                     url: '@Url.Action("TrpzUretim", "Uretim")',
                     type: 'POST',
-                    data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2,"kontrol":kontrol },
+                    data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": kontrol,"hurdamik":hurdamik },
                     error: function (data) {
                         console.log(data);
                         $("#progress2").hide();
@@ -2233,7 +2235,7 @@
                         console.log(data);
                         if (d[0].ISEMRINO.substring(0, 2) != 'MH' && d[0].ISEMRINO.substring(0, 2) != 'BK') {
                             if (d[0].KULL_MIKTAR != 0) {
-                                if (data.substring(0, 4) != 'HATA') {
+                                if (data.substring(0, 4) != 'Hata') {
 
                                     load(url);
                                 } else {
@@ -2340,8 +2342,21 @@
                         }
                     })
                 } else {
-
-                    var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + $("#miktar11").val().toString().trim() + "/" + $("#miktar22").val().toString().trim() + "/0";
+                    var mik1 = $("#miktar11").val();
+                    var ikincimik1 = $("#ikincimik1").val();
+                    var mik2 = $("#miktar22").val();
+                    var ikincimik2 = $("#ikincimik2").val();
+                    var hurdamik = $("#hurdamik").val();
+                    var top1 = parseFloat(mik1);
+                    var top2 = parseFloat(mik2);
+                    if (ikincimik1 != "" && ikincimik1 != null) {
+                        top1 = top1 + parseFloat(ikincimik1);
+                        top2 =top2 + parseFloat(ikincimik2);
+                    }
+                    if (hurdamik!=""&& hurdamik!=null) {
+                        top1 = top1 + parseFloat(hurdamik);
+                    }
+                    var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + top1.toString().trim() + "/" + top2.toString().trim() + "/0";
 
                     load(url);
                 }
@@ -2433,6 +2448,28 @@
 
 
                             <input disabled class="form-control text-center" placeholder="Miktar 2" onfocus="inputclick()" onkeyup="keychange2()" type="number" id="miktar22">
+
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+
+                            <input onfocus="inputclick()" onkeyup="keychange1()" placeholder="İKİNCİ KALİTE MİKTAR1" class="form-control text-center" type="number" id="ikincimik1">
+
+
+                        </div>
+                        <div class="col">
+
+
+                            <input class="form-control text-center" placeholder="İKİNCİ KALİTE MİKTAR2" type="number" id="ikincimik2">
+
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+
+
+                            <input class="form-control text-center" placeholder="HURDA" type="number" id="hurdamik">
 
                         </div>
                     </div>
@@ -2993,17 +3030,21 @@
                             Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                         },
                         success: function (data) {
-                            $("#progress7").hide();
-                            $("#HurdaModal").modal('hide');
-                            if (data.substring(0, 4) != 'Hata') {
-                                Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
-                            } else {
-                                Swal.fire('Başarısız!', data, 'error');
+                            if (d[0].KULL_MIKTAR != 0) {
+                                HurdaKaliteKayit();
                             }
+                            else {
+                                $("#progress7").hide();
+                                $("#HurdaModal").modal('hide');
+                                if (data.substring(0, 4) != 'Hata') {
+                                    Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                                } else {
+                                    Swal.fire('Başarısız!', data, 'error');
+                                }
 
 
-                            document.getElementById(btnid).onclick();
-
+                                document.getElementById(btnid).onclick();
+                            }
                         }
                     });
                 });

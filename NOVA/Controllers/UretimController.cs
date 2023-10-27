@@ -888,7 +888,7 @@ namespace NOVA.Controllers
 
             return "BAŞARILI";
         }
-        public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2,bool kontrol)
+        public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2,bool kontrol,string hurdamik)
         {
             var seri = "";
             if (KULL_MIKTAR != "0")
@@ -1021,6 +1021,8 @@ namespace NOVA.Controllers
                     seri = netRS.FieldByName("SERI_NO").AsString;
                    
 
+
+
                 }
                 catch (Exception exp)
                 {
@@ -1062,9 +1064,37 @@ namespace NOVA.Controllers
                         Isemri.Kapali = true;
                         Isemri.kayitDuzelt();
                     }
-                   
+                    netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
+
+                    seri = netRS.FieldByName("SERINO").AsString;
+                    var Stokkodu = netRS.FieldByName("STOK_KODU").AsString;
+                    Fatura fatura = default(Fatura);
+                    FatUst fatUst = default(FatUst);
+                    FatKalem fatKalem = default(FatKalem);
+                    fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
+
+                    fatUst = fatura.Ust();
+                    fatUst.FATIRS_NO = fatura.YeniNumara("A");
+                    fatUst.TIPI = TFaturaTipi.ft_Bos;
+                    fatUst.AMBHARTUR = TAmbarHarTur.htDepolar;
+                    fatUst.Tarih = DateTime.Now;
+                    fatUst.FiiliTarih = DateTime.Now;
+                    fatUst.PLA_KODU = "45";
+                    fatUst.Proje_Kodu = "1";
+                    fatUst.KDV_DAHILMI = true;
+                    fatKalem = fatura.kalemYeni(Stokkodu);
+                    
+                    ///Giriş Depo Kodu
+                    fatKalem.Gir_Depo_Kodu = 60;
+                    fatKalem.DEPO_KODU = 45;
+                    fatKalem.STra_GCMIK = hurdamik.ToDouble();
+                    fatKalem.STra_BF = 0;
                     netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
                     var karsi = netRS.FieldByName("SERI_NO").AsString;
+                    fatKalem.SeriEkle(karsi, "", "", "", hurdamik.ToDouble(), 0);
+                    fatura.kayitYeni();
+
+                    
                     seri = netRS.FieldByName("SERI_NO").AsString;
                     netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + SERI_NO + "' AND GCKOD='G'");
                     var ACIK1 = netRS.FieldByName("ACIK1").AsString;
