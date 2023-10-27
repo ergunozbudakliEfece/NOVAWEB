@@ -960,7 +960,7 @@ namespace NOVA.Controllers
                     {
                         netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + SERI_NO + "' WHERE ISEMRINO='" + ISEMRINO + "'");
                     }
-                    if (ISEMRINO == "TP0123000001001" || ISEMRINO == "TP0123000001002")
+                    if (ISEMRINO == stokkodu + "23000001001" || ISEMRINO == stokkodu+"23000001002")
                     {
                         netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE GCKOD='G' AND SERI_NO='" + SERI_NO + "'");
                         var seritraStok= netRS.FieldByName("STOK_KODU").AsString;
@@ -970,7 +970,7 @@ namespace NOVA.Controllers
                     
                     uretim.FisUret();
                     uretim.Kaydet();
-                    if(ISEMRINO== "TP0123000001001" || ISEMRINO == "TP0123000001002")
+                    if(ISEMRINO== stokkodu + "23000001001" || ISEMRINO == stokkodu + "23000001002")
                     {
                         netRS.Ac("UPDATE TBLISEMRIREC SET HAM_KODU='HURDA',SERINO=NULL WHERE ISEMRINO='" + ISEMRINO + "'");
                         netRS.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + ISEMRINO + "'");
@@ -1028,7 +1028,7 @@ namespace NOVA.Controllers
                     var message = exp.Message;
                     System.Diagnostics.Debug.Write(exp);
                     WebMail.SmtpServer = "192.168.2.13";
-                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Dertler Derya Olmuş", "<p><b>"+ISEMRINO + "</b> sıkıntılı ayağınızı den alın!</p><p>Sıkıntı: "+message+"</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Dertler Derya Olmuş", "<p><b>"+ISEMRINO + "</b> sıkıntılı ayağınızı denk alın!</p><p>Sıkıntı: "+message+"</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                     
                     return $"Hata: {message}";
                 }

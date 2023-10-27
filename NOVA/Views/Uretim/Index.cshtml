@@ -2968,14 +2968,16 @@
             if (miktar.length > 0) {
                 $("#progress7").show();
                 var url = "";
+                
+                var mak = $('input[name="btnradio btn-makineler"]:checked').val();
                 var Tip = $('#HurdaLabel').html();
                 var is = "";
                 if (Tip == "HURDA") {
-                    url = "//192.168.2.13:83/api/ie/USK/TP01/HURDA/TP0123000001001/" + miktar + "/0/0";
-                    is = 'TP0123000001001'
+                    url = "//192.168.2.13:83/api/ie/USK/"+mak+"/HURDA/"+mak+"23000001001/" + miktar + "/0/0";
+                    is = mak+'23000001001'
                 } else {
-                    url = "//192.168.2.13:83/api/ie/USK/TP01/IKINCIKALITE/TP0123000001002/" + miktar + "/0/0";
-                    is = 'TP0123000001002'
+                    url = "//192.168.2.13:83/api/ie/USK/"+mak+"/IKINCIKALITE/"+mak+"23000001002/" + miktar + "/0/0";
+                    is = mak+'23000001002'
                 }
                 $.getJSON(url, function (data) {
                     var d = data;
@@ -2983,7 +2985,7 @@
                     $.ajax({
                         url: '@Url.Action("TrpzUretim", "Uretim")',
                         type: 'POST',
-                        data: { "stokkodu": stok, "ISEMRINO": is, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": false },
+                        data: { "stokkodu": mak, "ISEMRINO": is, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": false },
                         error: function (data) {
 
                             $("#progress7").hide();
@@ -2993,7 +2995,7 @@
                         success: function (data) {
                             $("#progress7").hide();
                             $("#HurdaModal").modal('hide');
-                            if (data.substring(0, 4) != 'HATA') {
+                            if (data.substring(0, 4) != 'Hata') {
                                 Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                             } else {
                                 Swal.fire('Başarısız!', data, 'error');
