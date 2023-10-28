@@ -2217,6 +2217,7 @@
         }
         var toplam = 0;
         var oldSipNo = null;
+        var loadDongu=0;
         function load(url) {
             var kontrol = $("#kontrol").is(':checked');
             $.getJSON(url, function (data) {
@@ -2235,7 +2236,7 @@
                 $.ajax({
                     url: '@Url.Action("TrpzUretim", "Uretim")',
                     type: 'POST',
-                    data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": kontrol, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2 },
+                    data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": kontrol, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2 ,"dongu":loadDongu},
                     error: function (data) {
                         console.log(data);
                         $("#progress2").hide();
@@ -2247,7 +2248,7 @@
                         if (d[0].ISEMRINO.substring(0, 2) != 'MH' && d[0].ISEMRINO.substring(0, 2) != 'BK') {
                             if (d[0].KULL_MIKTAR != 0) {
                                 if (data.substring(0, 4) != 'Hata') {
-
+                                    loadDongu++;
                                     load(url);
                                 } else {
                                     $("#progress2").hide();
@@ -2260,7 +2261,7 @@
                                 $("#SiparisModal").modal('hide');
                                 Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                 document.getElementById(btnid).onclick();
-
+                                loadDongu=0;
                                 if ($("#etiketyazdir").is(':checked'))
                                 {
                                     TrpzBarkod(data);

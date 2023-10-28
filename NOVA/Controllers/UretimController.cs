@@ -888,7 +888,7 @@ namespace NOVA.Controllers
 
             return "BAŞARILI";
         }
-        public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2,bool kontrol,string hurdamik, string ikincimik1, string ikincimik2)
+        public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2,bool kontrol,string hurdamik, string ikincimik1, string ikincimik2,int dongu)
         {
             var seri = "";
             if (KULL_MIKTAR != "0")
@@ -942,9 +942,9 @@ namespace NOVA.Controllers
 
                     var SeriNoTakip = SeriNoTakipRS.FieldByName("GIRIS_SERI").AsString;
 
-                    if (SeriNoTakip == "E")
+                    if (SeriNoTakip == "E" && dongu == 0)
                     {
-                        if (seri == null)
+                        if (seri == null )
                         {
                             uretim.OTOSERIURET();
                             uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
@@ -953,6 +953,12 @@ namespace NOVA.Controllers
                         {
                             uretim.SeriEkle(seri, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
                         }
+                    }
+                    else
+                    {
+                        netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
+                        var s = netRS.FieldByName("SERI_NO").AsString;
+                        uretim.SeriEkle(s, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
                     }
                     
 
@@ -1135,7 +1141,7 @@ namespace NOVA.Controllers
                     var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
                     var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
                     netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "',ACIK1='"+ACIK1+"',ACIK2='"+ACIK2+ "',SERI_NO_3='"+ SERI_NO_3 + "',SERI_NO_4='"+ SERI_NO_4 + "' WHERE SIPNO='" + ISEMRINO + "'");
-                    netRS.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "',ACIK1='"+ACIK1+"',ACIK2='"+ACIK2+ "',SERI_NO_3='"+ SERI_NO_3 + "',SERI_NO_4='"+ SERI_NO_4 + "' WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+                    netRS.Ac("UPDATE TBLSERITRA SET ACIK1='"+ACIK1+"',ACIK2='"+ACIK2+ "',SERI_NO_3='"+ SERI_NO_3 + "',SERI_NO_4='"+ SERI_NO_4 + "' WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
                 }
                 catch (Exception e)
                 {
