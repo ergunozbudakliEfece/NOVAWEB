@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
@@ -837,5 +838,15 @@ namespace NOVA.Controllers
 
             return jsonList.Where(x => x.INCKEY == id).ToList();
         }
+
+        #region DetayliRiskLimiti
+
+        public async Task<ActionResult> DetayliRiskLimiti() 
+        {
+            return View();
+        }
+
+
+        #endregion
     }
 }

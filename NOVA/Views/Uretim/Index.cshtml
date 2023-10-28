@@ -1900,6 +1900,9 @@
                 var seri = value.dataset.isemri;
                 $("#miktar11").val(null);
                 $("#miktar22").val(null);
+                $("#hurdamik").val(null);
+                $("#ikincimik1").val(null);
+                $("#ikincimik2").val(null);
                 $("#miktar22").prop("disabled", true);
                 $("#miktar11").prop("disabled", false);
                 $("#SiparisModal").modal('show');
@@ -1934,14 +1937,14 @@
                     $("#kontrol").prop('checked', true);
                     $("#kontrol").prop('disabled', true);
                     $("#ModalSaveButton").prop("disabled", false)
-                    $('#ikinciDiv').show();
+                    $('#ikinciDiv').hide();
                 } else if(hat=='PB01'){
                     $("#miktar11").prop("disabled", false);
                     $("#miktar22").prop("disabled", true);
                     $("#kontrolcol").show();
                     $("#kontrol").prop('checked', false);
                     $("#kontrol").prop('disabled', true);
-                    $('#ikinciDiv').show();
+                    $('#ikinciDiv').hide();
                 }
                 else {
                     $("#miktar11").prop("disabled", false);
@@ -1949,7 +1952,7 @@
                     $("#kontrolcol").show();
                     $("#kontrol").prop('checked', true);
                     $("#kontrol").prop('disabled', true);
-                    $('#ikinciDiv').show();
+                    $('#ikinciDiv').hide();
                 }
                 $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0]);
                 $("#SiparisModalLabel2").html(value.innerHTML.split("<br>")[1].split("<p")[0]);
@@ -2220,11 +2223,19 @@
                 var d = data;
                
                 var hurdamik = $("#hurdamik").val();
-              
+                var ikincimik1 = $("#ikincimik1").val();
+                var ikincimik2 = $("#ikincimik2").val();
+                if (ikincimik1 == null || ikincimik1 == "") {
+                    ikincimik1 = "0";
+                    ikincimik2 = "0";
+                }
+                if (hurdamik == null || hurdamik == "") {
+                    hurdamik = "0";
+                }
                 $.ajax({
                     url: '@Url.Action("TrpzUretim", "Uretim")',
                     type: 'POST',
-                    data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": kontrol,"hurdamik":hurdamik },
+                    data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": kontrol, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2 },
                     error: function (data) {
                         console.log(data);
                         $("#progress2").hide();
