@@ -1632,6 +1632,11 @@
             } else {
                 $("#miktar22").val(null);
                 $("#miktar22").prop("disabled", true);
+                $("#ikincimik2").prop("disabled", true);
+                $("#hurdamik").prop("disabled", true);
+                $("#ikincimik2").val(null);
+                $("#ikincimik1").val(null);
+                $("#hurdamik").val(null);
                 $("#ModalSaveButton").prop("disabled", true);
             }
             if (m1 > max) {
@@ -1700,9 +1705,20 @@
                         }
                     } else {
                         $("#ModalSaveButton").prop("disabled", false);
-                    }
+                }
+                $("#ikincimik2").prop("disabled", false);
+                $("#hurdamik").prop("disabled", false);
+                $("#BirimMik").html(" Birim Miktar: " + (m1 / m2).toLocaleString(undefined,{
+                    maximumFractionDigits: 2
+                })).show();
             } else {
                 $("#ModalSaveButton").prop("disabled", true)
+                $("#ikincimik2").prop("disabled", true);
+                $("#hurdamik").prop("disabled", true);
+                $("#ikincimik2").val(null);
+                $("#ikincimik1").val(null);
+                $("#hurdamik").val(null);
+                $("#BirimMik").html(null).show();
             }
 
         }
@@ -1909,6 +1925,9 @@
                 $("#ModalSaveButton").prop("disabled", true)
                 $("#kontrol").prop('checked', true);
                 $("#etiketyazdir").prop('checked', true);
+                $("#ikincimik2").prop("disabled", true);
+                $("#hurdamik").prop("disabled", true);
+                $("#ikincimik1").prop("disabled", true);
                 $('#miktar22').attr('onkeyup', 'keychange2()');
                 $('#ModalSaveButton').attr('onclick', 'ModalKaydet()')
                 $("#etiketyazdir").change(() => {
@@ -2447,6 +2466,7 @@
                     <div class="row text-center mt-1">
                         <div class="col">
                             <label class="modal-title" id="SiparisModalLabel2">SATICI SİPARİŞ RAPORU</label>
+                            <label class="modal-title" id="BirimMik" style="display: none; font-size: 12px"></label>
                         </div>
                     </div>
                     <div class="row mt-2">
@@ -2466,14 +2486,14 @@
                     <div class="row mt-2">
                         <div class="col">
 
-                            <input onfocus="inputclick()" onkeyup="keychange1()" placeholder="İKİNCİ KALİTE MİKTAR1" class="form-control text-center" type="number" id="ikincimik1">
+                            <input placeholder="İKİNCİ KALİTE MİKTAR1" class="form-control text-center" type="number" id="ikincimik1">
 
 
                         </div>
                         <div class="col">
 
 
-                            <input class="form-control text-center" placeholder="İKİNCİ KALİTE MİKTAR2" type="number" id="ikincimik2">
+                            <input class="form-control text-center" onkeyup="keychangeikinci()" placeholder="İKİNCİ KALİTE MİKTAR2" type="number" id="ikincimik2">
 
                         </div>
                     </div>
@@ -3067,6 +3087,19 @@
                 Swal.fire('Uyarı!', 'Miktar girilmedi!', 'warning');
             }
 
+        }
+        function keychangeikinci() {
+            var m1 = $("#miktar11").val();
+            var m2 = $("#miktar22").val();
+            
+            var ikinci2 = $("#ikincimik2").val();
+            if (ikinci2.length > 0) {
+                $("#ikincimik1").val(Math.round((m1 / m2) * ikinci2));
+
+            } else {
+                $("#ikincimik1").val(null);
+            }
+            
         }
     </script>
 </body>
