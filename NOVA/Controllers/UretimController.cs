@@ -44,6 +44,9 @@ namespace NOVA.Controllers
         SerbestUSK uretim = default(SerbestUSK);
         SerbestUSK USK = default(SerbestUSK);
         NetRS netRS = default(NetRS);
+        Fatura fatura = default(Fatura);
+        FatUst fatUst = default(FatUst);
+        FatKalem fatKalem = default(FatKalem);
         // GET: Uretim
         public async Task<ActionResult> Index()
         {
@@ -344,15 +347,12 @@ namespace NOVA.Controllers
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
 
         }
-        public string UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket, bool onizleme,string fark)
+        public string UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket, bool onizleme)
         {
             var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
             var stokadi = GetStokAdlari().FirstOrDefault(x => x.STOK_KODU == stokkodu);
-            var f = 0;
-            if(fark!=null && fark != "")
-            {
-                f = fark.ToInt();
-            }
+            double f = 0;
+          
             var Etiket = "";
             try
             {
@@ -392,7 +392,7 @@ namespace NOVA.Controllers
                     {
                         netRS = kernel.yeniNetRS(sirket);
                         netRS.Ac("SELECT * FROM TBLISEMRIREC WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
-
+                        var recmik = netRS.FieldByName("MIKTAR").AsFloat;
                         var miktarsabitle = netRS.FieldByName("MIKTARSABITLE").AsString;
                         netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                         var eskimiktar = netRS.FieldByName("MIKTAR").AsFloat;
@@ -444,46 +444,40 @@ namespace NOVA.Controllers
                             uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
                             seri = uretim.SeriOku(0).Seri1;
                         }
-                        NetRS netRS1 = kernel.yeniNetRS(sirket);
-                        if (f != 0 && hatkodu=="DL01")
-                        {
-                            netRS1.Ac("SELECT MAX(FISNO) AS FISNO FROM TEST2022..TBLSTHAR WHERE FISNO LIKE 'Z%'");
-                            var fisno = (netRS1.FieldByName("FISNO").AsString.Substring(1, netRS1.FieldByName("FISNO").AsString.Count() - 1).ToInt() + 1).ToString().PadLeft(14, '0');
-                            var fisno2 = (netRS1.FieldByName("FISNO").AsString.Substring(1, netRS1.FieldByName("FISNO").AsString.Count() - 1).ToInt() + 2).ToString().PadLeft(14, '0');
-                            StokHareket stok = kernel.yeniStokHareket(sirket);
-                            stok.Stok_Kodu = uretim.UretSon_Mamul;
-                            stok.Sthar_Aciklama = stokadi.STOK_ADI + "-" + uretim.UretSon_FisNo + "-" + jsonList[i].ISEMRINO.Substring(0, 4);
-                            stok.Fisno = "Z" + fisno;
-                            stok.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
-                            stok.Proje_Kodu = "1";
-                            stok.Sthar_Gckod = "C";
-                            stok.Sthar_Bf = 0;
-                            stok.Sthar_Nf = 0;
-                            stok.Sthar_Gcmik = jsonList[i].FIRE;
-                            stok.Sthar_Gcmik2 = 0;
-                            stok.DEPO_KODU = 45;
-                            stok.Sthar_Htur = "A";
-                            stok.kayitYeni();
-                            StokHareket stok2 = kernel.yeniStokHareket(sirket);
-                            stok2.Stok_Kodu = "HURDA";
-                            stok2.Sthar_Aciklama = stokadi.STOK_ADI + "-" + uretim.UretSon_FisNo+"-"+ jsonList[i].ISEMRINO.Substring(0,4);
-                            stok2.Fisno = "Z" + fisno2;
-                            stok2.Sthar_Bf = 0;
-                            stok2.Sthar_Nf = 0;
-                            stok2.Sthar_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
-                            stok2.Proje_Kodu = "1";
-                            stok2.Sthar_Gckod = "G";
-                            stok2.Sthar_Gcmik = jsonList[i].FIRE;
-                            stok2.Sthar_Gcmik2 = 0;
-                            stok2.DEPO_KODU = 45;
-                            stok2.Sthar_Htur = "A";
-                            stok2.kayitYeni();
-                        }
-                        
-                       
                         uretim.FisUret();
                         uretim.Kaydet();
-                        
+                        NetRS netRS1 = kernel.yeniNetRS(sirket);
+                        f = recmik - jsonList[i].KULL_MIKTAR;
+                        if (f != 0 && hatkodu == "DL01")
+                        {
+                            
+                            fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
+
+                            fatUst = fatura.Ust();
+                            fatUst.FATIRS_NO = fatura.YeniNumara("A");
+                            fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                            fatUst.CikisYeri = TCikisYeri.cySerbest;
+                            fatUst.CariKod = "12035200100406";
+                            fatUst.Tarih = DateTime.Now;
+                            fatUst.ENTEGRE_TRH = DateTime.Now;
+                            fatUst.FiiliTarih = DateTime.Now;
+                            fatUst.Proje_Kodu = "1";
+                            fatUst.Aciklama = jsonList[i].ISEMRINO.Substring(0, 4);
+                            fatKalem = fatura.kalemYeni("HURDA");
+                            fatKalem.DEPO_KODU = 60;
+                            fatKalem.Olcubr = 1;
+                            fatKalem.ProjeKodu= "1";
+                            fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd")); 
+                            fatKalem.STra_GCMIK = f;
+                            fatKalem.STra_NF = 0;
+                            fatKalem.STra_BF = 0;
+                            fatKalem.STra_ACIK = jsonList[i].ISEMRINO;
+
+                            fatura.kayitYeni();
+                            Marshal.ReleaseComObject(fatura);
+                            Marshal.ReleaseComObject(fatUst);
+                            Marshal.ReleaseComObject(fatKalem);
+                        }
                         //if (miktarsabitle == "E")
                         //{
                         //    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + eskimiktar + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
@@ -555,7 +549,7 @@ namespace NOVA.Controllers
                 {
                     var exp = e.Message;
                     System.Diagnostics.Debug.Write(exp);
-                    //return $"Hata: {exp}";
+                    return $"Hata: {exp}";
                 }
                 
 
@@ -888,7 +882,7 @@ namespace NOVA.Controllers
 
             return "BAŞARILI";
         }
-        public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2,bool kontrol,string hurdamik, string ikincimik1, string ikincimik2,int dongu)
+        public string TrpzUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2,bool kontrol,string hurdamik, string ikincimik1, string ikincimik2,int dongu,bool sonMu)
         {
             var seri = "";
             if (KULL_MIKTAR != "0")
@@ -945,7 +939,7 @@ namespace NOVA.Controllers
                     if (SeriNoTakip == "E" && dongu == 0)
                     {
                         if (seri == null )
-                        {
+                        { 
                             uretim.OTOSERIURET();
                             uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
                         }
@@ -956,12 +950,12 @@ namespace NOVA.Controllers
                     }
                     else
                     {
-                        netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
+                        netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND STOK_KODU='" + Stokkodu + "' ORDER BY BELGENO DESC");
                         var s = netRS.FieldByName("SERI_NO").AsString;
                         uretim.SeriEkle(s, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
                     }
-                    
 
+                    
                     if (SERI_NO != null && ISEMRINO.Substring(0, 2) != "MH")
                     {
                         netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + SERI_NO + "' WHERE ISEMRINO='" + ISEMRINO + "'");
@@ -1025,8 +1019,97 @@ namespace NOVA.Controllers
                     }
                     netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
                     seri = netRS.FieldByName("SERI_NO").AsString;
-                   
 
+                    if (sonMu == true)
+                    {
+                        if (kontrol)
+                        {
+                            Isemri = kernel.yeniIsEmri(sirket);
+                            Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + ISEMRINO + "\'");
+                            Isemri.ReceteSaklansin = false;
+                            Isemri.Kapali = true;
+                            Isemri.kayitDuzelt();
+                        }
+                        netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
+
+                        seri = netRS.FieldByName("SERINO").AsString;
+                        var Stokkoduu = netRS.FieldByName("STOK_KODU").AsString;
+                        netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
+                        var karsii = netRS.FieldByName("SERI_NO").AsString;
+
+                        Fatura fatura = default(Fatura);
+                        FatUst fatUst = default(FatUst);
+                        FatKalem fatKalem = default(FatKalem);
+                        if (hurdamik != null && hurdamik != "0")
+                        {
+                            fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
+
+                            fatUst = fatura.Ust();
+                            fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                            fatUst.CariKod = "12035200100406";
+                            fatUst.TIPI = TFaturaTipi.ft_Bos;
+                            fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                            fatUst.Tarih = DateTime.Now;
+                            fatUst.FiiliTarih = DateTime.Now;
+                            fatUst.PLA_KODU = "45";
+                            fatUst.Proje_Kodu = "1";
+                            fatUst.KDV_DAHILMI = true;
+                            fatUst.Aciklama = ISEMRINO;
+                            fatKalem = fatura.kalemYeni(Stokkoduu);
+
+                            ///Giriş Depo Kodu
+                            fatKalem.Gir_Depo_Kodu = 60;
+                            fatKalem.DEPO_KODU = 45;
+                            fatKalem.STra_GCMIK = hurdamik.ToDouble();
+                            fatKalem.STra_BF = 0;
+                            fatKalem.STra_ACIK = ISEMRINO.Substring(0, 4);
+                            fatKalem.Olcubr = 1;
+                            fatKalem.ProjeKodu = "1";
+                            fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+
+                            fatKalem.SeriEkle(karsii, "", "", "", hurdamik.ToDouble(), 0);
+                            fatura.kayitYeni();
+                        }
+                        if (ikincimik1 != null && ikincimik1 != "0")
+                        {
+                            fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
+
+                            fatUst = fatura.Ust();
+                            fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                            fatUst.CariKod = "12035200100406";
+                            fatUst.TIPI = TFaturaTipi.ft_Bos;
+                            fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                            fatUst.Tarih = DateTime.Now;
+                            fatUst.FiiliTarih = DateTime.Now;
+                            fatUst.PLA_KODU = "45";
+                            fatUst.Proje_Kodu = "1";
+                            fatUst.Aciklama = ISEMRINO.Substring(0, 4);
+                            fatUst.KDV_DAHILMI = true;
+                            fatKalem = fatura.kalemYeni(Stokkoduu);
+
+                            ///Giriş Depo Kodu
+                            fatKalem.Gir_Depo_Kodu = 55;
+                            fatKalem.DEPO_KODU = 45;
+                            fatKalem.STra_GCMIK = ikincimik1.ToDouble();
+                            fatKalem.STra_GCMIK2 = ikincimik2.ToDouble();
+                            fatKalem.STra_ACIK = ISEMRINO.Substring(0, 4);
+                            fatKalem.STra_BF = 0;
+                            fatKalem.Olcubr = 1;
+                            fatKalem.ProjeKodu = "1";
+                            fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                            fatKalem.SeriEkle(karsii, "", "", "", ikincimik1.ToDouble(), ikincimik2.ToDouble());
+                            fatura.kayitYeni();
+                        }
+
+
+                        netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + SERI_NO + "' AND GCKOD='G'");
+                        var ACIKK1 = netRS.FieldByName("ACIK1").AsString;
+                        var ACIKK2 = netRS.FieldByName("ACIK2").AsString;
+                        var SERI_NOO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                        var SERI_NOO_4 = netRS.FieldByName("SERI_NO_4").AsString;
+                        netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsii + "',ACIK1='" + ACIKK1 + "',ACIK2='" + ACIKK2 + "',SERI_NO_3='" + SERI_NOO_3 + "',SERI_NO_4='" + SERI_NOO_4 + "' WHERE SIPNO='" + ISEMRINO + "'");
+                        netRS.Ac("UPDATE TBLSERITRA SET ACIK1='" + ACIKK1 + "',ACIK2='" + ACIKK2 + "',SERI_NO_3='" + SERI_NOO_3 + "',SERI_NO_4='" + SERI_NOO_4 + "' WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+                    }
 
 
                 }
@@ -1087,13 +1170,13 @@ namespace NOVA.Controllers
                         fatUst = fatura.Ust();
                         fatUst.FATIRS_NO = fatura.YeniNumara("E");
                         fatUst.TIPI = TFaturaTipi.ft_Bos;
-                        fatUst.AMBHARTUR = TAmbarHarTur.htDepolar;
+                        fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                         fatUst.Tarih = DateTime.Now;
                         fatUst.FiiliTarih = DateTime.Now;
                         fatUst.PLA_KODU = "45";
                         fatUst.Proje_Kodu = "1";
                         fatUst.KDV_DAHILMI = true;
-                        fatUst.Aciklama = ISEMRINO.Substring(0, 4);
+                        fatUst.Aciklama = ISEMRINO;
                         fatKalem = fatura.kalemYeni(Stokkodu);
 
                         ///Giriş Depo Kodu
@@ -1102,7 +1185,10 @@ namespace NOVA.Controllers
                         fatKalem.STra_GCMIK = hurdamik.ToDouble();
                         fatKalem.STra_BF = 0;
                         fatKalem.STra_ACIK = ISEMRINO.Substring(0, 4);
-                        
+                        fatKalem.Olcubr = 1;
+                        fatKalem.ProjeKodu = "1";
+                        fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+
                         fatKalem.SeriEkle(karsi, "", "", "", hurdamik.ToDouble(), 0);
                         fatura.kayitYeni();
                     }
@@ -1113,7 +1199,7 @@ namespace NOVA.Controllers
                         fatUst = fatura.Ust();
                         fatUst.FATIRS_NO = fatura.YeniNumara("E");
                         fatUst.TIPI = TFaturaTipi.ft_Bos;
-                        fatUst.AMBHARTUR = TAmbarHarTur.htDepolar;
+                        fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                         fatUst.Tarih = DateTime.Now;
                         fatUst.FiiliTarih = DateTime.Now;
                         fatUst.PLA_KODU = "45";
@@ -1129,7 +1215,9 @@ namespace NOVA.Controllers
                         fatKalem.STra_GCMIK2 = ikincimik2.ToDouble();
                         fatKalem.STra_ACIK = ISEMRINO.Substring(0, 4);
                         fatKalem.STra_BF = 0;
-                        
+                        fatKalem.Olcubr = 1;
+                        fatKalem.ProjeKodu = "1";
+                        fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
                         fatKalem.SeriEkle(karsi, "", "", "", ikincimik1.ToDouble(), ikincimik2.ToDouble());
                         fatura.kayitYeni();
                     }
@@ -1157,6 +1245,240 @@ namespace NOVA.Controllers
                 }
 
             }
+
+            return seri;
+        }
+        public string BKUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2, bool kontrol, string hurdamik, string ikincimik1, string ikincimik2, int dongu)
+        {
+            var seri = "";
+            if (KULL_MIKTAR != "0")
+            {
+                try
+                {
+
+
+                    sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+
+
+
+
+
+                    netRS = kernel.yeniNetRS(sirket);
+
+                    uretim = kernel.yeniSerbestUSK(sirket);
+                    uretim.IsEmrindenGetir(ISEMRINO);
+                    uretim.UretSon_FisNo = uretim.SonFisNumarasi("N");
+
+                    uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                    uretim.BelgeTipi = TBelgeTipi.btIsEmri;
+                    uretim.Proje_Kodu = "1";
+                    uretim.UretSon_Miktar = KULL_MIKTAR.ToDouble();
+
+                    uretim.F_Yedek1 = mik2.ToDouble();
+
+
+                    uretim.UretSon_Depo = 45;
+                    uretim.I_Yedek1 = 45;
+                    uretim.I_Yedek2 = 0;
+                    uretim.OTO_YMAM_GIRDI_CIKTI = true;
+                    uretim.OTO_YMAM_STOK_KULLAN = false;
+
+
+                    uretim.BAKIYE_DEPO = 0;
+
+                    netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
+
+                    seri = netRS.FieldByName("SERINO").AsString;
+                    var Stokkodu = netRS.FieldByName("STOK_KODU").AsString;
+
+                    NetRS SeriNoTakipRS = kernel.yeniNetRS(sirket);
+
+                    SeriNoTakipRS.Ac($"SELECT * FROM TBLSTSABIT WHERE STOK_KODU='{Stokkodu}'");
+
+                    var SeriNoTakip = SeriNoTakipRS.FieldByName("GIRIS_SERI").AsString;
+
+                    if (SeriNoTakip == "E" && dongu == 0)
+                    {
+                        if (seri == null)
+                        {
+                            uretim.OTOSERIURET();
+                            uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
+                        }
+                        else
+                        {
+                            uretim.SeriEkle(seri, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
+                        }
+                    }
+                    else
+                    {
+                        netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
+                        var s = netRS.FieldByName("SERI_NO").AsString;
+                        uretim.SeriEkle(s, "", "", "", KULL_MIKTAR.ToDouble(), mik2.ToDouble());
+                    }
+
+
+                    if (SERI_NO != null && ISEMRINO.Substring(0, 2) != "MH")
+                    {
+                        netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + SERI_NO + "' WHERE ISEMRINO='" + ISEMRINO + "'");
+                    }
+                    if (ISEMRINO == stokkodu + "23000001001" || ISEMRINO == stokkodu + "23000001002")
+                    {
+                        netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE GCKOD='G' AND SERI_NO='" + SERI_NO + "'");
+                        var seritraStok = netRS.FieldByName("STOK_KODU").AsString;
+                        netRS.Ac("UPDATE TBLISEMRIREC SET HAM_KODU='" + seritraStok + "' WHERE ISEMRINO='" + ISEMRINO + "'");
+                        netRS.Ac("UPDATE TBLISEMRI SET KAPALI='H' WHERE ISEMRINO='" + ISEMRINO + "'");
+                    }
+
+                    uretim.FisUret();
+                    uretim.Kaydet();
+                    if (ISEMRINO == stokkodu + "23000001001" || ISEMRINO == stokkodu + "23000001002")
+                    {
+                        netRS.Ac("UPDATE TBLISEMRIREC SET HAM_KODU='HURDA',SERINO=NULL WHERE ISEMRINO='" + ISEMRINO + "'");
+                        netRS.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + ISEMRINO + "'");
+                    }
+
+
+                    netRS.Ac("SELECT * FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+                    var karsi = netRS.FieldByName("SERI_NO").AsString;
+
+                    netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' AND BELGENO<>'" + uretim.UretSon_FisNo + "' ORDER BY BELGENO DESC");
+                    var mikold = netRS.FieldByName("MIKTAR").AsFloat;
+                    netRS.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+
+                    //if (eskimiktar!= jsonList[i].KULL_MIKTAR)
+                    //{
+                    //    netRS1.Ac("UPDATE TBLISEMRIREC SET MIKTAR=" + (eskimiktar - jsonList[i].KULL_MIKTAR) + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                    //}
+                    netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + SERI_NO + "' AND GCKOD='G'");
+                    var ACIK1 = netRS.FieldByName("ACIK1").AsString;
+                    var ACIK2 = netRS.FieldByName("ACIK2").AsString;
+                    var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                    var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
+                    netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "',ACIK1='" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + ISEMRINO + "'");
+
+                    netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
+                    var referans = netRS.FieldByName("REFISEMRINO").AsString;
+
+                    //netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + referans + "'");
+
+                    //var eski = netRS.FieldByName("MIKTAR").AsFloat;
+                    //var oran = KULL_MIKTAR.ToDouble() / eski;
+                    //var miktar2 = netRS.FieldByName("ACIKLAMA").AsString;
+                    //var yeni = miktar2.ToDouble() * oran;
+
+                    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + (mikold != 0 ? mikold + KULL_MIKTAR.ToDouble() : KULL_MIKTAR.ToDouble()) + "' WHERE ISEMRINO='" + referans + "'");
+
+
+
+                    if (ISEMRINO.Substring(0, 2) == "MH" || ISEMRINO.Substring(0, 2) == "BK")
+                    {
+                        Isemri = kernel.yeniIsEmri(sirket);
+                        Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + ISEMRINO + "\'");
+                        Isemri.ReceteSaklansin = false;
+                        Isemri.Kapali = true;
+                        Isemri.kayitDuzelt();
+                    }
+                    netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+                    seri = netRS.FieldByName("SERI_NO").AsString;
+                   
+                    netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
+
+                    seri = netRS.FieldByName("SERINO").AsString;
+                   
+
+                    Fatura fatura = default(Fatura);
+                    FatUst fatUst = default(FatUst);
+                    FatKalem fatKalem = default(FatKalem);
+                    if (hurdamik != null && hurdamik != "0")
+                    {
+                        fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
+
+                        fatUst = fatura.Ust();
+                        fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                        fatUst.TIPI = TFaturaTipi.ft_Bos;
+                        fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                        fatUst.Tarih = DateTime.Now;
+                        fatUst.FiiliTarih = DateTime.Now;
+                        fatUst.PLA_KODU = "45";
+                        fatUst.Proje_Kodu = "1";
+                        fatUst.KDV_DAHILMI = true;
+                        fatUst.Aciklama = ISEMRINO;
+                        fatKalem = fatura.kalemYeni(Stokkodu);
+
+                        ///Giriş Depo Kodu
+                        fatKalem.Gir_Depo_Kodu = 60;
+                        fatKalem.DEPO_KODU = 45;
+                        fatKalem.STra_GCMIK = hurdamik.ToDouble();
+                        fatKalem.STra_BF = 0;
+                        fatKalem.STra_ACIK = ISEMRINO.Substring(0, 4);
+                        fatKalem.Olcubr = 1;
+                        fatKalem.ProjeKodu = "1";
+                        fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+
+                        fatKalem.SeriEkle(karsi, "", "", "", hurdamik.ToDouble(), 0);
+                        fatura.kayitYeni();
+                    }
+                    if (ikincimik1 != null && ikincimik1 != "0")
+                    {
+                        fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
+
+                        fatUst = fatura.Ust();
+                        fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                        fatUst.TIPI = TFaturaTipi.ft_Bos;
+                        fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                        fatUst.Tarih = DateTime.Now;
+                        fatUst.FiiliTarih = DateTime.Now;
+                        fatUst.PLA_KODU = "45";
+                        fatUst.Proje_Kodu = "1";
+                        fatUst.Aciklama = ISEMRINO;
+                        fatUst.KDV_DAHILMI = true;
+                        fatKalem = fatura.kalemYeni(Stokkodu);
+
+                        ///Giriş Depo Kodu
+                        fatKalem.Gir_Depo_Kodu = 55;
+                        fatKalem.DEPO_KODU = 45;
+                        fatKalem.STra_GCMIK = ikincimik1.ToDouble();
+                        fatKalem.STra_GCMIK2 = ikincimik2.ToDouble();
+                        fatKalem.STra_ACIK = ISEMRINO.Substring(0, 4);
+                        fatKalem.STra_BF = 0;
+                        fatKalem.Olcubr = 1;
+                        fatKalem.ProjeKodu = "1";
+                        fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+
+                        fatKalem.SeriEkle(karsi, "", "", "", ikincimik1.ToDouble(), ikincimik2.ToDouble());
+                        fatura.kayitYeni();
+                    }
+
+
+                   
+
+
+
+                }
+                catch (Exception exp)
+                {
+                    sirket.LogOff();
+                    var message = exp.Message;
+                    System.Diagnostics.Debug.Write(exp);
+                    WebMail.SmtpServer = "192.168.2.13";
+                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Dertler Derya Olmuş", "<p><b>" + ISEMRINO + "</b> sıkıntılı ayağınızı denk alın!</p><p>Sıkıntı: " + message + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+
+                    return $"Hata: {message}";
+                }
+                finally
+                {
+                    sirket.LogOff();
+                    Marshal.ReleaseComObject(sirket);
+                    kernel.FreeNetsisLibrary();
+                    Marshal.ReleaseComObject(kernel);
+                }
+            }
+           
 
             return seri;
         }

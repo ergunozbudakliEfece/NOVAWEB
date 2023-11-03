@@ -971,21 +971,20 @@
                             } else {
                                 if (tr[i].getElementsByTagName("input")[2].value.length > 0) {
                                     DlInputChange(tr[i].getElementsByTagName("input")[2]);
+
                                 }
                             }
+
                             MachineChange(tr[i].getElementsByTagName("select")[0], 'DLTable')
                         }
-
-                        $('#fireTable').find("tr").eq(1).find("input").eq(0).val(null)
-                        $('#fireTable').find("tr").eq(1).find("input").eq(1).val(null)
-                        $('#fireTable').find("tr").eq(1).find("input").eq(2).val(null)
+                        oran(tr[1].getElementsByTagName("input")[0])
                         break;
                     case 'BK':
                         var l = $("#BKTable").find("tr").length;
                         if (l > 2) {
                             for (let a = 1; a < l; a++) {
                                 if (a == 1) {
-                                    MachineChange($("#BKTable").find("tr").eq(a).find("select").eq(0).val(),'BKTable') 
+                                    MachineChange($("#BKTable").find("tr").eq(a).find("select").eq(0).val(),'BKTable')
                                     $("#BKTable").find("tr").eq(a).find("select").eq(1).trigger("change");
                                 } else {
 
@@ -1243,9 +1242,9 @@
                             $sel2.appendChild(opt1);
                         }
 
-                        
 
-                    } 
+
+                    }
 
                     $(".js-select").select2(
                         {
@@ -1258,6 +1257,7 @@
                             return markup;
                         }
                         });
+                    DlInputChange(document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("input")[2]);
                 }
 
                 KaydetAktivite();
@@ -1350,8 +1350,8 @@
                 opt2.setAttribute("disabled", "");
                 $sel3.appendChild(opt2);
             }
-           
-        
+
+
         KaydetAktivite();
         }
     function DlInputChange(val) {
@@ -1551,30 +1551,30 @@
 
 
         if (tableId == 'DLTable') {
-          
+
             for (let i = 0; i < 4; i++) {
                 var val = currenttr.getElementsByTagName("select")[i].value;
-                
+
                 if (val == "SEÇİNİZ") {
                     search = false;
                 }
             }
-           
+
             if (currenttd[4].getElementsByTagName("input")[0].value == null || currenttd[4].getElementsByTagName("input")[0].value == "") {
 
                 search = false
             }
-            
+
         } else {
             for (let i = 0; i < 3; i++) {
                 var val = currenttr.getElementsByTagName("select")[i].value;
-               
-                
+
+
                 if (val == "SEÇİNİZ") {
                     search = false;
                 }
             }
-           
+
         }
 
         if (search) {
@@ -1686,7 +1686,7 @@
                 table.getElementsByTagName("tr")[rownum].getElementsByTagName("input")[0].setAttribute("onblur", "ParcalioranUst(this)")
                 ParcalioranAlt(table.getElementsByTagName("tr")[rownum + 1].getElementsByTagName("input")[0])
             }
-            
+
 
 
     }
@@ -1812,318 +1812,341 @@
                 }
                 break;
             case "DL":
-                $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
-    sonSeri = data;
-                }).done(function () {
-     var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
-        var table = document.getElementById("DLTable");
-    var tr = table.getElementsByTagName("tr");
-    if (localStorage.DLlist != null && localStorage.DLlist != "null") {
-        DLList = JSON.parse(localStorage.DLlist)
-        DLListTop = JSON.parse(localStorage.DLlistTop)
-        for (let e = 0; e < DLList.length; e++) {
-            if (!serilist.includes(DLList[e].GIRDI2)) {
-                serilist.push(DLList[e].GIRDI2);
-            }
+                var f = parseFloat($("#fireagirligi").val());
+                if (f > 0) {
+                    $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
+                        sonSeri = data;
+                    }).done(function () {
+                        var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
+                        var table = document.getElementById("DLTable");
+                        var tr = table.getElementsByTagName("tr");
+                        if (localStorage.DLlist != null && localStorage.DLlist != "null") {
+                            DLList = JSON.parse(localStorage.DLlist)
+                            DLListTop = JSON.parse(localStorage.DLlistTop)
+                            for (let e = 0; e < DLList.length; e++) {
+                                if (!serilist.includes(DLList[e].GIRDI2)) {
+                                    serilist.push(DLList[e].GIRDI2);
+                                }
 
-            if (!isemrilist.includes(DLList[e].ISEMRINO)) {
-                isemrilist.push(DLList[e].ISEMRINO);
-            }
+                                if (!isemrilist.includes(DLList[e].ISEMRINO)) {
+                                    isemrilist.push(DLList[e].ISEMRINO);
+                                }
 
-            if (!isemrilist.includes(DLList[e].REF_ISEMRINO)) {
-                isemrilist.push(DLList[e].REF_ISEMRINO);
-            }
+                                if (!isemrilist.includes(DLList[e].REF_ISEMRINO)) {
+                                    isemrilist.push(DLList[e].REF_ISEMRINO);
+                                }
 
-        }
-    } else {
-        DLList = [];
-        DLListTop = [];
-                    }
-    var Cariler = @Html.Raw(Json.Encode(ViewBag.Cariler));
-    for (let i = 1; i < tr.length; i++) {
-        var adet = tr[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
-        var oran = tr[i].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value;
-        var tam = document.getElementById("agirlik").value.split("/")[0].split('.').join('');
-        var hamor = document.getElementById("hamoran").value;
-        var sirano = parseInt(tr[i].getElementsByTagName("td")[0].innerHTML);
-        var girdi2 = sonSeri[0].SERI_NO;
-        var makine = tr[i].getElementsByTagName("select")[0].value;
-        var makineref = tr[i].getElementsByTagName("select")[2].value;
-        var s = jsonObj.filter(x => x.MAK_KODU == makine);
-        var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
-        var urunkodu = document.getElementById("seri").value;
-
-        var stokadi = tr[i].getElementsByTagName("select")[1].value;
-        var kalinlik = document.getElementById("kalinlik").value;
-        var kaplama = document.getElementById("kaplama").value;
-        var kalite = document.getElementById("kalite").value;
-        var siparisno, Sipkont = "";
-
-        var musteri = tr[i].getElementsByTagName("select")[tr[i].getElementsByTagName("select").length - 1].value;
-        if (musteri != "EFECE GALVANİZ") {
-            var f = Cariler.filter(x => x.CARI_ISIM == musteri)[0];
-            siparisno = f.FISNO;
-            Sipkont = f.SIPKONT;
-        }
-        var genislik = tr[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value;
-        var refagirlik = tr[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value;
-
-        var refstokolcusu = tr[i].getElementsByTagName("select")[3].value;
-        var sonrefisemri = "-";
-        for (let a = 0; a < adet; a++) {
-            var refadet = tr[i].getElementsByTagName("td")[9].innerHTML;
-            var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (a + 1).toString().padStart(3, '0');
-            if (s1.length>0) {
-                sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (a + 1).toString().padStart(3, '0');
-                if (isemrilist.includes(sonrefisemri)) {
-                    var is1 = isemrilist.filter(x => x.includes(makineref));
-                    sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                }
-            }
-
-
-            if (isemrilist.includes(sonisemri)) {
-                var is = isemrilist.filter(x => x.includes(makine));
-                sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-            }
-
-            if (serilist.includes(girdi2)) {
-                if (siralist.includes(sirano) && adet == 1) {
-                    girdi2 = serilist[serilist.length - 1];
-                } else {
-                    girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                }
-
-            }
-            if (refstokolcusu == "SEÇİNİZ") {
-                refstokolcusu = "-"
-                refadet = "-"
-            } else {
-                refadet = Math.round(refadet / adet)
-            }
-            if (refadet == "-") {
-                refadet = 0;
-            }
-            DLList.push({
-                GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri , STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: refadet, AGIRLIK: (parseFloat(refagirlik) / adet).toString(), SIPKONT: "", SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam, ORAN: oran
-            });
-
-            if (!serilist.includes(girdi2)) {
-
-                serilist.push(girdi2);
-            }
-            if (!siralist.includes(sirano)) {
-
-                siralist.push(sirano);
-            }
-            isemrilist.push(sonisemri);
-
-            if (sonrefisemri != "-") {
-                isemrilist.push(sonrefisemri);
-            }
-
-
-            say++;
-        }
-        DLListTop.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: (refstokolcusu == "-" ? stokadi : refstokolcusu), KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: (refadet == 0 || refadet == '-' ?adet: (refadet*adet)) });
-        var fark = DLList.length;
-        OldStokAdi = $("#stokadi").val();
-        siralist = [];
-        if (localStorage.DLlist != null && localStorage.DLlist != "null") {
-
-            fark = fark - JSON.parse(localStorage.DLlist).length;
-        }
-        var uu = "http://192.168.2.13:83/api/seri/1/" + fark;
-        $.getJSON(uu, function (data) { });
-        localStorage.DLlist = JSON.stringify(DLList);
-        localStorage.DLlistTop = JSON.stringify(DLListTop);
-
-    }
-    var tpl = $.pivotUtilities.aggregatorTemplates;
-    takiplist = [];
-
-    function drawPivot() {
-
-        $(function () {
-            document.getElementById("DLPivot").replaceChildren();
-            $("#tamamidiv").hide()
-            $("#DLPivot").pivot(
-                takiplist,
-                {
-                    rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET", "AGIRLIK", "FIRE", "HAMSARF"],
-                    cols: [],
-                    aggregator: tpl.sum()(["ADET"]),
-                    sorters: {
-
-                        GIRDI1: function (a, b) { return a - b; } //sort backwards
-                    }
-
-
-                }, false, "tr")
-        })
-    }
-    function getPivot() {
-
-                document.body.style.cursor = 'default';
-                takiplist = JSON.parse(localStorage.DLlist);
-                var girdi1 = [];
-                for (let i = 0; i < takiplist.length; i++) {
-
-                    if (!girdi1.includes(takiplist[i].GIRDI1)) {
-
-                        girdi1.push({ GIRDI1: takiplist[i].GIRDI1 });
-
-                    }
-
-                }
-
-                var newtakip = [];
-                var hamtop = 0;
-                var firtop = 0;
-                for (let i = 0; i < girdi1.length; i++) {
-                    var sum = 0;
-                    var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
-
-                    for (let e = 0; e < fil.length; e++) {
-                        if (e >= 1) {
-                            if (fil[e].GIRDI2 != fil[e - 1].GIRDI2) {
-                                sum = sum + parseFloat(fil[e].GENISLIK);
                             }
                         } else {
-                            sum = sum + parseFloat(fil[e].GENISLIK);
+                            DLList = [];
+                            DLListTop = [];
                         }
+                        var Cariler = @Html.Raw(Json.Encode(ViewBag.Cariler));
+                        for (let i = 1; i < tr.length; i++) {
+                            var adet = tr[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value;
+                            var oran = tr[i].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value;
+                            var tam = document.getElementById("agirlik").value.split("/")[0].split('.').join('');
+                            var hamor = document.getElementById("hamoran").value;
+                            var sirano = parseInt(tr[i].getElementsByTagName("td")[0].innerHTML);
+                            var girdi2 = sonSeri[0].SERI_NO;
+                            var makine = tr[i].getElementsByTagName("select")[0].value;
+                            var makineref = tr[i].getElementsByTagName("select")[2].value;
+                            var s = jsonObj.filter(x => x.MAK_KODU == makine);
+                            var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
+                            var urunkodu = document.getElementById("seri").value;
 
-                    }
-                    var ek = 0;
-                    for (let e = 0; e < fil.length; e++) {
-                        fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * fil[e].ORAN;
-                        var oldek = ek;
-                        ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
-                        if (Math.round(ek) != Math.round(oldek)) {
-                            fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
-                        } else {
-                            fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
+                            var stokadi = tr[i].getElementsByTagName("select")[1].value;
+                            var kalinlik = document.getElementById("kalinlik").value;
+                            var kaplama = document.getElementById("kaplama").value;
+                            var kalite = document.getElementById("kalite").value;
+                            var siparisno, Sipkont = "";
+
+                            var musteri = tr[i].getElementsByTagName("select")[tr[i].getElementsByTagName("select").length - 1].value;
+                            if (musteri != "EFECE GALVANİZ") {
+                                var f = Cariler.filter(x => x.CARI_ISIM == musteri)[0];
+                                siparisno = f.FISNO;
+                                Sipkont = f.SIPKONT;
+                            }
+                            var genislik = tr[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value;
+                            var refagirlik = tr[i].getElementsByTagName("td")[11].getElementsByTagName("input")[0].value;
+
+                            var refstokolcusu = tr[i].getElementsByTagName("select")[3].value;
+                            var sonrefisemri = "-";
+                            for (let a = 0; a < adet; a++) {
+                                var refadet = tr[i].getElementsByTagName("td")[9].innerHTML;
+                                var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (a + 1).toString().padStart(3, '0');
+                                if (s1.length > 0) {
+                                    sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (a + 1).toString().padStart(3, '0');
+                                    if (isemrilist.includes(sonrefisemri)) {
+                                        var is1 = isemrilist.filter(x => x.includes(makineref));
+                                        sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                    }
+                                }
+
+
+                                if (isemrilist.includes(sonisemri)) {
+                                    var is = isemrilist.filter(x => x.includes(makine));
+                                    sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                }
+
+                                if (serilist.includes(girdi2)) {
+                                    if (siralist.includes(sirano) && adet == 1) {
+                                        girdi2 = serilist[serilist.length - 1];
+                                    } else {
+                                        girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                    }
+
+                                }
+                                if (refstokolcusu == "SEÇİNİZ") {
+                                    refstokolcusu = "-"
+                                    refadet = "-"
+                                } else {
+                                    refadet = Math.round(refadet / adet)
+                                }
+                                if (refadet == "-") {
+                                    refadet = 0;
+                                }
+                                DLList.push({
+                                    GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: refadet, AGIRLIK: (parseFloat(refagirlik) / adet).toString(), SIPKONT: "", SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam, ORAN: oran
+                                });
+
+                                if (!serilist.includes(girdi2)) {
+
+                                    serilist.push(girdi2);
+                                }
+                                if (!siralist.includes(sirano)) {
+
+                                    siralist.push(sirano);
+                                }
+                                isemrilist.push(sonisemri);
+
+                                if (sonrefisemri != "-") {
+                                    isemrilist.push(sonrefisemri);
+                                }
+
+
+                                say++;
+                            }
+                            DLListTop.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: (refstokolcusu == "-" ? stokadi : refstokolcusu), KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: (refadet == 0 || refadet == '-' ? adet : (refadet * adet)) });
+                            var fark = DLList.length;
+                            OldStokAdi = $("#stokadi").val();
+                            siralist = [];
+                            if (localStorage.DLlist != null && localStorage.DLlist != "null") {
+
+                                fark = fark - JSON.parse(localStorage.DLlist).length;
+                            }
+                            var uu = "http://192.168.2.13:83/api/seri/1/" + fark;
+                            $.getJSON(uu, function (data) { });
+                            localStorage.DLlist = JSON.stringify(DLList);
+                            localStorage.DLlistTop = JSON.stringify(DLListTop);
+
                         }
-                        fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
-                        fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
-                    }
+                        var tpl = $.pivotUtilities.aggregatorTemplates;
+                        takiplist = [];
 
-                    if (newtakip.length == 0) {
-                        newtakip = fil;
-                    } else {
-                        newtakip = newtakip.concat(fil);
-                    }
+                        function drawPivot() {
 
+                            $(function () {
+                                document.getElementById("DLPivot").replaceChildren();
+                                $("#tamamidiv").hide()
+                                $("#DLPivot").pivot(
+                                    takiplist,
+                                    {
+                                        rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET", "AGIRLIK", "FIRE", "HAMSARF"],
+                                        cols: [],
+                                        aggregator: tpl.sum()(["ADET"]),
+                                        sorters: {
+
+                                            GIRDI1: function (a, b) { return a - b; } //sort backwards
+                                        }
+
+
+                                    }, false, "tr")
+                            })
+                        }
+                        function getPivot() {
+
+                            document.body.style.cursor = 'default';
+                            takiplist = JSON.parse(localStorage.DLlist);
+                            var girdi1 = [];
+                            for (let i = 0; i < takiplist.length; i++) {
+
+                                if (!girdi1.includes(takiplist[i].GIRDI1)) {
+
+                                    girdi1.push({ GIRDI1: takiplist[i].GIRDI1 });
+
+                                }
+
+                            }
+
+                            var newtakip = [];
+                            var hamtop = 0;
+                            var firtop = 0;
+                            for (let i = 0; i < girdi1.length; i++) {
+                                var sum = 0;
+                                var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
+
+                                for (let e = 0; e < fil.length; e++) {
+                                    if (e >= 1) {
+                                        if (fil[e].GIRDI2 != fil[e - 1].GIRDI2) {
+                                            sum = sum + parseFloat(fil[e].GENISLIK);
+                                        }
+                                    } else {
+                                        sum = sum + parseFloat(fil[e].GENISLIK);
+                                    }
+
+                                }
+                                var ek = 0;
+                                for (let e = 0; e < fil.length; e++) {
+                                    fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * fil[e].ORAN;
+                                    var oldek = ek;
+                                    ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
+                                    if (Math.round(ek) != Math.round(oldek)) {
+                                        fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
+                                    } else {
+                                        fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
+                                    }
+                                    fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
+                                    fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+                                }
+
+                                if (newtakip.length == 0) {
+                                    newtakip = fil;
+                                } else {
+                                    newtakip = newtakip.concat(fil);
+                                }
+
+                            }
+
+                            takiplist = newtakip;
+                            var fn = takiplist.filter(x => x.ISEMRINO === takiplist[0].ISEMRINO).length;
+                            for (let i = 0; i < takiplist.length; i++) {
+                                tp = tp + parseInt(takiplist[i].FIRE);
+                            }
+
+                            for (let i = 0; i < takiplist.length; i++) {
+                                hamtop = hamtop + takiplist[i].HAMSARF;
+                                firtop = firtop + takiplist[i].FIRE;
+                            }
+                            //fireag.value = (firtop / fn).toLocaleString();
+                            //fireyuz.value = ((firtop / fn) / (hamtop / fn) * 100).toFixed(2) + " %";
+                            localStorage.list4 = JSON.stringify(takiplist);
+                            drawPivot();
+
+
+
+
+                        }
+                        takiplist2 = [];
+                        function drawPivot2() {
+
+
+                            $("#DLPivotTop").pivot(
+                                takiplist2,
+                                {
+                                    rows: ["MUSTERI", "STOKADI", "ADET", "AGIRLIK"],
+
+
+
+
+                                }, false, "tr")
+                        }
+                        function getPivot2() {
+
+                            var result = Grupla(JSON.parse(localStorage.DLlistTop))
+                            for (let i = 0; i < result.length; i++) {
+
+                                takiplist2.push({ STOKADI: result[i].STOKADI, MUSTERI: result[i].MUSTERI, AGIRLIK: result[i].AGIRLIK, ADET: result[i].ADET })
+
+
+                            }
+                            drawPivot2();
+                            document.body.style.cursor = 'default';
+                            var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
+                            var sum = 0;
+                            var sum2 = 0;
+                            for (let i = 1; i < rr.length - 1; i++) {
+                                sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
+                                sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
+                            }
+
+                        }
+                        var aggMap = {
+                            'agg1': {
+                                aggType: 'Sum',
+                                arguments: ['ADET'],
+                                name: 'ADET TOPLAM',
+                                varName: 'a',
+                                renderEnhancement: 'barchart'
+                            },
+
+                            'agg2': {
+                                aggType: 'Sum',
+                                arguments: ['AGIRLIK'],
+                                name: 'AGIRLIK TOPLAM',
+                                varName: 'b',
+                                hidden: false,
+                                renderEnhancement: 'none'
+                            },
+
+                        };
+
+
+                        var customAggs = {};
+                        customAggs['Multifact Aggregators'] = $.pivotUtilities.multifactAggregatorGenerator(aggMap, []);
+
+                        var config = {
+                            "cols": [],
+                            "rows": ["MUSTERI", "STOKOLCULERI", "KALINLIK", "KALITE", "KAPLAMA"],
+                            "vals": [],
+                            "rowOrder": "key_a_to_z",
+                            "colOrder": "key_a_to_z",
+                            "aggregatorName": "Multifact Aggregators",
+                            "rendererName": "GT Table Heatmap and Barchart",
+                            "rendererOptions": {
+
+                                aggregations: {
+                                    defaultAggregations: aggMap,
+
+
+                                }
+                            }
+                        };
+
+
+
+
+                        $.pivotUtilities.customAggs = customAggs;
+
+                        config.aggregators = $.extend($.pivotUtilities.aggregators, $.pivotUtilities.customAggs);
+
+                        config.renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.gtRenderers);
+                        getPivot();
+                        getPivot2();
+                        $("#tamami").hide();
+                        $("#seri").val(null).trigger("input");
+                    })
+
+                } else {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'center',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Fire eksi olamaz!'
+                        })
+                        
                 }
 
-                takiplist = newtakip;
-                var fn = takiplist.filter(x => x.ISEMRINO === takiplist[0].ISEMRINO).length;
-                for (let i = 0; i < takiplist.length; i++) {
-                    tp = tp + parseInt(takiplist[i].FIRE);
-                }
-
-                for (let i = 0; i < takiplist.length; i++) {
-                    hamtop = hamtop + takiplist[i].HAMSARF;
-                    firtop = firtop + takiplist[i].FIRE;
-                }
-                //fireag.value = (firtop / fn).toLocaleString();
-                //fireyuz.value = ((firtop / fn) / (hamtop / fn) * 100).toFixed(2) + " %";
-                localStorage.list4 = JSON.stringify(takiplist);
-                drawPivot();
-
-
-
-
-    }
-    takiplist2 = [];
-    function drawPivot2() {
-
-
-        $("#DLPivotTop").pivot(
-            takiplist2,
-            {
-                rows: ["MUSTERI", "STOKADI", "ADET", "AGIRLIK"],
-
-
-
-
-            }, false, "tr")
-    }
-    function getPivot2() {
-
-        var result = Grupla(JSON.parse(localStorage.DLlistTop))
-        for (let i = 0; i < result.length; i++) {
-
-            takiplist2.push({ STOKADI: result[i].STOKADI, MUSTERI: result[i].MUSTERI, AGIRLIK: result[i].AGIRLIK, ADET: result[i].ADET })
-
-
-        }
-        drawPivot2();
-        document.body.style.cursor = 'default';
-        var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
-        var sum = 0;
-        var sum2 = 0;
-        for (let i = 1; i < rr.length - 1; i++) {
-            sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
-            sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
-        }
-
-    }
-    var aggMap = {
-        'agg1': {
-            aggType: 'Sum',
-            arguments: ['ADET'],
-            name: 'ADET TOPLAM',
-            varName: 'a',
-            renderEnhancement: 'barchart'
-        },
-
-        'agg2': {
-            aggType: 'Sum',
-            arguments: ['AGIRLIK'],
-            name: 'AGIRLIK TOPLAM',
-            varName: 'b',
-            hidden: false,
-            renderEnhancement: 'none'
-        },
-
-    };
-
-
-    var customAggs = {};
-    customAggs['Multifact Aggregators'] = $.pivotUtilities.multifactAggregatorGenerator(aggMap, []);
-
-    var config = {
-        "cols": [],
-        "rows": ["MUSTERI", "STOKOLCULERI", "KALINLIK", "KALITE", "KAPLAMA"],
-        "vals": [],
-        "rowOrder": "key_a_to_z",
-        "colOrder": "key_a_to_z",
-        "aggregatorName": "Multifact Aggregators",
-        "rendererName": "GT Table Heatmap and Barchart",
-        "rendererOptions": {
-
-            aggregations: {
-                defaultAggregations: aggMap,
-
-
-            }
-        }
-    };
-
-
-
-
-    $.pivotUtilities.customAggs = customAggs;
-
-    config.aggregators = $.extend($.pivotUtilities.aggregators, $.pivotUtilities.customAggs);
-
-    config.renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.gtRenderers);
-    getPivot();
-                    getPivot2();
-                    $("#tamami").hide();
-    $("#seri").val(null).trigger("input");
-})
                 break;
 
         };
@@ -2213,7 +2236,7 @@
 
         }
         else if (val.value == "TP")
-        {   
+        {
             hamkod = null;
             $("#HammaddeCard").hide();
             $("#addRw").show();
@@ -2272,7 +2295,7 @@
                 $("#tamamidiv").show();
             }
             BKTableLoadLocalData();
-            
+
         }
         else if (val.value == "PB")
         {
@@ -2389,7 +2412,7 @@
 
         $("#seri").val(null).trigger("input");
         /*mail();*/
-        
+
         Swal.fire(
             'Veriler başarılı bir şekilde Netsis\'e aktarıldı.',
             '',
@@ -2734,9 +2757,9 @@
                     document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3].removeAttribute("disabled");
                     document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
                     var s = document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].value;
-                    
+
                     var url = "http://192.168.2.13:83/api/seri/receteden/" + s + "/" + Satir.value
-                   
+
                     $.getJSON(url, function (d1) {
                         var $sel3 = document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
                         $sel3.replaceChildren();
@@ -2857,7 +2880,7 @@
         }
 
         document.getElementById('DLTable').getElementsByTagName('tr')[rowNumber].getElementsByTagName('select')[4].innerHTML = CariListe;
-       
+
     }
 
     //String olarak gelen veriyi, html element olarak geriye döner.
@@ -2974,7 +2997,7 @@
             }
             switch (Tip) {
                 case 'DL':
-                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += a.REF_ADET;
+                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.REF_ADET);
                     break;
                 case 'TP':
                     this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.ADET);
@@ -2982,7 +3005,7 @@
                 case 'BK':
                 case 'PB':
                 case 'RF':
-                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += a.ADET;
+                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.ADET);
                     break;
             }
             this[`${a.STOKADI}${a.MUSTERI}`].AGIRLIK += a.AGIRLIK;
