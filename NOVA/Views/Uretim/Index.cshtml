@@ -1503,7 +1503,12 @@
                         b.style.height = "145px";
                         b.setAttribute("data-stokkodu", data[i].STOK_KODU);
                         b.setAttribute("data-genislik", data[i].BANT_GENISLIGI);
-                        b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
+                        if(value=='DL01'){
+                            b.setAttribute("data-top", data[i].TOPLAM_MIKTAR_REC);
+                        }else{
+                            b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
+                        }
+                        
                         b.setAttribute("data-kul", data[i].KULL_MIKTAR);
                         b.setAttribute("data-hat", data[i].HAT_KODU);
                         b.setAttribute("data-mik2", data[i].TOPLAM_MIKTAR2);
@@ -1514,7 +1519,12 @@
                             b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
 
                             /*b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].SIP_CARI_ISIM + "</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";*/
-                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                            if(value=='DL01'){
+                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR_REC.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                            }else{
+                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                            }
+                            
                       
 
                         b.setAttribute("onclick", "showmodal(this)");
@@ -1597,13 +1607,14 @@
             } else {
                 $("#miktar22").val(null);
                 $("#miktar22").prop("disabled", true);
-                $("#ikincimik2").prop("disabled", true);
+                $("#ikincimik1").prop("disabled", true);
                 $("#hurdamik").prop("disabled", true);
                 $("#ikincimik2").val(null);
                 $("#ikincimik1").val(null);
                 $("#hurdamik").val(null);
                 $("#ModalSaveButton").prop("disabled", true);
             }
+            m1 = $("#miktar11").val();
             if (m1 > max) {
                 $("#miktar11").val(max)
 
@@ -1653,9 +1664,11 @@
             var olcu2 = olculer.split("||")[1].split(" ")[2]
             if (m1.length == 0) {
                 $("#miktar22").val(null);
+                m1 = null;
             }
             if (m2 > max2) {
                 $("#miktar22").val(max2)
+                
             }
             if (m2.length > 0 && m1.length > 0) {
                     if (m1 % m2 != 0) {
@@ -1676,15 +1689,17 @@
                         }
                     } else {
                         $("#ModalSaveButton").prop("disabled", false);
-                }
+                    }
                 $("#ikincimik2").prop("disabled", false);
                 $("#hurdamik").prop("disabled", false);
-                $("#BirimMik").html( (m1 / m2).toLocaleString(undefined, {
+                m1 = $("#miktar11").val();
+                m2 = $("#miktar22").val();
+                $("#BirimMik").html((parseInt(m1) / m2).toLocaleString(undefined, {
                     maximumFractionDigits: 2
                 }) + " " + olcu1+" / "+olcu2);
             } else {
                 $("#ModalSaveButton").prop("disabled", true)
-                $("#ikincimik2").prop("disabled", true);
+                $("#ikincimik1").prop("disabled", true);
                 $("#hurdamik").prop("disabled", true);
                 $("#ikincimik2").val(null);
                 $("#ikincimik1").val(null);
@@ -2384,6 +2399,7 @@
                 }
             }
         }
+       
         function ModalKaydet() {
             if (m1 != null) {
                 $("#progress2").show();
@@ -2425,7 +2441,7 @@
                                 console.log(data);
                             }
                         })
-                    } else {0
+                    } else {
                         var mik1 = $("#miktar11").val();
                         var ikincimik1 = $("#ikincimik1").val();
                         var mik2 = $("#miktar22").val();
@@ -2441,19 +2457,41 @@
                             top1 = top1 + parseFloat(hurdamik);
                         }
                         var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/0/" + top1.toString().trim() + "/" + top2.toString().trim() + "/0";
+                        if (top1 <= max) {
 
-                        $.getJSON(url, function (dataa) {
-                            var list = dataa;
-                            if (dataa.length > 0) {
-                                Pbsayac = 0;
-                                sonMu = false;
-                                if (Pbsayac == dataa.length - 1) {
-                                    sonMu = true;
+                            $.getJSON(url, function (dataa) {
+                                var list = dataa;
+                                if (dataa.length > 0) {
+                                    Pbsayac = 0;
+                                    sonMu = false;
+                                    if (Pbsayac == dataa.length - 1) {
+                                        sonMu = true;
+                                    }
+                                    loadPB(list)
                                 }
-                                loadPB(list)
-                            }
 
-                        })
+                            })
+
+                        } else {
+                            $("#progress2").hide();
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'center',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            })
+
+                            Toast.fire({
+                                icon: 'info',
+                                title: 'Toplam miktarı aşamazsınız.'
+                            });
+                        }
+                       
 
                     }
                 } else {
@@ -2472,8 +2510,28 @@
                         top1 = top1 + parseFloat(hurdamik);
                     }
                     var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + top1.toString().trim() + "/" + top2.toString().trim() + "/0";
+                    if (top1 <= max) {
+                        load(url);
+                    } else {
+                        $("#progress2").hide();
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'center',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
 
-                    load(url);
+                        Toast.fire({
+                            icon: 'info',
+                            title: 'Toplam miktarı aşamazsınız.'
+                        });
+                    }
+                    
                 }
             } else {
                 Swal.fire(
