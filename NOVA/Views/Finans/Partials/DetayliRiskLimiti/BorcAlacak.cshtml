@@ -1,0 +1,108 @@
+﻿<div class="card border-0 shadow-sm" style="min-height:285px;">
+    <div class="card-body overflow-hidden h-100">
+        <h5 class="card-title text-center">CARİ BAKİYE DETAYLARI</h5>
+
+        <div class="card-content d-flex justify-content-center align-items-center gap-4">
+
+            <div class="table-responsive w-100" style="font-size:smaller;">
+                <table class="table table-bordered table-sm align-middle text-center">
+                    <thead>
+                        <tr>
+                            <th class="left-top-borderless-cell" colspan="1"></th>
+                            <th>BORÇ/ALACAK</th>
+                            <th>BAKİYE</th>
+                            <th>TOPLAM BAKİYE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td id="TRY_SEMBOL_BORC_ALACAK" class="money-unit" style="color: #d30e0eb8;" rowspan="2">₺</td>
+                            <td id="TOPLAM_BORC_TRY">₺0,00</td>
+
+                            <td rowspan="2" id="BAKIYE_TRY">₺0,00</td>
+                            <td rowspan="9" id="TOPLAM_BAKIYE">₺0,00</td>
+                        </tr>
+                        <tr>
+                            <td id="TOPLAM_ALACAK_TRY">₺0,00</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3"></td>
+                        </tr>
+
+                        <tr>
+                            <td id="USD_SEMBOL_BORC_ALACAK" class="money-unit" style="color: #d30e0eb8;" rowspan="2">$</td>
+                            <td id="TOPLAM_BORC_USD">₺0,00</td>
+
+                            <td rowspan="2" id="BAKIYE_USD">₺0,00</td>
+                        </tr>
+                        <tr>
+                            <td id="TOPLAM_ALACAK_USD">₺0,00</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3"></td>
+                        </tr>
+
+                        <tr>
+                            <td id="EUR_SEMBOL_BORC_ALACAK" class="money-unit" style="color: #d30e0eb8;" rowspan="2">€</td>
+                            <td id="TOPLAM_BORC_EUR">₺0,00</td>
+
+                            <td rowspan="2" id="BAKIYE_EUR">₺0,00</td>
+                        </tr>
+                        <tr>
+                            <td id="TOPLAM_ALACAK_EUR">₺0,00</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function BorcAlacakGuncelle()
+    {
+        return new Promise((resolve, reject) => {
+            var TRY_Bilgi = DetayliRiskLimitiBilgileri?.filter(item => item.DOVIZ_TIPI == "TRY");
+            var USD_Bilgi = DetayliRiskLimitiBilgileri?.filter(item => item.DOVIZ_TIPI == "USD");
+            var EUR_Bilgi = DetayliRiskLimitiBilgileri?.filter(item => item.DOVIZ_TIPI == "EUR");
+
+            var BAKIYE_TRY =  (TRY_Bilgi[0]?.TOPLAM_BORC ?? 0) - (TRY_Bilgi[0]?.TOPLAM_ALACAK ?? 0);
+            var BAKIYE_USD =  (USD_Bilgi[0]?.TOPLAM_BORC ?? 0) - (USD_Bilgi[0]?.TOPLAM_ALACAK ?? 0);
+            var BAKIYE_EUR =  (EUR_Bilgi[0]?.TOPLAM_BORC ?? 0) - (EUR_Bilgi[0]?.TOPLAM_ALACAK ?? 0);
+            var BAKIYE_TOPLAM = BAKIYE_TRY + BAKIYE_USD + BAKIYE_EUR;
+
+            var BAKIYE_TRY_YONU = BAKIYE_TRY > 0 ? '#ff000012' : (BAKIYE_TRY < 0 ? '#00ff1112' : '');
+            var BAKIYE_USD_YONU = BAKIYE_USD > 0 ? '#ff000012' : (BAKIYE_USD < 0 ? '#00ff1112' : '');
+            var BAKIYE_EUR_YONU = BAKIYE_EUR > 0 ? '#ff000012' : (BAKIYE_EUR < 0 ? '#00ff1112' : '');
+            var BAKIYE_TOPLAM_YONU = BAKIYE_TOPLAM > 0 ? '#ff000012' : (BAKIYE_TOPLAM < 0 ? '#00ff1112' : '');
+
+            $('#TOPLAM_BORC_TRY').html(ParaBirimiFormat(TRY_Bilgi[0]?.TOPLAM_BORC)).css('background-color', !NullOrZero(TRY_Bilgi[0]?.TOPLAM_BORC) ? '#ff000012' : '');
+            $('#TOPLAM_ALACAK_TRY').html(ParaBirimiFormat(TRY_Bilgi[0]?.TOPLAM_ALACAK)).css('background-color', !NullOrZero(TRY_Bilgi[0]?.TOPLAM_ALACAK) ? '#00ff1112' : '');
+            $('#BAKIYE_TRY').html(ParaBirimiFormat(BAKIYE_TRY)).css('background-color', BAKIYE_TRY_YONU);
+
+            $('#TOPLAM_BORC_USD').html(ParaBirimiFormat(USD_Bilgi[0]?.TOPLAM_BORC)).css('background-color', !NullOrZero(USD_Bilgi[0]?.TOPLAM_BORC) ? '#ff000012' : '');
+            $('#TOPLAM_ALACAK_USD').html(ParaBirimiFormat(USD_Bilgi[0]?.TOPLAM_ALACAK)).css('background-color', !NullOrZero(USD_Bilgi[0]?.TOPLAM_ALACAK) ? '#00ff1112' : '');
+            $('#BAKIYE_USD').html(ParaBirimiFormat(BAKIYE_USD)).css('background-color', BAKIYE_USD_YONU);
+
+            $('#TOPLAM_BORC_EUR').html(ParaBirimiFormat(EUR_Bilgi[0]?.TOPLAM_BORC)).css('background-color', !NullOrZero(EUR_Bilgi[0]?.TOPLAM_BORC) ? '#ff000012' : '');
+            $('#TOPLAM_ALACAK_EUR').html(ParaBirimiFormat(EUR_Bilgi[0]?.TOPLAM_ALACAK)).css('background-color', !NullOrZero(EUR_Bilgi[0]?.TOPLAM_ALACAK) ? '#00ff1112' : '');
+            $('#BAKIYE_EUR').html(ParaBirimiFormat(BAKIYE_EUR)).css('background-color', BAKIYE_EUR_YONU);
+
+            $('#TOPLAM_BAKIYE').html(ParaBirimiFormat(BAKIYE_TOPLAM)).css('background-color', BAKIYE_TOPLAM_YONU);
+
+            var TRY_SEMBOL_RENGI = ((TRY_Bilgi[0]?.TOPLAM_BORC ?? 0) == 0 && (TRY_Bilgi[0]?.TOPLAM_ALACAK ?? 0) == 0) ? '#d30e0eb8' : '#13ad1dbd';
+            var USD_SEMBOL_RENGI = ((USD_Bilgi[0]?.TOPLAM_BORC ?? 0) == 0 && (USD_Bilgi[0]?.TOPLAM_ALACAK ?? 0) == 0) ? '#d30e0eb8' : '#13ad1dbd';
+            var EUR_SEMBOL_RENGI = ((EUR_Bilgi[0]?.TOPLAM_BORC ?? 0) == 0 && (EUR_Bilgi[0]?.TOPLAM_ALACAK ?? 0) == 0) ? '#d30e0eb8' : '#13ad1dbd';
+
+            $('#TRY_SEMBOL_BORC_ALACAK').css('color', TRY_SEMBOL_RENGI);
+            $('#USD_SEMBOL_BORC_ALACAK').css('color', USD_SEMBOL_RENGI);
+            $('#EUR_SEMBOL_BORC_ALACAK').css('color', EUR_SEMBOL_RENGI);
+
+            resolve(true);
+        });
+    }
+</script>

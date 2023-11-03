@@ -1,0 +1,137 @@
+﻿<div class="card border-0 shadow-sm" style="min-height:285px;">
+    <div class="card-body overflow-hidden h-100">
+        <h5 class="card-title text-center">DOĞRUDAN TAHSİLAT SİSTEMİ</h5>
+
+        <div class="card-content d-flex justify-content-center align-items-center gap-3 pt-3">
+            <div id="dbs-grafik-alani" class="skeleton rounded-circle" style="height:160px;width:160px;">
+                <canvas id="DBSGrafik"></canvas>
+            </div>
+
+            <div class="table-responsive w-100" style="font-size:smaller;">
+                <table class="table table-bordered table-sm align-middle text-center">
+                    <thead>
+                        <tr>
+                            <th class="left-top-borderless-cell"></th>
+                            <th>ESAS TUTAR</th>
+                            <th>DEĞERLENMİŞ</th>
+                            <th>DBS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="width:150px;"><div class="d-flex justify-content-start align-items-center gap-1"><div style="width: 15px; height: 15px; background-color: #99dbcb; "></div>YÜKLENEN</div></td>
+                            <td id="YUKLENEN_DBS_FATURA">₺0,00</td>
+                            <td id="DG_ODENMEMIS_DBS_TUTARI">₺0,00</td>
+                            <td rowspan="3" id="TOPLAM_DBS_LIMIT">₺0,00</td>
+                        </tr>
+                        <tr>
+                            <td><div class="d-flex justify-content-start align-items-center gap-1"><div style="width: 15px; height: 15px; background-color: #1EAE98;"></div>YÜKLENMEYEN</div></td>
+                            <td id="YUKLENMEYEN_DBS_FATURA">₺0,00</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><div class="d-flex justify-content-start align-items-center gap-1"><div style="width: 15px; height: 15px; background-color: #233E8B;"></div>GÜNCEL DBS LİMİTİ</div></td>
+                            <td></td>
+                            <td id="DG_GUNCEL_DBS_LIMIT">₺0,00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-content {
+        flex-direction: row;
+    }
+
+    @@media (max-width: 576px) {
+        .card-content {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+    var DBSChart;
+
+    $(document).ready(() =>
+    {
+        DBSGrafikOlustur();
+    });
+
+    function DBSGuncelle()
+    {
+        return new Promise((resolve, reject) => {
+            $('#YUKLENEN_DBS_FATURA').html(ParaBirimiFormat(DetayliRiskLimitiBilgileri[0]?.YUKLENEN_DBS_FATURA ?? null));
+            $('#DG_ODENMEMIS_DBS_TUTARI').html(ParaBirimiFormat(DetayliRiskLimitiBilgileri[0]?.DG_ODENMEMIS_DBS_TUTARI ?? null));
+            $('#YUKLENMEYEN_DBS_FATURA').html(ParaBirimiFormat(DetayliRiskLimitiBilgileri[0]?.YUKLENMEYEN_DBS_FATURA ?? null));
+            $('#DG_GUNCEL_DBS_LIMIT').html(ParaBirimiFormat(DetayliRiskLimitiBilgileri[0]?.DG_GUNCEL_DBS_LIMIT ?? null));
+            $('#TOPLAM_DBS_LIMIT').html(ParaBirimiFormat(DetayliRiskLimitiBilgileri[0]?.TOPLAM_DBS_LIMIT ?? null));
+
+            var Bilgi = (DetayliRiskLimitiBilgileri.length > 0) && !(NullOrZero(DetayliRiskLimitiBilgileri[0].YUKLENEN_DBS_FATURA) && NullOrZero(DetayliRiskLimitiBilgileri[0].DG_ODENMEMIS_DBS_TUTARI) && NullOrZero(DetayliRiskLimitiBilgileri[0].YUKLENMEYEN_DBS_FATURA) && NullOrZero(DetayliRiskLimitiBilgileri[0].DG_GUNCEL_DBS_LIMIT) && NullOrZero(DetayliRiskLimitiBilgileri[0].TOPLAM_DBS_LIMIT));
+
+            Bilgi ? $('#dbs-grafik-alani').removeClass('skeleton') : $('#dbs-grafik-alani').addClass('skeleton');
+
+            DBSChart.data.datasets = DBSGrafikVerisi();
+            DBSChart.update();
+
+            resolve(true);
+        });
+    }
+
+    function DBSGrafikVerisi()
+    {
+        return [
+            {
+                backgroundColor: ['#233E8B', '#233E8B'],
+                data: [0, DetayliRiskLimitiBilgileri[0]?.TOPLAM_DBS_LIMIT ?? 0]
+            },
+            {
+                backgroundColor: ['#1EAE98', '#32cfb7'],
+                data: [DetayliRiskLimitiBilgileri[0]?.YUKLENMEYEN_DBS_FATURA ?? 0, 0]
+            },
+            {
+                backgroundColor: ['#88c3b5', '#99dbcb'],
+                data: [DetayliRiskLimitiBilgileri[0]?.YUKLENEN_DBS_FATURA ?? 0, DetayliRiskLimitiBilgileri[0]?.DG_ODENMEMIS_DBS_TUTARI ?? 0]
+            }
+        ];
+    }
+
+    function DBSGrafikOlustur()
+    {
+        const Grafik = document.getElementById('DBSGrafik').getContext("2d");
+
+        const Veri =
+        {
+            labels: ['ESAS TUTAR', 'DEĞERLENMİŞ', 'ESAS TUTAR', 'DEĞERLENMİŞ', 'ESAS TUTAR', 'DEĞERLENMİŞ'],
+            datasets: DBSGrafikVerisi()
+        };
+
+        const Ayar = {
+            type: 'pie',
+            data: Veri,
+            options: {
+                responsive: true,
+                plugins: {
+                    responsive: true,
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const labelIndex = (context.datasetIndex * 2) + context.dataIndex;
+                                return '₺' + context.formattedValue;
+                            }
+                        }
+                    }
+                }
+            },
+        };
+
+
+        DBSChart = new Chart(Grafik, Ayar);
+    }
+</script>

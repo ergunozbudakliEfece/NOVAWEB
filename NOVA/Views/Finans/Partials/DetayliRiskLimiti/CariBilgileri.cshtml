@@ -1,0 +1,78 @@
+﻿<div class="card border-0 shadow-sm" style="height:285px;">
+    <div class="card-body">
+        <h5 class="card-title text-center">CARİ BİLGİLERİ</h5>
+
+        <select id="cari-isim-select" name="cari-isim-grup" onchange="CariDegistir()" style="width: 100%;height:2rem;"></select>
+
+        <table class="table-sm table-borderless text-start align-middle" style="margin-top: 2.5rem;">
+            <tr>
+                <td><b>CARİ KOD</b></td>
+                <td>: <span id="cari-kod" class="text-break">-</span></td>
+            </tr>
+            <tr>
+                <td><b>CARİ RİSK GRUBU</b></td>
+                <td>: <span id="cari-risk-grubu" class="text-break">-</span></td>
+            </tr>
+            <tr>
+                <td><b>EFECE İÇ LİMİTİ</b></td>
+                <td>: <span id="efece-ic-limiti" class="text-break">-</span></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script>
+    var DetayliRiskLimitiBilgileri = [];
+
+    function CarileriGetir()
+    {
+        axios.get('http://192.168.2.13:83/api/finans/0')
+            .then((response) => {
+                var CariIsimler = '';
+
+                response.data.forEach((item) => {
+                    CariIsimler += `<option value="${item.CARIKOD}">${item.CARI_ISIM}</option>`;
+                });
+
+                $('#cari-isim-select').html(CariIsimler);
+
+                var CariKod_Parametre = @ViewBag.DRL_CariKod;
+
+                var CariKodu = CariKod_Parametre == null ? $('#cari-isim-select').find(':selected').val() : CariKod_Parametre;
+
+                $('#cari-isim-select').val(CariKodu).trigger('change');
+            });
+    }
+
+    async function RiskGrubuBilgileriGetir(CariKodu) {
+
+        var Response = await axios.get(`http://192.168.2.13:83/api/finans/${CariKodu}`);
+
+        DetayliRiskLimitiBilgileri = Response.data;
+
+        if (DetayliRiskLimitiBilgileri.length > 0) {
+            $('#cari-kod').html(CariKodu);
+            $('#efece-ic-limiti').html(ParaBirimiFormat(DetayliRiskLimitiBilgileri[0].RISKLIMITI));
+            $('#cari-risk-grubu').html(DetayliRiskLimitiBilgileri[0].RISKGRUP);
+        }
+        else
+        {
+            $('#cari-kod').html('-');
+            $('#efece-ic-limiti').html('-');
+            $('#cari-risk-grubu').html('-');
+        }
+
+        var Guncellemeler = Promise.all([VadesineGoreBorclarGuncelle(), BorcAlacakGuncelle(), DBSGuncelle()]);
+
+        Guncellemeler.then((values) => {  HideProgress(); });
+    }
+
+    function CariDegistir() {
+        ShowProgress();
+
+        var CariKodu = $('#cari-isim-select').find(':selected').val();
+
+        RiskGrubuBilgileriGetir(CariKodu);
+    }
+</script>

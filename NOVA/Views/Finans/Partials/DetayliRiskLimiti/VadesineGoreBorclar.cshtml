@@ -1,0 +1,101 @@
+﻿<div class="card border-0 shadow-sm" style="min-height:285px;">
+    <div class="card-body overflow-hidden h-100">
+        <h5 class="card-title text-center">VADESİNE GÖRE BORÇLAR</h5>
+
+        <div class="card-content d-flex justify-content-center align-items-center gap-4 pt-3">
+
+            <div class="table-responsive w-100" style="font-size:smaller;">
+                <table class="table table-bordered table-sm align-middle text-center">
+                    <tbody>
+                        @*<tr>
+                            <td rowspan="9"  style="width: 40px;">BAKİYE</td>
+                        </tr>*@
+
+                        <tr>
+                            <td id="TRY_SEMBOL_VADE" class="money-unit" style="color: #d30e0eb8;" rowspan="2">₺</td>
+                            <td style="width:180px;">VADESİ GELEN</td>
+                            <td id="VADESI_GELEN_BORC_BAKIYE_TRY">₺0,00</td>
+                        </tr>
+                        <tr>
+                            <td>VADESİ GELMEYEN</td>
+                            <td id="VADESI_GELMEMIS_BORC_BAKIYE_TRY">₺0,00</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3"></td>
+                        </tr>
+
+                        <tr>
+                            <td id="USD_SEMBOL_VADE" class="money-unit" style="color: #d30e0eb8;" rowspan="2">$</td>
+                            <td>VADESİ GELEN</td>
+                            <td id="VADESI_GELEN_BORC_BAKIYE_USD">₺0,00</td>
+                        </tr>
+                        <tr>
+                            <td>VADESİ GELMEYEN</td>
+                            <td id="VADESI_GELMEMIS_BORC_BAKIYE_USD">₺0,00</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3"></td>
+                        </tr>
+
+                        <tr>
+                            <td id="EUR_SEMBOL_VADE" class="money-unit" style="color: #d30e0eb8;" rowspan="2">€</td>
+                            <td>VADESİ GELEN</td>
+                            <td id="VADESI_GELEN_BORC_BAKIYE_EUR">₺0,00</td>
+                        </tr>
+                        <tr>
+                            <td>VADESİ GELMEYEN</td>
+                            <td id="VADESI_GELMEMIS_BORC_BAKIYE_EUR">₺0,00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function VadesineGoreBorclarGuncelle()
+    {
+        return new Promise((resolve, reject) =>
+        {
+            var TRY_Bilgi = DetayliRiskLimitiBilgileri?.filter(item => item.DOVIZ_TIPI == "TRY");
+            var USD_Bilgi = DetayliRiskLimitiBilgileri?.filter(item => item.DOVIZ_TIPI == "USD");
+            var EUR_Bilgi = DetayliRiskLimitiBilgileri?.filter(item => item.DOVIZ_TIPI == "EUR");
+
+            var TRY_TEMERRUT_BORC_BAKIYE = (TRY_Bilgi[0]?.TEMERRUT_BORC_BAKIYE ?? 0) < 0 ? 0 : (TRY_Bilgi[0]?.TEMERRUT_BORC_BAKIYE ?? 0);
+            var TRY_VADESI_GELMEMIS_BORC_BAKIYE = TRY_Bilgi[0]?.VADESI_GELMEMIS_BORC_BAKIYE ?? 0;
+            var USD_TEMERRUT_BORC_BAKIYE = (USD_Bilgi[0]?.TEMERRUT_BORC_BAKIYE ?? 0) < 0 ? 0 : (USD_Bilgi[0]?.TEMERRUT_BORC_BAKIYE ?? 0);
+            var USD_VADESI_GELMEMIS_BORC_BAKIYE = USD_Bilgi[0]?.VADESI_GELMEMIS_BORC_BAKIYE ?? 0;
+            var EUR_TEMERRUT_BORC_BAKIYE = (EUR_Bilgi[0]?.TEMERRUT_BORC_BAKIYE ?? 0) < 0 ? 0 : (EUR_Bilgi[0]?.TEMERRUT_BORC_BAKIYE ?? 0);
+            var EUR_VADESI_GELMEMIS_BORC_BAKIYE = EUR_Bilgi[0]?.VADESI_GELMEMIS_BORC_BAKIYE ?? 0;
+
+            var TRY_TEMERRUT_BORC_BAKIYE_YONU = TRY_TEMERRUT_BORC_BAKIYE > 0 ? '#ff000012' : (TRY_TEMERRUT_BORC_BAKIYE < 0 ? '#00ff1112' : '');
+            var TRY_VADESI_GELMEMIS_BORC_BAKIYE_YONU = TRY_VADESI_GELMEMIS_BORC_BAKIYE > 0 ? '#ff000012' : (TRY_VADESI_GELMEMIS_BORC_BAKIYE < 0 ? '#00ff1112' : '');
+            var USD_TEMERRUT_BORC_BAKIYE_YONU = USD_TEMERRUT_BORC_BAKIYE > 0 ? '#ff000012' : (USD_TEMERRUT_BORC_BAKIYE < 0 ? '#00ff1112' : '');
+            var USD_VADESI_GELMEMIS_BORC_BAKIYE_YONU = USD_VADESI_GELMEMIS_BORC_BAKIYE > 0 ? '#ff000012' : (USD_VADESI_GELMEMIS_BORC_BAKIYE < 0 ? '#00ff1112' : '');
+            var EUR_TEMERRUT_BORC_BAKIYE_YONU = EUR_TEMERRUT_BORC_BAKIYE > 0 ? '#ff000012' : (EUR_TEMERRUT_BORC_BAKIYE < 0 ? '#00ff1112' : '');
+            var EUR_VADESI_GELMEMIS_BORC_BAKIYE_YONU = EUR_VADESI_GELMEMIS_BORC_BAKIYE > 0 ? '#ff000012' : (EUR_VADESI_GELMEMIS_BORC_BAKIYE < 0 ? '#00ff1112' : '');
+
+            $('#VADESI_GELEN_BORC_BAKIYE_TRY').html(ParaBirimiFormat(TRY_TEMERRUT_BORC_BAKIYE)).css('background-color', TRY_TEMERRUT_BORC_BAKIYE_YONU);
+            $('#VADESI_GELMEMIS_BORC_BAKIYE_TRY').html(ParaBirimiFormat(TRY_VADESI_GELMEMIS_BORC_BAKIYE)).css('background-color', TRY_VADESI_GELMEMIS_BORC_BAKIYE_YONU);
+
+            $('#VADESI_GELEN_BORC_BAKIYE_USD').html(ParaBirimiFormat(USD_TEMERRUT_BORC_BAKIYE)).css('background-color', USD_TEMERRUT_BORC_BAKIYE_YONU);
+            $('#VADESI_GELMEMIS_BORC_BAKIYE_USD').html(ParaBirimiFormat(USD_VADESI_GELMEMIS_BORC_BAKIYE)).css('background-color', USD_VADESI_GELMEMIS_BORC_BAKIYE_YONU);
+
+            $('#VADESI_GELEN_BORC_BAKIYE_EUR').html(ParaBirimiFormat(EUR_TEMERRUT_BORC_BAKIYE)).css('background-color', EUR_TEMERRUT_BORC_BAKIYE_YONU);
+            $('#VADESI_GELMEMIS_BORC_BAKIYE_EUR').html(ParaBirimiFormat(EUR_VADESI_GELMEMIS_BORC_BAKIYE)).css('background-color', EUR_VADESI_GELMEMIS_BORC_BAKIYE_YONU);
+
+            var TRY_SEMBOL_RENGI = ((TRY_Bilgi[0]?.TEMERRUT_BORC_BAKIYE ?? 0) == 0 && (TRY_Bilgi[0]?.VADESI_GELMEMIS_BORC_BAKIYE ?? 0) == 0) ? '#d30e0eb8' : '#13ad1dbd';
+            var USD_SEMBOL_RENGI = ((USD_Bilgi[0]?.TEMERRUT_BORC_BAKIYE ?? 0) == 0 && (USD_Bilgi[0]?.VADESI_GELMEMIS_BORC_BAKIYE ?? 0) == 0) ? '#d30e0eb8' : '#13ad1dbd';
+            var EUR_SEMBOL_RENGI = ((EUR_Bilgi[0]?.TEMERRUT_BORC_BAKIYE ?? 0) == 0 && (EUR_Bilgi[0]?.VADESI_GELMEMIS_BORC_BAKIYE ?? 0) == 0) ? '#d30e0eb8' : '#13ad1dbd';
+
+            $('#TRY_SEMBOL_VADE').css('color', TRY_SEMBOL_RENGI);
+            $('#USD_SEMBOL_VADE').css('color', USD_SEMBOL_RENGI);
+            $('#EUR_SEMBOL_VADE').css('color', EUR_SEMBOL_RENGI);
+
+            resolve(true);
+        });
+    }
+</script>

@@ -1,4 +1,5 @@
 ﻿using NOVA.Models;
+using NOVA.Utils;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
@@ -841,8 +842,19 @@ namespace NOVA.Controllers
 
         #region DetayliRiskLimiti
 
-        public async Task<ActionResult> DetayliRiskLimiti() 
+
+        public async Task<ActionResult> DetayliRiskLimiti(string CariKod) 
         {
+            ViewBag.DRL_CariKod = CariKod;
+
+            if (Request.Cookies["Id"] == null)
+            {
+                FormsAuthentication.SignOut();
+                return RedirectToAction("Login", "Login");
+            }
+
+            await RoleHelper.CheckRoles(this);
+
             return View();
         }
 

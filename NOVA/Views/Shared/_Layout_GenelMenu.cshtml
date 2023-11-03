@@ -1,0 +1,386 @@
+﻿<style>
+    a {
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .side-menu a {
+        color: var(--text-color);
+        line-height: 2rem;
+    }
+
+        .side-menu a:hover {
+            color: #203289;
+            font-weight: bold;
+        }
+
+    .active-item {
+        color: #203289 !important;
+        background-color: rgba(105, 108, 255, 0.16) !important;
+        border-radius: 0.375rem;
+    }
+
+    .side-menu {
+        width: 0;
+        overflow-x: hidden;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        background-color: var(--container-color);
+        z-index: 4500;
+        transition: width 0.3s;
+    }
+
+        .side-menu::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+
+    .app-logo {
+        height: 75px;
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        padding-left: 0.9rem;
+        padding-top: 1rem;
+        margin-bottom: 2rem;
+    }
+
+        .app-logo .square {
+            height: 30px;
+            width: auto;
+            margin-right: 0.5rem;
+            transition: 0.3s;
+        }
+
+        .app-logo .text {
+            height: 30px;
+            width: auto;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+    .app-logo-hover {
+        height: 50px !important;
+        opacity: 1 !important;
+    }
+
+
+    .menu-item{
+        width: 250px;
+        padding: 0 1.05rem;
+        margin-bottom: 1rem;
+    }
+
+        .menu-item .module{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            cursor: pointer;
+            padding: 0 0.2rem;
+        }
+
+            .menu-item .module:hover {
+                color: #203289 !important;
+                background-color: rgb(88 85 94 / 7%) !important;
+                border-radius: 0.375rem;
+            }
+
+            .menu-item .module .name {
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                width: 100%;
+            }
+
+                .menu-item .module .name i {
+                    font-size: 14pt;
+                    margin-right: 0.5rem;
+                }
+
+                .menu-item .module .name span {
+                    font-size: var(--small-font-size);
+                    font-weight: var(--font-medium);
+                    white-space: nowrap;
+                }
+        .menu-item .fade-item {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+    .side-menu .menu-item .inner-menu {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: start;
+        gap: 0.4rem;
+        padding-left: 0.45rem;
+        margin-bottom: 1rem;
+        font-size: 11pt;
+        word-break: normal;
+    }
+        .side-menu .menu-item .inner-menu .inner-menu-item {
+            color: #203289;
+            cursor: pointer;
+            font-size: var(--smaller-font-size);
+            font-weight: var(--font-medium);
+            color: var(--text-color);
+            width: 100%;
+            line-height: 1.5rem;
+        }
+            .side-menu .menu-item .inner-menu .inner-menu-item:hover {
+                color: #203289;
+                background-color: rgb(88 85 94 / 7%);
+                border-radius: 0.375rem;
+                cursor: pointer;
+            }
+
+    .side-menu .menu-item .module .inner-arrow {
+        transition: transform 0.3s;
+        font-size: x-large;
+    }
+
+    .inner-arrow-rotated {
+        -webkit-transform: rotate(-90deg); /* Chrome, Safari 3.1+ */
+        -moz-transform: rotate(-90deg); /* Firefox 3.5-15 */
+        -ms-transform: rotate(-90deg); /* IE 9 */
+        -o-transform: rotate(-90deg); /* Opera 10.50-12.00 */
+        transform: rotate(-90deg); /* Firefox 16+, IE 10+, Opera 12.10+ */
+    }
+</style>
+
+
+
+<div class="side-menu shadow-sm">
+
+    @*Logo*@
+    <div class="app-logo">
+        <img src="~/Content/Images/logoefece.png" class="square" />
+        <img src="~/Content/Images/efeceyazi.png" class="text" />
+    </div>
+
+    @*Ana Sayfa*@
+    <div class="menu-item">
+        <div class="module">
+            <a class="name" href="/Home/Index">
+                <i class='bx bxs-home'></i>
+                <span class="fade-item">Ana Sayfa</span>
+            </a>
+        </div>
+    </div>
+
+    @*Satış*@
+    <div class="menu-item" style="display:@ViewBag.DisplaySatis">
+        <div class="module expandable">
+            <a class="name">
+                <i class='bx bxs-dollar-circle'></i>
+                <span class="fade-item">Satış</span>
+            </a>
+
+            <i class='bx bx-chevron-left inner-arrow'></i>
+        </div>
+        <div class="inner-menu pt-2">
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayStok" href="/Satis/Index">• Stok</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayFiyatListesi" href="/Satis/FiyatListesi">• Fiyat Listesi</a>
+            <a class="inner-menu-item" style="display:@ViewBag.FiyatYonetim" href="/Satis/FiyatYonetimi">• Fiyat Yönetimi</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplaySiparis" href="/Satis/DetayliSiparis">• Detaylı Sipariş Raporu</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayFiyatsizStok" href="/Satis/HammaddeListesi">• Fabrika Stok</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayZiyaretPlani" href="/Satis/ZiyaretPlanlari">• Müşteri İlişkileri Yönetimi</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayTeklif" href="/Satis/Teklif">• Teklif Oluştur</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayTekliflerim" href="/Satis/Tekliflerim">• Tekliflerim</a>
+        </div>
+    </div>
+
+    @*Sevkiyat*@
+    <div class="menu-item" style="display: @ViewBag.DisplaySevkiyat">
+        <div class="module expandable">
+            <a class="name">
+                <i class='bx bxs-truck'></i>
+                <span class="fade-item">Sevkiyat</span>
+            </a>
+
+            <i class='bx bx-chevron-left inner-arrow'></i>
+        </div>
+        <div class="inner-menu pt-2">
+            <a class="inner-menu-item" style="display:@ViewBag.DisplaySiparisRaporu" href="/Sevkiyat/SiparisRaporu">• Müşteri Siparişi Raporu</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplaySaticiSiparisRaporu" href="/Sevkiyat/SaticiSiparisRaporu">• Satıcı Siparişi Raporu</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplaySevkMalKabul" href="/Sevkiyat/SevkMalKabul">• Sevk & Kabul İşlemleri</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayDepoTransfer" href="/Sevkiyat/DepoTransfer">• Depo Transfer</a>
+        </div>
+    </div>
+
+    @*Üretim*@
+    <div class="menu-item" style="display:@ViewBag.DisplayUretim">
+        <div class="module expandable">
+            <a class="name">
+                <i class='bx bxs-hard-hat'></i>
+                <span class="fade-item">Üretim</span>
+            </a>
+
+            <i class='bx bx-chevron-left inner-arrow'></i>
+        </div>
+        <div class="inner-menu pt-2">
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayIsEmriKayit" href="/IsEmri/IsEmri">• İş Emri</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayAnlikUretim" href="/Uretim/Index">• Üretim Kayıtları</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayMES" href="/Uretim/MES">• MES</a>
+        </div>
+    </div>
+
+    @*Satın Alma*@
+    <div class="menu-item" style="display:@ViewBag.DisplaySatinAlma">
+        <div class="module expandable">
+            <a class="name">
+                <i class='bx bxs-credit-card'></i>
+                <span class="fade-item">Satın Alma</span>
+            </a>
+
+            <i class='bx bx-chevron-left inner-arrow'></i>
+        </div>
+        <div class="inner-menu pt-2">
+            <a class="inner-menu-item" style="display:@ViewBag.DisplaySiparisRaporu" href="/SatinAlma/SatinAlmaRaporu">• Detaylı Sipariş Raporu</a>
+        </div>
+    </div>
+
+    @*Finans*@
+    <div class="menu-item" style="display:@ViewBag.DisplayFinans">
+        <div class="module expandable">
+            <a class="name">
+                <i class='bx bx-trending-up'></i>
+                <span class="fade-item">Finans</span>
+            </a>
+
+            <i class='bx bx-chevron-left inner-arrow'></i>
+        </div>
+        <div class="inner-menu pt-2">
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayKur" href="/Finans/Index">• Kur Yönetimi</a>
+            <a class="inner-menu-item" style="display:@ViewBag.DisplayKur" href="/Finans/DetayliRiskLimiti">• Detaylı Risk Limiti</a>
+        </div>
+    </div>
+
+    @*Muhasebe*@
+    <div class="menu-item" style="display:@ViewBag.DisplayMuhasebe">
+        <div class="module">
+            <a class="name">
+                <i class='bx bxs-calculator'></i>
+                <span class="fade-item">Muhasebe</span>
+            </a>
+        </div>
+    </div>
+
+    @*İnsan Kaynakları*@
+    <div class="menu-item" style="display:@ViewBag.Display4">
+        <div class="module expandable">
+            <a class="name">
+                <i class='bx bx-male-female'></i>
+                <span class="fade-item">İnsan Kaynakları</span>
+            </a>
+
+            <i class='bx bx-chevron-left inner-arrow'></i>
+        </div>
+        <div class="inner-menu pt-2">
+            <a class="inner-menu-item" style="display:@ViewBag.Display5" href="/IK/PersonelBilgi">• Personel Bilgi Girişi</a>
+            <a class="inner-menu-item" style="display:@ViewBag.Display6" href="/IK/PersonelBilgiYonetim">• Personel Bilgi Yönetimi</a>
+            <a class="inner-menu-item" style="display:@ViewBag.Sube" href="/IK/PersonelSubeYonetim">• Şube Bazında Personel Bilgi Yönetimi</a>
+            <a class="inner-menu-item" style="display:@ViewBag.Puantaj" href="/IK/PersonelPuantaj">• Puantaj</a>
+        </div>
+    </div>
+
+    @*Yönetim*@
+    <div class="menu-item" style="display:@ViewBag.DisplayYonetim">
+        <div class="module expandable">
+            <a class="name">
+                <i class='bx bx-sitemap'></i>
+                <span class="fade-item">Yönetim</span>
+            </a>
+
+            <i class='bx bx-chevron-left inner-arrow'></i>
+        </div>
+        <div class="inner-menu pt-2">
+            <a class="inner-menu-item" style="display:@ViewBag.Stok" href="/Yonetim/Stok">• Stok Değeri</a>
+        </div>
+    </div>
+
+    @*Yönetim Paneli*@
+    <div class="menu-item" style="display:@ViewBag.Display">
+        <div class="module expandable">
+            <a class="name">
+                <i class='bx bxs-report'></i>
+                <span class="fade-item">Yönetim Paneli</span>
+            </a>
+
+            <i class='bx bx-chevron-left inner-arrow'></i>
+        </div>
+        <div class="inner-menu pt-2">
+            <a class="inner-menu-item" style="display:@ViewBag.Display1" href="/YonetimPaneli/KullaniciAyar">• Uygulama Ayarları</a>
+            <a class="inner-menu-item" style="display:@ViewBag.Istatistik" href="/YonetimPaneli/UygulamaIstatistik">• Uygulama İstatistikleri</a>
+        </div>
+    </div>
+
+
+    @*Ana Sayfa*@
+    <div class="menu-item">
+        <div class="module" onclick="ToggleLogoutModal()">
+            <a class="name">
+                <i class='bx bxs-log-out'></i>
+                <span class="fade-item">Çıkış</span>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    SetActiveItem();
+
+    function ExpandMenu()
+    {
+        $('.side-menu').css('width', '250px');
+        $('.side-menu').css('border-right', '1px solid #e2dee7');
+        $('.side-menu').addClass('shadow-lg');
+
+        $('.app-logo .square').addClass('app-logo-hover');
+        $('.app-logo .text').addClass('app-logo-hover');
+
+        $('.menu-item .fade-item').css('opacity', '1');
+
+        if (window.innerWidth < 770)
+        {
+            document.activeElement.blur();
+            document.body.style.overflow = 'hidden';
+            $('#menu-overlay').fadeIn('fast');
+        }
+    }
+
+    function CollapseMenu()
+    {
+        document.body.style.overflow = 'auto';
+
+        $('.side-menu').css('width', (window.innerWidth < 770) ? '0' : '60px');
+        $('.side-menu').css('border-right', 'none');
+        $('.side-menu').removeClass('shadow-lg');
+
+        $('.app-logo .square').removeClass('app-logo-hover');
+        $('.app-logo .text').removeClass('app-logo-hover');
+
+        $('#menu-overlay').fadeOut('fast');
+
+        $('.inner-arrow').removeClass('inner-arrow-rotated');
+        $('.inner-menu').removeClass('d-flex');
+
+        $('.menu-item .fade-item').css('opacity', '0');
+    }
+
+    $('.side-menu .expandable').on('click', function () {
+        $(this).find('.inner-arrow').toggleClass('inner-arrow-rotated');
+        $(this).parent().find('.inner-menu').toggleClass('d-flex');
+    });
+
+    function SetActiveItem()
+    {
+        var Path = window.location.pathname;
+
+        $(`.side-menu a[href='${Path}']`).addClass('active-item');
+    }
+</script>
