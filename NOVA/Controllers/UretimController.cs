@@ -1701,7 +1701,7 @@ namespace NOVA.Controllers
                 try
                 {
 
-                    //PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
+                    PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
                 }
                 catch (Exception ex)
                 {
@@ -1834,7 +1834,7 @@ namespace NOVA.Controllers
                 //Eğer önizleme kapalıysa direkt yazdır.
                 if (!ETIKET_ONIZLEME)
                 {
-                    //PrintHelper.Print(pdfPath, "Microsoft Print to PDF");
+                    PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
                 }
 
                 return ToBase64String(pdfPath);
