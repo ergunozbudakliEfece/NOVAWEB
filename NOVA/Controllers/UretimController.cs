@@ -1109,6 +1109,7 @@ namespace NOVA.Controllers
                         var SERI_NOO_4 = netRS.FieldByName("SERI_NO_4").AsString;
                         netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsii + "',ACIK1='" + ACIKK1 + "',ACIK2='" + ACIKK2 + "',SERI_NO_3='" + SERI_NOO_3 + "',SERI_NO_4='" + SERI_NOO_4 + "' WHERE SIPNO='" + ISEMRINO + "'");
                         netRS.Ac("UPDATE TBLSERITRA SET ACIK1='" + ACIKK1 + "',ACIK2='" + ACIKK2 + "',SERI_NO_3='" + SERI_NOO_3 + "',SERI_NO_4='" + SERI_NOO_4 + "' WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+                        return karsii;
                     }
 
 
@@ -1695,18 +1696,18 @@ namespace NOVA.Controllers
             document.Close();
             Memory.Close();
 
-            //if (!ETIKET_ONIZLEME)
-            //{
-            //    try
-            //    {
+            if (!ETIKET_ONIZLEME)
+            {
+                try
+                {
 
-            //        PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        return ex.Message;
-            //    }
-            //}
+                    //PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
+            }
 
             return ToBase64String(pdfPath);
         }

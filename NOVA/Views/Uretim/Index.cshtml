@@ -1520,7 +1520,7 @@
 
                             /*b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].SIP_CARI_ISIM + "</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";*/
                             if(value=='DL01'){
-                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR_REC.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
                             }else{
                                 b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
                             }
@@ -2345,6 +2345,9 @@
                             }
                             document.getElementById(btnid).onclick();
                             loadDongu = 0;
+                            if ($("#etiketyazdir").is(':checked')) {
+                                TrpzBarkod(data);
+                            }
                         }
                     });
 
@@ -2417,6 +2420,11 @@
                                 console.log(data);
                                 $("#progress2").hide();
                                 $("#SiparisModal").modal('hide');
+                                Swal.fire(
+                                    'Başarısız!',
+                                    data,
+                                    'error'
+                                )
                             },
                             success: function (data) {
                                 $("#progress2").hide();
@@ -2558,8 +2566,9 @@
                 ikincimik1 = "0";
                 ikincimik2 = "0";
             }
-            var result = null;
-            var k = false;
+            var etiket = $("#etiketyazdir").is(':checked');
+            var etiketOnizleme = $("#etiket-onizleme").is(':checked');
+            var k = $("#kontrol").is(':checked');
             
                 $.ajax({
                     url: '@Url.Action("TrpzUretim", "Uretim")',
@@ -2586,7 +2595,11 @@
                             } else {
                                 $("#progress2").hide();
                                 $("#SiparisModal").modal('hide');
-                                Swal.fire('Başarılı!', data1, 'success');
+                                Swal.fire('Başarılı!', 'Başardık!!', 'success');
+                               
+                                if ($("#etiketyazdir").is(':checked')) {
+                                    TrpzBarkod(data1);
+                                }
                                 document.getElementById(btnid).onclick();
                             }
 
@@ -2648,7 +2661,7 @@
                                 <label class="form-check-label" for="kontrol">İş Emirleri Otomatik Kapansın</label>
                             </div>
                             <div class="form-check form-switch mb-2">
-                                <input id="etiketyazdir" class="form-check-input" disabled type="checkbox">
+                                <input id="etiketyazdir" class="form-check-input" type="checkbox">
                                 <label class="form-check-label" for="etiketyazdir">Etiket Yazdır</label>
                             </div>
                             <div class="form-check form-switch">
