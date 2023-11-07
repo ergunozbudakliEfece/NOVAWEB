@@ -1231,6 +1231,7 @@ namespace NOVA.Controllers
                     var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
                     netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "',ACIK1='"+ACIK1+"',ACIK2='"+ACIK2+ "',SERI_NO_3='"+ SERI_NO_3 + "',SERI_NO_4='"+ SERI_NO_4 + "' WHERE SIPNO='" + ISEMRINO + "'");
                     netRS.Ac("UPDATE TBLSERITRA SET ACIK1='"+ACIK1+"',ACIK2='"+ACIK2+ "',SERI_NO_3='"+ SERI_NO_3 + "',SERI_NO_4='"+ SERI_NO_4 + "' WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
+                    seri = karsi;
                 }
                 catch (Exception e)
                 {
