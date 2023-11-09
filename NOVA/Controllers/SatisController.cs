@@ -3804,11 +3804,12 @@ namespace NOVA.Controllers
             client.Encoding = System.Text.Encoding.UTF8;
             client.Headers.Add("Authorization", "Bearer " + HtmlResult);
             string json = client.DownloadString(url);
-            
 
+            var j = Json(json, JsonRequestBehavior.AllowGet);
+            j.MaxJsonLength = int.MaxValue;
             //END
 
-            return Json(json, JsonRequestBehavior.AllowGet);
+            return j;
         }
         public List<Modules> GetModules(int id)
         {

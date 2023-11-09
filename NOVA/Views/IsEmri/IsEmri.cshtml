@@ -1324,27 +1324,34 @@
             document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3].removeAttribute("disabled");
             document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
             var s = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].value;
-            var stokkodu = Stoklar.filter(x => x.STOK_ADI == s)[0].STOK_KODU;
-            if (OldStokAdi != $("#stokadi").val()) {
+            
+            
+            
+            if (OldStokAdi != $("#stokadi").val() && s != "SEÇİNİZ") {
+                var stokkodu = Stoklar.filter(x => x.STOK_ADI == s)[0].STOK_KODU;
                 var url = "http://192.168.2.13:83/api/seri/receteden/" + stokkodu + "/" + val.value
                 $.getJSON(url, function (d1) {
-                    var $sel3 = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
-                    $sel3.replaceChildren();
-                    var opt2 = document.createElement("option");
-                    opt2.value = "SEÇİNİZ";
-                    opt2.text = "SEÇİNİZ";
-                    opt2.setAttribute("selected", "");
-                    opt2.setAttribute("disabled", "");
-                    $sel3.appendChild(opt2);
-                    for (let i = 0; i < d1.length; i++) {
-                        var opt3 = document.createElement("option");
-                        opt3.value = d1[i].STOK_ADI;
-                        opt3.text = d1[i].STOK_ADI;
-                        $sel3.appendChild(opt3);
+                
+                    if (d1.length > 0) {
+                        var $sel3 = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
+                        $sel3.replaceChildren();
+                        var opt2 = document.createElement("option");
+                        opt2.value = "SEÇİNİZ";
+                        opt2.text = "SEÇİNİZ";
+                        opt2.setAttribute("selected", "");
+                        opt2.setAttribute("disabled", "");
+                        $sel3.appendChild(opt2);
+                        for (let i = 0; i < d1.length; i++) {
+                            var opt3 = document.createElement("option");
+                            opt3.value = d1[i].STOK_ADI;
+                            opt3.text = d1[i].STOK_ADI;
+                            $sel3.appendChild(opt3);
+                        }
                     }
+                    
                 })
             }
-            } else {
+        } else {
 
                 var $sel3 = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
                 $sel3.replaceChildren();
@@ -2134,6 +2141,16 @@
                             getPivot();
                             getPivot2();
                             $("#seri").val(null).trigger("input");
+                            $("#stokadi").html("")
+                            $("#marka").html(null)
+                            $("#adet").val(null)
+                            $("#kalinlik").val(null)
+                            $("#genislik").val(null)
+                            $("#genislikalti").val(0)
+                            $("#kaplama").val(null)
+                            $("#kalite").val(null)
+                            $("#metraj").val(null)
+                            $("#agirlik").val(null)
                             $("#tamami").hide();
 
                         })

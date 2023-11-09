@@ -1020,7 +1020,7 @@ namespace NOVA.Controllers
                     }
                     netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + ISEMRINO + "'");
                     seri = netRS.FieldByName("SERI_NO").AsString;
-
+                    var fisno = uretim.UretSon_FisNo;
                     if (sonMu == true)
                     {
                         if (kontrol)
@@ -1055,7 +1055,7 @@ namespace NOVA.Controllers
                             fatUst.PLA_KODU = "45";
                             fatUst.Proje_Kodu = "1";
                             fatUst.KDV_DAHILMI = true;
-                            fatUst.Aciklama = ISEMRINO;
+                            fatUst.Aciklama = fisno;
                             fatKalem = fatura.kalemYeni(Stokkoduu);
 
                             ///Giriş Depo Kodu
@@ -1084,7 +1084,7 @@ namespace NOVA.Controllers
                             fatUst.FiiliTarih = DateTime.Now;
                             fatUst.PLA_KODU = "45";
                             fatUst.Proje_Kodu = "1";
-                            fatUst.Aciklama = ISEMRINO.Substring(0, 4);
+                            fatUst.Aciklama = fisno;
                             fatUst.KDV_DAHILMI = true;
                             fatKalem = fatura.kalemYeni(Stokkoduu);
 
@@ -1392,8 +1392,8 @@ namespace NOVA.Controllers
                     netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + ISEMRINO + "'");
 
                     seri = netRS.FieldByName("SERINO").AsString;
-
-
+                    seri = karsi;
+                    var fisno = uretim.UretSon_FisNo;
                     Fatura fatura = default(Fatura);
                     FatUst fatUst = default(FatUst);
                     FatKalem fatKalem = default(FatKalem);
@@ -1410,7 +1410,7 @@ namespace NOVA.Controllers
                         fatUst.PLA_KODU = "45";
                         fatUst.Proje_Kodu = "1";
                         fatUst.KDV_DAHILMI = true;
-                        fatUst.Aciklama = ISEMRINO;
+                        fatUst.Aciklama = fisno;
                         fatKalem = fatura.kalemYeni(Stokkodu);
 
                         ///Giriş Depo Kodu
@@ -1438,7 +1438,7 @@ namespace NOVA.Controllers
                         fatUst.FiiliTarih = DateTime.Now;
                         fatUst.PLA_KODU = "45";
                         fatUst.Proje_Kodu = "1";
-                        fatUst.Aciklama = ISEMRINO;
+                        fatUst.Aciklama = fisno;
                         fatUst.KDV_DAHILMI = true;
                         fatKalem = fatura.kalemYeni(Stokkodu);
 
@@ -1659,11 +1659,11 @@ namespace NOVA.Controllers
                 Content.AddElement(Miktar2);
 
                 iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {BosDegerKontrolu(Data[i].KALINLIK)}", fontNormal));
+                Kalinlik.Add(new Chunk($": {(Data[i].MAK_KODU=="TP01"|| Data[i].MAK_KODU == "MH01" ? "-":BosDegerKontrolu(Data[i].KALINLIK))}", fontNormal));
                 Content.AddElement(Kalinlik);
 
                 iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {DegerFormat(Data[i].GENISLIK, "GENISLIK")}", fontNormal));
+                Genislik.Add(new Chunk($": {(Data[i].MAK_KODU == "TP01" || Data[i].MAK_KODU == "MH01" ? "-" : BosDegerKontrolu(Data[i].GENISLIK), "GENISLIK")}", fontNormal));
                 Content.AddElement(Genislik);
 
                 iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -1807,11 +1807,11 @@ namespace NOVA.Controllers
                 Content.AddElement(Miktar2);
 
                 iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {BosDegerKontrolu(Model.KALINLIK)}", fontNormal));
+                Kalinlik.Add(new Chunk($": {(Model.MAK_KODU == "TP01" || Model.MAK_KODU == "MH01" ? "-" : BosDegerKontrolu(Model.KALINLIK))}", fontNormal));
                 Content.AddElement(Kalinlik);
 
                 iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {DegerFormat(Model.GENISLIK, "GENISLIK")}", fontNormal));
+                Genislik.Add(new Chunk($": {(Model.MAK_KODU == "TP01" || Model.MAK_KODU == "MH01" ? "-" : DegerFormat(Model.GENISLIK, "GENISLIK"))}", fontNormal));
                 Content.AddElement(Genislik);
 
                 iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };

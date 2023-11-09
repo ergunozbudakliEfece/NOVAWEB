@@ -280,16 +280,7 @@
             }
         }
 
-        @@media screen and (min-width:801px) and (max-width:1199px) {
-            #qr-reader1 {
-                margin-top: 35% !important
-            }
-        }
-
         @@media screen and (max-width:1201px) {
-            #qr-reader1 {
-                margin-top: 35% !important
-            }
 
             .tableClass {
                 max-height: 1600px !important;
@@ -326,9 +317,9 @@
     <div class="centercontent" id="content" style="display:unset">
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
     </div>
-    <div class="container-fluid mt-2" style="min-height:88%">
+    <div class="container-fluid">
         <div class="row d-flex justify-content-center align-items-center">
-            <div class="col-sm-auto d-flex">
+            <div class="col-sm-11 d-flex justify-content-center">
                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                     <input type="radio" class="btn-check" name="uretim-islem" id="uretimealrd" onclick="change(parseInt(this.value))" value="1" autocomplete="off">
                     <label class="btn btn-outline-primary openlbl" for="uretimealrd">ÜRETİME AL</label>
@@ -341,24 +332,29 @@
 
                     <input type="radio" class="btn-check" name="uretim-islem" id="uretimegirenlerrd" onclick="change(parseInt(this.value))" value="3" autocomplete="off">
                     <label class="btn btn-outline-primary" for="uretimegirenlerrd">ÜRETİME GİRENLER</label>
+
+                    <input type="radio" class="btn-check" name="uretim-islem" id="uretilmisbarkodlarrd" onclick="change(parseInt(this.value))" value="4" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="uretilmisbarkodlarrd">ÜRETİLMİŞ BARKODLAR</label>
                 </div>
             </div>
-            <div class="col-sm-auto gap-1 d-flex" id="barkodbuttoncol">
+            <div class="col-sm-1 gap-1 d-flex justify-content-start" id="barkodbuttoncol">
                 <button type="button" id="BarkodButton" onclick="BarkodModal()" class="btn btn-primary showmodal" style="width:50px;display:flex;justify-content:center;align-items:center" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Barkod</span>"><i class="bi bi-qr-code-scan"></i></button>
                 <button id="RefreshButton" type="button" class="btn btn-primary" onclick="ResetControl()" style="width:50px;display:flex;justify-content:center;align-items:center"><i class="bi bi-arrow-clockwise"></i></button>
             </div>
         </div>
 
+
         <div class="row" style="min-height:100%;overflow-y:auto;">
             <div class="col">
-                <div class="row mt-4" style="max-width:100vw">
-                    <div class="col d-flex justify-content-center align-items-center">
+                <div class="row mt-2" style="max-width:100vw">
+                    <div class="col-11 d-flex justify-content-center align-items-center makineler">
+                        <div id="UretimeAlMakine" style="max-width: 65vw; width: 65vw; display: none;"> </div>
                         <div id="UretimKaydiMakine" style="max-width: 65vw; width: 65vw; display: none;"> </div>
                         <div id="BekleyenIsEmirleriMakine" style="max-width: 65vw; width: 65vw; display: none;"> </div>
                         <div id="UretimeGirenlerMakine" style="max-width: 65vw; width: 65vw; display: none;"> </div>
                     </div>
                 </div>
-                <div class="row  mt-3">
+                <div class="row  mt-2">
                     <div class="col-sm-auto">
                         <div class="btn-group iefiltre" role="group" aria-label="Basic radio toggle button group" style="display:none;">
                             <input type="radio" class="btn-check" name="makine-status-ie" id="on-ie" onclick="BekleyenIsEmriFiltrele(this.value)" value="open" autocomplete="off">
@@ -485,11 +481,24 @@
                     </div>
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="UretimeGirenlerTablo">
+                    <div id="UretimeGirenlerTabloToolBar">
+                        <div class="row mt-1">
+                            <div class="col">
+                                <select id="filter" name="filterAlgorithm" style="width: 15vw">
+                                </select>
+
+                            </div>
+                            <div class="col">
+                                <button type="button" id="UretimeAlButton" onclick="UretimeAl()" class="btn btn-primary" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;">ÜRETİME AL</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <div class="tableClass" style="max-height:680px">
                             <table id="UretimeGirenlerTable"
                                    class="table"
                                    data-search="true"
+                                   data-toolbar="#UretimeGirenlerTabloToolBar"
                                    data-show-refresh="false"
                                    data-show-toggle="false"
                                    data-show-fullscreen="false"
@@ -511,7 +520,7 @@
                                 <thead>
                                     <tr>
                                         <th data-formatter="oranFormatter3" data-width="50" data-field="ORAN" data-halign="center" data-align="center">%</th>
-                                        <th data-field="SERI_NO" data-halign="center" data-align="center">SERI_NO</th>
+                                        <th data-field="SERI_NO" data-halign="center" data-align="center" data-formatter="seriFormatter">SERI_NO</th>
                                         <th data-formatter="intFormatter" data-field="SERI_MIKTAR" data-halign="center" data-align="center">SERI_MIKTAR</th>
                                         <th data-formatter="intFormatter" data-field="URETILEN" data-halign="center" data-align="center">URETILEN</th>
                                         <th data-formatter="intFormatter" data-field="SERI_BAKIYE" data-halign="center" data-align="center">SERI_BAKIYE</th>
@@ -523,7 +532,7 @@
                     </div>
 
                 </div>
-                <div class="row" style="margin-top:-5%;min-height:33%;display:none" id="scanner">
+                <div class="row" style="min-height:33%;display:none" id="scanner">
                     <div id="element">
                         <audio id="giris">
                             <source src="~/Content/giris.mp3" type="audio/mpeg" />
@@ -537,7 +546,7 @@
                         <button style="display:none" onclick="playAudio()" type="button">Play Audio</button>
 
                         <div class="justify-content-center" style="display:flex">
-                            <div id="qr-reader1" style="width:900px;margin-top:5%"></div>
+                            <div id="qr-reader1" style="width:900px;"></div>
                             <div id="qr-reader-results1"></div>
                         </div>
                     </div>
@@ -557,6 +566,10 @@
         .detail-view td {
             padding: 1px;
         }
+
+        .makineler label {
+            font-size: larger;
+        }
     </style>
 
     <script>
@@ -569,7 +582,11 @@
                 var Makineler = `<div class="btn-group" style="grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) );display:grid;grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group">`;
 
                 for (var i = 0; i < data.length; i++) {
-                    Makineler += `<input type="radio" class="btn-check" name="makine-ie" id="${data[i].HAT_KODU}" onclick="MakineBekleyenIsEmri(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
+                    var MachineType = data[i].HAT_KODU.substring(0, 2).toLowerCase();
+
+                    if (MachineType != "sm") {
+                        Makineler += `<input type="radio" class="btn-check" name="makine-ie" id="${data[i].HAT_KODU}" onclick="MakineBekleyenIsEmri(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
+                    }
                 }
 
                 $('#BekleyenIsEmirleriMakine').html(Makineler + `</div>`);
@@ -580,15 +597,33 @@
                 var Makineler = `<div class="btn-group" style="grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) );display:grid;grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group">`;
 
                 for (var i = 0; i < data.length; i++) {
-                    if (data[i].HAT_KODU == "DL01") {
-                        Makineler += `<input type="radio" checked="checked" class="btn-check" name="makine-ieuk" id="${data[i].HAT_KODU}" onclick="c(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
-                    } else {
+                    var MachineType = data[i].HAT_KODU.substring(0, 2).toLowerCase();
+
+                    if (MachineType != "sm") {
                         Makineler += `<input type="radio" class="btn-check" name="makine-ieuk" id="${data[i].HAT_KODU}" onclick="c(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                     }
-
                 }
 
                 $('#UretimKaydiMakine').html(Makineler + `</div>`);
+            });
+        }
+        function MakineListeleAL() {
+            $.getJSON("http://192.168.2.13:83/api/makine/makineler", (data) => {
+                var Makineler = `<div class="btn-group" style="grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) );display:grid;grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group">`;
+
+                for (var i = 0; i < data.length; i++) {
+                    var MachineType = data[i].HAT_KODU.substring(0, 2).toLowerCase();
+
+                    if (MachineType != "sm") {
+                        if (data[i].HAT_KODU == "TP01") {
+                            Makineler += `<input type="radio" class="btn-check" name="makine-ieAL" id="${data[i].HAT_KODU}" onclick="UretimAl()" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
+                        } else {
+                            Makineler += `<input type="radio" disabled class="btn-check" name="makine-ieAL" id="${data[i].HAT_KODU}" onclick="c(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
+                        }
+                    }
+                }
+
+                $('#UretimeAlMakine').html(Makineler + `</div>`);
             });
         }
 
@@ -1046,7 +1081,11 @@
                 var Makineler = `<div class="btn-group" style="grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) );display:grid;grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group">`;
 
                 for (var i = 0; i < data.length; i++) {
-                    Makineler += `<input type="radio" class="btn-check" name="makine-ie" id="${data[i].HAT_KODU}" onclick="UretimeGirenler(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
+                    var MachineType = data[i].HAT_KODU.substring(0, 2).toLowerCase();
+
+                    if (MachineType != "sm") {
+                        Makineler += `<input type="radio" class="btn-check" name="makine-ie" id="${data[i].HAT_KODU}" onclick="UretimeGirenler(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
+                    }
                 }
 
                 $('#UretimeGirenlerMakine').html(Makineler + `</div>`);
@@ -1058,9 +1097,30 @@
                 url: `http://192.168.2.13:83/api/ie/hatgirdi/${value}`,
                 type: 'GET',
                 success: (response) => {
+                    $("#filter").select2('destroy').html('');
                     $('#UretimeGirenlerTable').bootstrapTable('destroy');
                     $('#UretimeGirenlerTable').bootstrapTable({ data: response });
 
+                    $.getJSON('http://192.168.2.13:83/api/seri/manuelhat/' + value, function (data) {
+                        for (let i = 0; i < data.length; i++) {
+                            var newOption = new Option(data[i].SERINO, data[i].SERINO, false, false);
+                            $('#filter').append(newOption).trigger('change');
+                        }
+
+                    }).done(function () {
+
+                        $("#filter").select2(
+                            {
+                                "language": {
+                                    "noResults": function () {
+                                        return "Sonuç bulunamadı.";
+                                    }
+                                },
+                                escapeMarkup: function (markup) {
+                                    return markup;
+                                }
+                            });
+                    })
                     $('#UretimeGirenlerTablo').show();
                 }
             });
@@ -1193,9 +1253,19 @@
         var html5QrcodeScanner = null;
         $(document).ready(function () {
 
+            $("#filter").select2(
+                {
+                    "language": {
+                        "noResults": function () {
+                            return "Sonuç bulunamadı.";
+                        }
+                    },
+                    escapeMarkup: function (markup) {
+                        return markup;
+                    }
+                });
             $('#BekleyenIsEmirleriTable').bootstrapTable('destroy');
             $('#BekleyenIsEmirleriTable').bootstrapTable({ data: [] });
-
             change(0);
             $(`input:radio[name="uretim-islem"][value='0']`).prop('checked', true);
 
@@ -1210,7 +1280,6 @@
                 $(this).css('z-index', zIndex);
                 setTimeout(() => $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack'));
             });
-            c('DL01');
 
         });
         if ($(window).width() < 600) {
@@ -1226,7 +1295,16 @@
         );
         var uretimControl = '';
         function UretimAl() {
-            uretimControl='TP01'
+
+            if (uretimControl != '') {
+                $("#TP01").prop("checked", false);
+                $("#TP01").blur();
+                uretimControl = ''
+            } else {
+                uretimControl = 'TP01'
+
+                document.addEventListener("DOMContentLoaded", fn);
+            }
         }
         function change(value) {
             $("#btnradio1112").prop("checked", false);
@@ -1234,6 +1312,7 @@
             if (value == 0) {
                 constant = 0;
                 KapatilacakIsEmirleri = [];
+                document.getElementById("stokadlari").replaceChildren();
                 $('#isemirlerinikapatbtn').hide();
                 $("#label").html("Çıktı")
                 $("#tablo").show();
@@ -1246,8 +1325,9 @@
                 $('#UretimeGirenlerMakine').hide();
                 $('#UretimeGirenlerTablo').hide();
                 $("#UretimListeTable").show();
-
+                $('#UretimeAlMakine').html(null).hide();
                 MakineListeleUK();
+
                 $('#UretimKaydiMakine').show();
 
                 if (html5QrcodeScanner != null) {
@@ -1256,9 +1336,9 @@
                 if (html5QrcodeScanner1 != null) {
                     html5QrcodeScanner1.clear();
                 }
+
             }
-            else if (value == 1)
-            {
+            else if (value == 1) {
                 KapatilacakIsEmirleri = [];
                 constant = 1;
 
@@ -1273,8 +1353,8 @@
                 $("#makineler").hide();
                 $("#makineler4").show();
                 $("#scanner").show();
-                $('#BarkodButton').show();
-                $('#RefreshButton').show();
+                $('#BarkodButton').hide();
+                $('#RefreshButton').hide();
                 $('#BekleyenIsEmirleriMakine').hide();
                 $('#BekleyenIsEmirleriTablo').hide();
                 $('#UretimeGirenlerMakine').hide();
@@ -1282,136 +1362,135 @@
                 $("#UretimListeTable").hide();
                 $('.iefiltre').hide();
                 $('#UretimKaydiMakine').html(null).hide();
+
+                MakineListeleAL();
+                $('#UretimeAlMakine').show();
                 UretimListeYedek = [];
 
                 $("input:radio[name=makine-ie]").prop('checked', false);
-                        function docReady(fn) {
-            // see if DOM is already available
-            if (document.readyState === "complete"
-                || document.readyState === "interactive") {
-                // call on next available tick
-                setTimeout(fn, 1);
-            } else {
-                document.addEventListener("DOMContentLoaded", fn);
-            }
-
-        }
-         docReady(function () {
-    var resultContainer = document.getElementById('qr-reader-results1');
-    var lastResult, countResults = 0;
-    function onScanSuccess(decodedText, decodedResult) {
-        if (decodedText !== lastResult) {
-            ++countResults;
-            lastResult = decodedText;
-            var userid =@Request.Cookies["UserId"].Value;
-            var u = "";
-            var u2 = "http://192.168.2.13:83/api/ie/control/" + decodedText;
-            if (uretimControl == '') {
-                $.getJSON(u2, function (data) {
-                    if (data.length > 0 && data[0].HG_CONTROL =='True') {
-                        Swal.fire({
-                            text: data[0].SERI_NO + " seri numaralı ürünü " + data[0].HATKODU + " kodlu makinede üretime almayı onaylıyor musunuz?",
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Evet',
-                            cancelButtonText: "Hayır"
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                u = "http://192.168.2.13:83/api/ie/hat/" + data[0].HATKODU + "/" + decodedText + "/" + userid;
-                                $.getJSON(u, function () {
-
-                                }).done(function () {
-                                    Swal.fire(
-                                        'Başarılı!',
-                                        'Kayıt başarılı',
-                                        'success'
-                                    )
-                                })
-                                uretimControl = '';
-
-                            }
-                        })
-
+                function docReady(fn) {
+                    // see if DOM is already available
+                    if (document.readyState === "complete"
+                        || document.readyState === "interactive") {
+                        // call on next available tick
+                        setTimeout(fn, 1);
                     } else {
-                        Swal.fire(
-                            'Karekodunu okutmuş olduğunuz ürün için iş emri kaydı bulunmamaktadır!',
-                            'Ürünü TP01 için üretime almak istiyorsanız, lütfen yukarıdaki butonlardan TP\'yi seçiniz.',
-                            'error'
-                        ).then((result) => {
-                            if (result.isConfirmed) {
-                                lastResult = 0;
-                            }
-                        })
-                        uretimControl = '';
+                        document.addEventListener("DOMContentLoaded", fn);
                     }
-                })
-            } else {
-                u = "http://192.168.2.13:83/api/ie/tpcontrol/" + decodedText
-                $.getJSON(u, function (data) {
 
-                    if (data.length != 0 && data[0].HG_CONTROL=='True') {
-                        Swal.fire({
-                            text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Evet',
-                            cancelButtonText: "Hayır"
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                u = "http://192.168.2.13:83/api/ie/hat/TP01/" + decodedText + "/" + userid;
-                                $.getJSON(u, function () {
+                }
+                docReady(function () {
+                    var resultContainer = document.getElementById('qr-reader-results1');
+                    var lastResult, countResults = 0;
+                    function onScanSuccess(decodedText, decodedResult) {
+                        if (decodedText !== lastResult) {
+                            ++countResults;
+                            lastResult = decodedText;
+                            var userid =@Request.Cookies["UserId"].Value;
+                            var u = "";
+                            var u2 = "http://192.168.2.13:83/api/ie/control/" + decodedText;
+                            if (uretimControl == '') {
+                                $.getJSON(u2, function (data) {
+                                    if (data.length > 0 && data[0].HG_CONTROL == 'True') {
+                                        playOkundu()
+                                        Swal.fire({
+                                            text: data[0].SERI_NO + " seri numaralı ürünü " + data[0].HATKODU + " kodlu makinede üretime almayı onaylıyor musunuz?",
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#3085d6',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: 'Evet',
+                                            cancelButtonText: "Hayır"
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                u = "http://192.168.2.13:83/api/ie/hat/" + data[0].HATKODU + "/" + decodedText + "/" + userid;
+                                                $.getJSON(u, function () {
 
-                                }).done(function () {
-                                    Swal.fire(
-                                        'Başarılı!',
-                                        'Kayıt başarılı',
-                                        'success'
-                                    )
+                                                }).done(function () {
+                                                    Swal.fire(
+                                                        'Başarılı!',
+                                                        'Kayıt başarılı',
+                                                        'success'
+                                                    )
+                                                })
+                                                uretimControl = '';
+
+                                            }
+                                            lastResult = 0;
+
+
+                                        })
+
+                                    } else {
+                                        playHata()
+                                        Swal.fire(
+                                            'Karekodunu okutmuş olduğunuz ürün için iş emri kaydı bulunmamaktadır!',
+                                            'Ürünü TP01 için üretime almak istiyorsanız, lütfen yukarıdaki butonlardan TP\'yi seçiniz.',
+                                            'error'
+                                        ).then((result) => {
+                                            if (result.isConfirmed) {
+                                                lastResult = 0;
+                                            }
+                                        })
+                                        uretimControl = '';
+                                    }
+                                })
+                            } else {
+                                u = "http://192.168.2.13:83/api/ie/tpcontrol/" + decodedText
+                                $.getJSON(u, function (data) {
+
+                                    if (data.length != 0 && data[0].HG_CONTROL == 'True') {
+                                        playOkundu()
+                                        Swal.fire({
+                                            text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#3085d6',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: 'Evet',
+                                            cancelButtonText: "Hayır"
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                u = "http://192.168.2.13:83/api/ie/hat/TP01/" + decodedText + "/" + userid;
+                                                $.getJSON(u, function () {
+
+                                                }).done(function () {
+                                                    Swal.fire(
+                                                        'Başarılı!',
+                                                        'Kayıt başarılı',
+                                                        'success'
+                                                    )
+                                                })
+
+                                            }
+                                        })
+                                    } else {
+                                        playHata()
+                                        Swal.fire(
+                                            'Başarısız!',
+                                            'Okutmuş olduğunuz barkod numarası bulunamamaktadır!',
+                                            'warning'
+                                        ).then((result) => {
+                                            if (result.isConfirmed) {
+                                                lastResult = 0;
+                                            }
+                                        })
+                                    }
                                 })
 
+
                             }
-                        })
-                    } else {
-                        Swal.fire(
-                            'Başarısız!',
-                            'Okutmuş olduğunuz barkod numarası bulunamamaktadır!',
-                            'warning'
-                        ).then((result) => {
-                            if (result.isConfirmed) {
-                                lastResult = 0;
-                            }
-                        })
+
+
+
+                        }
+
                     }
-                })
 
-
+                    html5QrcodeScanner = new Html5QrcodeScanner(
+                        "qr-reader1", { fps: 60, qrbox: 800 });
+                    html5QrcodeScanner.render(onScanSuccess);
+                });
             }
-
-
-
-        }
-
-    }
-
-    html5QrcodeScanner = new Html5QrcodeScanner(
-        "qr-reader1", {
-        qrbox: {
-            width: 900,
-            height: 400,
-        },
-        fps: 60,
-        videoConstraints: {
-            facingMode: { exact: "environment" },
-        },
-    },
-        false);
-    html5QrcodeScanner.render(onScanSuccess);
-});
-            }
-            else if(value == 2)
-            {
+            else if (value == 2) {
                 KapatilacakIsEmirleri = [];
                 constant = 2;
                 MakineListele();
@@ -1423,13 +1502,14 @@
                 $("#makineler3").hide();
                 $("#makineler").hide();
                 $("#scanner").hide();
-                $('#BarkodButton').hide();
+                $('#BarkodButton').show();
                 $('#RefreshButton').hide();
                 $('.iefiltre').hide();
                 $('#makineler4').hide();
                 $('#UretimeGirenlerMakine').hide();
                 $('#UretimeGirenlerTablo').hide();
                 $('#UretimKaydiMakine').html(null).hide();
+                $('#UretimeAlMakine').html(null).hide();
                 $("#UretimListeTable").hide();
 
                 $('#BekleyenIsEmirleriTablo').hide();
@@ -1465,6 +1545,7 @@
                 $('#RefreshButton').hide();
                 $("#UretimListeTable").hide();
                 $('#UretimKaydiMakine').html(null).hide();
+                $('#UretimeAlMakine').html(null).hide();
                 $('#BekleyenIsEmirleriMakine').html('');
                 $('#BekleyenIsEmirleriMakine').hide();
                 $('#BekleyenIsEmirleriTablo').hide();
@@ -1481,6 +1562,41 @@
                     html5QrcodeScanner1.clear();
                 }
             }
+            else if (value == 4)
+            {
+                constant = 4;
+                $('#isemirlerinikapatbtn').hide();
+                $("#tablo").hide();
+                $("#makmobile1").hide();
+                $("#makmobile2").hide();
+                $("#makineler1").hide();
+                $("#makineler2").hide();
+                $("#makineler3").hide();
+                $("#makineler").hide();
+                $("#scanner").hide();
+                $('#BarkodButton').hide();
+                $('#RefreshButton').hide();
+                $("#UretimListeTable").hide();
+                $('#UretimKaydiMakine').html(null).hide();
+                $('#UretimeAlMakine').html(null).hide();
+                $('#BekleyenIsEmirleriMakine').html('');
+                $('#BekleyenIsEmirleriMakine').hide();
+                $('#BekleyenIsEmirleriTablo').hide();
+                $('.iefiltre').hide();
+                $('#UretimeGirenlerMakine').hide();
+                $('#makineler4').hide();
+                if (html5QrcodeScanner != null) {
+                    html5QrcodeScanner.clear();
+                }
+                if (html5QrcodeScanner1 != null) {
+                    html5QrcodeScanner1.clear();
+                }
+            }
+
+            $('#UretimListeTable').bootstrapTable('destroy');
+            $('#UretimListeTable').bootstrapTable({ data: [] });
+
+            $("#progress").hide();
         }
         var sabit = "";
         var btnid = "";
@@ -1891,6 +2007,7 @@
             $("#hurdamiktar2").val(null);
             $('#HurdaModal').modal('show');
         }
+        var mik2 = 0;
         function showmodal(value) {
             hat = value.dataset.hat;
             stok = value.dataset.stokkodu;
@@ -1907,7 +2024,7 @@
                     bant = false;
                 }
             }).done(function () {
-                var mik2 = parseInt(value.dataset.mik2)
+                mik2 = parseInt(value.dataset.mik2)
                 var seri = value.dataset.isemri;
                 $("#miktar11").val(null);
                 $("#miktar22").val(null);
@@ -1940,6 +2057,11 @@
                 $("#etiket-onizleme").prop('checked', false);
                 $("#etiket-onizleme").prop('disabled', false);
                 $('#normal').prop('checked', true);
+                $("#ikincimik2").prop('disabled', true);
+                $("#hurdamik1").prop('disabled', true);
+                $("#hurdamik1").val(null);
+                $("#hurdaMHdiv").hide();
+                $("#hurdaMHdiv1").hide();
                 if (hat == 'DL01') {
                     $("#kontrolcol").show();
                     $("#kontrol").prop('disabled', false);
@@ -1947,23 +2069,34 @@
                     $("#hurdamik").hide();
                     $("#ikincimik1").hide();
                     $("#ikincimik2").hide();
+                    $("#ikincimik2").attr('onkeyup', 'keychangeikinci()');
+                    $("#hurdamik").attr('onkeyup', '');
                     $("#BirimMik").show();
+                    $("#hurdaMHdiv").hide();
                     $("#BirimMik2").hide();
                 } else if (hat == 'MH01') {
                     $("#kontrolcol").show();
                     $("#miktar11").val(max);
                     $("#miktar22").val(mik2);
+
                     $("#miktar11").prop("disabled", true);
                     $("#miktar22").prop("disabled", true);
                     $("#kontrol").prop('checked', true);
                     $("#kontrol").prop('disabled', true);
                     $("#ModalSaveButton").prop("disabled", false)
+                    $("#hurdamik").prop("disabled", false)
                     $('#ikinciDiv').hide();
-                    $("#hurdamik").hide();
-                    $("#ikincimik1").hide();
-                    $("#ikincimik2").hide();
+                    $("#hurdamik").show();
+                    $("#ikincimik1").show();
+                    $("#ikincimik2").show();
+                    $("#ikincimik2").prop('disabled', false);
+                    $("#ikincimik2").attr('onkeyup', 'MHKeyChange2()');
+                    $("#hurdaMHdiv").show();
+                    $("#hurdaMHdiv1").show();
+                    $("#hurdamik1").attr('onkeyup', 'HurdaChange2()');
+                    $("#hurdamik").attr('onkeyup', 'HurdaChange3()');
                     $("#BirimMik").show();
-                    $("#BirimMik2").hide();
+                    $("#BirimMik2").show();
                 } else if(hat=='PB01'){0
                     $("#miktar11").prop("disabled", false);
                     $("#miktar22").prop("disabled", true);
@@ -1976,6 +2109,9 @@
                     $("#ikincimik2").show();
                     $("#BirimMik").show();
                     $("#BirimMik2").show();
+                    $("#hurdaMHdiv").hide();
+                    $("#ikincimik2").attr('onkeyup', 'keychangeikinci()');
+                    $("#hurdamik").attr('onkeyup', '');
                 }
                 else {
                     $("#miktar11").prop("disabled", false);
@@ -1989,12 +2125,22 @@
                     $("#ikincimik2").show();
                     $("#BirimMik").show();
                     $("#BirimMik2").show();
+                    $("#ikincimik2").attr('onkeyup', 'keychangeikinci()');
+                    $("#hurdamik").attr('onkeyup', '');
+                    $("#hurdaMHdiv").hide();
                 }
                 $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0]);
                 $("#SiparisModalLabel2").html(value.innerHTML.split("<br>")[1].split("<p")[0]);
                 document.getElementById("modalicon").setAttribute("data-hat", hat);
                 document.getElementById("modalicon").setAttribute("data-stok", stok);
                 document.getElementById("modalicon").setAttribute("data-genislik", genislik);
+                if (hat == "MH01") {
+                    var olculer = $("#SiparisModalLabel2").html();
+                    var olcu1 = olculer.split("||")[0].split(" ")[3];
+                    var olcu2 = olculer.split("||")[1].split(" ")[2]
+                    $("#BirimMik").html((max / mik2).toFixed(2) + " " + olcu1 + " / " + olcu2)
+                }
+
                 constant = 0;
             })
 
@@ -2004,6 +2150,112 @@
         var hat = "";
         var stok = "";
         var genislik = "";
+        function MHKeyChange2() {
+
+            var oran = (max / mik2);
+            var m2 = $('#ikincimik2').val();
+            var olculer = $("#SiparisModalLabel2").html();
+            var olcu1 = olculer.split("||")[0].split(" ")[3];
+            var olcu2 = olculer.split("||")[1].split(" ")[2]
+            if (m2.length > 0) {
+                if (m2 < mik2) {
+                    $('#miktar22').val(mik2 - m2);
+                    $('#miktar11').val(Math.round(oran * (mik2 - m2)));
+                    if ($('#hurdamik1').val().length > 0) {
+                        $('#miktar11').val($('#miktar11').val() - $('#hurdamik1').val());
+                        $('#miktar22').val(mik2 - m2 - $('#hurdamik').val());
+                    }
+
+                    $("#BirimMik2").html(oran.toFixed(2) + " " + olcu1 + " / " + olcu2)
+                    if (m2.length > 0) {
+                        $('#ikincimik1').val(Math.round(m2 * oran));
+                    } else {
+                        $('#ikincimik1').val(null);
+                        $('#hurdamik1').val(null);
+                        $("#BirimMik2").html(" - ");
+                        $('#miktar11').val(max)
+                        $('#miktar22').val(mik2)
+                    }
+                } else {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'center',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Toplam miktarı aşamazsınız.'
+                    });
+                    $('#ikincimik2').val(null).trigger("keyup");
+                    $("#BirimMik2").html(" - ");
+                }
+            } else {
+                if ($('#hurdamik1').val().length > 0) {
+                    $('#miktar11').val(max - $('#hurdamik1').val());
+                    $('#ikincimik1').val(null);
+                    $('#miktar22').val(mik2 - $('#hurdamik').val())
+                } else {
+                    $('#ikincimik1').val(null);
+                    $('#hurdamik1').val(null);
+                    $("#BirimMik2").html(" - ");
+                    $('#miktar11').val(max)
+                    $('#miktar22').val(mik2)
+                }
+
+            }
+
+
+
+        }
+        function HurdaChange2() {
+            if ($('#hurdamik1').val().length > 0) {
+                var m = parseInt($('#hurdamik1').val())
+
+                if (m < max) {
+
+                    MHKeyChange2()
+                } else {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'center',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Toplam miktarı aşamazsınız.'
+                    });
+                    $('#hurdamik1').val(null)
+                    $('#hurdamik1').val(null)
+                    MHKeyChange2()
+                }
+            } else {
+                MHKeyChange2()
+            }
+
+        }
+        function HurdaChange3() {
+            var oran = (max / mik2);
+            if ($('#hurdamik').val().length > 0) {
+                $('#hurdamik1').val(Math.round($('#hurdamik').val() * oran)).trigger("keyup")
+            } else {
+                $('#hurdamik1').val(null).trigger("keyup")
+            }
+
+        }
         function showmodal2(value) {
 
 
@@ -2266,6 +2518,10 @@
                     ikincimik1 = "0";
                     ikincimik2 = "0";
                 }
+
+                if (hat == 'MH01') {
+                    hurdamik = $("#hurdamik1").val();
+                }
                 if (hurdamik == null || hurdamik == "") {
                     hurdamik = "0";
                 }
@@ -2514,8 +2770,12 @@
                         top1 = top1 + parseFloat(ikincimik1);
                         top2 =top2 + parseFloat(ikincimik2);
                     }
-                    if (hurdamik!=""&& hurdamik!=null) {
-                        top1 = top1 + parseFloat(hurdamik);
+                    if (hat == 'MH01') {
+                        hurdamik = $("#hurdamik1").val();
+                    }
+                    if (hurdamik != "" && hurdamik != null) {
+
+                            top1 = top1 + parseFloat(hurdamik);
                     }
                     var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + top1.toString().trim() + "/" + top2.toString().trim() + "/0";
                     if (top1 <= max) {
@@ -2718,19 +2978,33 @@
                         </div>
                     </div>
                     <div class="row mt-2">
+                        <div class="col" id="hurdaMHdiv" style="display:none">
+
+
+                            <input class="form-control text-center" placeholder="HURDA KG" type="number" id="hurdamik1">
+
+                        </div>
+                        <div class="col-2 text-center" id="hurdaMHdiv1" style="display:none">
+
+
+
+
+                        </div>
                         <div class="col">
 
 
-                            <input class="form-control text-center" placeholder="HURDA" type="number" id="hurdamik">
+                            <input class="form-control text-center" placeholder="HURDA ADET" type="number" id="hurdamik">
 
                         </div>
+
+
                     </div>
 
 
                     <div class="modal-footer mt-1" style="display:flex;justify-content:center;align-items:center;">
                         <button class="btn btn-primary" id="ModalSaveButton" type="button" onclick="ModalKaydet()" disabled>KAYDET</button>
                         <button class="btn btn-danger" type="button" onclick="ModalKapat()">KAPAT</button>
-                        <button class="btn btn-danger" type="button" onclick="TrpzBarkod('EFC200000000013')">Test</button>
+                        @*<button class="btn btn-danger" type="button" onclick="TrpzBarkod('EFC200000000013')">Test</button>*@
                     </div>
                 </div>
             </div>
@@ -2851,9 +3125,9 @@
         </div>
 
     </div>
-    <div class="modal fade" id="QRModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 90% !important">
-            <div class="modal-content" style="max-height:100vh;">
+    <div class="modal fade" id="QRModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" style="height: max-content;" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 90% !important">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="BarkodModalLabel">BARKOD OKUYUCU</h5>
                     <button type="button" class="btn-close" onclick="qrmodalclose()" aria-label="Close"></button>
@@ -3030,7 +3304,6 @@
             if (html5QrcodeScanner != null) {
                 html5QrcodeScanner.clear();
             }
-            change(0);
             $("#QRModal").modal("show");
             function docReady1(fn) {
                 // see if DOM is already available
@@ -3079,14 +3352,7 @@
                 }
 
                 html5QrcodeScanner1 = new Html5QrcodeScanner(
-                    "qr-readerr", {
-                    qrbox: 800,
-                    fps: 60,
-                    videoConstraints: {
-                        facingMode: { exact: "environment" },
-                    },
-                },
-                    false);
+                    "qr-readerr", { fps: 60, qrbox: 800 });
                 html5QrcodeScanner1.render(onScanSuccess);
 
             });
@@ -3183,7 +3449,7 @@
         }
         function ResetControl() {
             uretimControl = "";
-            $("#btnradio1112").prop("checked", false);
+            $("#TP01").prop("checked", false);
         }
 
 
@@ -3343,7 +3609,7 @@
             else
                 $("#BirimMik2").html(" - ")
             }
-      
+
 
         //function pdfOpen(d) {
         //    let byteCharacters = atob(d);0
@@ -3356,11 +3622,105 @@
         //    let fileURL = URL.createObjectURL(file);
         //    window.open(fileURL);
         //}
-            
-                       
-   
+
+        function playOkundu() {
+            var x = document.getElementById("okundu");
+            x.play();
+        }
+        function playHata() {
+            var x = document.getElementById("hata");
+            x.play();
+        }
+        function UretimeAl() {
+            var hat = $('input[name="makine-ie"]:checked').val();
+            var seri = $('#filter').val();
+            Swal.fire({
+                title: "UYARI",
+                html: seri+' nolu hammaddenin girişini yapmak istediğinizden emin misiniz?',
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'HAYIR',
+                cancelButtonColor: '#d33',
+                confirmButtonColor: '#3085d6',
+                allowEnterKey: false,
+                confirmButtonText: 'EVET',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#progress").show();
+                    $('#isemirlerinikapatbtn').hide();
+                    var serino = $('#filter').val();
+                    $.ajax({
+                        url: 'http://192.168.2.13:83/api/seri/manuelgir/' + hat+'/'+seri+'/'+@Request.Cookies["Id"].Value,
+                        type: 'GET',
+                        data: {},
+                        error: function (data) { alert(JSON.stringify(data)); },
+                        success: function (data) {
+                            if (data == "Başarılı") {
+                                Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                            } else {
+                                Swal.fire('Başarısız!', data, 'error');
+                            }
+                            $("#progress").hide();
+
+                            $('input[name="makine-ie"]:checked').trigger('click');
+                        }
+                    })
+
+                }
+            });
+
+        }
+        function seriFormatter(value,index,row) {
+            return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="SilButton" onclick="Sil(\''+value+'\')" class="btn btn-danger" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">SİL</button>'+" "+value+"</div>";
+        }
+        function Sil(value) {
+            Swal.fire({
+                title: "UYARI",
+                html: value + ' nolu hammaddeyi silmek istediğinize emin misiniz?',
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'HAYIR',
+                cancelButtonColor: '#d33',
+                confirmButtonColor: '#3085d6',
+                allowEnterKey: false,
+                confirmButtonText: 'EVET',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#progress").show();
+                    $('#isemirlerinikapatbtn').hide();
+                    var serino = $('#filter').val();
+                    $.ajax({
+                        url: 'http://192.168.2.13:83/api/seri/manuelsil/'+value,
+                        type: 'GET',
+                        data: {},
+                        error: function (data) { alert(JSON.stringify(data)); },
+                        success: function (data) {
+                            if (data == "Başarılı") {
+                                Swal.fire('Başarılı!', 'Silme işlemi tamamlandı', 'success');
+                            } else {
+                                Swal.fire('Başarısız!', data, 'error');
+                            }
+                            $("#progress").hide();
+
+                            $('input[name="makine-ie"]:checked').trigger('click');
+                        }
+                    })
+
+                }
+            });
+
+        }
     </script>
-   
+    <audio id="okundu">
+        <source src="~/Content/Barcode-scanner-beep-sound.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="hata">
+        <source src="~/Content/hata.mp3" type="audio/mpeg" />
+    </audio>
+    <button style="display:none" onclick="playAudio()" type="button">Play Audio</button>
+
 </body>
 
 </html>
