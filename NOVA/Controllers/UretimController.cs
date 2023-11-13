@@ -1663,7 +1663,7 @@ namespace NOVA.Controllers
                 Content.AddElement(Kalinlik);
 
                 iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {(Data[i].MAK_KODU == "TP01" || Data[i].MAK_KODU == "MH01" ? "-" : BosDegerKontrolu(Data[i].GENISLIK), "GENISLIK")}", fontNormal));
+                Genislik.Add(new Chunk($": {(Data[i].MAK_KODU == "TP01" || Data[i].MAK_KODU == "MH01" ? "-" : DegerFormat(Data[i].GENISLIK, "GENISLIK"))}", fontNormal));
                 Content.AddElement(Genislik);
 
                 iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
@@ -1743,7 +1743,7 @@ namespace NOVA.Controllers
         }
 
         [HttpPost]
-        public string TrpzUretimKaydiSonuBarkodCiktisi(string BARKOD_NO, bool ETIKET_ONIZLEME)
+        public string TrpzUretimKaydiSonuBarkodCiktisi(string BARKOD_NO, bool ETIKET_ONIZLEME, string YAZICI)
         {
 
             try
@@ -1855,7 +1855,7 @@ namespace NOVA.Controllers
                         using (var printDocument = pdocument.CreatePrintDocument())
                         {
                             printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
-                            printDocument.PrinterSettings.PrinterName = @"Olivetti d-COPIA 4023MF MUHASEBE";
+                            printDocument.PrinterSettings.PrinterName = YAZICI;
                             printDocument.DocumentName = "file.pdf";
                             printDocument.PrinterSettings.PrintFileName = "file.pdf";
                             printDocument.PrintController = new StandardPrintController();
@@ -2228,6 +2228,38 @@ namespace NOVA.Controllers
             await RoleHelper.CheckRoles(this);
 
             return View();
+        }
+
+        #endregion
+
+        #region UretilmisBarkodlar
+
+        public string UretilmisBarkodYazdir(string[] BarkodListesi) 
+        {
+            string BarkodPDF = "";
+
+            try
+            {
+                List<BarkodModel> Etiketler = new List<BarkodModel>();
+                WebClient Client = new WebClient() { Encoding = Encoding.UTF8 };
+
+                foreach (var item in BarkodListesi)
+                {
+                    string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + item));
+                    List<BarkodModel> Result = new JavaScriptSerializer().Deserialize<List<BarkodModel>>(Response);
+
+                    if (Result.Count > 0)
+                    {
+                        Etiketler.Add(Result[0]);
+                    }
+                }
+
+                return UretimKaydiSonuBarkodCiktisi(Etiketler, true);
+            }
+            catch (Exception ex) 
+            {
+                return $"Uretilmis Barkod Hata: {ex.Message}";
+            }
         }
 
         #endregion
