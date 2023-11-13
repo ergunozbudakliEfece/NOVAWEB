@@ -346,7 +346,8 @@
                     <select id="yazici" class="form-select my-2">
                         @*<option value="Olivetti d-COPIA 4023MF MUHASEBE">Olivetti d-COPIA 4023MF MUHASEBE</option>*@
                         <option value="Olivetti d-COPIA 4023MF MUHASEBE" selected>Olivetti d-COPIA 4023MF MUHASEBE</option>
-                        <option value="ZD2301">ZD2301</option>
+                        <option value="ZEBRA8">ZEBRA8</option>
+                        <option value="Microsoft Print to PDF">Microsoft Print to PDF</option>
                     </select>
                 </div>
                 <div class="row mt-2" style="max-width:100vw">
@@ -484,24 +485,7 @@
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="UretimeGirenlerTablo">
                     <div id="UretimeGirenlerTabloToolBar">
-                        <div class="row gx-2 gy-2 mt-3">
-                            <div class="col-sm-3 col-6 m-auto">
-                                <select id="filter" name="filterAlgorithm" style="width: 15vw">
-                                </select>
-                            </div>
-                            <div class="col-sm-3 col-6 m-auto">
-                                <button type="button" id="UretimeAlButton" onclick="UretimeAl()" class="btn btn-primary" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;">ÜRETİME AL</button>
-                            </div>
-                            <div class="col-sm-3 col-6 m-auto">
-                                <div class="class=form-check form-switch text-center">
-                                    <input class="form-check-input" type="checkbox" onchange="HatGirdiSıralama()" id="flexSwitchCheckChecked1">
-                                </div>
-                            </div>
-                            <div class="col-sm-3 col-6 m-auto">
-                            </div>
-                        </div>
-
-                        @*<div class="row mt-1">
+                        <div class="row mt-1">
                             <div class="col">
                                 <select id="filter" name="filterAlgorithm" style="width: 15vw">
                                 </select>
@@ -512,13 +496,13 @@
                             </div>
                             <div class="col" id="siralama">
                                 <div class="class=form-check form-switch text-center">
-                                    <input class="form-check-input" type="checkbox" onchange="HatGirdiSıralama()" id="flexSwitchCheckChecked1">
+                                    <input class="form-check-input" type="checkbox" onchange="HatGirdiSıralama()" id="HatGirdiSiralamaSwitch">
                                 </div>
                                 <div class="row">
                                     <label style="font-size: 10px; letter-spacing:1px">SIRALAMA</label>
                                 </div>
                             </div>
-                        </div>*@
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <div class="tableClass" style="max-height:680px">
@@ -557,7 +541,7 @@
                             </table>
                         </div>
                     </div>
-                    
+
                 </div>
 
 
@@ -565,7 +549,7 @@
 
                 <div class="row" style="min-height:33%;display:none" id="UretilmisBarkodlar">
                     <div id="UretilmisBarkodlarToolbar">
-                            <button id="uretilmis-barkod-yazdir" class="btn btn-primary" onclick="UretilmisBarkodlariYazdir()" disabled>SEÇİLİ BARKODLARI YAZDIR</button>
+                        <button id="uretilmis-barkod-yazdir" class="btn btn-primary" onclick="UretilmisBarkodlariYazdir()" disabled>SEÇİLİ BARKODLARI YAZDIR</button>
                     </div>
                     <div class="table-responsive">
                         <div class="tableClass" style="max-height:680px">
@@ -619,9 +603,9 @@
                         <button style="display:none" onclick="playAudio()" type="button">Play Audio</button>
 
                         @*<div class="justify-content-center" style="display:flex">
-                    <div id="qr-reader1" style="width:900px;"></div>
-                    <div id="qr-reader-results1"></div>
-                </div>*@
+                                <div id="qr-reader1" style="width:900px;"></div>
+                                <div id="qr-reader-results1"></div>
+                            </div>*@
                     </div>
                 </div>
             </div>
@@ -1199,11 +1183,9 @@
             });
         }
 
-        var HatGirdiSirala = false;
-
         function HatGirdiSıralama()
         {
-            HatGirdiSirala = !HatGirdiSirala;
+            var HatGirdiSirala = $('#HatGirdiSiralamaSwitch').is(':checked');
 
             if (HatGirdiSirala)
             {
@@ -1223,9 +1205,15 @@
                     var TopItem = DroppedData[DraggedIndex == 0 ? 0 : DraggedIndex - 1].SERI_NO;
                     var DraggedItem = DroppedData[DraggedIndex].SERI_NO;
 
-                    console.log(`${Machine} ${DraggedItem} ${TopItem}`);
-
-                    HatGirdiSıralama();
+                    $.ajax({
+                        url: `http://192.168.2.13:83/api/ie/hatgirdisira/${Machine}/${DraggedItem}/${(DraggedItem == TopItem ? 0 : TopItem)}`,
+                        type: 'GET',
+                        error: (e) => { console.error(`Hat Girdi Sıralama: ${e}`); },
+                        success: (response) => { }
+                    }).then(() => {
+                        $('#HatGirdiSiralamaSwitch').prop('checked', false);
+                        HatGirdiSıralama();
+                    });
                 });
             }
             else
@@ -3904,7 +3892,6 @@
     </script>
 
     <!--Üretime Al Son-->
-
     <!--Üretilmis Barkodlar-->
     <script>
         var UretilmisBarkodlar = [];

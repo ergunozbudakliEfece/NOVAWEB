@@ -1161,7 +1161,8 @@ namespace NOVA.Controllers
                     var Stokkodu = netRS.FieldByName("STOK_KODU").AsString;
                     netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
                     var karsi = netRS.FieldByName("SERI_NO").AsString;
-
+                    netRS.Ac("SELECT * FROM TBLSTOKURS WHERE URETSON_SIPNO='" + ISEMRINO + "'");
+                    var fisno= netRS.FieldByName("URETSON_FISNO").AsString;
                     Fatura fatura = default(Fatura);
                     FatUst fatUst = default(FatUst);
                     FatKalem fatKalem = default(FatKalem);
@@ -1178,7 +1179,7 @@ namespace NOVA.Controllers
                         fatUst.PLA_KODU = "45";
                         fatUst.Proje_Kodu = "1";
                         fatUst.KDV_DAHILMI = true;
-                        fatUst.Aciklama = ISEMRINO;
+                        fatUst.Aciklama = fisno;
                         fatKalem = fatura.kalemYeni(Stokkodu);
 
                         ///Giriş Depo Kodu
@@ -1206,7 +1207,7 @@ namespace NOVA.Controllers
                         fatUst.FiiliTarih = DateTime.Now;
                         fatUst.PLA_KODU = "45";
                         fatUst.Proje_Kodu = "1";
-                        fatUst.Aciklama = ISEMRINO.Substring(0, 4);
+                        fatUst.Aciklama = fisno;
                         fatUst.KDV_DAHILMI = true;
                         fatKalem = fatura.kalemYeni(Stokkodu);
 
