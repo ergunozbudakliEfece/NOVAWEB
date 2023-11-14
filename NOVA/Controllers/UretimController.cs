@@ -348,7 +348,7 @@ namespace NOVA.Controllers
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
 
         }
-        public string UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket, bool onizleme)
+        public string UretimSonuKaydi(string hatkodu, string stokkodu, string genislik, string mik1, string mik2, bool kontrol, bool etiket, bool onizleme, string YAZICI)
         {
             var uretimTipi = UretimTipi(hatkodu)[0].URETIM_TIPI;
             var stokadi = GetStokAdlari().FirstOrDefault(x => x.STOK_KODU == stokkodu);
@@ -570,7 +570,7 @@ namespace NOVA.Controllers
                         }
                     }
 
-                    Etiket = UretimKaydiSonuBarkodCiktisi(Etiketler, onizleme);
+                    Etiket = UretimKaydiSonuBarkodCiktisi(Etiketler, onizleme,YAZICI);
                 }
             }
             catch (Exception e)
@@ -1005,7 +1005,6 @@ namespace NOVA.Controllers
                     //var oran = KULL_MIKTAR.ToDouble() / eski;
                     //var miktar2 = netRS.FieldByName("ACIKLAMA").AsString;
                     //var yeni = miktar2.ToDouble() * oran;
-
                     netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + (mikold != 0 ? mikold + KULL_MIKTAR.ToDouble() : KULL_MIKTAR.ToDouble()) + "' WHERE ISEMRINO='" + referans + "'");
 
 
@@ -1607,7 +1606,7 @@ namespace NOVA.Controllers
             return RedirectToAction("Index");
         }
         #region BarkodPDF
-        public string UretimKaydiSonuBarkodCiktisi(List<BarkodModel> Data, bool ETIKET_ONIZLEME)
+        public string UretimKaydiSonuBarkodCiktisi(List<BarkodModel> Data, bool ETIKET_ONIZLEME,string YAZICI)
         {
             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
@@ -1710,7 +1709,7 @@ namespace NOVA.Controllers
                         using (var printDocument = pdocument.CreatePrintDocument())
                         {
                             printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
-                            printDocument.PrinterSettings.PrinterName = @"Olivetti d-COPIA 4023MF MUHASEBE";
+                            printDocument.PrinterSettings.PrinterName = YAZICI;
                             printDocument.DocumentName = "file.pdf";
                             printDocument.PrinterSettings.PrintFileName = "file.pdf";
                             printDocument.PrintController = new StandardPrintController();
@@ -2255,7 +2254,7 @@ namespace NOVA.Controllers
                     }
                 }
 
-                return UretimKaydiSonuBarkodCiktisi(Etiketler, true);
+                return UretimKaydiSonuBarkodCiktisi(Etiketler, true,"");
             }
             catch (Exception ex) 
             {

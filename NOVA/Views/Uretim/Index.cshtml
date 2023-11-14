@@ -342,14 +342,7 @@
 
         <div class="row" style="min-height:100%;overflow-y:auto;">
             <div class="col">
-                <div class="row">
-                    <select id="yazici" class="form-select my-2">
-                        @*<option value="Olivetti d-COPIA 4023MF MUHASEBE">Olivetti d-COPIA 4023MF MUHASEBE</option>*@
-                        <option value="Olivetti d-COPIA 4023MF MUHASEBE" selected>Olivetti d-COPIA 4023MF MUHASEBE</option>
-                        <option value="ZEBRA8">ZEBRA8</option>
-                        <option value="Microsoft Print to PDF">Microsoft Print to PDF</option>
-                    </select>
-                </div>
+                
                 <div class="row mt-2" style="max-width:100vw">
                     <div class="col-11 d-flex justify-content-center align-items-center makineler">
                         <div id="UretimKaydiMakine" style="max-width: 65vw; width: 65vw; display: none;"> </div>
@@ -492,7 +485,7 @@
 
                             </div>
                             <div class="col">
-                                <button type="button" id="UretimeAlButton" onclick="UretimeAl()" class="btn btn-primary" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;">ÜRETİME AL</button>
+                                <button type="button" id="UretimeAlButton" onclick="UretimeAl()" class="btn btn-primary" style="height: 28px; white-space: nowrap; text-align: center; padding-top: 2px !important;">ÜRETİME AL</button>
                             </div>
                             <div class="col" id="siralama">
                                 <div class="class=form-check form-switch text-center">
@@ -1378,7 +1371,28 @@
             $('#BekleyenIsEmirleriTable').bootstrapTable({ data: [] });
             change(0);
             $(`input:radio[name="uretim-islem"][value='0']`).prop('checked', true);
+            $.getJSON('http://192.168.2.13:83/api/printers/list', function (data) {
+                var opt = $("<option>").val("Microsoft Print to PDF").text("Microsoft Print to PDF");
 
+                $('#yazici').append(opt);
+                for (let i = 0; i < data.length; i++) {
+                   opt = $("<option>").val(data[i].PRINTER_NAME).text(data[i].PRINTER_NAME);
+
+                    $('#yazici').append(opt);
+                }
+            }).done(function () {
+                $('#yazici').select2(
+                    {
+                        "language": {
+                            "noResults": function () {
+                                return "Sonuç bulunamadı.";
+                            }
+                        },
+                        escapeMarkup: function (markup) {
+                            return markup;
+                        }
+                    });
+            })
 
             $(function () {
                 bootstrap.Tooltip.getOrCreateInstance("#guncelleButton")
@@ -2047,7 +2061,7 @@
         function clickfunc() {
             $("#progress").hide();
              $.ajax({
-                            url: '@Url.Action("IsEmirleriniKapat", "Uretim")',
+                  url: '@Url.Action("IsEmirleriniKapat", "Uretim")',
                  type: 'POST',
                  data: { "isemrimod": listIsemri },
                             error: function (data) {
@@ -2187,6 +2201,7 @@
                 $("#hurdamik1").val(null);
                 $("#hurdaMHdiv").hide();
                 $("#hurdaMHdiv1").hide();
+                $('#yazici').next(".select2-container").hide();
                 if (hat == 'DL01') {
                     $("#kontrolcol").show();
                     $("#kontrol").prop('disabled', false);
@@ -2799,13 +2814,14 @@
                 var kontrol = $("#kontrol").is(':checked');
                 var etiket = $("#etiketyazdir").is(':checked');
                 var etiketOnizleme = $("#etiket-onizleme").is(':checked');
+                var yazici = $("#yazici").val();
                 if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "BK" && hat.substring(0, 2) != "MH") {
                     if (hat.substring(0, 2) != "PB" && hat.substring(0, 2) != "RF") {
 
                         $.ajax({
                             url: '@Url.Action("UretimSonuKaydi", "Uretim")',
                             type: 'POST',
-                            data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(), "kontrol": kontrol, "etiket": etiket, "onizleme": etiketOnizleme },
+                            data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(), "kontrol": kontrol, "etiket": etiket, "onizleme": etiketOnizleme,"YAZICI":yazici },
                             error: function (data) {
                                 console.log(data);
                                 $("#progress2").hide();
@@ -3054,15 +3070,26 @@
                                 <input id="kontrol" checked="checked" class="form-check-input" type="checkbox">
                                 <label class="form-check-label" for="kontrol">İş Emirleri Otomatik Kapansın</label>
                             </div>
-                            <div class="form-check form-switch mb-2">
-                                <input id="etiketyazdir" class="form-check-input" type="checkbox">
-                                <label class="form-check-label" for="etiketyazdir">Etiket Yazdır</label>
+                            <div class="row mt-1">
+                                <div class="col-sm-3">
+                                    <div class="form-check form-switch mb-2">
+                                        <input id="etiketyazdir" class="form-check-input" onchange="yazdirchange()" type="checkbox">
+                                        <label class="form-check-label" for="etiketyazdir">Etiket Yazdır</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <select id="yazici" class="form-select" style="width:250px">
+                                    </select>
+                                </div>
+
                             </div>
+                           
                             <div class="form-check form-switch">
                                 <input id="etiket-onizleme" class="form-check-input" type="checkbox">
                                 <label class="form-check-label" for="etiket-onizleme">Etiket Önizle</label>
                             </div>
                         </div>
+                      
 
                     </div>
 
@@ -3982,6 +4009,16 @@
 
                 $('#UretilmisBarkodlarTablo').bootstrapTable('toggleView');
                 $('#UretilmisBarkodlarTablo').bootstrapTable('toggleView');
+            }
+        }
+        function yazdirchange() {
+            var check = $('#etiketyazdir:checked').val()
+            if (check) {
+               
+                $('#yazici').next(".select2-container").show();
+            } else {
+               
+                $('#yazici').next(".select2-container").hide();
             }
         }
     </script>
