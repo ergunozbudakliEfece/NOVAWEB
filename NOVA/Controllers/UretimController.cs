@@ -1005,6 +1005,14 @@ namespace NOVA.Controllers
                     //var oran = KULL_MIKTAR.ToDouble() / eski;
                     //var miktar2 = netRS.FieldByName("ACIKLAMA").AsString;
                     //var yeni = miktar2.ToDouble() * oran;
+                    if (hurdamik != "0")
+                    {
+                        KULL_MIKTAR = (KULL_MIKTAR.ToDouble()-hurdamik.ToDouble()).ToString();
+                    }
+                    if(ikincimik1 != "0")
+                    {
+                        KULL_MIKTAR = (KULL_MIKTAR.ToDouble() - ikincimik1.ToDouble()).ToString();
+                    }
                     netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + (mikold != 0 ? mikold + KULL_MIKTAR.ToDouble() : KULL_MIKTAR.ToDouble()) + "' WHERE ISEMRINO='" + referans + "'");
 
 
