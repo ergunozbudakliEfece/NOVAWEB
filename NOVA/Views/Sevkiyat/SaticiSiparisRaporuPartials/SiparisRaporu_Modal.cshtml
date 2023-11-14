@@ -156,12 +156,16 @@
                                         <div style="width: 1.25rem; height: 1.25rem; background-color: #FAEAEA;"></div>
                                         <div>KAPALI</div>
                                     </div>
-                                    <div class="col-4 col-md-2" style="display:flex;justify-content:start;align-items:center;">
+                                    <div class="col-3 col-sm-auto" style="display:flex;justify-content:start;align-items:center;">
                                         <div class="form-check form-switch h-100 position-relative">
                                             <input class="form-check-input" style="width: 6rem; height: 2rem;" type="checkbox" id="yazdirSwitch" onclick="YazdirSwitch()" checked="">
-                                            <span id="yazdirLabel" style="position: absolute; left: 0.5rem; top: 0.7rem; font-size: 0.7rem; pointer-events: none; color: white;" >YAZDIR</span>
-                                            <span id="yazdirmaLabel" style="position: absolute; left: 2.1rem; top: 0.7rem; font-size: 0.7rem; pointer-events: none; opacity: 0;" >YAZDIRMA</span>
+                                            <span id="yazdirLabel" style="position: absolute; left: 0.5rem; top: 0.7rem; font-size: 0.7rem; pointer-events: none; color: white;">YAZDIR</span>
+                                            <span id="yazdirmaLabel" style="position: absolute; left: 2.1rem; top: 0.7rem; font-size: 0.7rem; pointer-events: none; opacity: 0;">YAZDIRMA</span>
                                         </div>
+                                    </div>
+                                    <div class="col-12 col-sm-auto">
+                                        <select id="yazici" class="form-select" style="width:250px">
+                                        </select>
                                     </div>
                                     <div class="col-12 col-md-12">
                                         <input class="form-control" type="text" placeholder="Ara" id="customSearchTempTable" />
@@ -266,6 +270,29 @@
         history.pushState(null, null, window.location.href);
         history.back();
         window.onpopstate = function () { history.forward(); };
+
+        $.getJSON('http://192.168.2.13:83/api/printers/list', function (data) {
+            var opt = $("<option>").val("Microsoft Print to PDF").text("Microsoft Print to PDF");
+
+            $('#yazici').append(opt);
+            for (let i = 0; i < data.length; i++) {
+                opt = $("<option>").val(data[i].PRINTER_NAME).text(data[i].PRINTER_NAME);
+
+                $('#yazici').append(opt);
+            }
+        }).done(function () {
+            $('#yazici').select2(
+                {
+                    "language": {
+                        "noResults": function () {
+                            return "Sonuç bulunamadı.";
+                        }
+                    },
+                    escapeMarkup: function (markup) {
+                        return markup;
+                    }
+                });
+        })
     }
 
     function GetSiparisDetailsWithStockCode(StokKodu) {
@@ -1561,6 +1588,7 @@
 <script>
     function SevkiyatCiktisiAl(BARKOD_NO)
     {
+        var Printer = $('#yazici').val();
         var Kayit = Kalemler.filter(x => x.SERI_NO == BARKOD_NO);
 
         var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $('#SiparisNo').html() && x.STOK_KODU == Kayit[0].STOK_KODU)
@@ -1576,7 +1604,7 @@
                 "MIKTAR2": `${parseFloat(Kayit[0].MIKTAR2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
                 "OLCU_BR2": `${Kayit[0].OLCU_BR2}`,
                 "BIRIM_MIKTAR": `${(parseFloat(Kayit[0].MIKTAR) / parseFloat(Kayit[0].MIKTAR2)).toFixed(2).toString()}`,
-                "KALINLIK": Kayit[0].ACIK1.toString().replace('.',','),
+                "KALINLIK": Kayit[0].ACIK1.toString().replace('.', ','),
                 "GENISLIK": Kayit[0].ACIK2.toString().replace('.', ','),
                 "KALITE": Kayit[0].SERI_NO_3,
                 "KAPLAMA": Kayit[0].SERI_NO_4,
@@ -1588,7 +1616,7 @@
             $.ajax({
                 url: "@Url.Action("SevkiyatBarkodCiktisi", "Sevkiyat")",
                 type: 'POST',
-                data: Model,
+                data: { "Model": Model, Yazdir: true, Yazici: Printer },
                 success: (data) =>
                 {
                     if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent)

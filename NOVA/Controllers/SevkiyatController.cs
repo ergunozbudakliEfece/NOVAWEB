@@ -4,11 +4,13 @@ using NOVA.Models;
 using NOVA.Utils;
 using QRCoder;
 using ServiceStack;
+using ServiceStack.Text;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -106,6 +108,7 @@ namespace NOVA.Controllers
         }
 
         #endregion
+
         #region Depolar Arası Transfer
         public async Task<ActionResult> DepoTransfer()
         {
@@ -183,21 +186,23 @@ namespace NOVA.Controllers
 
         #region BarkodPDF
         [HttpPost]
-        public string SevkiyatBarkodCiktisi(SevkiyatBarkodFormModel Model)
+        public string SevkiyatBarkodCiktisi(SevkiyatBarkodFormModel Model, bool Yazdir, string Yazici)
         {
-            string imagepath = Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content");
             Document document = new Document(PageSize.A6, 10f, 10f, 10f, 10f);
 
-            MemoryStream Memory = new MemoryStream();
+            string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
+            string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Etiketler"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+
+            FileStream Memory = new FileStream(pdfPath, FileMode.Create);
             PdfWriter writer = PdfWriter.GetInstance(document, Memory);
 
             document.Open();
 
-            iTextSharp.text.Image png = iTextSharp.text.Image.GetInstance(imagepath + "/SevkiyatDesign.png");
-            png.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
-            png.Alignment = iTextSharp.text.Image.UNDERLYING;
-            png.SetAbsolutePosition(0, 0);
-            document.Add(png);
+            iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
+            BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
+            BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
+            BackgroundImage.SetAbsolutePosition(0, 0);
+            document.Add(BackgroundImage);
 
             PdfContentByte cb = writer.DirectContent;
 
@@ -284,8 +289,25 @@ namespace NOVA.Controllers
             document.Add(QR);
 
             document.Close();
+            Memory.Close();
 
-            return Convert.ToBase64String(Memory.ToArray());
+            if (Yazdir)
+            {
+                using (var pdocument = PdfiumViewer.PdfDocument.Load(pdfPath))
+                {
+                    using (var printDocument = pdocument.CreatePrintDocument())
+                    {
+                        printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
+                        printDocument.PrinterSettings.PrinterName = Yazici;
+                        printDocument.DocumentName = "file.pdf";
+                        printDocument.PrinterSettings.PrintFileName = "file.pdf";
+                        printDocument.PrintController = new StandardPrintController();
+                        printDocument.Print();
+                    }
+                }
+            }
+
+            return ToBase64String(pdfPath);
         }
         private byte[] ImageToByteArray(System.Drawing.Image img)
         {
@@ -298,6 +320,15 @@ namespace NOVA.Controllers
         private string BosDegerKontrolu(string Deger)
         {
             return string.IsNullOrEmpty(Deger) ? "-" : Deger;
+        }
+        public string ToBase64String(string fileName)
+        {
+            using (FileStream reader = new FileStream(fileName, FileMode.Open))
+            {
+                byte[] buffer = new byte[reader.Length];
+                reader.Read(buffer, 0, (int)reader.Length);
+                return Convert.ToBase64String(buffer);
+            }
         }
         #endregion
 

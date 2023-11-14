@@ -21,6 +21,20 @@
     </div>
 </div>
 
+<style>
+
+    .select2-selection__rendered {
+        line-height: 50px !important;
+    }
+
+    .select2-container .select2-selection--single {
+        height: 50px !important;
+    }
+
+    .select2-selection__arrow {
+        height: 50px !important;
+    }
+</style>
 
 <script>
     var DetayliRiskLimitiBilgileri = [];
@@ -52,9 +66,16 @@
         DetayliRiskLimitiBilgileri = Response.data;
 
         if (DetayliRiskLimitiBilgileri.length > 0) {
+
+            var TRY_Bilgi = DetayliRiskLimitiBilgileri?.filter(item => item.DOVIZ_TIPI == "TRY").length > 0 ? 'TRY' : '';
+            var USD_Bilgi = DetayliRiskLimitiBilgileri?.filter(item => item.DOVIZ_TIPI == "USD").length > 0 ? 'USD' : '';
+            var EUR_Bilgi = DetayliRiskLimitiBilgileri?.filter(item => item.DOVIZ_TIPI == "EUR").length > 0 ? 'EUR' : '';
+
+            Cariler = [TRY_Bilgi, USD_Bilgi, EUR_Bilgi].filter(Boolean).join(", ");
+
             $('#cari-kod').html(CariKodu);
             $('#efece-ic-limiti').html(ParaBirimiFormat(DetayliRiskLimitiBilgileri[0].RISKLIMITI));
-            $('#cari-risk-grubu').html(DetayliRiskLimitiBilgileri[0].RISKGRUP);
+            $('#cari-risk-grubu').html(DetayliRiskLimitiBilgileri[0].RISKGRUP + ` (${Cariler})`);
         }
         else
         {
@@ -75,4 +96,5 @@
 
         RiskGrubuBilgileriGetir(CariKodu);
     }
+
 </script>
