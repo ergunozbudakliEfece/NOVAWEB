@@ -206,9 +206,9 @@ namespace NOVA.Controllers
 
             PdfContentByte cb = writer.DirectContent;
 
-            iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.NORMAL);
-            iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
-            iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 9, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
 
             ColumnText Header = new ColumnText(cb);
             Header.SetSimpleColumn(45, 125, 270, 335);
@@ -218,7 +218,11 @@ namespace NOVA.Controllers
             Header.Go();
 
             ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
-            Content.SetSimpleColumn(35, 60, 280, 260);
+            Content.SetSimpleColumn(35, 65, 280, 270);
+
+            Paragraph GrupIsim = new Paragraph("GRUP İSİM    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
+            GrupIsim.Add(new Chunk($": {BosDegerKontrolu(Model.GRUP_ISIM)}", fontNormal));
+            Content.AddElement(GrupIsim);
 
             Paragraph Miktar1 = new Paragraph("MİKTAR 1      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
             Miktar1.Add(new Chunk($": {BosDegerKontrolu(Model.MIKTAR)} {BosDegerKontrolu(Model.OLCU_BR1)}", fontNormal));

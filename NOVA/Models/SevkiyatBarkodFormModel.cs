@@ -2,6 +2,7 @@
 {
     public class SevkiyatBarkodFormModel
     {
+        public string GRUP_ISIM { get; set; }
         public string BARKOD_NO { get; set; }
         public string STOK_KODU { get; set; }
         public string STOK_ADI { get; set; }
