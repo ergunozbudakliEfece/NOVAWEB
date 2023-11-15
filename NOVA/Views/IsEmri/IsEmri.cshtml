@@ -1269,8 +1269,12 @@
             }).done(function () {
                 if (val.value.substring(0, 2) != "TP") {
                     if (hamkod != null) {
-                        if (OldStokAdi != $("#stokadi").val()) {
-                            var url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/" + val.value
+                        if (OldStokAdi != $("#stokadi").html()) {
+                            var url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/0/"+ val.value
+                            if (val.value.substring(0, 2) == "BK") {
+                                var gen = $('#genislik').val();
+                                url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/" + gen + "/" + val.value
+                            }
                             $.getJSON(url, function (d1) {
                                 var $sel3 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1];
                                 $sel3.replaceChildren();
@@ -1294,7 +1298,7 @@
                 } else {
 
 
-                    var url = "http://192.168.2.13:83/api/seri/receteden/0/" + val.value
+                    var url = "http://192.168.2.13:83/api/seri/receteden/0/0/" + val.value
                     $.getJSON(url, function (d1) {
                         var $sel3 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1];
                         $sel3.replaceChildren();
@@ -1329,7 +1333,7 @@
             
             if (OldStokAdi != $("#stokadi").val() && s != "SEÇİNİZ") {
                 var stokkodu = Stoklar.filter(x => x.STOK_ADI == s)[0].STOK_KODU;
-                var url = "http://192.168.2.13:83/api/seri/receteden/" + stokkodu + "/" + val.value
+                var url = "http://192.168.2.13:83/api/seri/receteden/" + stokkodu + "/0/" + val.value
                 $.getJSON(url, function (d1) {
                 
                     if (d1.length > 0) {
@@ -2806,7 +2810,7 @@
                     document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
                     var s = document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].value;
 
-                    var url = "http://192.168.2.13:83/api/seri/receteden/" + s + "/" + Satir.value
+                    var url = "http://192.168.2.13:83/api/seri/receteden/" + s + "/0/" + Satir.value
 
                     $.getJSON(url, function (d1) {
                         var $sel3 = document.getElementById(`${Tip.toUpperCase()}Table`).getElementsByTagName("tr")[Satir.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
@@ -3237,7 +3241,7 @@
         var makine = table.find("tr").eq(1).find("select").eq(0).val()
         var o = parseFloat(currentRow.find("input").eq(0).val());
         function verileriGetir() {
-            currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / (selectedValue.BOY / 1000)) * o));
+            currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / ((selectedValue.BOY != null ? selectedValue.BOY:0) / 1000)) * o));
             currentRow.find("input").eq(3).val(parseInt(agirlik) * o);
             BKCariGetir(rowIndex);
         }
