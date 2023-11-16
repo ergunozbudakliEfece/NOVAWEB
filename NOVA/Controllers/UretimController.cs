@@ -87,6 +87,41 @@ namespace NOVA.Controllers
 
             return View();
         }
+        public async Task<ActionResult> AmbarGiris()
+        {
+            int moduleId = 26;
+
+            List<Modules> Modules = await AuthHelper.GetModules(moduleId);
+
+            if (Modules[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
+
+            User UserData = await RoleHelper.RoleControl(Request.Cookies["Id"].Value, moduleId);
+
+            if (UserData.SELECT_AUTH != true)
+            {
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                bool Logged = await AuthHelper.LoginLog(Request.Cookies["Id"].Value, Request.Cookies["LogId"].Value, moduleId);
+
+                if (!Logged)
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+            }
+
+            await RoleHelper.CheckRoles(this);
+            ViewBag.Id = Request.Cookies["Id"].Value;
+
+
+            return View();
+        }
         public ActionResult IsEmri()
         {
             return View();

@@ -22,6 +22,7 @@
     <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
 
     <style>
+       
         .thead {
             position: sticky !important;
             top: 0 !important;
@@ -1186,9 +1187,12 @@
         function HatGirdiSıralama()
         {
             var HatGirdiSirala = $('#HatGirdiSiralamaSwitch').is(':checked');
-
+           
             if (HatGirdiSirala)
             {
+                $('tr').hover(function () {
+                    $(this).css("cursor", "pointer");
+                });
                 $('#UretimeGirenlerTable').bootstrapTable('refreshOptions', {
                     search: false,
                     reorderableRows: true,
@@ -1583,7 +1587,11 @@
                 document.getElementById("cameras").replaceChildren();
                 Instascan.Camera.getCameras().then(function (cameras, image) {
                     //PC'de ki tüm kameraları algılayarak bizlere getirecektir.
-                   
+
+                    $('#cameras').css('display', cameras.length > 0 ? 'block' : 'none');
+                    $('#uretime-al-bildirim').css('display', cameras.length > 0 ? 'none' : 'flex');
+                    $('#uretime-al-bildirim').html(cameras.length > 0 ? '' : 'Kamera bulunamadı.');
+
                     this.cameraList = cameras;
                     for (let i = 0; i < cameras.length; i++) {
                         let cameraList = document.getElementById("cameras");
@@ -1598,8 +1606,16 @@
                         }
                         cameraList.add(option);
                     }
-                    html5QrcodeScanner.start(cameras[0])
-                }).catch(() => console.error(e));
+                    html5QrcodeScanner.start(cameras[0]).then(function () {
+                        $("#QrScannerClose").prop('disabled', false);
+                    })
+                }).catch((e) =>
+                {
+                    $('#cameras').css('display', 'none');
+                    $('#uretime-al-bildirim').css('display', 'flex');
+                    $('#uretime-al-bildirim').html(`Bir hata oluştu: ${e}`);
+                    $("#QrScannerClose").prop('disabled', false);
+                });
 
                 document.getElementById("cameras").addEventListener("change", event => {
                     //Select elementinde seçilen kamerayı qr code scanner olarak belirleyen olaydır.
@@ -1732,10 +1748,13 @@
             sabit = value;
             btnid = value;
             var url1 = "http://192.168.2.13:83/api/ie/TOP/" + value;
-            document.getElementById("stokadlari").replaceChildren();
+            
             UretimListe(sabit);
-
-            $.getJSON(url1, function (data) {
+            var data = null;
+            $.getJSON(url1, function (d) {
+                data = d;
+            }).done(function () {
+                document.getElementById("stokadlari").replaceChildren();
                 if (data.length > 0) {
                     for (let i = 0; i < data.length; i++) {
                         var b = document.createElement("button");
@@ -1795,15 +1814,11 @@
                     $('#stokadlari').css('display', 'flex');
                     $('#stokadlari').html(`<div class="w-100 h-100 d-flex justify-content-center align-items-center text-center"><span class="text-center">
 
-                    Seçili makinede iş emri yok.
+    Seçili makinede iş emri yok.
 
 
-                    </span></div>`);
+    </span></div>`);
                 }
-
-
-
-            }).done(function () {
                 $("#progress").hide();
                 $("#UretimListeTable").show();
             })
@@ -2063,20 +2078,6 @@
         }
         function cb(o) {
             console.log(o.ip)
-        }
-
-
-        var uretimControl = '';
-        function UretimAl() {
-
-            if (uretimControl != '') {
-                $("#TP01").prop("checked", false);
-                $("#TP01").blur();
-                $(document).blur();
-                uretimControl = ''
-            } else {
-                uretimControl = 'TP01'
-            }
         }
     </script>
 
@@ -3448,9 +3449,7 @@
         }
         var html5QrcodeScanner1 = null;
         function BarkodModal() {
-            if (html5QrcodeScanner != null) {
-                html5QrcodeScanner.clear();
-            }
+           
             $("#QRModal").modal("show");
             function docReady1(fn) {
                 // see if DOM is already available
@@ -3902,16 +3901,20 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="BarkodModalLabel">BARKOD OKUYUCU</h5>
-                    <input type="radio" class="btn-check" name="makine-ieAL" id="TP01" onclick="UretimAl()" value="TP01" autocomplete="off"><label class="btn btn-outline-primary mx-3" for="TP01">TP01</label>
-                    <button type="button" class="btn-close" onclick="UretimeAlQrScannerClose()" aria-label="Close"></button>
+
+                    <input type="checkbox" class="btn-check" id="TP01-uretim-barkod" autocomplete="off">
+                    <label class="btn btn-outline-primary mx-3" for="TP01-uretim-barkod">TP01</label>
+
+                    <button type="button" class="btn-close" id="QrScannerClose" onclick="UretimeAlQrScannerClose()" disabled aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center overflow-hidden pt-0">
                     
-                        <div class="vidparticipant">
-                            <select id="cameras"></select>
-                            <video id="qr-reader1" class="object-fit-fill">
-                            </video>
-                        </div>
+                    <div class="vidparticipant">
+                        <span id="uretime-al-bildirim" style="display: none;justify-content: center;align-items: center;width: 100%;height: 100%;">.</span>
+                        <select class="form-select mb-1" id="cameras" style="width:200px"></select>
+                        <video id="qr-reader1" class="object-fit-fill">
+                        </video>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3935,31 +3938,34 @@
     </style>
 
     <script>
+        var uretimControl = '';
+
+        $("#TP01-uretim-barkod").change(function () {
+            if ($(this).is(':checked')) {
+                uretimControl = 'TP01';
+            }
+            else {
+                uretimControl = '';
+            }
+        });
 
         function UretimeAlQrScanner() {
             $('#uretime-al-QRModal').modal('show');
 
         }
 
-        function UretimeAlQrScannerClose() {
-           
-            
-               
-                $('#uretime-al-QRModal').modal('hide');
-                html5QrcodeScanner.stop()
-            
-           
-           
-            if (html5QrcodeScanner1 != null) {
+        function UretimeAlQrScannerClose()
+        {
+            $('#uretime-al-QRModal').modal('hide');
+            html5QrcodeScanner.stop();
+
+            $('#QrScannerClose').prop('disabled', true);
+
+            if (html5QrcodeScanner1 != null)
+            {
                 html5QrcodeScanner1.clear();
                 html5QrcodeScanner1 = null;
-               
             }
-           
-              
-
-           
-            
         }
     </script>
 
