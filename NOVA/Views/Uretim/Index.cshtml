@@ -18,6 +18,7 @@
     <link href="https://unpkg.com/browse/bootstrap-table@1.15.3/dist/extensions/reorder-rows/bootstrap-table-reorder-rows.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
 
     <style>
@@ -137,7 +138,7 @@
         #pivotoutput .pvtGrandTotal {
             display: none;
         }
-
+       
         @@media screen and (max-width: 800px) {
             /*#makmobile1 {
                 display: flex !important;
@@ -166,9 +167,8 @@
                 margin-top: 0 !important;
             }
 
-            #qr-reader {
-                width: 100% !important;
-            }
+         
+
 
             .modal {
                 font-size: 10px !important;
@@ -208,6 +208,7 @@
             #makineler3 {
                 display: inline-flex !important;
             }*/
+           
             #BarkodButton {
                 width: 60% !important;
             }
@@ -267,8 +268,9 @@
 
         @@media screen and (min-height:801px) and (max-height:1180px) {
             #stokadlari {
-                height: 630px;
+                height: 560px;
             }
+         
         }
 
         @@media screen and (min-height:1150px) {
@@ -315,8 +317,8 @@
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
     </div>
     <div class="container-fluid">
-        <div class="row d-flex justify-content-center align-items-center">
-            <div class="col-sm-11 d-flex justify-content-center">
+        <div class="row d-flex justify-content-center align-items-center gap-2">
+            <div class="col-sm-auto d-flex justify-content-center">
                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                     <input type="radio" class="btn-check" name="uretim-islem" id="uretimealrd" onclick="change(parseInt(this.value))" value="1" autocomplete="off">
                     <label class="btn btn-outline-primary openlbl" for="uretimealrd">ÜRETİME AL</label>
@@ -334,7 +336,7 @@
                     <label class="btn btn-outline-primary" for="uretilmisbarkodlarrd">ÜRETİLMİŞ BARKODLAR</label>
                 </div>
             </div>
-            <div class="col-sm-1 gap-1 d-flex justify-content-end" id="barkodbuttoncol">
+            <div class="col-sm-auto gap-1 d-flex justify-content-end" id="barkodbuttoncol">
                 <button type="button" id="BarkodButton" onclick="BarkodModal()" class="btn btn-primary showmodal" style="width:50px;display:flex;justify-content:center;align-items:center" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Barkod</span>"><i class="bi bi-qr-code-scan"></i></button>
             </div>
         </div>
@@ -386,7 +388,7 @@
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="tablo">
                     <div class="col" style=" overflow-y: auto; border: 1px solid #d9dee3; padding: 13px; display: grid; grid-template-columns: repeat(auto-fill,minmax(295px, 0)); grid-template-rows: repeat(auto-fill, minmax(145px, 0)); grid-gap: 3px;" id="stokadlari">
-
+                        
                     </div>
 
                     <div class="col-sm-auto">
@@ -524,11 +526,12 @@
                                 <thead>
                                     <tr>
                                         <th data-formatter="oranFormatter3" data-width="50" data-field="ORAN" data-halign="center" data-align="center">%</th>
-                                        <th data-field="SERI_NO" data-halign="center" data-align="center" data-formatter="seriFormatter">SERI_NO</th>
+                                        <th data-field="SERI_NO" data-halign="center" data-align="center">SERI_NO</th>
                                         <th data-formatter="intFormatter" data-field="SERI_MIKTAR" data-halign="center" data-align="center">SERI_MIKTAR</th>
                                         <th data-formatter="intFormatter" data-field="URETILEN" data-halign="center" data-align="center">URETILEN</th>
                                         <th data-formatter="intFormatter" data-field="SERI_BAKIYE" data-halign="center" data-align="center">SERI_BAKIYE</th>
                                         <th data-formatter="oranFormatter2" data-field="ORAN" data-halign="center" data-align="center">ORAN</th>
+                                        <th data-halign="center" data-align="center" data-width="50" data-formatter="silFormatter">İŞLEM</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -668,7 +671,7 @@
                         if (data[i].HAT_KODU == "TP01") {
                             Makineler += `<input type="radio" class="btn-check" name="makine-ieAL" id="${data[i].HAT_KODU}" onclick="UretimAl()" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                         } else {
-                            Makineler += `<input type="radio" disabled class="btn-check" name="makine-ieAL" id="${data[i].HAT_KODU}" onclick="c(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
+                            //Makineler += `<input type="radio" disabled class="btn-check" name="makine-ieAL" id="${data[i].HAT_KODU}" onclick="c(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                         }
                     }
                 }
@@ -1154,6 +1157,7 @@
                     $.getJSON('http://192.168.2.13:83/api/seri/manuelhat/' + value, function (data) {
                         var newOption = new Option('SEÇİNİZ', 'SEÇİNİZ', false, true);
                         newOption.disabled = true;
+                        $('#filter').html('');
                         $('#filter').append(newOption)
                         for (let i = 0; i < data.length; i++) {
                             newOption = new Option(data[i].SERI_NO, data[i].SERI_NO, false, false);
@@ -1420,19 +1424,6 @@
             "language": "tr-TR"
         }
         );
-        var uretimControl = '';
-        function UretimAl() {
-
-            if (uretimControl != '') {
-                $("#TP01").prop("checked", false);
-                $("#TP01").blur();
-                uretimControl = ''
-            } else {
-                uretimControl = 'TP01'
-
-                document.addEventListener("DOMContentLoaded", fn);
-            }
-        }
         function change(value) {
             $("#btnradio1112").prop("checked", false);
             uretimControl = '';
@@ -1490,7 +1481,6 @@
                 $('#UretimeGirenlerTablo').hide();
                 $("#UretimListeTable").hide();
                 $('.iefiltre').hide();
-                $('#UretimeGirenlerTable').hide();
                 $('#UretimKaydiMakine').html(null).hide();
 
                 MakineListeleAL();
@@ -1502,127 +1492,120 @@
                 UretimeAlQrScanner();
 
                 $("input:radio[name=makine-ie]").prop('checked', false);
-                function docReady(fn) {
-                    // see if DOM is already available
-                    if (document.readyState === "complete"
-                        || document.readyState === "interactive") {
-                        // call on next available tick
-                        setTimeout(fn, 1);
-                    } else {
-                        document.addEventListener("DOMContentLoaded", fn);
-                    }
+                let cameraList = []; //Tüm kameraları tutacağımız liste.
+                html5QrcodeScanner = new Instascan.Scanner({ video: document.getElementById('qr-reader1'), mirror: false, refractoryPeriod: 2000 });
+                html5QrcodeScanner.addListener('scan', function (decodedText) {
+                    var userid =@Request.Cookies["UserId"].Value;
+                    var u = "";
+                    var u2 = "http://192.168.2.13:83/api/ie/control/" + decodedText;
+                    if (uretimControl == '') {
+                        $.getJSON(u2, function (data) {
+                            if (data.length > 0 && data[0].HG_CONTROL == 'True') {
+                                playOkundu()
+                                Swal.fire({
+                                    text: data[0].SERI_NO + " seri numaralı ürünü " + data[0].HATKODU + " kodlu makinede üretime almayı onaylıyor musunuz?",
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Evet',
+                                    cancelButtonText: "Hayır"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        u = "http://192.168.2.13:83/api/ie/hat/" + data[0].HATKODU + "/" + decodedText + "/" + userid;
+                                        $.getJSON(u, function () {
 
-                }
-                docReady(function () {
-                    var resultContainer = document.getElementById('qr-reader-results1');
-                    var lastResult, countResults = 0;
-                    function onScanSuccess(decodedText, decodedResult) {
-                        if (decodedText !== lastResult) {
-                            ++countResults;
-                            lastResult = decodedText;
-                            var userid =@Request.Cookies["UserId"].Value;
-                            var u = "";
-                            var u2 = "http://192.168.2.13:83/api/ie/control/" + decodedText;
-                            if (uretimControl == '') {
-                                $.getJSON(u2, function (data) {
-                                    if (data.length > 0 && data[0].HG_CONTROL == 'True') {
-                                        playOkundu()
-                                        Swal.fire({
-                                            text: data[0].SERI_NO + " seri numaralı ürünü " + data[0].HATKODU + " kodlu makinede üretime almayı onaylıyor musunuz?",
-                                            showCancelButton: true,
-                                            confirmButtonColor: '#3085d6',
-                                            cancelButtonColor: '#d33',
-                                            confirmButtonText: 'Evet',
-                                            cancelButtonText: "Hayır"
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                u = "http://192.168.2.13:83/api/ie/hat/" + data[0].HATKODU + "/" + decodedText + "/" + userid;
-                                                $.getJSON(u, function () {
-
-                                                }).done(function () {
-                                                    Swal.fire(
-                                                        'Başarılı!',
-                                                        'Kayıt başarılı',
-                                                        'success'
-                                                    )
-                                                })
-                                                uretimControl = '';
-
-                                            }
-                                            lastResult = 0;
-
-
-                                        })
-
-                                    } else {
-                                        playHata()
-                                        Swal.fire(
-                                            'Karekodunu okutmuş olduğunuz ürün için iş emri kaydı bulunmamaktadır!',
-                                            'Ürünü TP01 için üretime almak istiyorsanız, lütfen yukarıdaki butonlardan TP\'yi seçiniz.',
-                                            'error'
-                                        ).then((result) => {
-                                            if (result.isConfirmed) {
-                                                lastResult = 0;
-                                            }
+                                        }).done(function () {
+                                            Swal.fire(
+                                                'Başarılı!',
+                                                'Kayıt başarılı',
+                                                'success'
+                                            )
                                         })
                                         uretimControl = '';
+
+                                    }
+
+
+                                })
+
+                            } else {
+                                playHata()
+                                Swal.fire(
+                                    'Karekodunu okutmuş olduğunuz ürün için iş emri kaydı bulunmamaktadır!',
+                                    'Ürünü TP01 için üretime almak istiyorsanız, lütfen yukarıdaki butonlardan TP\'yi seçiniz.',
+                                    'error'
+                                )
+                                uretimControl = '';
+                            }
+                        })
+                    } else {
+                        u = "http://192.168.2.13:83/api/ie/tpcontrol/" + decodedText
+                        $.getJSON(u, function (data) {
+
+                            if (data.length != 0 && data[0].HG_CONTROL == 'True') {
+                                playOkundu()
+                                Swal.fire({
+                                    text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Evet',
+                                    cancelButtonText: "Hayır"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        u = "http://192.168.2.13:83/api/ie/hat/TP01/" + decodedText + "/" + userid;
+                                        $.getJSON(u, function () {
+
+                                        }).done(function () {
+                                            Swal.fire(
+                                                'Başarılı!',
+                                                'Kayıt başarılı',
+                                                'success'
+                                            )
+                                        })
+
                                     }
                                 })
                             } else {
-                                u = "http://192.168.2.13:83/api/ie/tpcontrol/" + decodedText
-                                $.getJSON(u, function (data) {
-
-                                    if (data.length != 0 && data[0].HG_CONTROL == 'True') {
-                                        playOkundu()
-                                        Swal.fire({
-                                            text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
-                                            showCancelButton: true,
-                                            confirmButtonColor: '#3085d6',
-                                            cancelButtonColor: '#d33',
-                                            confirmButtonText: 'Evet',
-                                            cancelButtonText: "Hayır"
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                u = "http://192.168.2.13:83/api/ie/hat/TP01/" + decodedText + "/" + userid;
-                                                $.getJSON(u, function () {
-
-                                                }).done(function () {
-                                                    Swal.fire(
-                                                        'Başarılı!',
-                                                        'Kayıt başarılı',
-                                                        'success'
-                                                    )
-                                                })
-
-                                            }
-                                        })
-                                    } else {
-                                        playHata()
-                                        Swal.fire(
-                                            'Başarısız!',
-                                            'Okutmuş olduğunuz barkod numarası bulunamamaktadır!',
-                                            'warning'
-                                        ).then((result) => {
-                                            if (result.isConfirmed) {
-                                                lastResult = 0;
-                                            }
-                                        })
-                                    }
-                                })
-
-
+                                playHata()
+                                Swal.fire(
+                                    'Başarısız!',
+                                    'Okutmuş olduğunuz barkod numarası bulunamamaktadır!',
+                                    'warning'
+                                )
                             }
+                        })
 
-
-
-                        }
 
                     }
 
-                    html5QrcodeScanner = new Html5QrcodeScanner(
-                        "qr-reader1", { fps: 60, qrbox: 800 });
-                    html5QrcodeScanner.render(onScanSuccess);
                 });
+                document.getElementById("cameras").replaceChildren();
+                Instascan.Camera.getCameras().then(function (cameras, image) {
+                    //PC'de ki tüm kameraları algılayarak bizlere getirecektir.
+                   
+                    this.cameraList = cameras;
+                    for (let i = 0; i < cameras.length; i++) {
+                        let cameraList = document.getElementById("cameras");
+                        let option = document.createElement("option");
+                        if (i == 0) {
+
+                            option.text = "Ön Kamera";
+                            option.value = cameras[i].id;
+                        } else {
+                            option.text = "Arka Kamera";
+                            option.value = cameras[i].id;
+                        }
+                        cameraList.add(option);
+                    }
+                    html5QrcodeScanner.start(cameras[0])
+                }).catch(() => console.error(e));
+
+                document.getElementById("cameras").addEventListener("change", event => {
+                    //Select elementinde seçilen kamerayı qr code scanner olarak belirleyen olaydır.
+                    html5QrcodeScanner.start(this.cameraList.find(c => c.id == event.target.value));
+                })
+
             }
             else if (value == 2) {
                 KapatilacakIsEmirleri = [];
@@ -1804,20 +1787,21 @@
                         p.appendChild(span1);
                         b.appendChild(p);
 
+                        $('#stokadlari').css('display', 'grid');
+
                         document.getElementById("stokadlari").appendChild(b);
                     }
                 } else {
-                    var b = document.createElement('div');
-                    b.className = 'row text-center';
-                    var c = document.createElement('div');
-                    c.className = 'col';
-                    b.appendChild(c);
-                    c.innerHTML = 'Seçili mekinede iş emri bulunmamaktadır.';
-                    c.style ='white-space:nowrap;position: absolute;margin-left:-8.5%;margin-top:3%'
-                    document.getElementById("stokadlari").appendChild(b);
+                    $('#stokadlari').css('display', 'flex');
+                    $('#stokadlari').html(`<div class="w-100 h-100 d-flex justify-content-center align-items-center text-center"><span class="text-center">
+
+                    Seçili makinede iş emri yok.
+
+
+                    </span></div>`);
                 }
 
-               
+
 
             }).done(function () {
                 $("#progress").hide();
@@ -2079,6 +2063,20 @@
         }
         function cb(o) {
             console.log(o.ip)
+        }
+
+
+        var uretimControl = '';
+        function UretimAl() {
+
+            if (uretimControl != '') {
+                $("#TP01").prop("checked", false);
+                $("#TP01").blur();
+                $(document).blur();
+                uretimControl = ''
+            } else {
+                uretimControl = 'TP01'
+            }
         }
     </script>
 
@@ -3842,8 +3840,13 @@
 
 
         }
-        function seriFormatter(value,index,row) {
-            return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="SilButton" onclick="Sil(\''+value+'\')" class="btn btn-danger" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">SİL</button>'+" "+value+"</div>";
+        function silFormatter(value, index, row) {
+            if (index.ORAN == 0) {
+                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="SilButton" onclick="Sil(\'' + index.SERI_NO + '\')" class="btn btn-danger" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">SİL</button></div>';
+            } else {
+                return "-";
+            }
+            
         }
         function Sil(value) {
             Swal.fire({
@@ -3895,41 +3898,68 @@
 
     <!--Üretime Al-->
     <div class="modal fade" id="uretime-al-QRModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" style="height: max-content;" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 90% !important">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 90% !important;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="BarkodModalLabel">BARKOD OKUYUCU</h5>
+                    <input type="radio" class="btn-check" name="makine-ieAL" id="TP01" onclick="UretimAl()" value="TP01" autocomplete="off"><label class="btn btn-outline-primary mx-3" for="TP01">TP01</label>
                     <button type="button" class="btn-close" onclick="UretimeAlQrScannerClose()" aria-label="Close"></button>
                 </div>
-                <div class="modal-body d-flex justify-content-center align-items-center overflow-hidden">
-                    <div class="row w-100 h-100">
-
-                        <div id="UretimeAlMakine"></div>
-                        <div id="qr-reader1" style="width: 100%; position: relative; padding: 0px; border: 1px solid silver;"><div style="text-align: left; margin: 0px;"><div style="position: absolute; top: 10px; right: 10px; z-index: 2; display: none; padding: 5pt; border: 1px solid rgb(23, 23, 23); font-size: 10pt; background: rgba(0, 0, 0, 0.69); border-radius: 5px; text-align: center; font-weight: 400; color: white;">Powered by <a href="https://scanapp.org" target="new" style="color: white;">ScanApp</a><br><br><a href="https://github.com/mebjas/html5-qrcode/issues" target="new" style="color: white;">Report issues</a></div><img alt="Info icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NjAgNDYwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0NjAgNDYwIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBkPSJNMjMwIDBDMTAyLjk3NSAwIDAgMTAyLjk3NSAwIDIzMHMxMDIuOTc1IDIzMCAyMzAgMjMwIDIzMC0xMDIuOTc0IDIzMC0yMzBTMzU3LjAyNSAwIDIzMCAwem0zOC4zMzMgMzc3LjM2YzAgOC42NzYtNy4wMzQgMTUuNzEtMTUuNzEgMTUuNzFoLTQzLjEwMWMtOC42NzYgMC0xNS43MS03LjAzNC0xNS43MS0xNS43MVYyMDIuNDc3YzAtOC42NzYgNy4wMzMtMTUuNzEgMTUuNzEtMTUuNzFoNDMuMTAxYzguNjc2IDAgMTUuNzEgNy4wMzMgMTUuNzEgMTUuNzFWMzc3LjM2ek0yMzAgMTU3Yy0yMS41MzkgMC0zOS0xNy40NjEtMzktMzlzMTcuNDYxLTM5IDM5LTM5IDM5IDE3LjQ2MSAzOSAzOS0xNy40NjEgMzktMzkgMzl6Ii8+PC9zdmc+" style="position: absolute; top: 4px; right: 4px; opacity: 0.6; cursor: pointer; z-index: 2; width: 16px; height: 16px;"><div id="qr-reader__header_message" style="display: none; text-align: center; font-size: 14px; padding: 2px 10px; margin: 4px; border-top: 1px solid rgb(246, 246, 246);"></div></div><div id="qr-reader__scan_region" style="width: 100%; min-height: 100px; text-align: center;"><br><img width="64" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNzEuNjQzIDM3MS42NDMiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDM3MS42NDMgMzcxLjY0MyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZD0iTTEwNS4wODQgMzguMjcxaDE2My43Njh2MjBIMTA1LjA4NHoiLz48cGF0aCBkPSJNMzExLjU5NiAxOTAuMTg5Yy03LjQ0MS05LjM0Ny0xOC40MDMtMTYuMjA2LTMyLjc0My0yMC41MjJWMzBjMC0xNi41NDItMTMuNDU4LTMwLTMwLTMwSDEyNS4wODRjLTE2LjU0MiAwLTMwIDEzLjQ1OC0zMCAzMHYxMjAuMTQzaC04LjI5NmMtMTYuNTQyIDAtMzAgMTMuNDU4LTMwIDMwdjEuMzMzYTI5LjgwNCAyOS44MDQgMCAwIDAgNC42MDMgMTUuOTM5Yy03LjM0IDUuNDc0LTEyLjEwMyAxNC4yMjEtMTIuMTAzIDI0LjA2MXYxLjMzM2MwIDkuODQgNC43NjMgMTguNTg3IDEyLjEwMyAyNC4wNjJhMjkuODEgMjkuODEgMCAwIDAtNC42MDMgMTUuOTM4djEuMzMzYzAgMTYuNTQyIDEzLjQ1OCAzMCAzMCAzMGg4LjMyNGMuNDI3IDExLjYzMSA3LjUwMyAyMS41ODcgMTcuNTM0IDI2LjE3Ny45MzEgMTAuNTAzIDQuMDg0IDMwLjE4NyAxNC43NjggNDUuNTM3YTkuOTg4IDkuOTg4IDAgMCAwIDguMjE2IDQuMjg4IDkuOTU4IDkuOTU4IDAgMCAwIDUuNzA0LTEuNzkzYzQuNTMzLTMuMTU1IDUuNjUtOS4zODggMi40OTUtMTMuOTIxLTYuNzk4LTkuNzY3LTkuNjAyLTIyLjYwOC0xMC43Ni0zMS40aDgyLjY4NWMuMjcyLjQxNC41NDUuODE4LjgxNSAxLjIxIDMuMTQyIDQuNTQxIDkuMzcyIDUuNjc5IDEzLjkxMyAyLjUzNCA0LjU0Mi0zLjE0MiA1LjY3Ny05LjM3MSAyLjUzNS0xMy45MTMtMTEuOTE5LTE3LjIyOS04Ljc4Ny0zNS44ODQgOS41ODEtNTcuMDEyIDMuMDY3LTIuNjUyIDEyLjMwNy0xMS43MzIgMTEuMjE3LTI0LjAzMy0uODI4LTkuMzQzLTcuMTA5LTE3LjE5NC0xOC42NjktMjMuMzM3YTkuODU3IDkuODU3IDAgMCAwLTEuMDYxLS40ODZjLS40NjYtLjE4Mi0xMS40MDMtNC41NzktOS43NDEtMTUuNzA2IDEuMDA3LTYuNzM3IDE0Ljc2OC04LjI3MyAyMy43NjYtNy42NjYgMjMuMTU2IDEuNTY5IDM5LjY5OCA3LjgwMyA0Ny44MzYgMTguMDI2IDUuNzUyIDcuMjI1IDcuNjA3IDE2LjYyMyA1LjY3MyAyOC43MzMtLjQxMyAyLjU4NS0uODI0IDUuMjQxLTEuMjQ1IDcuOTU5LTUuNzU2IDM3LjE5NC0xMi45MTkgODMuNDgzLTQ5Ljg3IDExNC42NjEtNC4yMjEgMy41NjEtNC43NTYgOS44Ny0xLjE5NCAxNC4wOTJhOS45OCA5Ljk4IDAgMCAwIDcuNjQ4IDMuNTUxIDkuOTU1IDkuOTU1IDAgMCAwIDYuNDQ0LTIuMzU4YzQyLjY3Mi0zNi4wMDUgNTAuODAyLTg4LjUzMyA1Ni43MzctMTI2Ljg4OC40MTUtMi42ODQuODIxLTUuMzA5IDEuMjI5LTcuODYzIDIuODM0LTE3LjcyMS0uNDU1LTMyLjY0MS05Ljc3Mi00NC4zNDV6bS0yMzIuMzA4IDQyLjYyYy01LjUxNCAwLTEwLTQuNDg2LTEwLTEwdi0xLjMzM2MwLTUuNTE0IDQuNDg2LTEwIDEwLTEwaDE1djIxLjMzM2gtMTV6bS0yLjUtNTIuNjY2YzAtNS41MTQgNC40ODYtMTAgMTAtMTBoNy41djIxLjMzM2gtNy41Yy01LjUxNCAwLTEwLTQuNDg2LTEwLTEwdi0xLjMzM3ptMTcuNSA5My45OTloLTcuNWMtNS41MTQgMC0xMC00LjQ4Ni0xMC0xMHYtMS4zMzNjMC01LjUxNCA0LjQ4Ni0xMCAxMC0xMGg3LjV2MjEuMzMzem0zMC43OTYgMjguODg3Yy01LjUxNCAwLTEwLTQuNDg2LTEwLTEwdi04LjI3MWg5MS40NTdjLS44NTEgNi42NjgtLjQzNyAxMi43ODcuNzMxIDE4LjI3MWgtODIuMTg4em03OS40ODItMTEzLjY5OGMtMy4xMjQgMjAuOTA2IDEyLjQyNyAzMy4xODQgMjEuNjI1IDM3LjA0IDUuNDQxIDIuOTY4IDcuNTUxIDUuNjQ3IDcuNzAxIDcuMTg4LjIxIDIuMTUtMi41NTMgNS42ODQtNC40NzcgNy4yNTEtLjQ4Mi4zNzgtLjkyOS44LTEuMzM1IDEuMjYxLTYuOTg3IDcuOTM2LTExLjk4MiAxNS41Mi0xNS40MzIgMjIuNjg4aC05Ny41NjRWMzBjMC01LjUxNCA0LjQ4Ni0xMCAxMC0xMGgxMjMuNzY5YzUuNTE0IDAgMTAgNC40ODYgMTAgMTB2MTM1LjU3OWMtMy4wMzItLjM4MS02LjE1LS42OTQtOS4zODktLjkxNC0yNS4xNTktMS42OTQtNDIuMzcgNy43NDgtNDQuODk4IDI0LjY2NnoiLz48cGF0aCBkPSJNMTc5LjEyOSA4My4xNjdoLTI0LjA2YTUgNSAwIDAgMC01IDV2MjQuMDYxYTUgNSAwIDAgMCA1IDVoMjQuMDZhNSA1IDAgMCAwIDUtNVY4OC4xNjdhNSA1IDAgMCAwLTUtNXpNMTcyLjYyOSAxNDIuODZoLTEyLjU2VjEzMC44YTUgNSAwIDEgMC0xMCAwdjE3LjA2MWE1IDUgMCAwIDAgNSA1aDE3LjU2YTUgNSAwIDEgMCAwLTEwLjAwMXpNMjE2LjU2OCA4My4xNjdoLTI0LjA2YTUgNSAwIDAgMC01IDV2MjQuMDYxYTUgNSAwIDAgMCA1IDVoMjQuMDZhNSA1IDAgMCAwIDUtNVY4OC4xNjdhNSA1IDAgMCAwLTUtNXptLTUgMjQuMDYxaC0xNC4wNlY5My4xNjdoMTQuMDZ2MTQuMDYxek0yMTEuNjY5IDEyNS45MzZIMTk3LjQxYTUgNSAwIDAgMC01IDV2MTQuMjU3YTUgNSAwIDAgMCA1IDVoMTQuMjU5YTUgNSAwIDAgMCA1LTV2LTE0LjI1N2E1IDUgMCAwIDAtNS01eiIvPjwvc3ZnPg==" alt="Camera based scan" style="opacity: 0.8;"></div><div id="qr-reader__dashboard" style="width: 100%;"><div id="qr-reader__dashboard_section" style="width: 100%; padding: 10px 0px; text-align: left;"><div><div id="qr-reader__dashboard_section_csr" style="display: block;"><div style="text-align: center;"><button id="html5-qrcode-button-camera-permission" class="html5-qrcode-element" type="button">Request Camera Permissions</button></div></div><div style="text-align: center; margin: auto auto 10px; width: 80%; max-width: 600px; border: 6px dashed rgb(235, 235, 235); padding: 10px; display: none;"><label for="html5-qrcode-private-filescan-input" style="display: inline-block;"><button id="html5-qrcode-button-file-selection" class="html5-qrcode-element" type="button">Choose Image - No image choosen</button><input id="html5-qrcode-private-filescan-input" class="html5-qrcode-element" type="file" accept="image/*" style="display: none;"></label><div style="font-weight: 400;">Or drop an image to scan</div></div></div><div style="text-align: center;"><span id="html5-qrcode-anchor-scan-type-change" class="html5-qrcode-element" style="text-decoration: underline; cursor: pointer;">Scan an Image File</span></div></div></div></div>
-                        <div id="qr-reader-resultss"></div>
-                    </div>
+                <div class="modal-body d-flex justify-content-center align-items-center overflow-hidden pt-0">
+                    
+                        <div class="vidparticipant">
+                            <select id="cameras"></select>
+                            <video id="qr-reader1" class="object-fit-fill">
+                            </video>
+                        </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <style>
+        .vidparticipant {
+            height: 600px;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        video {
+            height: 100%;
+            width: 100%;
+        }
+
+            video.object-fit-fill {
+                object-fit: cover;
+            }
+    </style>
+
     <script>
 
         function UretimeAlQrScanner() {
             $('#uretime-al-QRModal').modal('show');
+
         }
 
         function UretimeAlQrScannerClose() {
-            $('#uretime-al-QRModal').modal('hide');
-            if (html5QrcodeScanner != null) {
-                html5QrcodeScanner.clear();
-            }
+           
+            
+               
+                $('#uretime-al-QRModal').modal('hide');
+                html5QrcodeScanner.stop()
+            
+           
+           
             if (html5QrcodeScanner1 != null) {
                 html5QrcodeScanner1.clear();
+                html5QrcodeScanner1 = null;
+               
             }
+           
+              
 
-            html5QrcodeScanner = null;
-            html5QrcodeScanner1 = null;
+           
+            
         }
     </script>
 

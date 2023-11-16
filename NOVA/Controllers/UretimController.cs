@@ -445,6 +445,7 @@ namespace NOVA.Controllers
                             uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
                             seri = uretim.SeriOku(0).Seri1;
                         }
+                        var fisno = uretim.UretSon_FisNo;
                         uretim.FisUret();
                         uretim.Kaydet();
                         NetRS netRS1 = kernel.yeniNetRS(sirket);
@@ -463,7 +464,7 @@ namespace NOVA.Controllers
                             fatUst.ENTEGRE_TRH = DateTime.Now;
                             fatUst.FiiliTarih = DateTime.Now;
                             fatUst.Proje_Kodu = "1";
-                            fatUst.Aciklama = jsonList[i].ISEMRINO.Substring(0, 4);
+                            fatUst.Aciklama = fisno;
                             fatKalem = fatura.kalemYeni("HURDA");
                             fatKalem.DEPO_KODU = 60;
                             fatKalem.Olcubr = 1;
@@ -472,7 +473,8 @@ namespace NOVA.Controllers
                             fatKalem.STra_GCMIK = f;
                             fatKalem.STra_NF = 0;
                             fatKalem.STra_BF = 0;
-                            fatKalem.STra_ACIK = jsonList[i].ISEMRINO;
+                            fatKalem.STra_ACIK = fisno;
+
 
                             fatura.kayitYeni();
                             Marshal.ReleaseComObject(fatura);

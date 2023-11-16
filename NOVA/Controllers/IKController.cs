@@ -1889,7 +1889,7 @@ namespace NOVA.Controllers
             {   if(personel.END_DATE.ToString().Split(' ')[1] != "00:00:00")
                 {
                     var tarih = personel.END_DATE.ToString().Split('.')[2].Substring(0, 4) + "-" + personel.END_DATE.ToString().Split('.')[1] + "-" + personel.END_DATE.ToString().Split('.')[0] + " " + personel.END_DATE.ToString().Split(' ')[1];
-                    var apiUrl1 = "http://192.168.2.13:83/api/attendance/manual/" + personel.USER_ID + "/" + tarih + "/E";
+                    var apiUrl1 = "http://192.168.2.13:83/api/attendance/manual/" + personel.USER_ID + "/" + tarih + "/E"+"/"+ personel.START_INCKEY;
                     var httpClient1 = new HttpClient();
                     var request1 = new HttpRequestMessage(HttpMethod.Get, apiUrl1);
                     var response1 = await httpClient1.SendAsync(request1);
