@@ -6,9 +6,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="BarkodKameraKapat()"></button>
             </div>
             <div class="modal-body d-flex justify-content-center align-items-center">
-                <div class="row w-100">
-                    <div id="qr-reader" style="width:100%;"></div>
-                    <div id="qr-reader-results"></div>
+                <div class="vidparticipant">
+                    <span id="uretime-al-bildirim" style="display: none;justify-content: center;align-items: center;width: 100%;height: 100%;">.</span>
+                    <select class="form-select mb-1" id="cameras" style="width:200px;display:none"></select>
+                    <video id="qr-reader" class="object-fit-fill">
+                    </video>
                 </div>
             </div>
         </div>
@@ -16,42 +18,55 @@
 </div>
 
 <script>
-    var html5QrcodeScanner;
+    var scanner;
     var BarkodKameraAcik = false;
 
     function BarkodModal() {
 
-        docReady(function () {
-            var resultContainer = document.getElementById('qr-reader-results');
-            var lastResult, countResults = 0;
-            function onScanSuccess(decodedText, decodedResult) {
-                if (decodedText !== lastResult) {
-                    ++countResults;
-                    lastResult = decodedText;
+        scanner = new Instascan.Scanner({ video: document.getElementById('qr-reader'), mirror: false, refractoryPeriod: 2000 });
+        scanner.addListener('scan', function (decodedText) {
 
-                    BarkodBakiyeGetir(decodedText);
+            BarkodBakiyeGetir(decodedText);
+        })
+        Instascan.Camera.getCameras().then(function (cameras, image) {
+            //PC'de ki tüm kameraları algılayarak bizlere getirecektir.
+            $('#cameras').html('');
+            $('#cameras').css('display', cameras.length > 1 ? 'block' : 'none');
+
+            for (let i = 0; i < cameras.length; i++) {
+                let cameraList = document.getElementById("cameras");
+                let option = document.createElement("option");
+                if (i == 0) {
+
+                    option.text = "Ön Kamera";
+                    option.value = cameras[i].id;
+                } else {
+                    option.text = "Arka Kamera";
+                    option.value = cameras[i].id;
                 }
+                cameraList.add(option);
             }
-            BarkodKameraAcik = true;
-            html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 800 });
-            html5QrcodeScanner.render(onScanSuccess);
-        });
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]).then(function () {
+                    $("#barkodClose").prop('disabled', false);
+                })
+            } else {
+                $("#barkodClose").prop('disabled', false);
+            }
+
+        })
+    
+                   
+               
 
         $('#BarkodModal').modal('show');
     }
 
-    function docReady(fn) {
-        if (document.readyState === "complete"
-            || document.readyState === "interactive") {
-            setTimeout(fn, 1);
-        } else {
-            document.addEventListener("DOMContentLoaded", fn);
-        }
-    }
+  
 
     function BarkodKameraKapat() {
         BarkodKameraAcik = false;
-        html5QrcodeScanner.clear().then(_ => { }).catch(error => { });
+        scanner.stop().then(_ => { }).catch(error => { });
     }
 </script>
 

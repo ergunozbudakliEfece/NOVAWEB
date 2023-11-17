@@ -22,7 +22,9 @@
     <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
 
     <style>
-       
+        body {
+            padding: 0 0 0 8rem !important;
+        }
         .thead {
             position: sticky !important;
             top: 0 !important;
@@ -304,9 +306,7 @@
             z-index: 5;
         }
 
-        body {
-            padding: 0 0 0 4rem !important;
-        }
+       
 
         .foot {
             display: none !important;
@@ -337,15 +337,13 @@
                     <label class="btn btn-outline-primary" for="uretilmisbarkodlarrd">ÜRETİLMİŞ BARKODLAR</label>
                 </div>
             </div>
-            <div class="col-sm-auto gap-1 d-flex justify-content-end" id="barkodbuttoncol">
-                <button type="button" id="BarkodButton" onclick="BarkodModal()" class="btn btn-primary showmodal" style="width:50px;display:flex;justify-content:center;align-items:center" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Barkod</span>"><i class="bi bi-qr-code-scan"></i></button>
-            </div>
+          
         </div>
 
 
         <div class="row" style="min-height:100%;overflow-y:auto;">
             <div class="col">
-                
+
                 <div class="row mt-2" style="max-width:100vw">
                     <div class="col-11 d-flex justify-content-center align-items-center makineler">
                         <div id="UretimKaydiMakine" style="max-width: 65vw; width: 65vw; display: none;"> </div>
@@ -389,7 +387,7 @@
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="tablo">
                     <div class="col" style=" overflow-y: auto; border: 1px solid #d9dee3; padding: 13px; display: grid; grid-template-columns: repeat(auto-fill,minmax(295px, 0)); grid-template-rows: repeat(auto-fill, minmax(145px, 0)); grid-gap: 3px;" id="stokadlari">
-                        
+
                     </div>
 
                     <div class="col-sm-auto">
@@ -546,6 +544,7 @@
 
                 <div class="row" style="min-height:33%;display:none" id="UretilmisBarkodlar">
                     <div id="UretilmisBarkodlarToolbar">
+                        <select id="uretilmis-barkod-dizayn" class="form-select" style="width:250px"></select>
                         <button id="uretilmis-barkod-yazdir" class="btn btn-primary" onclick="UretilmisBarkodlariYazdir()" disabled>SEÇİLİ BARKODLARI YAZDIR</button>
                     </div>
                     <div class="table-responsive">
@@ -642,7 +641,7 @@
                         Makineler += `<input type="radio" class="btn-check" name="makine-ie" id="${data[i].HAT_KODU}" onclick="MakineBekleyenIsEmri(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                     }
                 }
-
+                Makineler += `<input type="radio" class="btn-check" name="makine-ie" id="BarkodButton" onclick="BarkodModal()" value="BarkodButton" autocomplete="off"><label class="btn btn-outline-primary" for="BarkodButton"><i class="bi bi-qr-code-scan"></i></label>`;
                 $('#BekleyenIsEmirleriMakine').html(Makineler + `</div>`);
             });
         }
@@ -1184,15 +1183,11 @@
             });
         }
 
-        function HatGirdiSıralama()
-        {
+        function HatGirdiSıralama() {
             var HatGirdiSirala = $('#HatGirdiSiralamaSwitch').is(':checked');
-           
-            if (HatGirdiSirala)
-            {
-                $('tr').hover(function () {
-                    $(this).css("cursor", "pointer");
-                });
+
+            if (HatGirdiSirala) {
+
                 $('#UretimeGirenlerTable').bootstrapTable('refreshOptions', {
                     search: false,
                     reorderableRows: true,
@@ -1219,9 +1214,13 @@
                         HatGirdiSıralama();
                     });
                 });
+                $('tbody tr').hover(function () {
+                    $(this).css('cursor', 'all-scroll');
+                }, function () {
+                    $(this).css('cursor', 'auto');
+                });
             }
-            else
-            {
+            else {
                 var Machine = $('input[name="makine-ie"]:checked').val();
                 UretimeGirenler(Machine);
 
@@ -1235,8 +1234,7 @@
             }
         }
 
-        function HatGirdiSiraDegisti(Data, DroppedData, OldPosition)
-        {
+        function HatGirdiSiraDegisti(Data, DroppedData, OldPosition) {
             console.log(Data);
         }
 
@@ -1439,7 +1437,6 @@
                 $("#label").html("Çıktı")
                 $("#tablo").show();
                 $("#scanner").hide();
-                $('#BarkodButton').hide();
                 $('#RefreshButton').hide();
                 $('#BekleyenIsEmirleriMakine').hide();
                 $('#BekleyenIsEmirleriTablo').hide();
@@ -1477,7 +1474,6 @@
                 $("#makineler").hide();
                 $("#makineler4").show();
                 $("#scanner").show();
-                $('#BarkodButton').hide();
                 $('#RefreshButton').hide();
                 $('#BekleyenIsEmirleriMakine').hide();
                 $('#BekleyenIsEmirleriTablo').hide();
@@ -1588,7 +1584,7 @@
                 Instascan.Camera.getCameras().then(function (cameras, image) {
                     //PC'de ki tüm kameraları algılayarak bizlere getirecektir.
 
-                    $('#cameras').css('display', cameras.length > 0 ? 'block' : 'none');
+                    $('#cameras').css('display', cameras.length > 1 ? 'block' : 'none');
                     $('#uretime-al-bildirim').css('display', cameras.length > 0 ? 'none' : 'flex');
                     $('#uretime-al-bildirim').html(cameras.length > 0 ? '' : 'Kamera bulunamadı.');
 
@@ -1635,7 +1631,6 @@
                 $("#makineler3").hide();
                 $("#makineler").hide();
                 $("#scanner").hide();
-                $('#BarkodButton').show();
                 $('#RefreshButton').hide();
                 $('.iefiltre').hide();
                 $('#makineler4').hide();
@@ -1675,7 +1670,6 @@
                 $("#makineler3").hide();
                 $("#makineler").hide();
                 $("#scanner").hide();
-                $('#BarkodButton').hide();
                 $('#RefreshButton').hide();
                 $("#UretimListeTable").hide();
                 $('#UretimKaydiMakine').html(null).hide();
@@ -1709,7 +1703,6 @@
                 $("#makineler3").hide();
                 $("#makineler").hide();
                 $("#scanner").hide();
-                $('#BarkodButton').hide();
                 $('#RefreshButton').hide();
                 $("#UretimListeTable").hide();
                 $('#UretimKaydiMakine').html(null).hide();
@@ -1748,7 +1741,7 @@
             sabit = value;
             btnid = value;
             var url1 = "http://192.168.2.13:83/api/ie/TOP/" + value;
-            
+
             UretimListe(sabit);
             var data = null;
             $.getJSON(url1, function (d) {
@@ -3075,13 +3068,13 @@
                                 </div>
 
                             </div>
-                           
+
                             <div class="form-check form-switch">
                                 <input id="etiket-onizleme" class="form-check-input" type="checkbox">
                                 <label class="form-check-label" for="etiket-onizleme">Etiket Önizle</label>
                             </div>
                         </div>
-                      
+
 
                     </div>
 
@@ -3285,12 +3278,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="BarkodModalLabel">BARKOD OKUYUCU</h5>
-                    <button type="button" class="btn-close" onclick="qrmodalclose()" aria-label="Close"></button>
+                    <button disabled type="button" id="qrClose" class="btn-close" onclick="qrmodalclose()" aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center overflow-hidden">
-                    <div class="row w-100 h-100">
-                        <div id="qr-readerr" style="width: 100%; position: relative; padding: 0px; border: 1px solid silver;"><div style="text-align: left; margin: 0px;"><div style="position: absolute; top: 10px; right: 10px; z-index: 2; display: none; padding: 5pt; border: 1px solid rgb(23, 23, 23); font-size: 10pt; background: rgba(0, 0, 0, 0.69); border-radius: 5px; text-align: center; font-weight: 400; color: white;">Powered by <a href="https://scanapp.org" target="new" style="color: white;">ScanApp</a><br><br><a href="https://github.com/mebjas/html5-qrcode/issues" target="new" style="color: white;">Report issues</a></div><img alt="Info icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NjAgNDYwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0NjAgNDYwIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBkPSJNMjMwIDBDMTAyLjk3NSAwIDAgMTAyLjk3NSAwIDIzMHMxMDIuOTc1IDIzMCAyMzAgMjMwIDIzMC0xMDIuOTc0IDIzMC0yMzBTMzU3LjAyNSAwIDIzMCAwem0zOC4zMzMgMzc3LjM2YzAgOC42NzYtNy4wMzQgMTUuNzEtMTUuNzEgMTUuNzFoLTQzLjEwMWMtOC42NzYgMC0xNS43MS03LjAzNC0xNS43MS0xNS43MVYyMDIuNDc3YzAtOC42NzYgNy4wMzMtMTUuNzEgMTUuNzEtMTUuNzFoNDMuMTAxYzguNjc2IDAgMTUuNzEgNy4wMzMgMTUuNzEgMTUuNzFWMzc3LjM2ek0yMzAgMTU3Yy0yMS41MzkgMC0zOS0xNy40NjEtMzktMzlzMTcuNDYxLTM5IDM5LTM5IDM5IDE3LjQ2MSAzOSAzOS0xNy40NjEgMzktMzkgMzl6Ii8+PC9zdmc+" style="position: absolute; top: 4px; right: 4px; opacity: 0.6; cursor: pointer; z-index: 2; width: 16px; height: 16px;"><div id="qr-reader__header_message" style="display: none; text-align: center; font-size: 14px; padding: 2px 10px; margin: 4px; border-top: 1px solid rgb(246, 246, 246);"></div></div><div id="qr-reader__scan_region" style="width: 100%; min-height: 100px; text-align: center;"><br><img width="64" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNzEuNjQzIDM3MS42NDMiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDM3MS42NDMgMzcxLjY0MyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZD0iTTEwNS4wODQgMzguMjcxaDE2My43Njh2MjBIMTA1LjA4NHoiLz48cGF0aCBkPSJNMzExLjU5NiAxOTAuMTg5Yy03LjQ0MS05LjM0Ny0xOC40MDMtMTYuMjA2LTMyLjc0My0yMC41MjJWMzBjMC0xNi41NDItMTMuNDU4LTMwLTMwLTMwSDEyNS4wODRjLTE2LjU0MiAwLTMwIDEzLjQ1OC0zMCAzMHYxMjAuMTQzaC04LjI5NmMtMTYuNTQyIDAtMzAgMTMuNDU4LTMwIDMwdjEuMzMzYTI5LjgwNCAyOS44MDQgMCAwIDAgNC42MDMgMTUuOTM5Yy03LjM0IDUuNDc0LTEyLjEwMyAxNC4yMjEtMTIuMTAzIDI0LjA2MXYxLjMzM2MwIDkuODQgNC43NjMgMTguNTg3IDEyLjEwMyAyNC4wNjJhMjkuODEgMjkuODEgMCAwIDAtNC42MDMgMTUuOTM4djEuMzMzYzAgMTYuNTQyIDEzLjQ1OCAzMCAzMCAzMGg4LjMyNGMuNDI3IDExLjYzMSA3LjUwMyAyMS41ODcgMTcuNTM0IDI2LjE3Ny45MzEgMTAuNTAzIDQuMDg0IDMwLjE4NyAxNC43NjggNDUuNTM3YTkuOTg4IDkuOTg4IDAgMCAwIDguMjE2IDQuMjg4IDkuOTU4IDkuOTU4IDAgMCAwIDUuNzA0LTEuNzkzYzQuNTMzLTMuMTU1IDUuNjUtOS4zODggMi40OTUtMTMuOTIxLTYuNzk4LTkuNzY3LTkuNjAyLTIyLjYwOC0xMC43Ni0zMS40aDgyLjY4NWMuMjcyLjQxNC41NDUuODE4LjgxNSAxLjIxIDMuMTQyIDQuNTQxIDkuMzcyIDUuNjc5IDEzLjkxMyAyLjUzNCA0LjU0Mi0zLjE0MiA1LjY3Ny05LjM3MSAyLjUzNS0xMy45MTMtMTEuOTE5LTE3LjIyOS04Ljc4Ny0zNS44ODQgOS41ODEtNTcuMDEyIDMuMDY3LTIuNjUyIDEyLjMwNy0xMS43MzIgMTEuMjE3LTI0LjAzMy0uODI4LTkuMzQzLTcuMTA5LTE3LjE5NC0xOC42NjktMjMuMzM3YTkuODU3IDkuODU3IDAgMCAwLTEuMDYxLS40ODZjLS40NjYtLjE4Mi0xMS40MDMtNC41NzktOS43NDEtMTUuNzA2IDEuMDA3LTYuNzM3IDE0Ljc2OC04LjI3MyAyMy43NjYtNy42NjYgMjMuMTU2IDEuNTY5IDM5LjY5OCA3LjgwMyA0Ny44MzYgMTguMDI2IDUuNzUyIDcuMjI1IDcuNjA3IDE2LjYyMyA1LjY3MyAyOC43MzMtLjQxMyAyLjU4NS0uODI0IDUuMjQxLTEuMjQ1IDcuOTU5LTUuNzU2IDM3LjE5NC0xMi45MTkgODMuNDgzLTQ5Ljg3IDExNC42NjEtNC4yMjEgMy41NjEtNC43NTYgOS44Ny0xLjE5NCAxNC4wOTJhOS45OCA5Ljk4IDAgMCAwIDcuNjQ4IDMuNTUxIDkuOTU1IDkuOTU1IDAgMCAwIDYuNDQ0LTIuMzU4YzQyLjY3Mi0zNi4wMDUgNTAuODAyLTg4LjUzMyA1Ni43MzctMTI2Ljg4OC40MTUtMi42ODQuODIxLTUuMzA5IDEuMjI5LTcuODYzIDIuODM0LTE3LjcyMS0uNDU1LTMyLjY0MS05Ljc3Mi00NC4zNDV6bS0yMzIuMzA4IDQyLjYyYy01LjUxNCAwLTEwLTQuNDg2LTEwLTEwdi0xLjMzM2MwLTUuNTE0IDQuNDg2LTEwIDEwLTEwaDE1djIxLjMzM2gtMTV6bS0yLjUtNTIuNjY2YzAtNS41MTQgNC40ODYtMTAgMTAtMTBoNy41djIxLjMzM2gtNy41Yy01LjUxNCAwLTEwLTQuNDg2LTEwLTEwdi0xLjMzM3ptMTcuNSA5My45OTloLTcuNWMtNS41MTQgMC0xMC00LjQ4Ni0xMC0xMHYtMS4zMzNjMC01LjUxNCA0LjQ4Ni0xMCAxMC0xMGg3LjV2MjEuMzMzem0zMC43OTYgMjguODg3Yy01LjUxNCAwLTEwLTQuNDg2LTEwLTEwdi04LjI3MWg5MS40NTdjLS44NTEgNi42NjgtLjQzNyAxMi43ODcuNzMxIDE4LjI3MWgtODIuMTg4em03OS40ODItMTEzLjY5OGMtMy4xMjQgMjAuOTA2IDEyLjQyNyAzMy4xODQgMjEuNjI1IDM3LjA0IDUuNDQxIDIuOTY4IDcuNTUxIDUuNjQ3IDcuNzAxIDcuMTg4LjIxIDIuMTUtMi41NTMgNS42ODQtNC40NzcgNy4yNTEtLjQ4Mi4zNzgtLjkyOS44LTEuMzM1IDEuMjYxLTYuOTg3IDcuOTM2LTExLjk4MiAxNS41Mi0xNS40MzIgMjIuNjg4aC05Ny41NjRWMzBjMC01LjUxNCA0LjQ4Ni0xMCAxMC0xMGgxMjMuNzY5YzUuNTE0IDAgMTAgNC40ODYgMTAgMTB2MTM1LjU3OWMtMy4wMzItLjM4MS02LjE1LS42OTQtOS4zODktLjkxNC0yNS4xNTktMS42OTQtNDIuMzcgNy43NDgtNDQuODk4IDI0LjY2NnoiLz48cGF0aCBkPSJNMTc5LjEyOSA4My4xNjdoLTI0LjA2YTUgNSAwIDAgMC01IDV2MjQuMDYxYTUgNSAwIDAgMCA1IDVoMjQuMDZhNSA1IDAgMCAwIDUtNVY4OC4xNjdhNSA1IDAgMCAwLTUtNXpNMTcyLjYyOSAxNDIuODZoLTEyLjU2VjEzMC44YTUgNSAwIDEgMC0xMCAwdjE3LjA2MWE1IDUgMCAwIDAgNSA1aDE3LjU2YTUgNSAwIDEgMCAwLTEwLjAwMXpNMjE2LjU2OCA4My4xNjdoLTI0LjA2YTUgNSAwIDAgMC01IDV2MjQuMDYxYTUgNSAwIDAgMCA1IDVoMjQuMDZhNSA1IDAgMCAwIDUtNVY4OC4xNjdhNSA1IDAgMCAwLTUtNXptLTUgMjQuMDYxaC0xNC4wNlY5My4xNjdoMTQuMDZ2MTQuMDYxek0yMTEuNjY5IDEyNS45MzZIMTk3LjQxYTUgNSAwIDAgMC01IDV2MTQuMjU3YTUgNSAwIDAgMCA1IDVoMTQuMjU5YTUgNSAwIDAgMCA1LTV2LTE0LjI1N2E1IDUgMCAwIDAtNS01eiIvPjwvc3ZnPg==" alt="Camera based scan" style="opacity: 0.8;"></div><div id="qr-reader__dashboard" style="width: 100%;"><div id="qr-reader__dashboard_section" style="width: 100%; padding: 10px 0px; text-align: left;"><div><div id="qr-reader__dashboard_section_csr" style="display: block;"><div style="text-align: center;"><button id="html5-qrcode-button-camera-permission" class="html5-qrcode-element" type="button">Request Camera Permissions</button></div></div><div style="text-align: center; margin: auto auto 10px; width: 80%; max-width: 600px; border: 6px dashed rgb(235, 235, 235); padding: 10px; display: none;"><label for="html5-qrcode-private-filescan-input" style="display: inline-block;"><button id="html5-qrcode-button-file-selection" class="html5-qrcode-element" type="button">Choose Image - No image choosen</button><input id="html5-qrcode-private-filescan-input" class="html5-qrcode-element" type="file" accept="image/*" style="display: none;"></label><div style="font-weight: 400;">Or drop an image to scan</div></div></div><div style="text-align: center;"><span id="html5-qrcode-anchor-scan-type-change" class="html5-qrcode-element" style="text-decoration: underline; cursor: pointer;">Scan an Image File</span></div></div></div></div>
-                        <div id="qr-reader-resultss"></div>
+                    <div class="vidparticipant">
+                        <select class="form-select mb-1" id="cameras1" style="width:200px;display:none"></select>
+                        <video id="qr-readerr" class="object-fit-fill">
+                        </video>
                     </div>
                 </div>
             </div>
@@ -3366,7 +3360,9 @@
     <script>
         function qrmodalclose() {
             $("#QRModal").modal("hide");
-            html5QrcodeScanner1.clear();
+            $("#qrClose").prop('disabled', true);
+            scanner.stop();
+            change(2);
         }
         var lastResult1 = 0;
         function eksikguncelle(value) {
@@ -3448,60 +3444,58 @@
             }
         }
         var html5QrcodeScanner1 = null;
+        var scanner = null;
         function BarkodModal() {
-           
+            $('#BekleyenIsEmirleriTablo').hide();
+            $('.iefiltre').hide();
+            
             $("#QRModal").modal("show");
-            function docReady1(fn) {
-                // see if DOM is already available
-                if (document.readyState === "complete"
-                    || document.readyState === "interactive") {
-                    // call on next available tick
-                    setTimeout(fn, 1);
-                } else {
-                    document.addEventListener("DOMContentLoaded", fn);
-                }
+            scanner= new Instascan.Scanner({ video: document.getElementById('qr-readerr'), mirror: false, refractoryPeriod: 2000 });
+            scanner.addListener('scan', function (decodedText)  {
+                $("#isemriTable").bootstrapTable("destroy").bootstrapTable({
+                    url: "http://192.168.2.13:83/api/ie/isemrileri/" + decodedText
+                })
 
-            }
-            docReady1(function () {
-                var resultContainer = document.getElementById('qr-reader-resultss');
-                var lastResult, countResults = 0;
-                function onScanSuccess(decodedText, decodedResult) {
-                    if (decodedText !== lastResult) {
-                        ++countResults;
-                        lastResult = decodedText;
+                $("#QRModal").modal("hide");
+                scanner.stop();
+                $("#IsEmirleri").modal("show");
+                $("#sarfTitle").html(decodedText + " Barkodlu Hammaddeye Bağlı İş Emirleri")
+                $.getJSON("http://192.168.2.13:83/api/ie/top/isemrileri/" + decodedText, function (data) {
+                    $("#topmik").html(data[0].SERI_BAKIYE.toLocaleString() + " " + data[0].OLCU_BR1)
+                    var eksik = data[0].SERI_BAKIYE;
+                    $("#eksikmiktar1").attr("data-max", eksik)
+                })
 
-                        $("#isemriTable").bootstrapTable("destroy").bootstrapTable({
-                            url: "http://192.168.2.13:83/api/ie/isemrileri/" + decodedText
-                        })
+                $("#guncelleButton").attr("data-seri", decodedText);
+            })
+            Instascan.Camera.getCameras().then(function (cameras, image) {
+                //PC'de ki tüm kameraları algılayarak bizlere getirecektir.
+                $('#cameras1').html('');
+                $('#cameras1').css('display', cameras.length > 1 ? 'block' : 'none');
 
-                        $("#QRModal").modal("hide");
-                        html5QrcodeScanner1.clear();
-                        $("#IsEmirleri").modal("show");
-                        ;
-                        $("#sarfTitle").html(decodedText + " Barkodlu Hammaddeye Bağlı İş Emirleri")
-                        $.getJSON("http://192.168.2.13:83/api/ie/top/isemrileri/" + decodedText, function (data) {
-                            $("#topmik").html(data[0].SERI_BAKIYE.toLocaleString() + " " + data[0].OLCU_BR1)
-                            var eksik = data[0].SERI_BAKIYE;
-                            $("#eksikmiktar1").attr("data-max", eksik)
-                        })
+                for (let i = 0; i < cameras.length; i++) {
+                    let cameraList = document.getElementById("cameras1");
+                    let option = document.createElement("option");
+                    if (i == 0) {
 
-                        $("#guncelleButton").attr("data-seri", decodedText);
-
-
-
-                        lastResult1 = 0;
+                        option.text = "Ön Kamera";
+                        option.value = cameras[i].id;
+                    } else {
+                        option.text = "Arka Kamera";
+                        option.value = cameras[i].id;
                     }
-
-
-
-
+                    cameraList.add(option);
                 }
-
-                html5QrcodeScanner1 = new Html5QrcodeScanner(
-                    "qr-readerr", { fps: 60, qrbox: 800 });
-                html5QrcodeScanner1.render(onScanSuccess);
-
-            });
+                if (cameras.length > 0) {
+                    scanner.start(cameras[0]).then(function () {
+                        $("#qrClose").prop('disabled', false);
+                    })
+                }
+               
+            })
+           
+            $('#BekleyenIsEmirleriTable').bootstrapTable('destroy');
+            $('#BekleyenIsEmirleriTable').bootstrapTable({ data: [] });
         }
         function ModalKapat3() {
 
@@ -3845,7 +3839,7 @@
             } else {
                 return "-";
             }
-            
+
         }
         function Sil(value) {
             Swal.fire({
@@ -3908,10 +3902,10 @@
                     <button type="button" class="btn-close" id="QrScannerClose" onclick="UretimeAlQrScannerClose()" disabled aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center overflow-hidden pt-0">
-                    
+
                     <div class="vidparticipant">
                         <span id="uretime-al-bildirim" style="display: none;justify-content: center;align-items: center;width: 100%;height: 100%;">.</span>
-                        <select class="form-select mb-1" id="cameras" style="width:200px"></select>
+                        <select class="form-select mb-1" id="cameras" style="width:200px;display:none"></select>
                         <video id="qr-reader1" class="object-fit-fill">
                         </video>
                     </div>
@@ -3954,15 +3948,13 @@
 
         }
 
-        function UretimeAlQrScannerClose()
-        {
+        function UretimeAlQrScannerClose() {
             $('#uretime-al-QRModal').modal('hide');
             html5QrcodeScanner.stop();
 
             $('#QrScannerClose').prop('disabled', true);
 
-            if (html5QrcodeScanner1 != null)
-            {
+            if (html5QrcodeScanner1 != null) {
                 html5QrcodeScanner1.clear();
                 html5QrcodeScanner1 = null;
             }
@@ -3976,8 +3968,17 @@
         var SecilenBarkodlar = [];
         var SecilenBarkodLimiti = 10;
 
+        $(document).ready(() =>
+        {
+            $('#uretilmis-barkod-dizayn').select2({ language: 'tr' });
+        });
+
         function UretilmisBarkodlariGetir()
         {
+            $('#uretilmis-barkod-dizayn').html('');
+            $('#uretilmis-barkod-dizayn').append(new Option('Üretim', '0'));
+            $('#uretilmis-barkod-dizayn').append(new Option('Sevkiyat', '1'));
+
             $.ajax({
                 url: 'http://192.168.2.13:83/api/seri/serirehbertumu',
                 type: 'GET',
@@ -4044,13 +4045,17 @@
 
                 document.body.style.pointerEvents = 'none';
 
+                var EtiketDizayn = parseInt($('#uretilmis-barkod-dizayn').val());
+
                 $.ajax({
-                    url: '@Url.Action("UretilmisBarkodYazdir", "Uretim")',
+                    url: '@Url.Action("UretilmisBarkodlariYazdir", "Uretim")',
                     type: 'POST',
-                    data: { BarkodListesi: SecilenBarkodlar.sort() },
+                    data: { "Request": { "BarkodListesi": SecilenBarkodlar.sort(), "EtiketDizayn": EtiketDizayn, "DirektYazdir": false } },
                     error: () => { console.log(`Üretilmiş Barkod Yazdır: Hata oluştu.`); },
-                    success: (Response) => {
-                        EtiketOnizle(Response, SecilenBarkodlar[0]);
+                    success: (Response) =>
+                    {
+                        console.log(Response);
+                        //EtiketOnizle(Response, SecilenBarkodlar[0]);
                     }
                 });
 
@@ -4065,10 +4070,10 @@
         function yazdirchange() {
             var check = $('#etiketyazdir:checked').val()
             if (check) {
-               
+
                 $('#yazici').next(".select2-container").show();
             } else {
-               
+
                 $('#yazici').next(".select2-container").hide();
             }
         }

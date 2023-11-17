@@ -178,6 +178,7 @@ namespace NOVA.Controllers
             var tekliflerim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 40).USER_AUTH;
             bool? yetkiMalKabulForm = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 41).USER_AUTH;
             bool? yetkiSevkMalKabul = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 42).USER_AUTH;
+            bool? mes = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 42).USER_AUTH;
             ViewBag.DisplaySevkMalKabul = yetkiSevkMalKabul is true ? "unset" : "none";
             ViewBag.DisplayMalKabulForm = yetkiMalKabulForm is true ? "unset" : "none";
             if (tekliflerim != true)
@@ -187,6 +188,14 @@ namespace NOVA.Controllers
             else
             {
                 ViewBag.DisplayTekliflerim = "unset";
+            }
+            if (mes != true)
+            {
+                ViewBag.DisplayMES = "none";
+            }
+            else
+            {
+                ViewBag.DisplayMES = "unset";
             }
             if (teklif != true)
             {
