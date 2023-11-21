@@ -2307,7 +2307,27 @@ namespace NOVA.Controllers
 
                 if (DirektYazdir)
                 {
-                    return $"Dosya Yolu: {Yazici} - {Etiket["Path"]}";
+                    try
+                    {
+                        using (var pdocument = PdfiumViewer.PdfDocument.Load(Etiket["Path"]))
+                        {
+                            using (var printDocument = pdocument.CreatePrintDocument())
+                            {
+                                printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
+                                printDocument.PrinterSettings.PrinterName = Yazici;
+                                printDocument.DocumentName = "file.pdf";
+                                printDocument.PrinterSettings.PrintFileName = "file.pdf";
+                                printDocument.PrintController = new StandardPrintController();
+                                printDocument.Print();
+                            }
+                        }
+
+                        return "Etiket başarıyla oluşturuldu.";
+                    }
+                    catch (Exception ex)
+                    {
+                        return "Etiket yazdırma işleminde bir hata oluştu.";
+                    }
                 }
                 else 
                 {
@@ -2316,7 +2336,7 @@ namespace NOVA.Controllers
             }
             catch (Exception ex) 
             {
-                return ex.Message;
+                return "Etiket oluşturulurken bir hata oluştu.";
             }
         }
 
