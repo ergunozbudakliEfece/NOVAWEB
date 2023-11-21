@@ -1,0 +1,317 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+    <title>Scanner</title>
+    <title>Nova | Efece Galvaniz</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/img/icons/brands/Nova_White.png" />
+    <script src="~/Scripts/jquery-3.6.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        #html5-qrcode-button-camera-stop {
+            display: none !important;
+        }
+        .swal2-popup {
+            font-size: 50px !important;
+            text-shadow: 2px 2px #808080;
+        }
+        .swal-modal .swal-text {
+            text-align: center !important;
+        }
+        .swal2-html-container {
+            text-align: justify !important;
+        }
+        .ortayazi {
+            position: fixed;
+            top: 13vh;
+            color: white;
+            opacity: 0.8;
+            font-size: 45px;
+            width: 100%;
+            text-align: center;
+        }
+        #element:-webkit-full-screen {
+            width: 100%;
+            height: 100%;
+            background-color: pink;
+            margin: 0;
+        }
+
+        #element:-moz-full-screen {
+            background-color: pink;
+            margin: 0;
+        }
+
+        #element:-ms-fullscreen {
+            background-color: pink;
+            margin: 0;
+        }
+
+   
+        #element:fullscreen {
+            background-color: pink;
+            margin: 0;
+        }
+        
+    </style>
+</head>
+<body style="overflow:hidden" class="h-100">
+    
+   
+    <div id="element">
+        <audio id="giris">
+            <source src="~/Content/giris.mp3" type="audio/mpeg" />
+        </audio>
+        <audio id="cikis">
+            <source src="~/Content/cıkıs.mp3" type="audio/mpeg" />
+        </audio>
+        <audio id="hata">
+            <source src="~/Content/hata.mp3" type="audio/mpeg" />
+        </audio>
+        <button style="display:none" onclick="playAudio()" type="button">Play Audio</button>
+
+        <div class="container-fluid p-0">
+            <div id="qr-reader" style="width:65% !important;margin-right:auto;margin-left:auto;margin-top:1%;margin-bottom:auto"></div>
+            <div id="qr-reader-results"></div>
+            <div class="ortayazi">Yaklaşık 20cm uzaklıkta gösteriniz</div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        function cb(o) {
+            console.log(o.ip)
+        }
+    </script>
+
+    <script src="http://freegeoip.net/json/?callback=cb" type="text/javascript"></script>
+    <script>
+        var x = document.getElementById("giris");
+        var y = document.getElementById("cikis");
+        var z = document.getElementById("hata");
+        function playGiris() {
+            x.play();
+        }
+        function playCikis() {
+            y.play();
+        }
+        function playHata() {
+            z.play();
+        }
+        $(document).ready(function () {
+            addEventListener("click", function () {
+                var el = document.documentElement,
+                    rfs = el.requestFullscreen
+                        || el.webkitRequestFullScreen
+                        || el.mozRequestFullScreen
+                        || el.msRequestFullscreen
+                    ;
+
+                rfs.call(el);
+            });
+
+            document.addEventListener("DOMContentLoaded", fn);
+
+        })
+        /**/
+    </script>
+
+    <script>
+        function docReady(fn) {
+            // see if DOM is already available
+            if (document.readyState === "complete"
+                || document.readyState === "interactive") {
+                // call on next available tick
+                setTimeout(fn, 1);
+            } else {
+                document.addEventListener("DOMContentLoaded", fn);
+            }
+        }
+
+        docReady(function () {
+            var resultContainer = document.getElementById('qr-reader-results');
+            var lastResult, countResults = 0;
+            function onScanSuccess(decodedText, decodedResult) {
+                if (decodedText !== lastResult) {
+                    ++countResults;
+                    lastResult = decodedText;
+                    var r1 = "http://192.168.2.13:83/api/attendance/name/" + decodedText;
+                    var r2 = "http://192.168.2.13:83/api/attendance/" + decodedText + "/1003";
+                    var r = "http://192.168.2.13:83/api/attendance/" + decodedText;
+                    var r3 = "http://192.168.2.13:83/api/attendance/timing/" + decodedText;
+                    var kontrol = null;
+                    $.getJSON(r3, function (data) {
+                        kontrol = data[0].SITUATION;
+
+                    }).done(function () {
+                        $.getJSON(r1, function (data) {
+                            var namedata = data;
+                            if (namedata.length > 0) {
+                                $.getJSON(r, function (data1) {
+                                    var da = data1;
+                                    if (da.length > 0) {
+                                        if (kontrol == "True") {
+                                            $.getJSON(r2, function (data2) {
+                                            }).then(function () {
+                                                if (da[0].STARTEND == "S") {
+                                                    const Toast = Swal.mixin({
+                                                        toast: true,
+                                                        position: 'center',
+                                                        showConfirmButton: false,
+                                                        timer: 3000,
+                                                        timerProgressBar: false,
+                                                        width: 800,
+                                                        color: '#fff',
+                                                        background: "#cc0000",
+                                                        didOpen: (toast) => {
+                                                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                                        }
+                                                    })
+                                                    playCikis()
+                                                    var dt = null;
+                                                    $.getJSON(r, function (data2) {
+                                                        dt = data2;
+                                                    }).then(function () {
+                                                        Toast.fire({
+                                                            title: '<div style="text-align:center"><p>' + namedata[0].USER_FIRSTNAME + " " + namedata[0].USER_LASTNAME + "</p></div>" + '<div style="text-align:center"><p>Çıkış</p></div>' + '<div style="text-align:center">' + (dt[0].DATE).split("T")[1].substring(0, 5) + '</div>'
+                                                        }).then(function () {
+                                                            lastResult = 0;
+                                                        })
+                                                    })
+
+                                                }
+                                                else {
+                                                    const Toast = Swal.mixin({
+                                                        toast: true,
+                                                        position: 'center',
+                                                        showConfirmButton: false,
+                                                        timer: 3000,
+                                                        timerProgressBar: false,
+                                                        width: 800,
+                                                        color: '#fff',
+                                                        background: "#00dd00",
+                                                        didOpen: (toast) => {
+                                                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                                        }
+                                                    })
+                                                    playGiris()
+                                                    var dt = null;
+                                                    $.getJSON(r, function (data2) {
+                                                        dt = data2;
+                                                    }).then(function () {
+                                                        Toast.fire({
+                                                            title: '<div style="text-align:center"><p>' + namedata[0].USER_FIRSTNAME + " " + namedata[0].USER_LASTNAME + "</p></div>" + '<div style="text-align:center"><p>Giriş</p></div>' + '<div style="text-align:center">' + (dt[0].DATE).split("T")[1].substring(0, 5) + '</div>'
+                                                        }).then(function () {
+                                                            lastResult = 0;
+                                                        })
+                                                    })
+                                                }
+                                            })
+
+
+
+
+
+
+
+
+
+                                        }
+                                        else {
+                                            const Toast = Swal.mixin({
+                                                toast: true,
+                                                position: 'center',
+                                                showConfirmButton: false,
+                                                timer: 3000,
+                                                width: 800,
+                                                timerProgressBar: false,
+                                                color: '#fff',
+                                                background: "#f6b578",
+                                                didOpen: (toast) => {
+                                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                                }
+                                            })
+                                            playHata()
+                                            Toast.fire({
+
+                                                title: '<div style="text-align:center">1 dakika içerisinde ikinci okuma işlemi yapılamamaktadır!</div>'
+                                            }).then(function () {
+                                                if (lastResult != 0) {
+                                                    setTimeout(function () {
+                                                        lastResult = 0;
+                                                    }, 60000);
+                                                }
+                                            })
+                                        }
+
+                                    }
+                                    else {
+
+                                        $.getJSON(r2, function (data) { }).then(function () {
+
+                                            const Toast = Swal.mixin({
+                                                toast: true,
+                                                position: 'center',
+                                                showConfirmButton: false,
+                                                timer: 3000,
+                                                width: 800,
+                                                timerProgressBar: false,
+                                                color: '#fff',
+                                                background: "#00dd00",
+                                                didOpen: (toast) => {
+                                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                                }
+                                            })
+                                            playGiris()
+                                            var dt = null;
+                                            $.getJSON(r, function (data2) {
+                                                dt = data2;
+                                            }).then(function () {
+                                                Toast.fire({
+                                                    title: '<div style="text-align:center"><p>' + namedata[0].USER_FIRSTNAME + " " + namedata[0].USER_LASTNAME + "</p></div>" + '<div style="text-align:center"><p>Giriş</p></div>' + '<div style="text-align:center">' + (dt[0].DATE).split("T")[1].substring(0, 5) + '</div>'
+                                                }).then(function () {
+                                                    lastResult = 0;
+                                                })
+                                            })
+                                        })
+
+
+                                    }
+                                })
+                            } else {
+                                playHata()
+                            }
+                        })
+                    })
+
+
+                }
+
+            }
+
+            var html5QrcodeScanner = new Html5QrcodeScanner(
+                "qr-reader", { fps: 10, qrbox: 800 });
+            html5QrcodeScanner.render(onScanSuccess);
+
+        });
+
+    </script>
+</body>
+   
+
+</html>

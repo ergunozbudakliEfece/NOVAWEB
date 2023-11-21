@@ -1206,54 +1206,17 @@ namespace NOVA.Controllers
             return RedirectToAction("Index");
         }
         [HttpPost]
-        public ActionResult Mail(List<MailModel> mail)
+        public ActionResult Mail(List<MailModel> mail,string hamkod)
         {
 
             string subject = "";
             List<string> makineler = new List<string>();
             List<string> makinelerref = new List<string>();
-            for (int i = 0; i < mail.Count; i++)
-            {
-                if (!makineler.Contains(mail[i].ISEMRINO.Substring(0, 4)))
-                {
-                    if (mail[i].ISEMRINO != "")
-                    {
-                        makineler.Add(mail[i].ISEMRINO.Substring(0, 4));
-                    }
-
-                }
-                if (!makinelerref.Contains(mail[i].REF_ISEMRINO.Substring(0, 4)))
-                {
-                    if (mail[i].REF_ISEMRINO != "")
-                    {
-                        makinelerref.Add(mail[i].REF_ISEMRINO.Substring(0, 4));
-                    }
-
-                }
-            }
-            for (int i = 0; i < makineler.Count; i++)
-            {
-                subject = subject + makineler[i] + "-";
-            }
-            for (int i = 0; i < makinelerref.Count; i++)
-            {
-
-                subject = subject + makinelerref[i] + "-";
+         
+             
 
 
-            }
-            var upt = "";
-            for (int i = 0; i < subject.Split('-').Length; i++)
-            {
-                if (subject.Split('-')[i] != "")
-                {
-                    upt = upt + subject.Split('-')[i] + "-";
-                }
-
-            }
-
-
-            var subject2 = upt.Substring(0, upt.Length - 1) + " İŞ EMRİ - " + Request.Cookies["UserName"].Value;
+            var subject2 = hamkod + " İŞ EMRİ - " + Request.Cookies["UserName"].Value;
             string body = "<tr style='outline: thin solid;margin-bottom:15px'><th style='margin-right:10px'>MUSTERI</th><th style='margin-right:10px'>STOKOLCULERI</th><th style='margin-right:10px'>KALINLIK</th><th style='margin-right:10px'>KALITE</th><th style='margin-right:10px'>KAPLAMA</th><th style='margin-right:10px'>ADET</th><th style='margin-right:10px'>AĞIRLIK</th></tr>";
             for (int i = 0; i < mail.Count; i++)
             {

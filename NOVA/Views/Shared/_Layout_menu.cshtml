@@ -11,6 +11,10 @@
     <!--========== CSS ==========-->
 
     <style>
+
+        ::-webkit-scrollbar {
+            width: 2px;
+        }
         /*========== GOOGLE FONTS ==========*/
         @@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 
@@ -281,7 +285,88 @@
             }
         }
 
-        @@media screen and (min-width: 600px) {
+        @@media screen and (min-width: 50px) {
+            
+
+            .header {
+                padding: 0 3rem 0 6rem;
+            }
+
+            .header__container {
+                height: calc(var(--header-height) + .5rem);
+            }
+
+            .header__search {
+                width: 300px;
+                padding: .55rem .75rem;
+            }
+
+            .header__toggle {
+                display: none;
+            }
+
+            .header__logo {
+                display: block;
+            }
+
+            .header__img {
+                width: 40px;
+                height: 40px;
+                order: 1;
+            }
+
+            .nav {
+                left: 0;
+                padding: 1.2rem 0.7rem;
+                width: 43px;
+            }
+
+            .nav__items {
+                row-gap: 1.7rem;
+            }
+
+            .nav__icon {
+                font-size: 1.3rem;
+            }
+            /* Element opacity */
+            .nav__logo-name,
+            .nav__name,
+            .nav__subtitle,
+            .nav__dropdown-icon {
+                opacity: 0;
+                transition: .3s;
+            }
+            /* Navbar expanded */
+            .nav:hover {
+                width: var(--nav-width);
+            }
+                /* Visible elements */
+                .nav:hover .nav__logo-name {
+                    opacity: 1;
+                }
+
+                .nav:hover .nav__subtitle {
+                    opacity: 1;
+                }
+
+                .nav:hover .nav__name {
+                    opacity: 1;
+                }
+
+                .nav:hover .nav__dropdown-icon {
+                    opacity: 1;
+                }
+        }
+        @@media screen and (max-width: 699px){
+            .cikis {
+                padding-bottom: 10rem !important;
+            }
+            .profil {
+                margin-top: 0 !important;
+            }
+        }
+        
+        @@media screen and (min-width: 700px) {
             
 
             .header {
@@ -361,166 +446,184 @@
 
     <!--========== NAV ==========-->
     <div class="nav" id="navbar" onmouseleave="leave()">
-        <nav class="nav__container">
+        <nav class="nav__container" style="overflow:hidden;">
             <div>
                 <a href="#" class="nav__link nav__logo">
 
-                    <img src="/Content/Images/logoefece.png" alt class="h-auto" style="width:48px"/>
+                    <img src="/Content/Images/logoefece.png" alt class="h-auto" style="width:48px" />
                     <span class="nav__logo-name ms-1"><img src="/Content/Images/efeceyazi.png" alt class="w-px-150 h-auto" /></span>
                 </a>
 
                 <div class="nav__list">
                     <div class="nav__items">
+                        <style>
+                            
+                        </style>
 
                         <a href="@Url.Action("Index", "Home")" id="anasayfa1" class="nav__link">
                             <i class='bx bx-home-circle nav__icon'></i>
                             <span class="nav__name">Anasayfa</span>
                         </a>
-                        
-                        <div class="nav__dropdown" style="display: @ViewBag.DisplaySatis">
-                            <a onclick="openalt('satisopen')" id="satis1" class="nav__link">
-                                <i class='bx bx-dollar nav__icon'></i>
-                                <span class="nav__name">Satış</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
+                        <div style="max-height: 50vh !important; min-height: 50vh !important; overflow-y: auto !important; overflow-x: hidden !important; box-shadow: 0 0 8px #98989854; ">
+                            <div class="nav__dropdown" style="display: @ViewBag.DisplaySatis">
+                                <a onclick="openalt('satisopen')" id="satis1" class="nav__link "  style="margin-top: 1rem !important;">
+                                    <i class='bx bx-dollar nav__icon'></i>
+                                    <span class="nav__name">Satış</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
 
-                            <div id="satisopen" class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-                                    <a href="@Url.Action("Index", "Satis")" id="stok1" style="cursor:pointer;display: @ViewBag.DisplayStok;" class="nav__dropdown-item">• Stok</a>
-                                    <a href="@Url.Action("FiyatListesi", "Satis")" id="fiyatlistesi1" style="cursor: pointer; display: @ViewBag.DisplayFiyatListesi" class="nav__dropdown-item">• Fiyat Listesi</a>
-                                    <a href="@Url.Action("FiyatYonetimi", "Satis")" id="fiyatyonetimi1" style="cursor: pointer; display: @ViewBag.FiyatYonetim" class="nav__dropdown-item">• Fiyat Yönetimi</a>
-                                    <a href="@Url.Action("DetayliSiparis", "Satis")" id="detaylisip1" style="cursor: pointer; display: @ViewBag.DisplaySiparis" class="nav__dropdown-item">• Detaylı Sipariş Raporu</a>
-                                    <a href="@Url.Action("HammaddeListesi", "Satis")" id="fabstokfiyatli1" style="cursor: pointer; display: @ViewBag.DisplayFiyatsizStok" class="nav__dropdown-item">• Fabrika Stok</a>
-                                    <a href="@Url.Action("ZiyaretPlanlari", "Satis")" id="ziyaretplanlari1" style="cursor: pointer; display: @ViewBag.DisplayZiyaretPlani" class="nav__dropdown-item">• Müşteri İlişkileri Yönetimi</a>
-                                    <a href="@Url.Action("Teklif", "Satis")" id="teklif1" style="cursor: pointer; display: @ViewBag.DisplayTeklif" class="nav__dropdown-item">• Teklif Oluştur</a>
-                                    <a href="@Url.Action("Tekliflerim", "Satis")" id="tekliflerim1" style="cursor: pointer; display: @ViewBag.DisplayTekliflerim" class="nav__dropdown-item">• Tekliflerim</a>
+                                <div id="satisopen" class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="@Url.Action("Index", "Satis")" id="stok1" style="cursor:pointer;display: @ViewBag.DisplayStok;" class="nav__dropdown-item">• Stok</a>
+                                        <a href="@Url.Action("FiyatListesi", "Satis")" id="fiyatlistesi1" style="cursor: pointer; display: @ViewBag.DisplayFiyatListesi" class="nav__dropdown-item">• Fiyat Listesi</a>
+                                        <a href="@Url.Action("FiyatYonetimi", "Satis")" id="fiyatyonetimi1" style="cursor: pointer; display: @ViewBag.FiyatYonetim" class="nav__dropdown-item">• Fiyat Yönetimi</a>
+                                        <a href="@Url.Action("DetayliSiparis", "Satis")" id="detaylisip1" style="cursor: pointer; display: @ViewBag.DisplaySiparis" class="nav__dropdown-item">• Detaylı Sipariş Raporu</a>
+                                        <a href="@Url.Action("HammaddeListesi", "Satis")" id="fabstokfiyatli1" style="cursor: pointer; display: @ViewBag.DisplayFiyatsizStok" class="nav__dropdown-item">• Fabrika Stok</a>
+                                        <a href="@Url.Action("ZiyaretPlanlari", "Satis")" id="ziyaretplanlari1" style="cursor: pointer; display: @ViewBag.DisplayZiyaretPlani" class="nav__dropdown-item">• Müşteri İlişkileri Yönetimi</a>
+                                        <a href="@Url.Action("Teklif", "Satis")" id="teklif1" style="cursor: pointer; display: @ViewBag.DisplayTeklif" class="nav__dropdown-item">• Teklif Oluştur</a>
+                                        <a href="@Url.Action("Tekliflerim", "Satis")" id="tekliflerim1" style="cursor: pointer; display: @ViewBag.DisplayTekliflerim" class="nav__dropdown-item">• Tekliflerim</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="nav__dropdown" style="display: @ViewBag.DisplaySevkiyat">
+                                <a onclick="openalt('sevkiyatopen')" id="sevkiyat1" class="nav__link "  style="margin-top: 1rem !important;">
+                                    <i class='bx bxs-truck nav__icon'></i>
+                                    <span class="nav__name">Sevkiyat</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+
+                                <div id="sevkiyatopen" class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="@Url.Action("SiparisRaporu", "Sevkiyat")" id="mussiparisrap1" style="cursor:pointer;display: @ViewBag.DisplaySiparisRaporu" class="nav__dropdown-item">• Müşteri Siparişi Raporu</a>
+                                        <a href="@Url.Action("SaticiSiparisRaporu", "Sevkiyat")" id="saticisiprap1" style="cursor: pointer; display: @ViewBag.DisplaySaticiSiparisRaporu" class="nav__dropdown-item">• Satıcı Siparişi Raporu</a>
+                                        <a href="@Url.Action("SevkMalKabul", "Sevkiyat")" id="sevkmalkabul1" style="cursor: pointer; display: @ViewBag.DisplaySevkMalKabul" class="nav__dropdown-item">• Sevk & Kabul İşlemleri</a>
+                                        <a href="@Url.Action("DepoTransfer", "Sevkiyat")" id="depotransfer1" style="cursor: pointer; display: @ViewBag.DisplayDepoTransfer" class="nav__dropdown-item">• Depo Transfer</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nav__dropdown" style="display:@ViewBag.DisplayUretim">
+                                <a onclick="openalt('uretimopen')" id="uretim1" class="nav__link "  style="margin-top: 1rem !important;">
+                                    <i class='bx bxs-hard-hat nav__icon'></i>
+                                    <span class="nav__name">Üretim</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+
+                                <div id="uretimopen" class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+
+                                        <a href="@Url.Action("IsEmri", "IsEmri")" id="isemri2" style="cursor: pointer; display: @ViewBag.DisplayIsEmriKayit" class="nav__dropdown-item">• İş Emri</a>
+                                        <a href="@Url.Action("Index", "Uretim")" id="anlikuretim1" style="cursor:pointer;display:  @ViewBag.DisplayAnlikUretim" class="nav__dropdown-item">• Üretim Kayıtları</a>
+                                        <a href="@Url.Action("MES", "Uretim")" id="mes" style="cursor:pointer;display:  @ViewBag.DisplayMES" class="nav__dropdown-item">• MES</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nav__dropdown" style="display:@ViewBag.DisplaySatinAlma">
+                                <a onclick="openalt('satinalmaopen')" id="satinalma1" class="nav__link "  style="margin-top: 1rem !important;">
+                                    <i class='bx bx-credit-card nav__icon'></i>
+                                    <span class="nav__name">Satın Alma</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+
+                                <div id="satinalmaopen" class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="@Url.Action("SatinAlmaRaporu", "SatinAlma")" id="satinalmadetsip1" style="cursor:pointer;display:  @ViewBag.DisplaySiparisRaporu" class="nav__dropdown-item">• Detaylı Sipariş Raporu</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nav__dropdown" style="display:@ViewBag.DisplayFinans">
+                                <a onclick="openalt('finansopen')" id="finans1" class="nav__link "  style="margin-top: 1rem !important;">
+                                    <i class='bx bx-trending-up nav__icon'></i>
+                                    <span class="nav__name">Finans</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+
+                                <div id="finansopen" class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="@Url.Action("Index", "Finans")" id="kur1" style="cursor:pointer;display:  @ViewBag.DisplayKur" class="nav__dropdown-item">• Kur Yönetimi</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nav__dropdown" style="display: @ViewBag.DisplayMuhasebe">
+                                <a onclick="openalt('muhasebetopen')" id="muhasebe1" class="nav__link"  style="margin-top: 1rem !important;">
+                                    <i class='bx bx-calculator nav__icon'></i>
+                                    <span class="nav__name">Muhasebe</span>
+                                </a>
+
+
+                            </div>
+                            <div class="nav__dropdown" style="display: @ViewBag.Display4">
+                                <a onclick="openalt('ikopen')" id="ik1" class="nav__link"  style="margin-top: 1rem !important;">
+                                    <i class='bx bx-male-female nav__icon'></i>
+                                    <span class="nav__name">İnsan Kaynakları</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+
+                                <div id="ikopen" class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="@Url.Action("PersonelBilgi", "IK")" id="personelbilgi1" style="cursor:pointer;display:  @ViewBag.Display5" class="nav__dropdown-item">• Personel Bilgi Girişi</a>
+                                        <a href="@Url.Action("PersonelBilgiYonetim", "IK")" id="personelbilgiyon1" style="cursor:pointer;display:  @ViewBag.Display6" class="nav__dropdown-item">• Personel Bilgi Yönetimi</a>
+                                        <a href="@Url.Action("PersonelSubeYonetim", "IK")" id="subebazi1" style="cursor:pointer;display:  @ViewBag.Sube" class="nav__dropdown-item">• Şube Bazında Personel Bilgi Yönetimi</a>
+                                        <a href="@Url.Action("PersonelPuantaj", "IK")" id="puantaj1" style="cursor:pointer;display:  @ViewBag.Puantaj" class="nav__dropdown-item">• Puantaj</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nav__dropdown" style="display: @ViewBag.DisplayYonetim">
+                                <a onclick="openalt('stokopen')" id="yonetim1" class="nav__link" style="margin-top: 1rem !important;">
+                                    <i class='bx bx-sitemap nav__icon'></i>
+                                    <span class="nav__name">Yönetim</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+
+                                <div id="stokopen" class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="@Url.Action("Stok", "Yonetim")" id="stokdeger1" style="cursor:pointer;display:  @ViewBag.Stok" class="nav__dropdown-item">• Stok Değeri</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nav__dropdown" style="display: @ViewBag.Display">
+                                <a onclick="openalt('yonetimpaneliopen')" id="yonetimpaneli1" class="nav__link"  style="margin-top: 1rem !important;">
+                                    <i class='bx bxs-report nav__icon'></i>
+                                    <span class="nav__name">Yönetim Paneli</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+
+                                <div id="yonetimpaneliopen" class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="@Url.Action("KullaniciAyar", "YonetimPaneli")" id="kullanici1" style="cursor:pointer;display:  @ViewBag.Display1" class="nav__dropdown-item">• Uygulama Ayarları</a>
+                                        <a href="@Url.Action("UygulamaIstatistik", "YonetimPaneli")" id="istatistik1" style="cursor:pointer;display:  @ViewBag.Istatistik" class="nav__dropdown-item">• Uygulama İstatistikleri</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="nav__dropdown"  style="display: @ViewBag.DisplaySevkiyat">
-                            <a onclick="openalt('sevkiyatopen')" id="sevkiyat1" class="nav__link">
-                                <i class='bx bxs-truck nav__icon'></i>
-                                <span class="nav__name">Sevkiyat</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
-
-                            <div id="sevkiyatopen" class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-                                    <a href="@Url.Action("SiparisRaporu", "Sevkiyat")" id="mussiparisrap1" style="cursor:pointer;display: @ViewBag.DisplaySiparisRaporu" class="nav__dropdown-item">• Müşteri Siparişi Raporu</a>
-                                    <a href="@Url.Action("SaticiSiparisRaporu", "Sevkiyat")" id="saticisiprap1" style="cursor: pointer; display: @ViewBag.DisplaySaticiSiparisRaporu" class="nav__dropdown-item">• Satıcı Siparişi Raporu</a>
-                                    <a href="@Url.Action("SevkMalKabul", "Sevkiyat")" id="sevkmalkabul1" style="cursor: pointer; display: @ViewBag.DisplaySevkMalKabul" class="nav__dropdown-item">• Sevk & Kabul İşlemleri</a>
-                                    <a href="@Url.Action("DepoTransfer", "Sevkiyat")" id="depotransfer1" style="cursor: pointer; display: @ViewBag.DisplayDepoTransfer" class="nav__dropdown-item">• Depo Transfer</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav__dropdown"  style="display:@ViewBag.DisplayUretim">
-                            <a onclick="openalt('uretimopen')" id="uretim1" class="nav__link">
-                                <i class='bx bxs-hard-hat nav__icon'></i>
-                                <span class="nav__name">Üretim</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
-
-                            <div id="uretimopen" class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-
-                                    <a href="@Url.Action("IsEmri", "IsEmri")" id="isemri2" style="cursor: pointer; display: @ViewBag.DisplayIsEmriKayit" class="nav__dropdown-item">• İş Emri</a>
-                                    <a href="@Url.Action("Index", "Uretim")" id="anlikuretim1" style="cursor:pointer;display:  @ViewBag.DisplayAnlikUretim" class="nav__dropdown-item">• Üretim Kayıtları</a>
-                                    <a href="@Url.Action("MES", "Uretim")" id="mes" style="cursor:pointer;display:  @ViewBag.DisplayMES" class="nav__dropdown-item">• MES</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav__dropdown"   style="display:@ViewBag.DisplaySatinAlma">
-                            <a onclick="openalt('satinalmaopen')" id="satinalma1" class="nav__link">
-                                <i class='bx bx-credit-card nav__icon'></i>
-                                <span class="nav__name">Satın Alma</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
-
-                            <div id="satinalmaopen" class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-                                    <a href="@Url.Action("SatinAlmaRaporu", "SatinAlma")" id="satinalmadetsip1" style="cursor:pointer;display:  @ViewBag.DisplaySiparisRaporu" class="nav__dropdown-item">• Detaylı Sipariş Raporu</a>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav__dropdown"   style="display:@ViewBag.DisplayFinans">
-                            <a onclick="openalt('finansopen')" id="finans1" class="nav__link">
-                                <i class='bx bx-trending-up nav__icon'></i>
-                                <span class="nav__name">Finans</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
-
-                            <div id="finansopen" class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-                                    <a href="@Url.Action("Index", "Finans")" id="kur1" style="cursor:pointer;display:  @ViewBag.DisplayKur" class="nav__dropdown-item">• Kur Yönetimi</a>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav__dropdown"  style="display: @ViewBag.DisplayMuhasebe">
-                            <a onclick="openalt('muhasebetopen')" id="muhasebe1" class="nav__link">
-                                <i class='bx bx-calculator nav__icon'></i>
-                                <span class="nav__name">Muhasebe</span>
-                            </a>
-
-
-                        </div>
-                        <div class="nav__dropdown"  style="display: @ViewBag.Display4">
-                            <a onclick="openalt('ikopen')" id="ik1" class="nav__link">
-                                <i class='bx bx-male-female nav__icon'></i>
-                                <span class="nav__name">İnsan Kaynakları</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
-
-                            <div id="ikopen" class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-                                    <a href="@Url.Action("PersonelBilgi", "IK")" id="personelbilgi1" style="cursor:pointer;display:  @ViewBag.Display5" class="nav__dropdown-item">• Personel Bilgi Girişi</a>
-                                    <a href="@Url.Action("PersonelBilgiYonetim", "IK")" id="personelbilgiyon1" style="cursor:pointer;display:  @ViewBag.Display6" class="nav__dropdown-item">• Personel Bilgi Yönetimi</a>
-                                    <a href="@Url.Action("PersonelSubeYonetim", "IK")" id="subebazi1" style="cursor:pointer;display:  @ViewBag.Sube" class="nav__dropdown-item">• Şube Bazında Personel Bilgi Yönetimi</a>
-                                    <a href="@Url.Action("PersonelPuantaj", "IK")" id="puantaj1" style="cursor:pointer;display:  @ViewBag.Puantaj" class="nav__dropdown-item">• Puantaj</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav__dropdown"  style="display: @ViewBag.DisplayYonetim">
-                            <a onclick="openalt('stokopen')" id="yonetim1" class="nav__link">
-                                <i class='bx bx-sitemap nav__icon'></i>
-                                <span class="nav__name">Yönetim</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
-
-                            <div id="stokopen" class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-                                    <a href="@Url.Action("Stok", "Yonetim")" id="stokdeger1" style="cursor:pointer;display:  @ViewBag.Stok" class="nav__dropdown-item">• Stok Değeri</a>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav__dropdown"  style="display: @ViewBag.Display">
-                            <a onclick="openalt('yonetimpaneliopen')" id="yonetimpaneli1" class="nav__link">
-                                <i class='bx bxs-report nav__icon'></i>
-                                <span class="nav__name">Yönetim Paneli</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
-
-                            <div id="yonetimpaneliopen" class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-                                    <a href="@Url.Action("KullaniciAyar", "YonetimPaneli")" id="kullanici1" style="cursor:pointer;display:  @ViewBag.Display1" class="nav__dropdown-item">• Uygulama Ayarları</a>
-                                    <a href="@Url.Action("UygulamaIstatistik", "YonetimPaneli")" id="istatistik1" style="cursor:pointer;display:  @ViewBag.Istatistik" class="nav__dropdown-item">• Uygulama İstatistikleri</a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
 
                 </div>
             </div>
+            
+            <div>
+                @{
+                    string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
+                }
+                <a href="/Profil/Index" class="nav__link nav__logout profil" style="margin: 2rem 0 !important;">
 
-            <a href="#" class="nav__link nav__logout" data-bs-toggle="modal"
-               data-bs-target="#cikis">
-                <i class='bx bx-lock nav__icon'></i>
-                <span class="nav__name">Çıkış</span>
-            </a>
+                    <img src="/assets/img/avatars/@s" type="image/png" class="rounded-circle profil" style="width: 35px;">
+
+                    <span class="nav__name ms-1">@Request.Cookies["Name"].Value</span>
+                </a>
+
+                <a href="#" class="nav__link nav__logout cikis" data-bs-toggle="modal"
+                   data-bs-target="#cikis" style="margin-top:0 !important;padding: 0 !important;">
+                    <i class='bx bx-lock nav__icon'></i>
+                    <span class="nav__name">Çıkış</span>
+                </a>
+            </div>
+
         </nav>
     </div>
 
@@ -528,10 +631,14 @@
 
         function openalt(value) {
             if (document.getElementById(value).style.display == "unset") {
+
                 document.getElementById(value).style.display = "none"
                 event.currentTarget.getElementsByClassName("nav__dropdown-icon")[0].style = "transform: rotate(0deg)";;
                 
             } else {
+
+                $(".nav__dropdown-collapse").hide();
+                $(".nav__dropdown-icon").css('transform', 'rotate(0deg)');
                 document.getElementById(value).style.display = "unset";
                 event.currentTarget.getElementsByClassName("nav__dropdown-icon")[0].style = "transform: rotate(90deg)";
             }
@@ -541,6 +648,7 @@
             $(".nav__dropdown-collapse").hide();
             $(".nav__dropdown-icon").css("transform", "rotate(0deg)")
         }
+
     </script>
 
    

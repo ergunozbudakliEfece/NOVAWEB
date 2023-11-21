@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout_yonetim.cshtml";
+    Layout = "~/Views/Shared/_Layout_common.cshtml";
 }
 
 @model Tuple<NOVA.Models.User, NOVA.Models.Mail,NOVA.Models.Modules>
@@ -14,6 +14,9 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 
 <style>
+    body {
+        padding: 0 0 0 4rem !important;
+    }
     .vertical-center {
         min-height: 95%; /* Fallback for browsers do NOT support vh unit */
         min-height: 95vh; /* These two lines are counted as one :-)       */
@@ -67,6 +70,31 @@
         }
     }
 </style>
+<script>
+         async function getUserAsync() {
+let response = await fetch(`@Url.Action("GetUser", "Satis")`);
+let data = await response.json()
+return data;
+    }
+    async function getModulesAsync() {
+let response = await fetch('http://192.168.2.13:83/api/modules');
+let data = await response.json()
+return data;
+    }
+      async function getRoleAsync() {
+          let response = await fetch('http://192.168.2.13:83/api/roles');
+let data = await response.json()
+return data;
+}
+    var users = null;
+    var roles = null;
+    var modules = null;
+    var ROLENAMES = null;
+    $.getJSON("http://192.168.2.13:83/api/roles", function (data) {
+
+        ROLENAMES = data;
+    })
+</script>
 <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
 
 <div class="jumbotron vertical-center" style="overflow-y:hidden">
@@ -166,61 +194,7 @@
         </div>
     </div>
     <div class="container-fluid">
-        <div class="row">
-            <div class="col">
-                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-                    <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                        <i class="bx bx-menu bx-sm"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col">
-                <div class="avatar avatar-online float-end mb-0" data-bs-toggle="dropdown">
-                    @{
-                        string s = Request.Cookies["Id"].Value + ".png?" + DateTime.Now.Ticks.ToString();
-                    }
-                    <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
-                        <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
-                    </object>
-                </div>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href='@Url.Action("Index", "Profil")'>
-                            <div class="d-flex">
-                                <div class="flex-shrink-0 me-3">
-                                    <div class="avatar avatar-online">
-                                        <object data="/assets/img/avatars/@s" type="image/png" class="w-px-40 h-auto rounded-circle">
-                                            <img src="/assets/img/avatars/7.png" class="w-px-40 h-auto rounded-circle">
-                                        </object>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1">
-                                    @if (@Request.Cookies["Name"] != null)
-                                    {
-                                        <span class="fw-semibold d-block">@Request.Cookies["Name"].Value</span>
-                                        <small class="text-muted">Yetki: @Request.Cookies["RoleName"].Value</small>
-                                    }
-                                    else
-                                    {
-                                        <span class="fw-semibold d-block">Test</span>
-                                        <small class="text-muted">Yetki: Test</small>
-                                    }
-
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                           data-bs-target="#cikis">
-                            <i class="bx bx-power-off me-2"></i>
-                            <span class="align-middle">Oturumu Kapat</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        
         <div class="btn-group menu1" role="group" aria-label="Basic radio toggle button group">
             <input type="radio" class="btn-check" onclick="changetable(1)" name="btnradio" id="btnradio1" checked="" autocomplete="off">
             <label class="btn btn-outline-secondary" for="btnradio1">KULLANICI</label>
