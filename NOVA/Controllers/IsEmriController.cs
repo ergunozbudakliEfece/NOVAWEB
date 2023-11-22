@@ -955,7 +955,7 @@ namespace NOVA.Controllers
 
         }
         [HttpPost]
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult Post(List<IsEmriModel> isemri)
+        public Microsoft.AspNetCore.Mvc.StatusCodeResult Post(List<IsEmriModel> isemri,bool TamamiKullanilsin)
         {
 
             var isemridis = isemri.GroupBy(x => x.ISEMRINO).Select(x => x.First()).ToList();
@@ -1062,9 +1062,17 @@ namespace NOVA.Controllers
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
                     
+                       
+                    if (TamamiKullanilsin == true)
+                    {
                         netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR='" + isemridis[i].HAMSARF + "',MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
-                   
-                    
+
+                    }
+                    else
+                    {
+                        netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "', DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                    }
+
 
                 }
             }

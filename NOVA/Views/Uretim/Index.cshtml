@@ -22,6 +22,12 @@
     <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
 
     <style>
+        button:disabled,
+        button[disabled] {
+            border: 1px solid #999999;
+            background-color: #e5e5e5e5;
+            color: #bababa;
+        }
         body {
             padding: 0 0 0 5rem !important;
         }
@@ -1778,6 +1784,7 @@
                         b.style.width = "295px";
                         b.style.height = "145px";
                         b.setAttribute("data-stokkodu", data[i].STOK_KODU);
+                        b.setAttribute("data-seri", data[i].SERINO);
                         b.setAttribute("data-genislik", data[i].BANT_GENISLIGI);
                         if (value == 'DL01') {
                             b.setAttribute("data-top", data[i].TOPLAM_MIKTAR_REC);
@@ -1796,12 +1803,18 @@
 
                         /*b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].SIP_CARI_ISIM + "</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";*/
                         if (value == 'DL01') {
-                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + data[i].SERINO + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
                         } else {
-                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + data[i].SERINO + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
                         }
                         if (data[i].URETILEBILIR == 'H') {
                             b.setAttribute("disabled", "disabled");
+                           
+                            if (value == 'DL01') {
+                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + data[i].SERINO + "</br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                            } else {
+                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + data[i].SERINO + "</br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                            }
                         }
 
 
@@ -4005,6 +4018,7 @@
 
     $(document).ready(() =>
     {
+        $('#pageName').html('<div class="dot"></div> Üretim Kayıtları')
         $('#uretilmis-barkod-dizayn').select2({ language: 'tr' });
     });
 
@@ -4220,20 +4234,18 @@
     <!--Üretilmis Barkodlar Son-->
     <!-- Deneysel -->
     <button class="btn btn-primary" onclick="Scan()">Scan</button>
-    <div id="qr-scanner-area">
+
+    <div class="qr-scanner-area">
         <video id="qr-scanner"></video>
-        <div id="qr-controls">
-            <select id="qr-camera-select">
-                <option>Test</option>
-                <option>Test2</option>
-            </select>
-            <button id="qr-scanner-exit" onclick="Close()">X</button>
+        <div class="qr-controls">
+            <select class="qr-camera-select"></select>
+            <i class='bx bx-x qr-scanner-exit' onclick="Close()"></i>
         </div>
     </div>
 
 
     <style>
-        #qr-scanner-area {
+        .qr-scanner-area {
             display: none;
             position: relative;
             width: 100%;
@@ -4246,7 +4258,7 @@
             object-fit: cover;
         }
 
-        #qr-controls {
+        .qr-controls {
             position: absolute;
             top: 0;
             right: 0;
@@ -4255,7 +4267,36 @@
             display: flex;
             justify-content: space-between;
             align-items: start;
-            padding: 1rem;
+            padding: 2rem;
+        }
+
+        .qr-camera-select {
+            width: 250px !important;
+            height: 3rem;
+            background-color: #00000036;
+            border: 1px solid #ffffff52;
+            border-radius: 0.375rem;
+            color: #ffffffff;
+            font-size: large;
+            padding: 0 0.25rem;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+            .qr-camera-select option {
+                font-size: xx-large;
+                cursor: pointer;
+            }
+
+        .qr-scanner-exit {
+            font-size: xxx-large;
+            color: white;
+            filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.562));
+            cursor: pointer;
+        }
+
+        .sweet-alert {
+            z-index: 2147483647 !important;
         }
     </style>
 
@@ -4263,21 +4304,48 @@
         var Scanner;
 
         function Scan() {
-            Scanner = new Instascan.Scanner({ video: document.getElementById('qr-scanner') });
+            Scanner = new Instascan.Scanner({ video: document.getElementById('qr-scanner'), mirror: false });
 
             Scanner.addListener('scan', function (content) {
-                alert(content);
+                swal.fire({
+                    title: "Success!",
+                    text: content,
+                    type: "success",
+                    icon: 'success',
+                    target: document.getElementsByClassName("qr-controls")[0],
+                });
             });
 
             let Cameras = [];
 
             Instascan.Camera.getCameras()
                 .then(function (cameras, image) {
-                    Scanner.start(cameras[0])
+
+                    this.Cameras = cameras;
+
+                    let MultipleCamera = cameras.length > 1;
+
+                    document.getElementsByClassName('qr-camera-select')[0].innerHTML = '';
+
+                    for (let i = 0; i < cameras.length; i++) {
+                        var CameraName = (i == 0 ? "Ön Kamera" : (i == 1 ? "Arka Kamera" : cameras[i].name));
+                        var CameraOption = new Option(CameraName, cameras[i].id);
+                        document.getElementsByClassName('qr-camera-select')[0].add(CameraOption);
+                    }
+
+                    if (MultipleCamera) {
+                        document.getElementsByClassName('qr-camera-select')[0].value = cameras[1].id;
+                    }
+
+                    Scanner.start(MultipleCamera ? cameras[1] : cameras[0])
                         .then(() => {
-                            SetFullscreen(document.getElementById('qr-scanner-area'));
-                            document.getElementById('qr-scanner-area').style.display = "block";
+                            document.getElementsByClassName('qr-scanner-area')[0].style.display = "block";
+                            SetFullscreen(document.getElementsByClassName('qr-scanner-area')[0]);
                         });
+
+                    document.getElementsByClassName('qr-camera-select')[0].addEventListener("change", event => {
+                        Scanner.start(this.Cameras.find(c => c.id == event.target.value));
+                    });
 
                 })
                 .catch((e) => {
@@ -4286,12 +4354,30 @@
         }
 
         function Close() {
+            document.getElementsByClassName('qr-scanner-area')[0].style.display = "none";
+
             Scanner
                 .stop()
                 .then(() => {
-                    document.getElementById('qr-scanner-area').style.display = "none";
+                    Scanner = null;
                     document.exitFullscreen();
                 });
+        }
+
+        document.addEventListener("fullscreenchange", FullscreenChanged);
+
+        function FullscreenChanged(event) {
+            if (!document.fullscreenElement) {
+                document.getElementsByClassName('qr-scanner-area')[0].style.display = "none";
+
+                if (Scanner != null) {
+                    Scanner
+                        .stop()
+                        .then(() => {
+                            Scanner = null;
+                        });
+                }
+            }
         }
 
         function SetFullscreen(Item) {
@@ -4306,6 +4392,8 @@
             }
         }
     </script>
+    </script>
+
 
     <!-- Deneysel Son-->
 </body>
