@@ -659,16 +659,18 @@
             <div class="row me-0">
                 <div class="col">
 
-
-                    <div class="form-check form-switch mb-2" id="tamamidiv" style="display:none">
-                        <input id="tamami" checked="checked" onchange="chcked()" class="form-check-input" type="checkbox">
-                        <label class="form-check-label" for="etiketyazdir">Tamamı Kullanılsın</label>
+                    <div style="overflow:auto !important">
+                        <div class="form-check form-switch mb-2" id="tamamidiv" style="display:none">
+                            <input id="tamami" checked="checked" onchange="chcked()" class="form-check-input" type="checkbox">
+                            <label class="form-check-label" for="etiketyazdir">Tamamı Kullanılsın</label>
+                        </div>
+                        <div class="text-center" id="DLPivotTop"></div>
+                        <div class="text-center" id="TPPivotTop" style="display:none"></div>
+                        <div class="text-center" id="BKPivotTop" style="display:none"></div>
+                        <div class="text-center" id="PBPivotTop" style="display:none"></div>
+                        <div class="text-center" id="RFPivotTop" style="display:none"></div>
                     </div>
-                    <div class="text-center" id="DLPivotTop"></div>
-                    <div class="text-center" id="TPPivotTop" style="display:none"></div>
-                    <div class="text-center" id="BKPivotTop" style="display:none"></div>
-                    <div class="text-center" id="PBPivotTop" style="display:none"></div>
-                    <div class="text-center" id="RFPivotTop" style="display:none"></div>
+                    
 
 
 
@@ -1870,6 +1872,7 @@
                                 var tam = document.getElementById("agirlik").value.split("/")[0].split('.').join('');
                                 var hamor = document.getElementById("hamoran").value;
                                 var sirano = parseInt(tr[i].getElementsByTagName("td")[0].innerHTML);
+                                var girdi2old = sonSeri[0].SERI_NO;
                                 var girdi2 = sonSeri[0].SERI_NO;
                                 var makine = tr[i].getElementsByTagName("select")[0].value;
                                 var makineref = tr[i].getElementsByTagName("select")[2].value;
@@ -1910,18 +1913,20 @@
                                         var is = isemrilist.filter(x => x.includes(makine));
                                         sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                     }
-
+                             
                                     if (serilist.includes(girdi2)) {
-                                        if (siralist.includes(sirano) && adet == 1) {
-                                            girdi2 = serilist[serilist.length - 1];
-                                        } else {
-                                            girdi2 = girdi2.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                        if (refstokolcusu == "SEÇİNİZ") {
+                                            if (siralist.includes(sirano) && adet == 1) {
+                                                girdi2 = serilist[serilist.length - 1];
+                                            } else {
+                                                girdi2 = girdi2old.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                            }
                                         }
-
-                                    }
+                                    } 
                                     if (refstokolcusu == "SEÇİNİZ") {
                                         refstokolcusu = "-"
                                         refadet = "-"
+                                        girdi2="-"
                                     } else {
                                         refadet = Math.round(refadet / adet)
                                     }
@@ -1932,7 +1937,7 @@
                                         GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: refadet, AGIRLIK: (parseFloat(refagirlik) / adet).toString(), SIPKONT: "", SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam, ORAN: oran
                                     });
 
-                                    if (!serilist.includes(girdi2)) {
+                                    if (!serilist.includes(girdi2) && girdi2!="-") {
 
                                         serilist.push(girdi2);
                                     }
@@ -1970,7 +1975,8 @@
 
                                 $(function () {
                                     document.getElementById("DLPivot").replaceChildren();
-                                    $("#tamamidiv").hide()
+                                    $("#tamamidiv").show()
+                                    $("#tamami").show()
                                     $("#DLPivot").pivot(
                                         takiplist,
                                         {
@@ -2201,7 +2207,8 @@
                         title: 'Hammadde seçmediniz!'
                     })
                 }
-
+                $('#tamami').show();
+                $('#tamamidiv').show();
 
                 break;
 
@@ -2221,33 +2228,39 @@
                 $("#tamamidiv").hide();
                 document.getElementById("DLPivot").replaceChildren();
                 document.getElementById("DLPivotTop").replaceChildren();
+                $("#tamamidiv").show();
+                $("#tamami").show();
                 break;
             case 'TP':
                 localStorage.TPPivotVeri = null;
                 localStorage.TPPivotToplamVeri = null;
                 document.getElementById("TPPivot").replaceChildren();
                 document.getElementById("TPPivotTop").replaceChildren();
+                $("#tamamidiv").hide();
                 break;
             case 'BK':
                 localStorage.BKPivotVeri = null;
                 localStorage.BKPivotToplamVeri = null;
                 document.getElementById("BKPivot").replaceChildren();
                 document.getElementById("BKPivotTop").replaceChildren();
+                $("#tamamidiv").hide();
                 break;
             case 'RF':
                 localStorage.RFPivotVeri = null;
                 localStorage.RFPivotToplamVeri = null;
                 document.getElementById("RFPivot").replaceChildren();
                 document.getElementById("RFPivotTop").replaceChildren();
+                $("#tamamidiv").hide();
                 break;
             case 'PB':
                 localStorage.PBPivotVeri = null;
                 localStorage.PBPivotToplamVeri = null;
                 document.getElementById("PBPivot").replaceChildren();
                 document.getElementById("PBPivotTop").replaceChildren();
+                $("#tamamidiv").hide();
                 break;
         }
-        $("#tamamidiv").hide();
+       
     }
     function c(val) {
         if (val.value == "DL") {
