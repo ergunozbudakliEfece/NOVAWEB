@@ -1,4 +1,4 @@
-﻿﻿
+﻿﻿﻿
 @{
     Layout = "/Views/Shared/_Layout_isemri.cshtml";
 }
@@ -12,20 +12,21 @@
 
 <html>
 <head>
-
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Nova | Efece Galvaniz/Üretim Kayıtları</title>
+    <link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <script src="~/Scripts/sweetAlert.js"></script>
     <link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
-    <link href="https://unpkg.com/browse/bootstrap-table@1.15.3/dist/extensions/reorder-rows/bootstrap-table-reorder-rows.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
-    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
-    <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
-
+    <script src="~/Scripts/jquery-3.6.1.js"></script>
+    <link href="~/Scripts/reorder-rows.css" rel="stylesheet" />
+    <script src="~/Scripts/jqueryui-min.js"></script>
+    <script src="~/Scripts/instascan.min.js"></script>
+    <link href="~/Scripts/sticky.css" rel="stylesheet" />
     <style>
         .tooltip-inner {
             max-width: 301px !important;
         }
-            button: disabled, button[disabled] {
+
+        button: disabled, button[disabled] {
             border: 1px solid #999999;
             background-color: #e5e5e5e5;
             color: #bababa;
@@ -59,7 +60,7 @@
             display: none !important;
         }
 
-        .myInput {
+        /* .myInput {
             box-sizing: border-box;
             background-image: url('https://www.w3schools.com/howto/searchicon.png');
             background-position: 5px;
@@ -68,11 +69,11 @@
             padding: 8px 20px 7px 45px;
             border: none;
             z-index: 5;
-        }
+        }*/
 
-            .myInput:focus {
-                outline: 3px solid #ddd;
-            }
+        .myInput:focus {
+            outline: 3px solid #ddd;
+        }
 
         .dropdown {
             position: fixed;
@@ -179,13 +180,9 @@
             #scanner {
                 margin-top: 0 !important;
             }
-
-
-
-
-            .modal {
+            /*.modal {
                 font-size: 10px !important;
-            }
+            }*/
 
             .modal-dialog {
                 max-width: 90% !important;
@@ -298,9 +295,11 @@
             }
         }
     </style>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="~/Scripts/select2.css" rel="stylesheet" />
+
     <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="~/Scripts/select2.min.js"></script>
+
     <script>
         var sag = 0;
     </script>
@@ -334,9 +333,6 @@
     </script>
 </head>
 <body style="overflow-x:hidden;">
-    <div class="centercontent" id="content" style="display:unset">
-        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
-    </div>
 
     <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
@@ -711,7 +707,7 @@
         }
 
         function MakineBekleyenIsEmri(value) {
-            $("#progress").show();
+            ShowProgress();
             $('#BekleyenIsEmirleriTablo').hide();
 
             $('#BekleyenIsEmirleriTable').bootstrapTable('destroy');
@@ -725,11 +721,11 @@
             BekleyenIsEmriFiltrele($("input:radio[name=makine-status-ie]").val());
 
             $(".iefiltre").show();
-            $("#progress").hide();
+            HideProgress();
         }
 
         function BekleyenIsEmriFiltrele(value) {
-            $("#progress").show();
+            ShowProgress();
             $('#BekleyenIsEmirleriTablo').hide();
 
             $('#BekleyenIsEmirleriTable').bootstrapTable('destroy');
@@ -760,7 +756,7 @@
                 MakineKoduIleSutunFiltrele(MakineKodu);
 
                 $('#BekleyenIsEmirleriTablo').show();
-                $("#progress").hide();
+                HideProgress();
             });
         }
 
@@ -1124,7 +1120,7 @@
                 }).then((result) => {
                     if (result.isConfirmed)
                     {
-                        $("#progress").show();
+                        ShowProgress();
                         $('#isemirlerinikapatbtn').hide();
 
                         $.ajax({
@@ -1282,7 +1278,8 @@
         }
 
         function oranFormatter4(value, index, row) {
-            return '<div  data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<div class=\'row flex-nowrap\'><div class=\'col  text-center\'>ORAN</div><div class=\'col  text-center\'>TOPLAM</div><div class=\'col  text-center\'>ÜRETİLEN</div></div><div class=\'row flex-nowrap\'><div class=\'col  text-center\'>' + Math.round(parseFloat(index.ORAN)) + ' %</div><div class=\'col  text-center\'>' + Math.round(parseFloat(index.SERI_MIKTAR)) + ' ' + index.OLCU_BR1 + '</div><div class=\'col  text-center\'>' + Math.round(parseFloat(index.URETILEN)) + ' ' + index.OLCU_BR1 + '</div></div>"><p class="meter" style="height: auto;position: relative; border: 1px solid #d9dee3; border-radius: 8px; margin: 0 0.25rem;"><span style="width:' + parseFloat(value) + '%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; display:flex;align-items:center;"><span style="height:auto; color: black;font-size: small;position: absolute; right: 0; left: 0; top: 0; bottom: 0;">' + index.SERI_NO + '</span></span></span></p></div>';
+            return '<div  data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<div class=\'row flex-nowrap\'><div class=\'col  text-center\'>ORAN</div><div class=\'col  text-center\'>TOPLAM</div><div class=\'col  text-center\'>ÜRETİLEN</div></div><div class=\'row flex-nowrap\'><div class=\'col  text-center\'>' + Math.round(parseFloat(index.ORAN)) + ' %</div><div class=\'col text-nowrap text-center\'>' + Math.round(parseFloat(index.SERI_MIKTAR)) + ' ' + index.OLCU_BR1 + '</div><div class=\'col  text-nowrap text-center\'>' + Math.round(parseFloat(index.URETILEN)) + ' ' + index.OLCU_BR1 + '</div></div>"><p class="meter" style="height: auto;position: relative; border: 1px solid #d9dee3; border-radius: 8px; margin: 0 0.25rem;"><span style="width:' + parseFloat(value) + '%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; display:flex;align-items:center;"><span style="height:auto; color: black;font-size: small;position: absolute; right: 0; left: 0; top: 0; bottom: 0;">' + index.SERI_NO + '</span></span></span></p></div>';
+            
         }
 
         var UretimListeYedek = [];
@@ -1610,13 +1607,13 @@
             $('#UretimListeTable').bootstrapTable('destroy');
             $('#UretimListeTable').bootstrapTable({ data: [] });
 
-            $("#progress").hide();
+            HideProgress();
         }
         var sabit = "";
         var btnid = "";
         function c(value) {
             $("#tablo").show();
-            $("#progress").show();
+            ShowProgress();
             $("#uretimkaydi").focus();
             sabit = value;
             btnid = value;
@@ -1699,7 +1696,7 @@
 
     </span></div>`);
                 }
-                $("#progress").hide();
+                HideProgress();
                 $("#UretimListeTable").show();
             })
 
@@ -1830,7 +1827,7 @@
                         maximumFractionDigits: 2
                     }))
                 }
-                
+
             } else {
                 $("#ModalSaveButton").prop("disabled", true)
                 $("#ikincimik1").prop("disabled", true);
@@ -1865,7 +1862,7 @@
     listIsemri = data;
 })
  Swal.fire({
-    title: value.innerHTML.split("<br>")[0] + '<i onclick="openother()" class="bi bi-file-earmark-text-fill float-end" style="color:#17a2b8;font-size:x-large;"></i>' + "<br>" + value.innerHTML.split("<br>")[1].split("<p")[0],
+     title: value.innerHTML.split("<br>")[0] + '<i onclick="openother()" class="bi bi-file-earmark-text-fill float-end" style="color:#17a2b8;font-size:x-large;"></i>' + "<br>" + value.innerHTML.split("<br>")[1].split("<p")[0] + "<br>",
     html: '<table id="tab1" class="table table-borderless inp"><tr><th>Miktar1</th><th>Miktar2</th></tr><tr><td><input onfocus="inputclick()" onkeyup="keychange1()" class="form-control text-center"  type="number"  id="miktar11" max="' + max + '" placeholder="Maksimum: ' + max.toLocaleString() + '"></td>' +
         '<td><input disabled class="form-control text-center" onfocus="inputclick()" onkeyup="keychange2()" type="number" id="miktar22  max="' + max2 + '" placeholder="Maksimum: ' + max2.toLocaleString() + '"></td></tr></table>',
     showCancelButton: true,
@@ -1880,7 +1877,7 @@
         popup: 'pop2 animate__animated animate__zoomOut'
     }
 }).then((result) => {
-    $("#progress").show();
+    ShowProgress();
     if (result.isConfirmed) {
         if (m1 != null) {
             var stokkodu = value.dataset.stokkodu;
@@ -1892,10 +1889,10 @@
                 data: { "hatkodu": hat, "stokkodu": stokkodu, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": m1.toString().trim(), "mik2": m2.toString().trim() },
                 error: function (data) {
                     alert(JSON.stringify(data));
-                    $("#progress").hide();
+                    HideProgress();
                 },
                 success: function (data) {
-                    $("#progress").hide();
+                    HideProgress();
                     if (data.substring(0, 4) == "Hata") {
                         Swal.fire(
                             'Başarısız!',
@@ -1925,7 +1922,7 @@
 
 
     } else {
-        $("#progress").hide();
+        HideProgress();
         constant = 0;
         $('body').trigger('click');
     }
@@ -1935,10 +1932,10 @@
 
         }
     </script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+   
     <script>
         function clickfunc() {
-            $("#progress").hide();
+            HideProgress();
              $.ajax({
                   url: '@Url.Action("IsEmirleriniKapat", "Uretim")',
                  type: 'POST',
@@ -1949,10 +1946,10 @@
                                     'Kapatılamadı',
                                     'warning'
                                 )
-                                $("#progress").hide();
+                                HideProgress();
                             },
                             success: function (data) {
-                                $("#progress").hide();
+                                HideProgress();
                                 Swal.fire(
                                     'Başarılı!',
                                     'Kayıt başarılı',
@@ -1968,7 +1965,7 @@
         }
     </script>
 
-    <script src="http://freegeoip.net/json/?callback=cb" type="text/javascript"></script>
+   
     <script>
         var x = document.getElementById("giris");
         var y = document.getElementById("cikis");
@@ -2148,8 +2145,8 @@
                     $("#hurdamik").attr('onkeyup', '');
                     $("#hurdaMHdiv").hide();
                 }
-                $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0]);
-                $("#SiparisModalLabel2").html(value.innerHTML.split("<br>")[1].split("<p")[0]);
+                $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0] + "<br>" + value.innerHTML.split("<br>")[1].split("<p")[0]);
+                $("#SiparisModalLabel2").html(value.innerHTML.split("<br>")[2].split("<p")[0]);
                 document.getElementById("modalicon").setAttribute("data-hat", hat);
                 document.getElementById("modalicon").setAttribute("data-stok", stok);
                 document.getElementById("modalicon").setAttribute("data-genislik", genislik);
@@ -2469,7 +2466,7 @@
 
         }
         function VerileriGonder() {
-            $("#progress1").show();
+            ShowProgress();
             var l = document.getElementById("table").getElementsByClassName("bi bi-check-circle-fill").length;
             var list = [];
             for (let i = 0; i < l; i++) {
@@ -2481,10 +2478,10 @@
                             data: {"isemrimod":list },
                             error: function (data) {
                                 alert(JSON.stringify(data));
-                                $("#progress1").hide();
+                                HideProgress();
                             },
                             success: function (data) {
-                                $("#progress1").hide();
+                                HideProgress();
                                 Swal.fire(
                                     'Başarılı!',
                                     'Kayıt başarılı',
@@ -2496,7 +2493,7 @@
                         })
         }
         function VerileriGonderAc() {
-            $("#progress1").show();
+            ShowProgress();
             var l = document.getElementById("table").getElementsByClassName("bi bi-check-circle-fill").length;
             var list = [];
             for (let i = 0; i < l; i++) {
@@ -2508,10 +2505,10 @@
                             data: {"isemrimod":list },
                             error: function (data) {
                                 alert(JSON.stringify(data));
-                                $("#progress1").hide();
+                                HideProgress();
                             },
                             success: function (data) {
-                                $("#progress1").hide();
+                                HideProgress();
                                 Swal.fire(
                                     'Başarılı!',
                                     'Kayıt başarılı',
@@ -2551,7 +2548,7 @@
                         data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": kontrol, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": loadDongu,"sonMu":false },
                         error: function (data) {
                             console.log(data);
-                            $("#progress2").hide();
+                            HideProgress();
                             $("#SiparisModal").modal('hide');
                             Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                         },
@@ -2563,13 +2560,13 @@
                                         loadDongu++;
                                         load(url);
                                     } else {
-                                        $("#progress2").hide();
+                                        HideProgress();
                                         $("#SiparisModal").modal('hide');
                                         Swal.fire('Başarısız!', data, 'error');
                                         document.getElementById(btnid).onclick();
                                     }
                                 } else {
-                                    $("#progress2").hide();
+                                    HideProgress();
                                     $("#SiparisModal").modal('hide');
                                     Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                     document.getElementById(btnid).onclick();
@@ -2579,7 +2576,7 @@
                                     }
                                 }
                             } else {
-                                $("#progress2").hide();
+                                HideProgress();
                                 $("#SiparisModal").modal('hide');
                                 Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                 document.getElementById(btnid).onclick();
@@ -2595,7 +2592,7 @@
                         data: { "stokkodu": stok, "ISEMRINO": d[0].ISEMRINO, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": kontrol, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": loadDongu },
                         error: function (data) {
                             console.log(data);
-                            $("#progress2").hide();
+                            HideProgress();
                             $("#SiparisModal").modal('hide');
                             Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                             loadDongu = 0;
@@ -2603,7 +2600,7 @@
                         success: function (data) {
 
 
-                                $("#progress2").hide();
+                                HideProgress();
                                 $("#SiparisModal").modal('hide');
                             if (data.substring(0, 4) == "Hata") {
                                 Swal.fire(
@@ -2684,12 +2681,12 @@
 
 
             document.body.style.pointerEvents = 'auto';
-            $("#progress").hide();
+            HideProgress();
         }
 
         function ModalKaydet() {
             if (m1 != null) {
-                $("#progress2").show();
+                ShowProgress();
                 var kontrol = $("#kontrol").is(':checked');
                 var etiket = $("#etiketyazdir").is(':checked');
                 var etiketOnizleme = $("#etiket-onizleme").is(':checked');
@@ -2703,7 +2700,7 @@
                             data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(), "kontrol": kontrol, "etiket": etiket, "onizleme": etiketOnizleme,"YAZICI":yazici },
                             error: function (data) {
                                 console.log(data);
-                                $("#progress2").hide();
+                                HideProgress();
                                 $("#SiparisModal").modal('hide');
                                 Swal.fire(
                                     'Başarısız!',
@@ -2712,7 +2709,7 @@
                                 )
                             },
                             success: function (data) {
-                                $("#progress2").hide();
+                                HideProgress();
                                 $("#SiparisModal").modal('hide');
                                 if (data.substring(0, 4) == "Hata") {
                                     Swal.fire(
@@ -2766,7 +2763,7 @@
                             })
 
                         } else {
-                            $("#progress2").hide();
+                            HideProgress();
                             const Toast = Swal.mixin({
                                 toast: true,
                                 position: 'center',
@@ -2810,7 +2807,7 @@
                     if (top1 <= max) {
                         load(url);
                     } else {
-                        $("#progress2").hide();
+                        HideProgress();
                         const Toast = Swal.mixin({
                             toast: true,
                             position: 'center',
@@ -2865,7 +2862,7 @@
                     data: { "stokkodu": stok, "ISEMRINO": r[Pbsayac].ISEMRINO, "SERI_NO": r[Pbsayac].SERI_NO, "KULL_MIKTAR": r[Pbsayac].KULL_MIKTAR, "mik2": Math.round(r[Pbsayac].MIKTAR2), "kontrol": k, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": Pbsayac, "sonMu": sonMu },
                     error: function (data1) {
                         console.log(data1);
-                        $("#progress2").hide();
+                        HideProgress();
                         $("#SiparisModal").modal('hide');
                         Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                     },
@@ -2882,7 +2879,7 @@
                                 loadPB(r)
 
                             } else {
-                                $("#progress2").hide();
+                                HideProgress();
                                 $("#SiparisModal").modal('hide');
                                 Swal.fire('Başarılı!', 'Başarılı!!', 'success');
 
@@ -2893,7 +2890,7 @@
                             }
 
                         } else {
-                            $("#progress2").hide();
+                            HideProgress();
                             $("#SiparisModal").modal('hide');
                             Swal.fire('Başarısız!', data1, 'error');
                             document.getElementById(btnid).onclick();
@@ -2922,7 +2919,7 @@
     <div class="modal fade" id="SiparisModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true" onclick="modalclick()">
 
         <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 50%;top:20vh">
-            <div class="modal-content" style="max-height:45vh;">
+            <div class="modal-content">
                 <div class="container-fluid mt-3">
                     <div class="centercontent" id="content2" style="display:unset">
                         <div class="heart"><img id="progress2" src="~/images/novasaydam.png" style="max-width:15vw;display:none" /></div>
@@ -2974,12 +2971,12 @@
 
                     <div class="row text-center mt-1">
                         <div class="col">
-                            <label class="modal-title" id="SiparisModalLabel" style="font-weight:bold">SATICI SİPARİŞ RAPORU</label>
+                            <label class="modal-title" id="SiparisModalLabel" style="font-weight:bold;font-size:larger">SATICI SİPARİŞ RAPORU</label>
                         </div>
                     </div>
                     <div class="row text-center mt-1">
                         <div class="col">
-                            <label class="modal-title" id="SiparisModalLabel2">SATICI SİPARİŞ RAPORU</label>
+                            <label class="modal-title" id="SiparisModalLabel2" style="font-size: large">SATICI SİPARİŞ RAPORU</label>
 
                         </div>
                     </div>
@@ -3462,7 +3459,7 @@
 
         }
         function ikinciKaliteKaydet(e) {
-            $("#progress2").show();
+            ShowProgress();
             var stokadi = $('#SiparisModalLabel').html().substring(3, $('#SiparisModalLabel').html().length - 4);
             $.ajax({
      url: '@Url.Action("IkinciKalite", "Uretim")',
@@ -3470,11 +3467,11 @@
                 data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(), "stokadi": stokadi, "tip": e,"uretimSonuKaydindanMi":false},
      error: function (data) {
          console.log(data);
-         $("#progress2").hide();
+         HideProgress();
          $("#SiparisModal").modal('hide');
      },
      success: function (data) {
-         $("#progress2").hide();
+         HideProgress();
          $("#SiparisModal").modal('hide');
          Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
          document.getElementById(btnid).onclick();
@@ -3499,18 +3496,18 @@
                             data: { "hatkodu": Tip, "mik1": miktar, "stokkodu": data[0].STOK_KODU },
                             error: function (data) {
                                 console.log(data);
-                                $("#progress7").hide();
+                                HideProgress();
                                 $("#SiparisModal").modal('hide');
                             },
                             success: function (data) {
                                 if (data == "BAŞARILI") {
-                                    $("#progress7").hide();
+                                    HideProgress();
                                     $("#SiparisModal").modal('hide');
                                     Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                     document.getElementById(btnid).onclick();
                                     HurdaModalKapat()
                                 } else {
-                                    $("#progress7").hide();
+                                    HideProgress();
                                     $("#SiparisModal").modal('hide');
                                     Swal.fire('Başarısız!', data, 'error');
                                     document.getElementById(btnid).onclick();
@@ -3530,7 +3527,7 @@
                                         data: { "hatkodu": Tip, "mik1": m, "stokkodu": data[0].STOK_KODU },
                                         error: function (data) {
                                             console.log(data);
-                                            $("#progress2").hide();
+                                            HideProgress();
                                             $("#SiparisModal").modal('hide');
                                         },
                                         success: function (data) {
@@ -3538,7 +3535,7 @@
                                             if (miktar > 0) {
                                                 HurdaLoop(miktar);
                                             } else {
-                                                $("#progress2").hide();
+                                                HideProgress();
                                                 $("#SiparisModal").modal('hide');
                                                 Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                                 document.getElementById(btnid).onclick();
@@ -3563,7 +3560,7 @@
             var miktar = $('#hurdamiktar1').val();
 
             if (miktar.length > 0) {
-                $("#progress7").show();
+                ShowProgress();
                 var url = "";
 
                 var mak = $('input[name="btnradio btn-makineler"]:checked').val();
@@ -3585,7 +3582,7 @@
                         data: { "stokkodu": mak, "ISEMRINO": is, "SERI_NO": d[0].SERI_NO, "KULL_MIKTAR": d[0].KULL_MIKTAR, "mik2": d[0].KULL_MIKTAR2, "kontrol": false },
                         error: function (data) {
 
-                            $("#progress7").hide();
+                            HideProgress();
                             $("#SiparisModal").modal('hide');
                             Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                         },
@@ -3594,7 +3591,7 @@
                                 HurdaKaliteKayit();
                             }
                             else {
-                                $("#progress7").hide();
+                                HideProgress();
                                 $("#HurdaModal").modal('hide');
                                 if (data.substring(0, 4) != 'Hata') {
                                     Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
@@ -3634,7 +3631,7 @@
             var m1 = $("#ikincimik1").val();
             var m2 = $("#ikincimik2").val();
             var olculer = $("#SiparisModalLabel2").html();
-           
+
             if (m2.length > 0) {
                 if (hat != 'PB01' && hat != 'PB02') {
                     var olcu1 = olculer.split("||")[0].split(" ")[3];
@@ -3649,8 +3646,8 @@
                 }
             } else { $("#BirimMik2").html(" - ") }
 
-           
-            
+
+
             }
 
 
@@ -3692,7 +3689,7 @@
                     allowOutsideClick: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $("#progress").show();
+                        ShowProgress();
                         $('#isemirlerinikapatbtn').hide();
                         var serino = $('#filter').val();
                         $.ajax({
@@ -3706,7 +3703,7 @@
                                 } else {
                                     Swal.fire('Başarısız!', data, 'error');
                                 }
-                                $("#progress").hide();
+                                HideProgress();
 
                                 $('input[name="makine-ie"]:checked').trigger('click');
                             }
@@ -3758,7 +3755,7 @@
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $("#progress").show();
+                    ShowProgress();
                     $('#isemirlerinikapatbtn').hide();
                     var serino = $('#filter').val();
                     $.ajax({
@@ -3772,7 +3769,7 @@
                             } else {
                                 Swal.fire('Başarısız!', data, 'error');
                             }
-                            $("#progress").hide();
+                            HideProgress();
 
                             $('input[name="makine-ie"]:checked').trigger('click');
                         }
@@ -3972,7 +3969,7 @@
     {
         if (SecilenBarkodlar.length > 0)
         {
-            $("#progress").show();
+            ShowProgress();
 
             document.body.style.pointerEvents = 'none';
 
@@ -3990,7 +3987,7 @@
                 success: (Response) =>
                 {
                         UretilmisEtiketOnizle(Response, SecilenBarkodlar[0]);
-                    
+
                 }
             });
 
@@ -4028,7 +4025,7 @@
         }
 
         document.body.style.pointerEvents = 'auto';
-        $("#progress").hide();
+        HideProgress();
     }
 
     function YazdirSwitch() {
@@ -4192,7 +4189,7 @@
         function Scan() {
             Scanner = new Instascan.Scanner({ video: document.getElementById('qr-scanner'), mirror: false, refractoryPeriod: 2000 });
 
-             $('#TP01ModeButton').css('display', (ScanType == "uretime-al") ? 'block' : 'none');
+            $('#TP01ModeButton').css('display', (ScanType == "uretime-al") ? 'block' : 'none');
 
             Scanner.addListener('scan', function (content) {
                 switch (ScanType) {
