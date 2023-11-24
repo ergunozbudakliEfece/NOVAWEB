@@ -485,37 +485,41 @@ namespace NOVA.Controllers
                         uretim.Kaydet();
                         NetRS netRS1 = kernel.yeniNetRS(sirket);
                         f = recmik - jsonList[i].KULL_MIKTAR;
-                        if (f != 0 && hatkodu == "DL01")
+                        if (miktarsabitle != "H")
                         {
+                            if (f > 0 && hatkodu == "DL01")
+                            {
 
-                            fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
+                                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
 
-                            fatUst = fatura.Ust();
-                            fatUst.FATIRS_NO = fatura.YeniNumara("A");
-                            fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
-                            fatUst.CikisYeri = TCikisYeri.cySerbest;
-                            fatUst.CariKod = "12035200100406";
-                            fatUst.Tarih = DateTime.Now;
-                            fatUst.ENTEGRE_TRH = DateTime.Now;
-                            fatUst.FiiliTarih = DateTime.Now;
-                            fatUst.Proje_Kodu = "1";
-                            fatUst.Aciklama = fisno;
-                            fatKalem = fatura.kalemYeni("HURDA");
-                            fatKalem.DEPO_KODU = 60;
-                            fatKalem.Olcubr = 1;
-                            fatKalem.ProjeKodu = "1";
-                            fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
-                            fatKalem.STra_GCMIK = f;
-                            fatKalem.STra_NF = 0;
-                            fatKalem.STra_BF = 0;
-                            fatKalem.STra_ACIK = fisno;
+                                fatUst = fatura.Ust();
+                                fatUst.FATIRS_NO = fatura.YeniNumara("A");
+                                fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                                fatUst.CikisYeri = TCikisYeri.cySerbest;
+                                fatUst.CariKod = "12035200100406";
+                                fatUst.Tarih = DateTime.Now;
+                                fatUst.ENTEGRE_TRH = DateTime.Now;
+                                fatUst.FiiliTarih = DateTime.Now;
+                                fatUst.Proje_Kodu = "1";
+                                fatUst.Aciklama = fisno;
+                                fatKalem = fatura.kalemYeni("HURDA");
+                                fatKalem.DEPO_KODU = 60;
+                                fatKalem.Olcubr = 1;
+                                fatKalem.ProjeKodu = "1";
+                                fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                                fatKalem.STra_GCMIK = f;
+                                fatKalem.STra_NF = 0;
+                                fatKalem.STra_BF = 0;
+                                fatKalem.STra_ACIK = fisno;
 
 
-                            fatura.kayitYeni();
-                            Marshal.ReleaseComObject(fatura);
-                            Marshal.ReleaseComObject(fatUst);
-                            Marshal.ReleaseComObject(fatKalem);
+                                fatura.kayitYeni();
+                                Marshal.ReleaseComObject(fatura);
+                                Marshal.ReleaseComObject(fatUst);
+                                Marshal.ReleaseComObject(fatKalem);
+                            }
                         }
+                           
                         //if (miktarsabitle == "E")
                         //{
                         //    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + eskimiktar + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
@@ -554,6 +558,10 @@ namespace NOVA.Controllers
                             {
                                 netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                                 netRS1.Ac("UPDATE TBLSERITRA SET ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            }
+                            if (kontrol == true)
+                            {
+                                netRS1.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                             }
                         }
                         else
