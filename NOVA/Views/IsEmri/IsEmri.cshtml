@@ -664,7 +664,7 @@
                             <input id="tamami" checked="checked" onchange="chcked()" class="form-check-input" type="checkbox">
                             <label class="form-check-label" for="etiketyazdir">Tamamı Kullanılsın</label>
                         </div>
-                        <div class="text-center" id="DLPivotTop"></div>
+                        <div class="text-center mb-2" id="DLPivotTop"></div>
                         <div class="text-center" id="TPPivotTop" style="display:none"></div>
                         <div class="text-center" id="BKPivotTop" style="display:none"></div>
                         <div class="text-center" id="PBPivotTop" style="display:none"></div>
@@ -1130,13 +1130,9 @@
 
 
                             for (let e = 0; e < fil.length; e++) {
-                                if (e >= 1) {
-                                    if (fil[e].GIRDI2 != fil[e - 1].GIRDI2) {
-                                        sum = sum + parseFloat(fil[e].GENISLIK);
-                                    }
-                                } else {
+                                
                                     sum = sum + parseFloat(fil[e].GENISLIK);
-                                }
+                                
 
                             }
                         var ek = 0;
@@ -1937,11 +1933,13 @@
                                         GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: refadet, AGIRLIK: (parseFloat(refagirlik) / adet).toString(), SIPKONT: "", SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam, ORAN: oran
                                     });
 
-                                    if (!serilist.includes(girdi2) && girdi2!="-") {
+                                    if (!(serilist.includes(girdi2)) && (girdi2!="-")) {
 
                                         serilist.push(girdi2);
+                                        say++;
+                                        
                                     }
-                                    if (!siralist.includes(sirano)) {
+                                    if (!siralist.includes(sirano) && girdi2 != "-") {
 
                                         siralist.push(sirano);
                                     }
@@ -1951,16 +1949,33 @@
                                         isemrilist.push(sonrefisemri);
                                     }
 
+                                   
+                                }
+                                var oldlistZ = [];
+                                for (let z = 0; z < DLList.length; z++) {
 
-                                    say++;
+                                    if (!oldlistZ.includes(DLList[z].GIRDI2)) {
+                                        oldlistZ.push(DLList[z].GIRDI2)
+                                    }
+
                                 }
                                 DLListTop.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: (refstokolcusu == "-" ? stokadi : refstokolcusu), KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: (refadet == 0 || refadet == '-' ? adet : (refadet * adet)) });
-                                var fark = DLList.length;
+                                var fark = oldlistZ.length;
                                 OldStokAdi = $("#stokadi").val();
                                 siralist = [];
+                                var listZ = [];
+                               
+                               
                                 if (localStorage.DLlist != null && localStorage.DLlist != "null") {
+                                    var l = JSON.parse(localStorage.DLlist);
+                                    for (let z = 0; z < l.length; z++) {
 
-                                    fark = fark - JSON.parse(localStorage.DLlist).length;
+                                        if (!listZ.includes(l[z].GIRDI2)) {
+                                            listZ.push(l[z].GIRDI2)
+                                        }
+
+                                    }
+                                    fark = fark - listZ.length;
                                 }
                                 var uu = "http://192.168.2.13:83/api/seri/1/" + fark;
                                 $.getJSON(uu, function (data) { });
@@ -2015,18 +2030,14 @@
                                     var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
 
                                     for (let e = 0; e < fil.length; e++) {
-                                        if (e >= 1) {
-                                            if (fil[e].GIRDI2 != fil[e - 1].GIRDI2) {
-                                                sum = sum + parseFloat(fil[e].GENISLIK);
-                                            }
-                                        } else {
+                                       
                                             sum = sum + parseFloat(fil[e].GENISLIK);
-                                        }
+                                        
 
                                     }
                                     var ek = 0;
                                     for (let e = 0; e < fil.length; e++) {
-                                        fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * fil[e].ORAN;
+                                        fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * parseFloat(fil[e].ORAN);
                                         var oldek = ek;
                                         ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
                                         if (Math.round(ek) != Math.round(oldek)) {
