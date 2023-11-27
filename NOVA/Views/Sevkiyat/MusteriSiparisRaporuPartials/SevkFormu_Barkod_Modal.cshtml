@@ -1,67 +1,295 @@
-﻿<div class="modal fade" id="BarkodModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="BarkodModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="BarkodModalLabel">BARKOD OKUYUCU</h5>
-                <button disabled type="button" id="barkodClose" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="BarkodKameraKapat()"></button>
-            </div>
-            <div class="modal-body d-flex justify-content-center align-items-center">
-                <div class="vidparticipant">
-                    <span id="uretime-al-bildirim" style="display: none;justify-content: center;align-items: center;width: 100%;height: 100%;">.</span>
-                    <select class="form-select mb-1" id="cameras" style="width:200px;display:none"></select>
-                    <video id="qr-reader" class="object-fit-fill">
-                    </video>
+﻿@*<div class="modal fade" id="BarkodModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="BarkodModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="BarkodModalLabel">BARKOD OKUYUCU</h5>
+                    <button disabled type="button" id="barkodClose" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="BarkodKameraKapat()"></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center align-items-center">
+                    <div class="vidparticipant">
+                        <span id="uretime-al-bildirim" style="display: none;justify-content: center;align-items: center;width: 100%;height: 100%;">.</span>
+                        <select class="form-select mb-1" id="cameras" style="width:200px;display:none"></select>
+                        <video id="qr-reader" class="object-fit-fill">
+                        </video>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        var scanner;
+        var BarkodKameraAcik = false;
+
+        function BarkodModal() {
+
+            scanner = new Instascan.Scanner({ video: document.getElementById('qr-reader'), mirror: false, refractoryPeriod: 2000 });
+            scanner.addListener('scan', function (decodedText) {
+
+                BarkodKontrol(decodedText);
+            })
+            Instascan.Camera.getCameras().then(function (cameras, image) {
+                //PC'de ki tüm kameraları algılayarak bizlere getirecektir.
+                $('#cameras').html('');
+                $('#cameras').css('display', cameras.length > 1 ? 'block' : 'none');
+
+                for (let i = 0; i < cameras.length; i++) {
+                    let cameraList = document.getElementById("cameras");
+                    let option = document.createElement("option");
+                    if (i == 0) {
+
+                        option.text = "Ön Kamera";
+                        option.value = cameras[i].id;
+                    } else {
+                        option.text = "Arka Kamera";
+                        option.value = cameras[i].id;
+                    }
+                    cameraList.add(option);
+                }
+                if (cameras.length > 0) {
+                    scanner.start(cameras[0]).then(function () {
+                        $("#barkodClose").prop('disabled', false);
+                    })
+                }
+
+            })
+
+
+            $('#BarkodModal').modal('show');
+        }
+
+
+    </script>
+
+    <script>
+
+        function BarkodKontrol(BarkodNo) {
+            var ProcUrl = "http://192.168.2.13:83/api/seri/bakiye/" + BarkodNo;
+
+            $.getJSON(ProcUrl, function (data) {
+                if (data.length > 0) {
+                    var Siparis = detayli.filter(x => x.SIPARIS_NO == $('#SİPARİS_NO').html() && x.STOK_KODU == data[0].STOK_KODU);
+
+                    if (Siparis.length > 0) {
+                        if (!BarkodNoTablodaVarMi(BarkodNo)) {
+                            if (data[0].MIKTAR > 0 || data[0].MIKTAR2 > 0) {
+                                StokAdiSec(data[0].STOK_KODU);
+
+                                $('#MIKTAR').val(data[0].MIKTAR.toFixed(2) <= Siparis[0].BAKIYE_MIKTARI.toFixed(2) ? (data[0].MIKTAR).toFixed(2) : (Siparis[0].BAKIYE_MIKTARI).toFixed(2));
+                                $('#MIKTAR2').val(data[0].MIKTAR2.toFixed(2));
+                                $('#SERI_NO').val(BarkodNo);
+                                $('#ACIK1').val(parseFloat(data[0].ACIK1.replace(",", ".")).toFixed(2).toString().replace(".", ","));
+                                $('#ACIK2').val(parseFloat(data[0].ACIK2.replace(",", ".")).toFixed(1).toString().replace(".", ","));
+                                $('#ACIK3').val(data[0].ACIK3);
+                                $('#SERI_NO_3').val(data[0].SERI_NO_3);
+                                $('#SERI_NO_4').val(data[0].SERI_NO_4);
+
+                                $('#MIKTAR').prop('max', data[0].MIKTAR.toFixed(2) <= Siparis[0].BAKIYE_MIKTARI.toFixed(2) ? (data[0].MIKTAR).toFixed(2) : (Siparis[0].BAKIYE_MIKTARI).toFixed(2));
+                                $('#MIKTAR2').prop('max', data[0].MIKTAR2.toFixed(2));
+
+                                SeciliBarkodVar = true;
+
+                                MiktarGirisKontrolu();
+                                GirisDurumlariniDegistir(false);
+                                SevkFormKayitDurumu();
+
+                                $('#SeriNoListeButton').prop('disabled', true);
+
+                                if (BarkodKameraAcik)
+                                {
+                                    BarkodKameraKapat();
+                                }
+
+                                $('#BarkodModal').modal('hide');
+                            }
+                            else {
+                                //UYARI -- miktar uyarısı
+                            }
+                        }
+                        else {
+                            Swal.fire({
+                                text: "Aynı barkod no tablo üzerinde mevcut.",
+                                icon: "error",
+                                showConfirmButton: false,
+                                timer: '1500'
+                            });
+                        }
+                    }
+                    else {
+                        Swal.fire({
+                            text: "Okunan barkod no sipariş içerisinde bulunmamaktadır.",
+                            icon: "error",
+                            showConfirmButton: false,
+                            timer: '1500'
+                        });
+                    }
+                }
+            });
+
+            MiktarGirisKontrolu();
+        }
+
+        function BarkodKameraKapat()
+        {
+            BarkodKameraAcik = false;
+            scanner.stop().then(_ => { }).catch(error => { });
+            $("#barkodClose").prop('disabled', true);
+        }
+    </script>*@
+
+
+
+<div class="qr-scanner-area">
+    <video id="qr-scanner"></video>
+    <div class="qr-controls">
+        <div class="d-flex justify-content-center align-items-center gap-2">
+            <select class="qr-camera-select"></select>
+        </div>
+        <i class='bx bx-x qr-scanner-exit' onclick="Close()"></i>
+    </div>
 </div>
 
-<script>
-    var scanner;
-    var BarkodKameraAcik = false;
 
-    function BarkodModal() {
-
-        scanner = new Instascan.Scanner({ video: document.getElementById('qr-reader'), mirror: false, refractoryPeriod: 2000 });
-        scanner.addListener('scan', function (decodedText) {
-
-            BarkodKontrol(decodedText);
-        })
-        Instascan.Camera.getCameras().then(function (cameras, image) {
-            //PC'de ki tüm kameraları algılayarak bizlere getirecektir.
-            $('#cameras').html('');
-            $('#cameras').css('display', cameras.length > 1 ? 'block' : 'none');
-
-            for (let i = 0; i < cameras.length; i++) {
-                let cameraList = document.getElementById("cameras");
-                let option = document.createElement("option");
-                if (i == 0) {
-
-                    option.text = "Ön Kamera";
-                    option.value = cameras[i].id;
-                } else {
-                    option.text = "Arka Kamera";
-                    option.value = cameras[i].id;
-                }
-                cameraList.add(option);
-            }
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]).then(function () {
-                    $("#barkodClose").prop('disabled', false);
-                })
-            }
-
-        })
-                
-          
-        $('#BarkodModal').modal('show');
+<style>
+    .qr-scanner-area {
+        display: none;
+        position: relative;
+        width: 100%;
+        height: 100%;
     }
 
-  
-</script>
+    #qr-scanner {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .qr-controls {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        padding: 2rem;
+        background: linear-gradient(180deg, rgba(0,0,0,0.7819502801120448) 0%, rgba(0,0,0,0) 35%);
+    }
+
+
+    .qr-camera-select {
+        width: 250px !important;
+        height: 3rem;
+        background-color: #00000036;
+        border: 1px solid #ffffff52;
+        border-radius: 0.375rem;
+        color: #ffffffff;
+        font-size: large;
+        padding: 0 0.25rem;
+        backdrop-filter: blur(10px);
+        cursor: pointer;
+    }
+
+        .qr-camera-select option {
+            font-size: xx-large;
+            cursor: pointer;
+        }
+
+    .qr-scanner-exit {
+        font-size: xxx-large;
+        color: white;
+        filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.562));
+        cursor: pointer;
+    }
+</style>
 
 <script>
+    var Scanner;
+
+    function BarkodModal() {
+        Scanner = new Instascan.Scanner({ video: document.getElementById('qr-scanner'), mirror: false, refractoryPeriod: 2000 });
+
+        Scanner.addListener('scan', function (content) {
+            BarkodKontrol(content);
+        });
+
+        let Cameras = [];
+
+        Instascan.Camera.getCameras()
+            .then(function (cameras, image) {
+
+                this.Cameras = cameras;
+
+                let MultipleCamera = cameras.length > 1;
+
+                document.getElementsByClassName('qr-camera-select')[0].innerHTML = '';
+
+                for (let i = 0; i < cameras.length; i++) {
+                    var CameraName = (i == 0 ? "Ön Kamera" : (i == 1 ? "Arka Kamera" : cameras[i].name));
+                    var CameraOption = new Option(CameraName, cameras[i].id);
+                    document.getElementsByClassName('qr-camera-select')[0].add(CameraOption);
+                }
+
+                if (MultipleCamera) {
+                    document.getElementsByClassName('qr-camera-select')[0].value = cameras[1].id;
+                }
+
+                Scanner.start(MultipleCamera ? cameras[1] : cameras[0])
+                    .then(() => {
+                        document.getElementsByClassName('qr-scanner-area')[0].style.display = "block";
+                        SetFullscreen(document.getElementsByClassName('qr-scanner-area')[0]);
+                    });
+
+                document.getElementsByClassName('qr-camera-select')[0].addEventListener("change", event => {
+                    Scanner.start(this.Cameras.find(c => c.id == event.target.value));
+                });
+
+            })
+            .catch((e) => {
+                console.error(e)
+            });
+    }
+
+    function Close() {
+        document.getElementsByClassName('qr-scanner-area')[0].style.display = "none";
+
+        Scanner
+            .stop()
+            .then(() => {
+                Scanner = null;
+                document.exitFullscreen();
+            });
+    }
+
+    document.addEventListener("fullscreenchange", FullscreenChanged);
+
+    function FullscreenChanged(event) {
+        if (!document.fullscreenElement) {
+            document.getElementsByClassName('qr-scanner-area')[0].style.display = "none";
+
+            if (Scanner != null) {
+                Scanner
+                    .stop()
+                    .then(() => {
+                        Scanner = null;
+                    });
+            }
+        }
+    }
+
+    function SetFullscreen(Item) {
+        if (Item.requestFullscreen) {
+            Item.requestFullscreen();
+        }
+        else if (Item.webkitRequestFullscreen) {
+            Item.webkitRequestFullscreen();
+        }
+        else if (Item.msRequestFullscreen) {
+            Item.msRequestFullscreen();
+        }
+    }
+
 
     function BarkodKontrol(BarkodNo) {
         var ProcUrl = "http://192.168.2.13:83/api/seri/bakiye/" + BarkodNo;
@@ -95,12 +323,7 @@
 
                             $('#SeriNoListeButton').prop('disabled', true);
 
-                            if (BarkodKameraAcik)
-                            {
-                                BarkodKameraKapat(); 
-                            }
-
-                            $('#BarkodModal').modal('hide');
+                            Close();
                         }
                         else {
                             //UYARI -- miktar uyarısı
@@ -111,7 +334,8 @@
                             text: "Aynı barkod no tablo üzerinde mevcut.",
                             icon: "error",
                             showConfirmButton: false,
-                            timer: '1500'
+                            timer: '1500',
+                            target: document.getElementsByClassName("qr-controls")[0],
                         });
                     }
                 }
@@ -120,19 +344,22 @@
                         text: "Okunan barkod no sipariş içerisinde bulunmamaktadır.",
                         icon: "error",
                         showConfirmButton: false,
-                        timer: '1500'
+                        timer: '1500',
+                        target: document.getElementsByClassName("qr-controls")[0],
                     });
                 }
+            }
+            else {
+                Swal.fire({
+                    text: "Okunan barkod no sipariş içerisinde bulunmamaktadır.",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: '1500',
+                    target: document.getElementsByClassName("qr-controls")[0],
+                });
             }
         });
 
         MiktarGirisKontrolu();
-    }
-
-    function BarkodKameraKapat()
-    {
-        BarkodKameraAcik = false;
-        scanner.stop().then(_ => { }).catch(error => { });
-        $("#barkodClose").prop('disabled', true);
     }
 </script>

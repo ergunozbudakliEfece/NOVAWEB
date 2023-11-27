@@ -634,6 +634,10 @@
                                     <div class="col">
                                         <button disabled class="btn btn-info float-start" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="kaydet()" id="kaydet">KAYDET</button>
                                         <button class="btn btn-info float-start ms-1" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="tablosil()" id="tablosilButton">SİL</button>
+                                        <div class="form-check form-switch mt-3" id="tamamidiv" style="display:none;float:right">
+                                            <input id="tamami" checked="checked" onchange="chcked()" class="form-check-input" type="checkbox">
+                                            <label class="form-check-label" for="tamami">Tamamı Kullanılsın</label>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -660,10 +664,7 @@
                 <div class="col">
 
                     <div style="overflow:auto !important">
-                        <div class="form-check form-switch mb-2" id="tamamidiv" style="display:none">
-                            <input id="tamami" checked="checked" onchange="chcked()" class="form-check-input" type="checkbox">
-                            <label class="form-check-label" for="etiketyazdir">Tamamı Kullanılsın</label>
-                        </div>
+                        
                         <div class="text-center mb-2" id="DLPivotTop"></div>
                         <div class="text-center" id="TPPivotTop" style="display:none"></div>
                         <div class="text-center" id="BKPivotTop" style="display:none"></div>
@@ -1095,7 +1096,7 @@
                 $("#DLPivot").pivot(
                     takiplist,
                     {
-                        rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET", "AGIRLIK", "FIRE", "HAMSARF"],
+                        rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET", "MIKTAR_SABITLE", "AGIRLIK", "FIRE", "HAMSARF"],
                         cols: [],
                         aggregator: tpl.sum()(["ADET"]),
                         sorters: {
@@ -1137,18 +1138,27 @@
                             }
                         var ek = 0;
                         for (let e = 0; e < fil.length; e++) {
-                            fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK))*fil[e].ORAN;
-                            var oldek = ek;
-                            ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
-                            if (Math.round(ek) != Math.round(oldek)) {
-                                fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
+                            if (fil[e].MIKTAR_SABITLE == "E") {
+                                fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * parseFloat(fil[e].ORAN);
+                                var oldek = ek;
+                                ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
+                                if (Math.round(ek) != Math.round(oldek)) {
+                                    fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
+                                } else {
+                                    fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
+                                }
+                                fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
+                                fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+
+                                if (fil.length == 1) {
+                                    fil[0].FIRE = fil[0].HAMSARF - (parseInt(fil[0].AGIRLIK));
+                                }
                             } else {
-                                fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
-                            }
-                            fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
-                            fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
-                            if (fil.length == 1) {
-                                fil[0].FIRE = fil[0].HAMSARF - (parseInt(fil[0].AGIRLIK));
+                                for (let e = 0; e < fil.length; e++) {
+                                    fil[e].HAMSARF = "1";
+                                    fil[e].FIRE = "-";
+                                    fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+                                }
                             }
                         }
 
@@ -1830,6 +1840,7 @@
                 }
                 break;
             case "DL":
+                var TamamiAktarilsin = $("#tamami").is(":checked");
                 var f = parseFloat($("#fireagirligi").val());
                 var stok = $("#seri").val();
                 if (stok.length > 0) {
@@ -1875,7 +1886,7 @@
                                 var s = jsonObj.filter(x => x.MAK_KODU == makine);
                                 var s1 = jsonObj.filter(x => x.MAK_KODU == makineref);
                                 var urunkodu = document.getElementById("seri").value;
-
+                                var tamMi = TamamiAktarilsin ? 'E' : 'H';
                                 var stokadi = tr[i].getElementsByTagName("select")[1].value;
                                 var kalinlik = document.getElementById("kalinlik").value;
                                 var kaplama = document.getElementById("kaplama").value;
@@ -1911,18 +1922,23 @@
                                     }
                              
                                     if (serilist.includes(girdi2)) {
-                                        if (refstokolcusu == "SEÇİNİZ") {
-                                            if (siralist.includes(sirano) && adet == 1) {
-                                                girdi2 = serilist[serilist.length - 1];
-                                            } else {
-                                                girdi2 = girdi2old.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                                            }
-                                        }
+                                        //if (refstokolcusu == "SEÇİNİZ") {
+                                        //    if (siralist.includes(sirano) && adet == 1) {
+                                        //        girdi2 = serilist[serilist.length - 1];
+                                        //    } else {
+                                        //        girdi2 = girdi2old.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                        //    }
+                                            
+                                        //}
+                                        girdi2 = girdi2old.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                     } 
                                     if (refstokolcusu == "SEÇİNİZ") {
                                         refstokolcusu = "-"
                                         refadet = "-"
-                                        girdi2="-"
+                                        if (tamMi=='H') {
+
+                                            girdi2 = "-"
+                                        }
                                     } else {
                                         refadet = Math.round(refadet / adet)
                                     }
@@ -1930,7 +1946,7 @@
                                         refadet = 0;
                                     }
                                     DLList.push({
-                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: refadet, AGIRLIK: (parseFloat(refagirlik) / adet).toString(), SIPKONT: "", SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam, ORAN: oran
+                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: refadet, AGIRLIK: (parseFloat(refagirlik) / adet).toString(), SIPKONT: "", SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam, ORAN: oran, "MIKTAR_SABITLE": tamMi
                                     });
 
                                     if (!(serilist.includes(girdi2)) && (girdi2!="-")) {
@@ -1951,16 +1967,9 @@
 
                                    
                                 }
-                                var oldlistZ = [];
-                                for (let z = 0; z < DLList.length; z++) {
-
-                                    if (!oldlistZ.includes(DLList[z].GIRDI2)) {
-                                        oldlistZ.push(DLList[z].GIRDI2)
-                                    }
-
-                                }
+                                
                                 DLListTop.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: (refstokolcusu == "-" ? stokadi : refstokolcusu), KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: (refadet == 0 || refadet == '-' ? adet : (refadet * adet)) });
-                                var fark = oldlistZ.length;
+                                var fark = DLList.length;
                                 OldStokAdi = $("#stokadi").val();
                                 siralist = [];
                                 var listZ = [];
@@ -1995,7 +2004,7 @@
                                     $("#DLPivot").pivot(
                                         takiplist,
                                         {
-                                            rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET", "AGIRLIK", "FIRE", "HAMSARF"],
+                                            rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET","MIKTAR_SABITLE", "AGIRLIK", "FIRE", "HAMSARF"],
                                             cols: [],
                                             aggregator: tpl.sum()(["ADET"]),
                                             sorters: {
@@ -2036,21 +2045,32 @@
 
                                     }
                                     var ek = 0;
+                                    
                                     for (let e = 0; e < fil.length; e++) {
-                                        fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * parseFloat(fil[e].ORAN);
-                                        var oldek = ek;
-                                        ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
-                                        if (Math.round(ek) != Math.round(oldek)) {
-                                            fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
-                                        } else {
-                                            fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
+                                        if (fil[e].MIKTAR_SABITLE == "E") {
+                                            fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * parseFloat(fil[e].ORAN);
+                                            var oldek = ek;
+                                            ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
+                                            if (Math.round(ek) != Math.round(oldek)) {
+                                                fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
+                                            } else {
+                                                fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
+                                            }
+                                            fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
+                                            fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+                                        
+                                        if (fil.length == 1) {
+                                            fil[0].FIRE = fil[0].HAMSARF - (parseInt(fil[0].AGIRLIK));
                                         }
-                                        fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
-                                        fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+                                    }else {
+                                        for (let e = 0; e < fil.length; e++) {
+                                            fil[e].HAMSARF = "1";
+                                            fil[e].FIRE = "-";
+                                            fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+                                        }
                                     }
-                                    if (fil.length == 1) {
-                                        fil[0].FIRE = fil[0].HAMSARF - (parseInt(fil[0].AGIRLIK));
-                                    }
+                                    } 
+                                    
 
                                     if (newtakip.length == 0) {
                                         newtakip = fil;
