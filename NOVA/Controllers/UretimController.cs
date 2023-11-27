@@ -474,7 +474,7 @@ namespace NOVA.Controllers
                         var ACIK2 = "";
                         var SERI_NO_3 = "";
                         var SERI_NO_4 = "";
-                        if (seri == null)
+                        if (seri == null || seri=="0")
                         {
                             uretim.OTOSERIURET();
                             uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
@@ -563,6 +563,10 @@ namespace NOVA.Controllers
                             {
                                 netRS1.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                             }
+                            if (etiket)
+                            {
+                                SeriNoListesi.Add(karsi);
+                            }
                         }
                         else
                         {
@@ -587,9 +591,13 @@ namespace NOVA.Controllers
                             {
                                 netRS1.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                             }
+                            if (etiket)
+                            {
+                                SeriNoListesi.Add(karsi1);
+                            }
                         }
 
-                        SeriNoListesi.Add(seri);
+                        
                     }
 
                     //Stok hareketleri gerçeklestiriliyor
@@ -619,22 +627,19 @@ namespace NOVA.Controllers
                         }
                     }
 
-                    Etiket = UretimKaydiSonuBarkodCiktisi(Etiketler, onizleme,YAZICI);
+                    Etiket = UretimKaydiSonuBarkodCiktisi(Etiketler, onizleme, YAZICI);
                 }
             }
             catch (Exception e)
             {
                 var exp = e.Message;
                 Console.WriteLine(e.Message);
-                //return $"Hata: {exp}";
+                return $"Hata: {exp}";
             }
             finally
             {
                 sirket.LogOff();
-                Marshal.ReleaseComObject(uretim);
-                Marshal.ReleaseComObject(sirket);
                 kernel.FreeNetsisLibrary();
-                Marshal.ReleaseComObject(kernel);
             }
 
             return Etiket;

@@ -1046,6 +1046,10 @@ namespace NOVA.Controllers
                     {
                         Isemri1.SeriNo = isemridis[i].GIRDI2;
                     }
+                    else
+                    {
+                        Isemri1.SeriNo = "0";
+                    }
                         
                     if (isemridis[i].ISEMRINO.Substring(0, 2) == "DL")
                     {
