@@ -363,7 +363,7 @@
                                         <td style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></td>
                                         <td class="text-center p-1">
                                             <i onclick="ReferansSecimiTemizle(this, 'DL')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color: #203289; font-size: larger; display: none; cursor: pointer; float: left"></i>
-                                            <select class="js-select selectmakina2" style="width:100px;float:left" onchange="RefMachineChange(this)">
+                                            <select class="js-select selectmakina2" style="width:100px;float:left" disabled onchange="RefMachineChange(this)">
                                                 <option selected disabled>SEÇİNİZ</option>
                                             </select>
                                         </td>
@@ -1507,6 +1507,15 @@
                         HtmlElement.getElementsByTagName('select')[0].disabled = true;
 
                         td.innerHTML = HtmlElement.innerHTML;
+                    }
+                    if ($('#tamami').is(':checked')) {
+                        if (i == 7) {
+                            var HtmlElement = StringToHtml(td.innerHTML);
+
+                            HtmlElement.getElementsByTagName('select')[0].disabled = true;
+
+                            td.innerHTML = HtmlElement.innerHTML;
+                        }
                     }
                 }
                 break;
@@ -3724,7 +3733,16 @@ $.ajax({
             }
         })
     
+    }
+    function chcked() {
+        var b = $('#tamami').is(':checked');
+        if (b) {
+            $('.bi-x-lg ').trigger('click');
+            $('.selectmakina2').prop('disabled', true);
+        } else {
+            $('.selectmakina2').prop('disabled', false);
         }
+    }
 //#endregion
 </script>
 </body>

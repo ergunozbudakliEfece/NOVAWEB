@@ -1155,12 +1155,13 @@
                 $('#UretimeGirenlerMakine').html(Makineler + `</div>`);
             });
         }
-
+        var stokkodlari;
         function UretimeGirenler(value) {
             $.ajax({
                 url: `http://192.168.2.13:83/api/ie/hatgirdidetay/${value}`,
                 type: 'GET',
                 success: (response) => {
+                    stokkodlari=response
                     $("#filter").html('').trigger('change');
                     $('#UretimeGirenlerTable').bootstrapTable('destroy');
                     $('#UretimeGirenlerTable').bootstrapTable({ data: response });
@@ -3805,9 +3806,9 @@
         }
         function silFormatter(value, index, row) {
             if (index.ORAN == 0) {
-                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="SilButton" onclick="Sil(\'' + index.SERI_NO + '\')" class="btn btn-danger" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">SİL</button><button type="button" id="aktarButton" onclick="Aktar(\'' + index.SERI_NO + '\')" class="btn btn-warning" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">AKTAR</button></div>';
+                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="SilButton" onclick="Sil(\'' + index.SERI_NO + '\')" class="btn btn-danger" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">SİL</button></div>';
             } else {
-                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="aktarButton" onclick="Aktar(\'' + index.SERI_NO + '\')" class="btn btn-warning" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">AKTAR</button></div>';
+                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="aktarButton" onclick="Aktar(\'' + index.SERI_NO + '\',\'' + index.SERI_BAKIYE +'\')" class="btn btn-warning" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">AKTAR</button></div>';
             }
 
         }
@@ -4484,9 +4485,26 @@
 
             $("#guncelleButton").attr("data-seri", decodedText);
         }
-        function Aktar(value) {
+        function Aktar(value,mik) {
 
+            var stokkodu = stokkodlari.filter(x => x.SERI_NO == value)[0];
+            $.ajax({
+                url: '@Url.Action("DepoTransfer", "Uretim")',
+                type: 'POST',
+                data: { "seri": value, "stokkodu": stokkodu, "miktar": mik,"depo":'60'},
+                error: function (data) { alert(JSON.stringify(data)); },
+                success: function (data) {
+                    if (data == 'Başarılı') {
 
+                        Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                    } else {
+                        Swal.fire('Başarısız!', data, 'error');
+                    }
+
+                    
+                }
+            })
+        
 
         }
     </script>

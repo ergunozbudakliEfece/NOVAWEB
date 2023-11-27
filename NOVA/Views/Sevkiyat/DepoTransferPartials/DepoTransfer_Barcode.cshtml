@@ -280,6 +280,8 @@
             if (data.length > 0) {
                 if (!BarkodNoTablodaVarMi(BarkodNo)) {
                     if (data[0].MIKTAR > 0 || data[0].MIKTAR2 > 0) {
+                        var Stok = StokAdlari.filter(x => x.STOK_KODU == data[0].STOK_KODU)[0];
+
                         $('#MIKTAR').val(data[0].MIKTAR.toFixed(2));
                         $('#MIKTAR2').val(data[0].MIKTAR2.toFixed(2));
                         $('#SERI_NO').val(BarkodNo);
@@ -292,9 +294,14 @@
                         $('#MIKTAR').prop('max', data[0].MIKTAR.toFixed(2));
                         $('#MIKTAR2').prop('max', data[0].MIKTAR2.toFixed(2));
 
-                        MiktarGirisKontrolu();
+                        $('#STOK_ADLARI').val(Stok.STOK_ADI);
+                        $('#OLCU_BR1').val(Stok.OLCU_BR1);
+                        $('#OLCU_BR2').val(Stok.OLCU_BR2);
 
                         Close();
+
+                        TabloButonAyarla(1);
+                        MiktarGirisKontrolu();
                     }
                     else {
                         //DEPO_UYARI: miktar uyarısı

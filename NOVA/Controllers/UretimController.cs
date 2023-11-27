@@ -1548,6 +1548,62 @@ namespace NOVA.Controllers
             return seri;
         }
         [HttpPost]
+        public string DepoTransfer(string seri,string stokkodu,string miktar,string depo)
+        {
+            
+            try
+            {   
+                Fatura fatura = default(Fatura);
+                FatUst fatUst = default(FatUst);
+                FatKalem fatKalem = default(FatKalem);
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                           "TEST2022",
+                                           "TEMELSET",
+                                           "",
+                                           Request.Cookies["UserName"].Value,
+                                           LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
+
+                fatUst = fatura.Ust();
+                fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                fatUst.CariKod = "12035200100406";
+                fatUst.TIPI = TFaturaTipi.ft_Bos;
+                fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                fatUst.Tarih = DateTime.Now;
+                fatUst.FiiliTarih = DateTime.Now;
+                fatUst.PLA_KODU = "45";
+                fatUst.Proje_Kodu = "1";
+                fatUst.KDV_DAHILMI = true;
+                fatUst.Aciklama = "";
+                fatKalem = fatura.kalemYeni(stokkodu);
+
+                ///Giriş Depo Kodu
+                fatKalem.Gir_Depo_Kodu = depo;
+                fatKalem.DEPO_KODU = 45;
+                fatKalem.STra_GCMIK = miktar.ToDouble();
+                fatKalem.STra_BF = 0;
+                fatKalem.STra_ACIK = "";
+                fatKalem.Olcubr = 1;
+                fatKalem.ProjeKodu = "1";
+                fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+
+                fatKalem.SeriEkle(seri, "", "", "", miktar.ToDouble(), 0);
+                fatura.kayitYeni();
+            }
+            catch (Exception ex)
+            {
+                return "Hata: "+ex.Message;
+            }
+            finally
+            {
+                sirket.LogOff();
+                Marshal.ReleaseComObject(sirket);
+                kernel.FreeNetsisLibrary();
+                Marshal.ReleaseComObject(kernel);
+            }
+            return "Başarılı";
+        }
+        [HttpPost]
         public ActionResult PostTRPZ(List<IsEmriModel2> isemri)
         {
             List<SeriModel> createdlog1 = null;
