@@ -3806,9 +3806,9 @@
         }
         function silFormatter(value, index, row) {
             if (index.ORAN == 0) {
-                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="SilButton" onclick="Sil(\'' + index.SERI_NO + '\')" class="btn btn-danger" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">SİL</button></div>';
+                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="SilButton" onclick="Sil(\'' + index.SERI_NO + '\')" class="btn btn-danger" style="height:28px;width: 85.77px; display: flex; justify-content: center; align-items: center;margin-right:5px">SİL</button></div>';
             } else {
-                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="aktarButton" onclick="Aktar(\'' + index.SERI_NO + '\',\'' + index.SERI_BAKIYE +'\')" class="btn btn-warning" style="height:28px;width: auto; display: flex; justify-content: center; align-items: center;margin-right:5px">AKTAR</button></div>';
+                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="aktarButton" onclick="Onay(\'' + index.SERI_NO + '\',\'' + index.SERI_BAKIYE + '\')" class="btn btn-warning" style="height:28px;width: auto; display: ' + (index.ORAN == 100 || index.ORAN == 0 ? 'none' : 'flex') +'; justify-content: center; align-items: center;margin-right:5px">AKTAR</button></div>';
             }
 
         }
@@ -4485,14 +4485,36 @@
 
             $("#guncelleButton").attr("data-seri", decodedText);
         }
-        function Aktar(value,mik) {
-
-            var stokkodu = stokkodlari.filter(x => x.SERI_NO == value)[0];
+        function Onay(value, mik) {
+            Swal.fire({
+                title: "UYARI",
+                html: value + ' seri nolu üründen ' + parseInt(mik)+' miktar hurda transferini onaylıyor musunuz?',
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'HAYIR',
+                cancelButtonColor: '#d33',
+                confirmButtonColor: '#3085d6',
+                allowEnterKey: false,
+                confirmButtonText: 'EVET',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Aktar(value, parseInt(mik))
+                }
+            });
+        
+        }
+        function Aktar(value, mik) {
+            ShowProgress();
+            var stokkodu = stokkodlari.filter(x => x.SERI_NO == value)[0].STOK_KODU;
             $.ajax({
                 url: '@Url.Action("DepoTransfer", "Uretim")',
                 type: 'POST',
-                data: { "seri": value, "stokkodu": stokkodu, "miktar": mik,"depo":'60'},
-                error: function (data) { alert(JSON.stringify(data)); },
+                data: { "seri": value, "stokkodu": stokkodu, "miktar": mik.toString(), "depo": '60' },
+                error: function (data) {
+                    alert(JSON.stringify(data));
+                    HideProgress()
+                },
                 success: function (data) {
                     if (data == 'Başarılı') {
 
@@ -4500,11 +4522,11 @@
                     } else {
                         Swal.fire('Başarısız!', data, 'error');
                     }
-
-                    
+                    HideProgress()
+                    $('input[name="makine-ie"]:checked').trigger('click');
                 }
             })
-        
+
 
         }
     </script>
