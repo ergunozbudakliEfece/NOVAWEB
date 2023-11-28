@@ -1574,7 +1574,7 @@ namespace NOVA.Controllers
                 fatUst.PLA_KODU = "45";
                 fatUst.Proje_Kodu = "1";
                 fatUst.KDV_DAHILMI = true;
-                fatUst.Aciklama = "Seri Düzeltme";
+                fatUst.Aciklama = "SERI DUZELTME";
                 fatKalem = fatura.kalemYeni(stokkodu);
 
                 ///Giriş Depo Kodu
@@ -1582,7 +1582,7 @@ namespace NOVA.Controllers
                 fatKalem.DEPO_KODU = 45;
                 fatKalem.STra_GCMIK = miktar.ToDouble();
                 fatKalem.STra_BF = 0;
-                fatKalem.STra_ACIK = "Seri Düzeltme";
+                fatKalem.STra_ACIK = "SERI DUZELTME";
                 fatKalem.Olcubr = 1;
                 fatKalem.ProjeKodu = "1";
                 fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));

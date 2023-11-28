@@ -4507,7 +4507,7 @@ namespace NOVA.Controllers
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
             return View();
         }
-        public ActionResult HammaddeListesi()
+        public ActionResult FabrikaStok()
         {
             var m = GetModules(29);
             if (m[0].ACTIVE != "1")
