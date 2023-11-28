@@ -464,7 +464,7 @@
                                    data-id-field="id"
                                    data-show-footer="false"
                                    data-mobile-responsive="true"
-                                   data-detail-view-icon="false" 
+                                   data-detail-view-icon="false"
                                    data-row-style="rowFormatter"
                                    data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
                                    data-locale="tr-TR"
@@ -773,7 +773,7 @@
             });
         }
 
-        $('#BekleyenIsEmirleriTable').on('expand-row.bs.table', function (e, index, row, $detail) 
+        $('#BekleyenIsEmirleriTable').on('expand-row.bs.table', function (e, index, row, $detail)
         {
             var Sütunlar = MakineKoduIleDetaySutunFiltrele();
 
@@ -1161,7 +1161,7 @@
                 url: `http://192.168.2.13:83/api/ie/hatgirdidetay/${value}`,
                 type: 'GET',
                 success: (response) => {
-                    stokkodlari=response
+                    stokkodlari = response
                     $("#filter").html('').trigger('change');
                     $('#UretimeGirenlerTable').bootstrapTable('destroy');
                     $('#UretimeGirenlerTable').bootstrapTable({ data: response });
@@ -1630,7 +1630,7 @@
                             } else {
                                 b.setAttribute("data-top", data[i].TOPLAM_MIKTAR_REC);
                             }
-                           
+
                         } else {
                             b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
                         }
@@ -1642,7 +1642,7 @@
 
                         if (value == 'DL01') {
                             b.setAttribute("data-miktarsabit", data[i].MIKTARSABITLE);
-                        } 
+                        }
 
                         b.setAttribute("data-kul2", data[i].KULL_MIKTAR2);
                         b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
@@ -1720,12 +1720,12 @@
                     $("#miktar11").val(parseInt(m1) - (m1 % m2))
 
                 } else {
-                   
+
                     if ((m1 % m2) != 0) {
 
                         $("#miktar11").val(parseInt(m1) + (m2 - (m1 % m2)))
                     }
-                    
+
 
                 }
                 if (m1 != $("#miktar11").val()) {
@@ -1760,7 +1760,7 @@
 
                     $("#miktar22").prop("disabled", false);
                 }
-            
+
             } else {
                 if (hat != "DL01") {
                     $("#miktar22").val(null);
@@ -1804,6 +1804,7 @@
 
 
             }
+            m1 = $("#miktar11").val()
             if (m1 == 0) {
                 $("#miktar11").val(null);
                 if (hat != "DL01") {
@@ -2070,13 +2071,15 @@
             $('#HurdaModal').modal('show');
         }
         var mik2 = 0;
-        var sabit='';
+        var sabit = '';
+        var seri;
         function showmodal(value) {
             sabit=value.dataset.miktarsabit;
             hat = value.dataset.hat;
             stok = value.dataset.stokkodu;
             genislik = value.dataset.genislik;
-            isemri=value.dataset.isemri;
+            isemri = value.dataset.isemri;
+            seri = value.dataset.seri
             max = parseInt(value.dataset.top) - parseInt(value.dataset.kul)
             max2 = parseInt(value.dataset.mik2)
             $.getJSON("http://192.168.2.13:83/api/ie/bakiye/" + hat, function (d) {
@@ -2356,6 +2359,16 @@
             ACIKSecim(hat,stok,genislik);
             constant = 0;
         }
+        function showHesapla() {
+
+
+            hat = document.getElementById('modalicon').dataset.hat;
+            stok = document.getElementById('modalicon').dataset.stok;
+            genislik = document.getElementById('modalicon').dataset.genislik;
+            $('#hesapInput').val(null);
+            $("#HesaplaModal").modal('show');
+            constant = 0;
+        }
         function ModalKapat() {
             $("#SiparisModal").modal('hide');
             constant = 0;
@@ -2370,6 +2383,12 @@
         }
         function ModalKapat2() {
             $("#SiparisModal2").modal('hide');
+            constant = 0;
+
+
+        }
+        function ModalKapat4() {
+            $("#HesaplaModal").modal('hide');
             constant = 0;
 
 
@@ -2749,7 +2768,7 @@
                 }
             }
 
-            
+
             document.body.style.pointerEvents = 'auto';
             HideProgress();
         }
@@ -3008,7 +3027,8 @@
                                 <label class="btn btn-outline-primary" for="hurda">HURDA</label>
 
                             </div>
-                            <i onclick="showmodal2(this)" id="modalicon" class="bi bi-file-earmark-text-fill float-end" style="color:#17a2b8; font-size: x-large; cursor: pointer"></i>
+                            <i onclick="showHesapla()" id="modaliconhesapla" class="bi bi-calculator float-end" style="color:#17a2b8; font-size: x-large; cursor: pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="Hesapla"></i>
+                            <i onclick="showmodal2(this)" id="modalicon" class="bi bi-file-earmark-text-fill float-end" style="color:#17a2b8; font-size: x-large; cursor: pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="İş Emirleri"></i>
                         </div>
                     </div>
                     <div class="row">
@@ -3191,6 +3211,46 @@
                 <div class="modal-footer" style="display:flex;justify-content:center;align-items:center;">
                     <button class="btn btn-primary" id="ModalSaveButton2" type="button" onclick="VerileriGonder()" disabled>KAYDET</button>
                     <button class="btn btn-danger" type="button" onclick="ModalKapat2()">KAPAT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="HesaplaModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true" onclick="modalclick()">
+        <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 25% !important;top:10vh">
+            <div class="modal-content" style="max-height:70vh;">
+                <div class="modal-header">
+                    <div class="row w-100">
+                        <div class="col text-center">
+                            <h3>
+                                HESAPLA
+                            </h3>
+                        </div>
+                            
+                    </div>
+
+
+
+
+                </div>
+
+                <div class="modal-body">
+                    <div class="centercontent" id="content1" style="display:unset">
+                        <div class="heart"><img id="progress1" src="~/images/novasaydam.png" style="max-width:15vw;display:none" /></div>
+                    </div>
+                    <div class="row w-100">
+                        <div class="col text-center">
+                            <input  placeholder="Dağıtılacak Miktar" class="form-control text-center" type="number" id="hesapInput">
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+
+                <div class="modal-footer" style="display:flex;justify-content:center;align-items:center;">
+                    <button class="btn btn-primary" id="ModalSaveButton2" type="button" onclick="Hesapla()">HESAPLA</button>
+                    <button class="btn btn-danger" type="button" onclick="ModalKapat4()">KAPAT</button>
                 </div>
             </div>
         </div>
@@ -4502,7 +4562,7 @@
                     Aktar(value, parseInt(mik))
                 }
             });
-        
+
         }
         function Aktar(value, mik) {
             ShowProgress();
@@ -4528,6 +4588,15 @@
             })
 
 
+        }
+        function Hesapla() {
+            var deger = $('#hesapInput').val();
+            $.getJSON('http://192.168.2.13:83/api/seri/hesapla/' + seri + '/' + deger, function (data) {
+              
+                var d = data.filter(x=>x.GENISLIK == genislik.toString())
+                ModalKapat4()
+                $('#miktar11').val(d[0].TOPLAM_MIKTAR).trigger('blur');
+            })
         }
     </script>
 

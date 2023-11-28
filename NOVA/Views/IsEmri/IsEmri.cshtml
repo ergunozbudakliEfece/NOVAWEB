@@ -12,14 +12,14 @@
     <link rel="stylesheet" type="text/css" href="../dist/pivot.css">
     <script type="text/javascript" src="../dist/pivot.js"></script>
     <script src="~/lib/pivot/multifact-pivottable.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
+    <link href="~/Scripts/select2.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
+    <link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
         body {
             padding: 0 0 0 3rem !important;
         }
+
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -363,7 +363,7 @@
                                         <td style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></td>
                                         <td class="text-center p-1">
                                             <i onclick="ReferansSecimiTemizle(this, 'DL')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color: #203289; font-size: larger; display: none; cursor: pointer; float: left"></i>
-                                            <select class="js-select selectmakina2" style="width:100px;float:left" disabled onchange="RefMachineChange(this)">
+                                            <select class="js-select selectmakina2" style="width:100px;float:left" onchange="RefMachineChange(this)">
                                                 <option selected disabled>SEÇİNİZ</option>
                                             </select>
                                         </td>
@@ -664,14 +664,14 @@
                 <div class="col">
 
                     <div style="overflow:auto !important">
-                        
+
                         <div class="text-center mb-2" id="DLPivotTop"></div>
                         <div class="text-center" id="TPPivotTop" style="display:none"></div>
                         <div class="text-center" id="BKPivotTop" style="display:none"></div>
                         <div class="text-center" id="PBPivotTop" style="display:none"></div>
                         <div class="text-center" id="RFPivotTop" style="display:none"></div>
                     </div>
-                    
+
 
 
 
@@ -698,7 +698,7 @@
         </div>
     </div>
     @Html.Partial("IsEmriPartials/RehberPartial")
-<script>
+    <script>
 
         if ($(window).width() < 600) {
             $("#divPartial2").show();
@@ -1075,9 +1075,9 @@
     });
 
     $(document).ready(function () {
-       
+
         $('#pageName').html('<div class="dot"></div> İş Emri')
-        
+
         $(".js-select").select2(
             {
                 "language": {
@@ -1131,9 +1131,9 @@
 
 
                             for (let e = 0; e < fil.length; e++) {
-                                
+
                                     sum = sum + parseFloat(fil[e].GENISLIK);
-                                
+
 
                             }
                         var ek = 0;
@@ -1509,6 +1509,14 @@
                         td.innerHTML = HtmlElement.innerHTML;
                     }
                     if ($('#tamami').is(':checked')) {
+                        if (i == 7) {
+                            var HtmlElement = StringToHtml(td.innerHTML);
+
+                            HtmlElement.getElementsByTagName('select')[0].disabled = false;
+
+                            td.innerHTML = HtmlElement.innerHTML;
+                        }
+                    } else {
                         if (i == 7) {
                             var HtmlElement = StringToHtml(td.innerHTML);
 
@@ -1929,7 +1937,7 @@
                                         var is = isemrilist.filter(x => x.includes(makine));
                                         sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                     }
-                             
+
                                     if (serilist.includes(girdi2)) {
                                         //if (refstokolcusu == "SEÇİNİZ") {
                                         //    if (siralist.includes(sirano) && adet == 1) {
@@ -1937,10 +1945,10 @@
                                         //    } else {
                                         //        girdi2 = girdi2old.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                         //    }
-                                            
+
                                         //}
                                         girdi2 = girdi2old.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                                    } 
+                                    }
                                     if (refstokolcusu == "SEÇİNİZ") {
                                         refstokolcusu = "-"
                                         refadet = "-"
@@ -1962,7 +1970,7 @@
 
                                         serilist.push(girdi2);
                                         say++;
-                                        
+
                                     }
                                     if (!siralist.includes(sirano) && girdi2 != "-") {
 
@@ -1974,16 +1982,16 @@
                                         isemrilist.push(sonrefisemri);
                                     }
 
-                                   
+
                                 }
-                                
+
                                 DLListTop.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: (refstokolcusu == "-" ? stokadi : refstokolcusu), KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: (refadet == 0 || refadet == '-' ? adet : (refadet * adet)) });
                                 var fark = DLList.length;
                                 OldStokAdi = $("#stokadi").val();
                                 siralist = [];
                                 var listZ = [];
-                               
-                               
+
+
                                 if (localStorage.DLlist != null && localStorage.DLlist != "null") {
                                     var l = JSON.parse(localStorage.DLlist);
                                     for (let z = 0; z < l.length; z++) {
@@ -2048,13 +2056,13 @@
                                     var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
 
                                     for (let e = 0; e < fil.length; e++) {
-                                       
+
                                             sum = sum + parseFloat(fil[e].GENISLIK);
-                                        
+
 
                                     }
                                     var ek = 0;
-                                    
+
                                     for (let e = 0; e < fil.length; e++) {
                                         if (fil[e].MIKTAR_SABITLE == "E") {
                                             fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * parseFloat(fil[e].ORAN);
@@ -2067,7 +2075,7 @@
                                             }
                                             fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
                                             fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
-                                        
+
                                         if (fil.length == 1) {
                                             fil[0].FIRE = fil[0].HAMSARF - (parseInt(fil[0].AGIRLIK));
                                         }
@@ -2078,8 +2086,8 @@
                                             fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
                                         }
                                     }
-                                    } 
-                                    
+                                    }
+
 
                                     if (newtakip.length == 0) {
                                         newtakip = fil;
@@ -2300,7 +2308,7 @@
                 $("#tamamidiv").hide();
                 break;
         }
-       
+
     }
     function c(val) {
         if (val.value == "DL") {
@@ -3708,7 +3716,7 @@ $.ajax({
                 break;
             case 'TP':
                 result = Grupla(JSON.parse(localStorage.TPPivotToplamVeri));
-               
+
                 break;
             case 'BK':
                 result = Grupla(JSON.parse(localStorage.BKPivotToplamVeri));
@@ -3732,19 +3740,30 @@ $.ajax({
                 alert('Mail gönderildi!')
             }
         })
-    
+
     }
     function chcked() {
         var b = $('#tamami').is(':checked');
         if (b) {
+            $('.selectmakina2').prop('disabled', false);
+        } else {
             $('.bi-x-lg ').trigger('click');
             $('.selectmakina2').prop('disabled', true);
-        } else {
-            $('.selectmakina2').prop('disabled', false);
         }
     }
 //#endregion
-</script>
+    </script>
+    <script>
+        function ShowProgress() {
+            document.body.style.overflow = 'hidden';
+            document.activeElement.blur();
+            $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+        }
+        function HideProgress() {
+            document.body.style.overflow = 'auto';
+            $('#nova-overlay').fadeOut('slow');
+        }
+    </script>
 </body>
 
 
