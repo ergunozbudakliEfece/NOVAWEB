@@ -491,7 +491,6 @@ namespace NOVA.Controllers
                             {
 
                                 fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
-
                                 fatUst = fatura.Ust();
                                 fatUst.FATIRS_NO = fatura.YeniNumara("A");
                                 fatUst.AMBHARTUR = TAmbarHarTur.htUretim;

@@ -839,7 +839,7 @@
                         kaplama.value = b.SERI_NO_4;
                         kalite.value = b.SERI_NO_3;
                         stokAdi.innerHTML = b.STOK_ADI;
-                        metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.ACIK1) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.ACIK1) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2);
+                        metraj.value = parseFloat((parseFloat(b.MIKTAR * hamoran.value)) / ((parseFloat(b.ACIK1) + parseFloat(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseFloat((b.MIKTAR)) / ((parseFloat(b.ACIK1) + parseFloat(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2);
                         var alltr = document.getElementsByTagName("table")[1].getElementsByTagName("tr");
 
 
@@ -944,7 +944,7 @@
                     kaplama.value = b.SERI_NO_4;
                     kalite.value = b.SERI_NO_3;
                     stokAdi.innerHTML = b.STOK_ADI;
-                    metraj.value = parseFloat((parseInt(b.MIKTAR * hamoran.value)) / ((parseInt(b.ACIK1) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseInt((b.MIKTAR)) / ((parseInt(b.ACIK1) + parseInt(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2);
+                    metraj.value = parseFloat((parseFloat(b.MIKTAR * hamoran.value)) / ((parseFloat(b.ACIK1) + parseFloat(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseFloat((b.MIKTAR)) / ((parseFloat(b.ACIK1) + parseFloat(document.getElementById('genislikalti').value)) * parseFloat((b.ACIK2).replace(",", ".")) * (0.00786))).toFixed(2);
                     var alltr = document.getElementsByTagName("table")[1].getElementsByTagName("tr");
 
 
@@ -1148,16 +1148,16 @@
                                     fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
                                 }
                                 fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
-                                fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+                                fil[e].AGIRLIK = parseFloat(parseFloat(fil[e].AGIRLIK));
 
                                 if (fil.length == 1) {
-                                    fil[0].FIRE = fil[0].HAMSARF - (parseInt(fil[0].AGIRLIK));
+                                    fil[0].FIRE = fil[0].HAMSARF - (parseFloat(fil[0].AGIRLIK));
                                 }
                             } else {
                                 for (let e = 0; e < fil.length; e++) {
                                     fil[e].HAMSARF = "1";
                                     fil[e].FIRE = "-";
-                                    fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+                                    fil[e].AGIRLIK = parseFloat(parseFloat(fil[e].AGIRLIK));
                                 }
                             }
                         }
@@ -1172,7 +1172,7 @@
                     takiplist = newtakip;
                     var fn = takiplist.filter(x => x.ISEMRINO === takiplist[0].ISEMRINO).length;
                     for (let i = 0; i < takiplist.length; i++) {
-                        tp = tp + parseInt(takiplist[i].FIRE);
+                        tp = tp + parseFloat(takiplist[i].FIRE);
                     }
 
                     for (let i = 0; i < takiplist.length; i++) {
@@ -1216,8 +1216,8 @@
                     var sum = 0;
                     var sum2 = 0;
                     for (let i = 1; i < rr.length - 1; i++) {
-                        sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
-                        sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
+                        sum = sum + parseFloat(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
+                        sum2 = sum2 + parseFloat(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
                     }
                     document.getElementById("fireagirligi1").value = sum;
 
@@ -1383,21 +1383,21 @@
         KaydetAktivite();
         }
     function DlInputChange(val) {
-            var tr = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex];
-            tr.getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = parseFloat((parseInt(tr.getElementsByTagName("td")[4].getElementsByTagName("input")[0].value) * parseInt(tr.getElementsByTagName("td")[5].getElementsByTagName("input")[0].value)) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(tr.getElementsByTagName("td")[1].getElementsByTagName("input")[0].value.toString().replace(",", ".")));
-            tr.getElementsByTagName("td")[11].getElementsByTagName("input")[1].value = parseInt(tr.getElementsByTagName("td")[11].getElementsByTagName("input")[0].value)
+        var tr = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex];
+        tr.getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = Math.round(parseFloat((parseFloat(tr.getElementsByTagName("td")[4].getElementsByTagName("input")[0].value.replace(',','.')) * parseFloat(tr.getElementsByTagName("td")[5].getElementsByTagName("input")[0].value)) / ((parseFloat(document.getElementById("genislik").value)) + (parseFloat(document.getElementById("genislikalti").value))) * (parseFloat(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(tr.getElementsByTagName("td")[1].getElementsByTagName("input")[0].value.toString().replace(",", "."))));
+            tr.getElementsByTagName("td")[11].getElementsByTagName("input")[1].value = parseFloat(tr.getElementsByTagName("td")[11].getElementsByTagName("input")[0].value)
             var top1 = 0;
             var rows = document.getElementById("DLTable").getElementsByTagName("tr");
             for (let i = 1; i < rows.length; i++) {
                 if (rows[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value != "") {
-                    top1 = top1 + (parseInt(rows[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value) * parseInt(rows[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
+                    top1 = top1 + parseFloat(parseFloat(rows[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value.replace(',', '.')) * parseFloat(rows[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
                 }
-            }
-            var d = parseInt(((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value))) - top1);
-            document.getElementById("fireagir").value = d;
-            document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
+        }
+        var d = parseFloat(((parseFloat(document.getElementById("genislik").value)) + (parseFloat(document.getElementById("genislikalti").value))) - top1);
+        document.getElementById("fireagir").value = d.toFixed(2);
+            document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseFloat(document.getElementById("genislik").value)) + (parseFloat(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
 
-            document.getElementById("fireagirligi").value = ((parseFloat(document.getElementById("fireagir").value) / ((parseInt(document.getElementById("genislik").value)) + (parseInt(document.getElementById("genislikalti").value)))) * (parseInt(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2);
+            document.getElementById("fireagirligi").value = ((parseFloat(document.getElementById("fireagir").value) / ((parseFloat(document.getElementById("genislik").value)) + (parseFloat(document.getElementById("genislikalti").value)))) * (parseFloat(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2);
             KaydetAktivite();
             tr.getElementsByTagName("select")[3].onchange()
 
@@ -1496,7 +1496,7 @@
                         td.replaceChildren();
                     }
                     if (i == 0) {
-                        td.innerHTML = parseInt(totaltr[totaltr.length - 1].getElementsByTagName("td")[0].innerHTML) + 1;
+                        td.innerHTML = parseFloat(totaltr[totaltr.length - 1].getElementsByTagName("td")[0].innerHTML) + 1;
                     }
                     if (i == 1) {
                         td.innerHTML = '<input class="border-0 text-center" style="font-size:small;max-width:50px" type="number" value="1.00" max="1.00" min="0.00" onblur="oran(this)" /><div><img onclick="addRow1(this)" style="width:18px;cursor:pointer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC"></div>'
@@ -1538,7 +1538,7 @@
                         td.replaceChildren();
                     }
                     if (i == 0) {
-                        td.innerHTML = parseInt(td.innerHTML) + 1;
+                        td.innerHTML = parseFloat(td.innerHTML) + 1;
                     }
                     if (i == 6) {
                         var HtmlElement = StringToHtml(td.innerHTML);
@@ -1895,7 +1895,7 @@
                                 var oran = tr[i].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value;
                                 var tam = document.getElementById("agirlik").value.split("/")[0].split('.').join('');
                                 var hamor = document.getElementById("hamoran").value;
-                                var sirano = parseInt(tr[i].getElementsByTagName("td")[0].innerHTML);
+                                var sirano = parseFloat(tr[i].getElementsByTagName("td")[0].innerHTML);
                                 var girdi2old = sonSeri[0].SERI_NO;
                                 var girdi2 = sonSeri[0].SERI_NO;
                                 var makine = tr[i].getElementsByTagName("select")[0].value;
@@ -1928,14 +1928,14 @@
                                         sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (a + 1).toString().padStart(3, '0');
                                         if (isemrilist.includes(sonrefisemri)) {
                                             var is1 = isemrilist.filter(x => x.includes(makineref));
-                                            sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseInt(is1[is1.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                            sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseFloat(is1[is1.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                         }
                                     }
 
 
                                     if (isemrilist.includes(sonisemri)) {
                                         var is = isemrilist.filter(x => x.includes(makine));
-                                        sonisemri = is[is.length - 1].substring(0, 12) + (parseInt(is[is.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                        sonisemri = is[is.length - 1].substring(0, 12) + (parseFloat(is[is.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                     }
                              
                                     if (serilist.includes(girdi2)) {
@@ -1943,11 +1943,11 @@
                                         //    if (siralist.includes(sirano) && adet == 1) {
                                         //        girdi2 = serilist[serilist.length - 1];
                                         //    } else {
-                                        //        girdi2 = girdi2old.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                        //        girdi2 = girdi2old.substring(0, 12) + (parseFloat(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                         //    }
                                             
                                         //}
-                                        girdi2 = girdi2old.substring(0, 12) + (parseInt(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                                        girdi2 = girdi2old.substring(0, 12) + (parseFloat(serilist[serilist.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                                     } 
                                     if (refstokolcusu == "SEÇİNİZ") {
                                         refstokolcusu = "-"
@@ -1963,7 +1963,7 @@
                                         refadet = 0;
                                     }
                                     DLList.push({
-                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik, ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: refadet, AGIRLIK: (parseFloat(refagirlik) / adet).toString(), SIPKONT: "", SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam, ORAN: oran, "MIKTAR_SABITLE": tamMi
+                                        GIRDI1: urunkodu, GIRDI2: girdi2, ISEMRINO: sonisemri, STOKADI: stokadi, KALINLIK: kalinlik, KALITE: kalite, KAPLAMA: kaplama, GENISLIK: genislik.replace(',','.'), ADET: 1, REF_ISEMRINO: sonrefisemri, REF_STOKOLCUSU: refstokolcusu, REF_ADET: refadet, AGIRLIK: (parseFloat(refagirlik) / adet).toString(), SIPKONT: "", SIPARISNO: siparisno, HAMORAN: hamor, TAMAGIRLIK: tam, ORAN: oran, "MIKTAR_SABITLE": tamMi
                                     });
 
                                     if (!(serilist.includes(girdi2)) && (girdi2!="-")) {
@@ -1985,7 +1985,7 @@
                                    
                                 }
                                 
-                                DLListTop.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: (refstokolcusu == "-" ? stokadi : refstokolcusu), KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseInt(refagirlik.replace(',', '.')), REF_ADET: (refadet == 0 || refadet == '-' ? adet : (refadet * adet)) });
+                                DLListTop.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: (refstokolcusu == "-" ? stokadi : refstokolcusu), KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseFloat(refagirlik.replace(',', '.')), REF_ADET: (refadet == 0 || refadet == '-' ? adet : (refadet * adet)) });
                                 var fark = DLList.length;
                                 OldStokAdi = $("#stokadi").val();
                                 siralist = [];
@@ -2074,16 +2074,16 @@
                                                 fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
                                             }
                                             fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
-                                            fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+                                            fil[e].AGIRLIK = parseFloat(parseFloat(fil[e].AGIRLIK));
                                         
                                         if (fil.length == 1) {
-                                            fil[0].FIRE = fil[0].HAMSARF - (parseInt(fil[0].AGIRLIK));
+                                            fil[0].FIRE = fil[0].HAMSARF - (parseFloat(fil[0].AGIRLIK));
                                         }
                                     }else {
                                         for (let e = 0; e < fil.length; e++) {
                                             fil[e].HAMSARF = "1";
                                             fil[e].FIRE = "-";
-                                            fil[e].AGIRLIK = parseInt(parseFloat(fil[e].AGIRLIK));
+                                            fil[e].AGIRLIK = parseFloat(parseFloat(fil[e].AGIRLIK));
                                         }
                                     }
                                     } 
@@ -2100,7 +2100,7 @@
                                 takiplist = newtakip;
                                 var fn = takiplist.filter(x => x.ISEMRINO === takiplist[0].ISEMRINO).length;
                                 for (let i = 0; i < takiplist.length; i++) {
-                                    tp = tp + parseInt(takiplist[i].FIRE);
+                                    tp = tp + parseFloat(takiplist[i].FIRE);
                                 }
 
                                 for (let i = 0; i < takiplist.length; i++) {
@@ -2145,8 +2145,8 @@
                                 var sum = 0;
                                 var sum2 = 0;
                                 for (let i = 1; i < rr.length - 1; i++) {
-                                    sum = sum + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
-                                    sum2 = sum2 + parseInt(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
+                                    sum = sum + parseFloat(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
+                                    sum2 = sum2 + parseFloat(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
                                 }
 
                             }
@@ -3088,7 +3088,7 @@
                 case 'PB':
                 case 'RF':
                     Seri = document.getElementById("seri").value.trim().length < 1 ? false : true;
-                    IlkKosul = Makine && Stok && Seri && (parseInt($("#agirlik").val().split("/")[0].replaceAll(".", "")) != 0);
+                    IlkKosul = Makine && Stok && Seri && (parseFloat($("#agirlik").val().split("/")[0].replaceAll(".", "")) != 0);
                     break;
             }
 
@@ -3119,15 +3119,15 @@
             }
             switch (Tip) {
                 case 'DL':
-                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.REF_ADET);
+                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseFloat(a.REF_ADET);
                     break;
                 case 'TP':
-                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.ADET);
+                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseFloat(a.ADET);
                     break;
                 case 'BK':
                 case 'PB':
                 case 'RF':
-                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseInt(a.ADET);
+                    this[`${a.STOKADI}${a.MUSTERI}`].ADET += parseFloat(a.ADET);
                     break;
             }
             this[`${a.STOKADI}${a.MUSTERI}`].AGIRLIK += a.AGIRLIK;
@@ -3199,9 +3199,9 @@
                     Satirlar.forEach((item) => {
                         var Makine = item.getElementsByTagName('select')[0].value;
                         var Stok = item.getElementsByTagName('select')[1].value;
-                        //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
-                        //var Adet = parseInt(item.getElementsByTagName('input')[2].value);
-                        var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
+                        //var Genislik = parseFloat(item.getElementsByTagName('input')[1].value);
+                        //var Adet = parseFloat(item.getElementsByTagName('input')[2].value);
+                        var Adet2 = parseFloat(item.getElementsByTagName('input')[1].value);
                         var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
                         var Girdi1 = $("#seri").val();
                         var Kalinlik = $("#kalinlik").val();
@@ -3217,7 +3217,7 @@
                         var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
                         if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                            SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                            SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                         }
 
                         OlusturulanIsEmirleri.push(SonIsEmri);
@@ -3312,7 +3312,7 @@
         var o = parseFloat(currentRow.find("input").eq(0).val());
         function verileriGetir() {
             currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / ((selectedValue.BOY != null ? selectedValue.BOY:0) / 1000)) * o));
-            currentRow.find("input").eq(3).val(parseInt(agirlik) * o);
+            currentRow.find("input").eq(3).val(parseFloat(agirlik) * o);
             BKCariGetir(rowIndex);
         }
         function verileriSifirla() {
@@ -3392,9 +3392,9 @@ $.ajax({
     Satirlar.forEach((item) => {
         var Makine = item.getElementsByTagName('select')[0].value;
         var Stok = item.getElementsByTagName('select')[1].value;
-        //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
-        //var Adet = parseInt(item.getElementsByTagName('input')[1].value);
-        var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
+        //var Genislik = parseFloat(item.getElementsByTagName('input')[1].value);
+        //var Adet = parseFloat(item.getElementsByTagName('input')[1].value);
+        var Adet2 = parseFloat(item.getElementsByTagName('input')[1].value);
         var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
         var Girdi1 = $("#seri").val();
         var Kalinlik = $("#kalinlik").val();
@@ -3410,7 +3410,7 @@ $.ajax({
         var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
         if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-            SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+            SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
         }
 
         OlusturulanIsEmirleri.push(SonIsEmri);
@@ -3502,7 +3502,7 @@ $.ajax({
         var o = parseFloat(currentRow.find("input").eq(0).val());
         function verileriGetir() {
             currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / (selectedValue.BOY / 1000)) * o));
-            currentRow.find("input").eq(3).val(parseInt(agirlik) * o);
+            currentRow.find("input").eq(3).val(parseFloat(agirlik) * o);
             PBCariGetir(rowIndex);
         }
         function verileriSifirla() {
@@ -3580,9 +3580,9 @@ $.ajax({
                 Satirlar.forEach((item) => {
                     var Makine = item.getElementsByTagName('select')[0].value;
                     var Stok = item.getElementsByTagName('select')[1].value;
-                    //var Genislik = parseInt(item.getElementsByTagName('input')[1].value);
-                    //var Adet = parseInt(item.getElementsByTagName('input')[1].value);
-                    var Adet2 = parseInt(item.getElementsByTagName('input')[1].value);
+                    //var Genislik = parseFloat(item.getElementsByTagName('input')[1].value);
+                    //var Adet = parseFloat(item.getElementsByTagName('input')[1].value);
+                    var Adet2 = parseFloat(item.getElementsByTagName('input')[1].value);
                     var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
                     var Girdi1 = $("#seri").val();
                     var Kalinlik = $("#kalinlik").val();
@@ -3598,7 +3598,7 @@ $.ajax({
                     var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
                     if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                        SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                        SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
                     }
 
                     OlusturulanIsEmirleri.push(SonIsEmri);
@@ -3691,7 +3691,7 @@ $.ajax({
         var o = parseFloat(currentRow.find("input").eq(0).val());
         function verileriGetir() {
             currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / (selectedValue.BOY / 1000)) * o));
-            currentRow.find("input").eq(3).val(parseInt(agirlik) * o);
+            currentRow.find("input").eq(3).val(parseFloat(agirlik) * o);
             RFCariGetir(rowIndex);
         }
         function verileriSifirla() {

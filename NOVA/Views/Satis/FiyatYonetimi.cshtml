@@ -34,7 +34,7 @@
     }
 
     .search {
-        width: 75%;
+        width: 50%;
         float: right !important;
     }
 
@@ -129,13 +129,16 @@
                         <label style="font-size: 10px; letter-spacing:1px">SIRALAMA</label>
                     </div>
                 </div>
+                <div class="col d-flex">
+                    <input class="form-control" style="float:left;width:200px" type="text" placeholder="FİYAT KODU EKLE" id="kodInput">
+                    <button class="btn btn-info ms-2" style="float:left;background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="Onay()" id="kaydet">EKLE</button>
+                </div>
                 @*<div class="col">
                     <button class="btn btn-secondary" onclick="location.href='@Url.Action("MailFiyatlist", "Satis")'" type="button"><i class='bx bx-mail-send'></i></button>
                 </div>*@
             </div>
 
         </div>
-        <div id="toolbar" class="mt-2 w-100"></div>
             <table id="table"
                    class="table table-striped"
                    data-show-fullscreen="true"
@@ -1180,6 +1183,36 @@
             })
             }
 
+        }
+        function Onay() {
+            var input = $('#kodInput').val();
+            $.getJSON('http://192.168.2.13:83/api/fiyat/siraekle/'+input+'/S', function (data) {
+                Swal.fire({
+                    title: "Aşağıdaki bilgileri onaylıyor musunuz?",
+                    html: '<table id="tab1" class="table table-borderless inp"><tr><th>FİYATKODU</th><th>OLCUBR</th><th>DOV.TİP</th><th>FİYAT2</th><th>FİYAT3</th></tr><tr><td>' + data[0].FIYATKODU + '</td><td>' + data[0].OLCUBR + '</td><td>' + data[0].FIYATDOVIZTIPI + '</td><td>' + data[0].FIYAT2 + '</td><td>' + data[0].FIYAT3 +'</td></tr></table>',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonText: 'HAYIR',
+                    cancelButtonColor: '#d33',
+                    confirmButtonColor: '#3085d6',
+                    allowEnterKey: false,
+                    confirmButtonText: 'EVET',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.getJSON('http://192.168.2.13:83/api/fiyat/siraekle/' + input + '/I', function (data) {
+
+                        }).done(function () {
+                            Swal.fire(
+                                'Fiyat kodu aktarıldı.',
+                                '',
+                                'success'
+                            )
+                        })
+                    }
+                });
+            })
+           
         }
     </script>
 </div>
