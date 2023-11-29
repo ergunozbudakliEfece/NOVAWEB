@@ -474,7 +474,7 @@ namespace NOVA.Controllers
                         var ACIK2 = "";
                         var SERI_NO_3 = "";
                         var SERI_NO_4 = "";
-                        if (seri == null || seri=="0")
+                        if (seri == null || seri == "0")
                         {
                             uretim.OTOSERIURET();
                             uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
@@ -518,7 +518,7 @@ namespace NOVA.Controllers
                                 Marshal.ReleaseComObject(fatKalem);
                             }
                         }
-                           
+
                         //if (miktarsabitle == "E")
                         //{
                         //    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + eskimiktar + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
@@ -552,11 +552,11 @@ namespace NOVA.Controllers
                         if (miktarsabitle != "E")
                         {
                             netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                            netRS1.Ac("UPDATE TBLSERITRA SET ACIK1 = '"+genislik+"',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G'");
+                            netRS1.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + genislik + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G'");
                             if (hatkodu != "BK01")
                             {
                                 netRS1.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                                netRS1.Ac("UPDATE TBLSERITRA SET ACIK1 = '"+ genislik + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                                netRS1.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + genislik + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND  GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                             }
                             if (kontrol == true)
                             {
@@ -580,7 +580,7 @@ namespace NOVA.Controllers
                             var yeni = miktar2.ToDouble() * oran;
                             netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi1 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
                             netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2='1' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='C'");
-                            netRS1.Ac("UPDATE TBLSERITRA SET ACIK1 = '"+ genislik + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G'");
+                            netRS1.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + genislik + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G'");
                             if (referans != null && referans != "")
                             {
 
@@ -596,7 +596,7 @@ namespace NOVA.Controllers
                             }
                         }
 
-                        
+
                     }
 
                     //Stok hareketleri gerçeklestiriliyor
@@ -609,27 +609,8 @@ namespace NOVA.Controllers
                     return $"Hata: {exp}";
                 }
 
+                return UretilmisEtiketleriYazdir(SeriNoListesi, "Uretim", etiket, YAZICI);
 
-                if (etiket)
-                {
-                    List<BarkodModel> Etiketler = new List<BarkodModel>();
-                    WebClient Client = new WebClient() { Encoding = Encoding.UTF8 };
-
-                    foreach (var item in SeriNoListesi)
-                    {
-                        string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + item));
-                        List<BarkodModel> Result = ser.Deserialize<List<BarkodModel>>(Response);
-
-                        if (Result.Count > 0)
-                        {
-                            Etiketler.Add(Result[0]);
-                        }
-                    }
-
-                    Etiket = UretimKaydiSonuBarkodCiktisi(Etiketler, onizleme, YAZICI);
-                }
-
-                //UretilmisEtiketleriYazdir(SeriNoListesi, "uretim", onizleme, Yazici);
             }
             catch (Exception e)
             {
@@ -642,8 +623,6 @@ namespace NOVA.Controllers
                 sirket.LogOff();
                 kernel.FreeNetsisLibrary();
             }
-
-            return Etiket;
         }
         public string Hurda(string hatkodu, string mik1, string stokkodu)
         {
@@ -1894,7 +1873,7 @@ namespace NOVA.Controllers
 
             return ToBase64String(pdfPath);
         }
-        private string DegerFormat(double Deger, string Tip)
+        private string DegerFormat(double? Deger, string Tip)
         {
             if (Deger == 0)
             {
@@ -2052,24 +2031,24 @@ namespace NOVA.Controllers
         {
             public string SERI_NO { get; set; }
             public string STOK_ADI { get; set; }
-            public double MIKTAR1 { get; set; }
+            public double? MIKTAR1 { get; set; }
             public string OLCU_BR1 { get; set; }
-            public double MIKTAR2 { get; set; }
+            public double? MIKTAR2 { get; set; }
             public string OLCU_BR2 { get; set; }
             public string STOK_KODU { get; set; }
-            public double GENISLIK { get; set; }
+            public double? GENISLIK { get; set; }
             public string GRUP_ISIM { get; set; }
-            public double BOY { get; set; }
+            public double? BOY { get; set; }
             public string KAYITYAPANKUL { get; set; }
             public string KAYITTARIHI { get; set; }
             public string SIPARIS_CARI { get; set; }
             public string MAK_KODU { get; set; }
             public string KALINLIK { get; set; }
-            public double METRAJ { get; set; }
+            public double? METRAJ { get; set; }
 
-            public double BIRIM_MIKTAR { get; set; }
-            public double KALITE { get; set; }
-            public double KAPLAMA { get; set; }
+            public double? BIRIM_MIKTAR { get; set; }
+            public double? KALITE { get; set; }
+            public double? KAPLAMA { get; set; }
             public string MENSEI { get; set; }
             public string FIRMA_SERI_NO { get; set; }
 
@@ -2099,7 +2078,7 @@ namespace NOVA.Controllers
         {
             return string.IsNullOrEmpty(Deger) ? "-" : Deger;
         }
-        private string BosDegerKontrolu(double Deger)
+        private string BosDegerKontrolu(double? Deger)
         {
             return Deger == 0 || Deger == 0.0 ? "-" : Deger.ToString();
         }
@@ -2112,23 +2091,23 @@ namespace NOVA.Controllers
 
             return DateTime.Parse(Tarih).ToString("dd/MM/yyyy HH:mm:ff");
         }
-        private string MiktarFormat(double Miktar, string OlcuBirimi)
+        private string MiktarFormat(double? Miktar, string OlcuBirimi)
         {
             if (Miktar == 0)
             {
                 return "-";
             }
 
-            return $"{Miktar.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
+            return $"{Miktar?.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
         }
-        private string MetrajFormat(double Metraj, string OlcuBirimi)
+        private string MetrajFormat(double? Metraj, string OlcuBirimi)
         {
             if (Metraj == 0)
             {
                 return "-";
             }
 
-            return $"{Metraj.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
+            return $"{Metraj?.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
         }
         #endregion
         public List<HatModel> UretimTipi(string hatKodu)
@@ -2419,7 +2398,7 @@ namespace NOVA.Controllers
 
         #region UretilmisBarkodlar
 
-        public string UretilmisEtiketleriYazdir(string[] BarkodListesi, string EtiketDizayn, bool DirektYazdir, string Yazici) 
+        public string UretilmisEtiketleriYazdir(List<string> BarkodListesi, string EtiketDizayn, bool DirektYazdir, string Yazici) 
         {
             try
             {
@@ -2439,42 +2418,49 @@ namespace NOVA.Controllers
                         throw new Exception("Hatalı etiket türü.");
                 }
 
-                if (DirektYazdir)
+                if (Etiket != null)
                 {
-                    try
+                    if (DirektYazdir)
                     {
-                        using (var pdocument = PdfiumViewer.PdfDocument.Load(Etiket["Path"]))
+                        try
                         {
-                            using (var printDocument = pdocument.CreatePrintDocument())
+                            using (var pdocument = PdfiumViewer.PdfDocument.Load(Etiket["Path"]))
                             {
-                                printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
-                                printDocument.PrinterSettings.PrinterName = Yazici;
-                                printDocument.DocumentName = "file.pdf";
-                                printDocument.PrinterSettings.PrintFileName = "file.pdf";
-                                printDocument.PrintController = new StandardPrintController();
-                                printDocument.Print();
+                                using (var printDocument = pdocument.CreatePrintDocument())
+                                {
+                                    printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
+                                    printDocument.PrinterSettings.PrinterName = Yazici;
+                                    printDocument.DocumentName = "file.pdf";
+                                    printDocument.PrinterSettings.PrintFileName = "file.pdf";
+                                    printDocument.PrintController = new StandardPrintController();
+                                    printDocument.Print();
+                                }
                             }
-                        }
 
-                        return "Etiket başarıyla oluşturuldu.";
+                            return "Etiket başarıyla oluşturuldu.";
+                        }
+                        catch (Exception ex)
+                        {
+                            return "Etiket yazdırma işleminde bir hata oluştu.";
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        return "Etiket yazdırma işleminde bir hata oluştu.";
+                        return Etiket["Base64"];
                     }
                 }
                 else 
                 {
-                    return Etiket["Base64"];
+                    return "Etiket verilerinde bir sorun oluştu.";
                 }
             }
             catch (Exception ex) 
             {
-                return "Etiket oluşturulurken bir hata oluştu.";
+                return $"Etiket oluşturulurken bir hata oluştu. (Detay: {ex.Message})";
             }
         }
 
-        public List<BarkodModel> UretilmisEtiketBilgileri(string[] BarkodListesi)
+        public List<BarkodModel> UretilmisEtiketBilgileri(List<string> BarkodListesi)
         {
             try
             {
@@ -2485,6 +2471,7 @@ namespace NOVA.Controllers
                 {
                     string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + item));
                     List<BarkodModel> Result = new JavaScriptSerializer().Deserialize<List<BarkodModel>>(Response);
+                    var a = 3 + 8;
 
                     if (Result.Count > 0)
                     {
@@ -2504,6 +2491,9 @@ namespace NOVA.Controllers
 
         public Dictionary<string, string> UretimEtiket(List<BarkodModel> EtiketBilgileri) 
         {
+            if(EtiketBilgileri.Count <= 0)
+                return null;
+
             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
             string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
@@ -2611,6 +2601,9 @@ namespace NOVA.Controllers
 
         public Dictionary<string, string> SevkiyatEtiket(List<BarkodModel> EtiketBilgileri)
         {
+            if (EtiketBilgileri.Count <= 0)
+                return null;
+
             Document document = new Document(PageSize.A6, 10f, 10f, 10f, 10f);
 
             string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
