@@ -708,6 +708,48 @@ namespace NOVA.Controllers
 
             return "BAŞARILI";
         }
+        public string AmbarGirCik(string seri,string miktar,string stokkodu)
+        {
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarC);
+                fatUst = fatura.Ust();
+                fatUst.FATIRS_NO = fatura.YeniNumara("A");
+                fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                fatUst.CikisYeri = TCikisYeri.cySerbest;
+                fatUst.CariKod = "12035200100406";
+                fatUst.Tarih = DateTime.Now;
+                fatUst.ENTEGRE_TRH = DateTime.Now;
+                fatUst.FiiliTarih = DateTime.Now;
+                fatUst.Proje_Kodu = "1";
+                fatUst.Aciklama = seri;
+                fatKalem = fatura.kalemYeni(stokkodu);
+                fatKalem.DEPO_KODU = 45;
+                fatKalem.Olcubr = 1;
+                fatKalem.ProjeKodu = "1";
+                fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                fatKalem.STra_GCMIK = miktar.ToDouble();
+                fatKalem.STra_NF = 0;
+                fatKalem.STra_BF = 0;
+                fatKalem.STra_ACIK = seri;
+
+
+                fatura.kayitYeni();
+            }
+            catch (Exception ex)
+            {
+
+                return "Hata "+ ex.Message;
+            }
+
+            return "Başarılı";
+        }
         public class HurdaModel
         {
             public string INCKEY { get; set; }

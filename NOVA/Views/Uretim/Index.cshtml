@@ -3225,7 +3225,7 @@
                                 HESAPLA
                             </h3>
                         </div>
-                            
+
                     </div>
 
 
@@ -3239,7 +3239,7 @@
                     </div>
                     <div class="row w-100">
                         <div class="col text-center">
-                            <input  placeholder="Dağıtılacak Miktar" class="form-control text-center" type="number" id="hesapInput">
+                            <input placeholder="Dağıtılacak Miktar" class="form-control text-center" type="number" id="hesapInput">
                         </div>
 
                     </div>
@@ -3868,7 +3868,7 @@
             if (index.ORAN == 0) {
                 return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="SilButton" onclick="Sil(\'' + index.SERI_NO + '\')" class="btn btn-danger" style="height:28px;width: 85.77px; display: flex; justify-content: center; align-items: center;margin-right:5px">SİL</button></div>';
             } else {
-                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="aktarButton" onclick="Onay(\'' + index.SERI_NO + '\',\'' + index.SERI_BAKIYE + '\')" class="btn btn-warning" style="height:28px;width: auto; display: ' + (index.ORAN == 100 || index.ORAN == 0 ? 'none' : 'flex') + '; justify-content: center; align-items: center;margin-right:5px">AKTAR</button><button type="button" id="testButton" onclick="Ambar(\'' + index.SERI_NO + '\',\'' + index.SERI_BAKIYE + '\')" class="btn btn-info" style="height:28px;width: auto; display: ' + (index.ORAN == 100 || index.ORAN == 0 ? 'none' : 'flex') +'; justify-content: center; align-items: center;margin-right:5px">TEST</button></div>';
+                return '<div style="display: flex; justify-content: center; align-items: center;"><button type="button" id="aktarButton" onclick="Onay(\'' + index.SERI_NO + '\',\'' + index.SERI_BAKIYE + '\')" class="btn btn-warning" style="height:28px;width: auto; display: ' + (index.ORAN == 100 || index.ORAN == 0 ? 'none' : 'flex') + '; justify-content: center; align-items: center;margin-right:5px">HURDA</button><button type="button" id="testButton" onclick="Ambar(\'' + index.SERI_NO + '\',\'' + index.SERI_BAKIYE + '\')" class="btn btn-info" style="height:28px;width: auto; display: ' + (index.ORAN == 100 || index.ORAN == 0 ? 'none' : 'flex') +'; justify-content: center; align-items: center;margin-right:5px">AMBAR</button></div>';
             }
 
         }
@@ -4589,10 +4589,54 @@
 
 
         }
+        function Ambar(value, mik) {
+            Swal.fire({
+                title: "UYARI",
+                html: value + ' seri nolu üründen ' + parseInt(mik) + ' miktar ambar giriş/çıkış yapılmasını onaylıyor musunuz?',
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'HAYIR',
+                cancelButtonColor: '#d33',
+                confirmButtonColor: '#3085d6',
+                allowEnterKey: false,
+                confirmButtonText: 'EVET',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    AmbarGirCik(value, parseInt(mik))
+                }
+            });
+        }
+        function AmbarGirCik(value, mik) {
+            ShowProgress();
+            var stokkodu = stokkodlari.filter(x => x.SERI_NO == value)[0].STOK_KODU;
+            $.ajax({
+                url: '@Url.Action("DepoTransfer", "Uretim")',
+                type: 'POST',
+                data: { "seri":value,"stokkodu": stokkodu, "miktar": mik.toString() },
+                error: function (data) {
+                    alert(JSON.stringify(data));
+                    HideProgress()
+                },
+                success: function (data) {
+                    if (data == 'Başarılı') {
+
+                        Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                    } else {
+                        Swal.fire('Başarısız!', data, 'error');
+                    }
+                    HideProgress()
+                    $('input[name="makine-ie"]:checked').trigger('click');
+                }
+            })
+
+
+
+        }
         function Hesapla() {
             var deger = $('#hesapInput').val();
             $.getJSON('http://192.168.2.13:83/api/seri/hesapla/' + seri + '/' + deger, function (data) {
-              
+
                 var d = data.filter(x=>x.GENISLIK == genislik.toString())
                 ModalKapat4()
                 $('#miktar11').val(d[0].TOPLAM_MIKTAR).trigger('blur');
