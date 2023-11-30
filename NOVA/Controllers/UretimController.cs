@@ -687,8 +687,9 @@ namespace NOVA.Controllers
 
             return "BAŞARILI";
         }
-        public string AmbarGirCik(string seri,string miktar,string stokkodu)
+        public string AmbarGirCik(string seri,string miktar,string stokkodu,string YAZICI)
         {
+            var yeniseri = seri.Substring(0, 3) + ((seri[3].ToString().ToInt()) + 1).ToString() + seri.Substring(4);
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
@@ -697,6 +698,7 @@ namespace NOVA.Controllers
                                             "",
                                             Request.Cookies["UserName"].Value,
                                             LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                
                 fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarC);
                 fatUst = fatura.Ust();
                 fatUst.FATIRS_NO = fatura.YeniNumara("A");
@@ -707,27 +709,65 @@ namespace NOVA.Controllers
                 fatUst.ENTEGRE_TRH = DateTime.Now;
                 fatUst.FiiliTarih = DateTime.Now;
                 fatUst.Proje_Kodu = "1";
+                fatUst.KOD1 = "N";
+                fatUst.Aciklama = yeniseri;
+                fatKalem = fatura.kalemYeni(stokkodu);
+                fatKalem.DEPO_KODU = 45;
+                fatKalem.Olcubr = 1;
+                fatKalem.ProjeKodu = "1";
+                fatKalem.SeriEkle(seri,"","","",miktar.ToDouble(), 1);
+                fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                fatKalem.STra_GCMIK = miktar.ToDouble();
+                fatKalem.STra_GCMIK2 = 1;
+                fatKalem.STra_NF = 0;
+                fatKalem.STra_BF = 0;
+                fatKalem.STra_ACIK = yeniseri;
+
+
+                fatura.kayitYeni();
+               
+                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
+                fatUst = fatura.Ust();
+                fatUst.FATIRS_NO = fatura.YeniNumara("A");
+                fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                fatUst.CikisYeri = TCikisYeri.cySerbest;
+                fatUst.CariKod = "12035200100406";
+                fatUst.Tarih = DateTime.Now;
+                fatUst.ENTEGRE_TRH = DateTime.Now;
+                fatUst.FiiliTarih = DateTime.Now;
+                fatUst.Proje_Kodu = "1";
+                fatUst.KOD1 = "N";
                 fatUst.Aciklama = seri;
                 fatKalem = fatura.kalemYeni(stokkodu);
                 fatKalem.DEPO_KODU = 45;
                 fatKalem.Olcubr = 1;
                 fatKalem.ProjeKodu = "1";
+                fatKalem.SeriEkle(yeniseri, "", "", "", miktar.ToDouble(), 1);
                 fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
                 fatKalem.STra_GCMIK = miktar.ToDouble();
+                fatKalem.STra_GCMIK2 = 1;
                 fatKalem.STra_NF = 0;
                 fatKalem.STra_BF = 0;
                 fatKalem.STra_ACIK = seri;
 
 
                 fatura.kayitYeni();
+                netRS = kernel.yeniNetRS(sirket);
+                netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + seri + "' AND GCKOD='G'");
+                var ACIK1 = netRS.FieldByName("ACIK1").AsString;
+                var ACIK2 = netRS.FieldByName("ACIK2").AsString;
+                var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
+                netRS.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE SERI_NO='"+yeniseri+"' AND GCKOD='G'");
             }
             catch (Exception ex)
             {
 
                 return "Hata "+ ex.Message;
             }
-
-            return "Başarılı";
+            List<string> seriList= new List<string>();
+            seriList.Add(yeniseri);
+            return UretilmisEtiketleriYazdir(seriList, "Uretim", true, YAZICI); 
         }
         public class HurdaModel
         {

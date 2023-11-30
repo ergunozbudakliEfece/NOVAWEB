@@ -22,6 +22,12 @@
     <script src="~/Scripts/instascan.min.js"></script>
     <link href="~/Scripts/sticky.css" rel="stylesheet" />
     <style>
+        .swal2-html-container{
+            overflow:hidden !important;
+        }
+        .select2-container--open {
+            z-index: 99999999999999;
+        }
         .tooltip-inner {
             max-width: 301px !important;
         }
@@ -337,7 +343,7 @@
     </script>
 </head>
 <body style="overflow-x:hidden;">
-
+  
     <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
     </div>
@@ -1381,6 +1387,7 @@
         //    change(constant);
         //});
         var html5QrcodeScanner = null;
+
         $(document).ready(function () {
             $("#filter").select2(
                 {
@@ -4592,7 +4599,7 @@
         function Ambar(value, mik) {
             Swal.fire({
                 title: "UYARI",
-                html: value + ' seri nolu üründen ' + parseInt(mik) + ' miktar ambar giriş/çıkış yapılmasını onaylıyor musunuz?',
+                html: value + ' seri nolu üründen ' + parseInt(mik) + ' miktar ambar giriş/çıkış yapılmasını onaylıyor musunuz?<br><div style="margin-top:10px;display:flex;justify-content:center;align:center"><select id="yazici1" class="form-select" style="width:250px"></select><div>',
                 icon: 'warning',
                 showCancelButton: true,
                 cancelButtonText: 'HAYIR',
@@ -4600,8 +4607,33 @@
                 confirmButtonColor: '#3085d6',
                 allowEnterKey: false,
                 confirmButtonText: 'EVET',
-                allowOutsideClick: false
+                allowOutsideClick: false,
+                didOpen: function () {
+                    $.getJSON('http://192.168.2.13:83/api/printers/list', function (data) {
+                        //var opt = $("<option>").val("Microsoft Print to PDF").text("Microsoft Print to PDF");
+
+                        //$('#yazici1').append(opt);
+                        for (let i = 0; i < data.length; i++) {
+                           var opt = $("<option>").val(data[i].PRINTER_NAME).text(data[i].PRINTER_NAME);
+
+                            $('#yazici1').append(opt);
+                        }
+                    }).done(function () {
+                        $('#yazici1').select2(
+                            {
+                                "language": {
+                                    "noResults": function () {
+                                        return "Sonuç bulunamadı.";
+                                    }
+                                },
+                                escapeMarkup: function (markup) {
+                                    return markup;
+                                }
+                            });
+                    })
+                }
             }).then((result) => {
+               
                 if (result.isConfirmed) {
                     AmbarGirCik(value, parseInt(mik))
                 }
@@ -4611,7 +4643,7 @@
             ShowProgress();
             var stokkodu = stokkodlari.filter(x => x.SERI_NO == value)[0].STOK_KODU;
             $.ajax({
-                url: '@Url.Action("DepoTransfer", "Uretim")',
+                url: '@Url.Action("AmbarGirCik", "Uretim")',
                 type: 'POST',
                 data: { "seri":value,"stokkodu": stokkodu, "miktar": mik.toString() },
                 error: function (data) {
