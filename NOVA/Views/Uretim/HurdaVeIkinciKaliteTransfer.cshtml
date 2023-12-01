@@ -1,0 +1,322 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout_common.cshtml";
+}
+<link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+<style>
+    body {
+        padding-left: 5rem;
+    }
+
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+
+    th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .detail-view td{
+        padding: 0;
+    }
+</style>
+
+<div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:flex;justify-content:center;align-items:center;">
+    <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+</div>
+<script>
+    function ShowProgress() {
+        document.body.style.overflow = 'hidden';
+        document.activeElement.blur();
+        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    }
+
+    function HideProgress() {
+        document.body.style.overflow = 'auto';
+        $('#nova-overlay').fadeOut('slow');
+    }
+</script>
+
+<div class="row">
+    <div class="col-sm-auto">
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="transfer-islem" id="hurda" onclick="ChangeType()" value="60" checked autocomplete="off">
+            <label class="btn btn-outline-primary" for="hurda">HURDA</label>
+
+            <input type="radio" class="btn-check" name="transfer-islem" id="ikinci-kalite" onclick="ChangeType()" value="55" autocomplete="off">
+            <label class="btn btn-outline-primary" for="ikinci-kalite">2. KALİTE</label>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="table-responsive">
+            <div id="transfer-table-toolbar">
+                <button id="transfer-button" class="btn btn-outline-primary" style="display:none;">HURDAYA AKTAR</button>
+            </div>
+
+            <table id="transfer-table"
+                   class="table"
+                   data-toolbar="#transfer-table-toolbar"
+                   data-search="true"
+                   data-show-refresh="false"
+                   data-show-toggle="false"
+                   data-show-fullscreen="false"
+                   data-show-columns="false"
+                   data-show-columns-toggle-all="false"
+                   data-detail-view="true"
+                   data-detail-view-by-click="true"
+                   data-detail-view-icon="false"
+                   data-show-export="false"
+                   data-click-to-select="true"
+                   data-show-pagination-switch="false"
+                   data-pagination="true"
+                   data-id-field="id"
+                   data-show-footer="false"
+                   data-mobile-responsive="true"
+                   data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
+                   data-locale="tr-TR"
+                   data-page-size="20"
+                   data-sticky-header="false"
+                   data-row-style="TransferTableRowStyle">
+                <thead>
+                    <tr>
+                        <th data-field="STOK_KODU">STOK KODU</th>
+                        <th data-field="STOK_ADI">STOK ADI</th>
+                        <th data-field="MIKTAR">TOPLAM MİKTAR</th>
+                        <th data-width="50" data-formatter="SelectAllRow" data-halign="center" data-align="center">İŞLEM</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var SelectedValues = [];
+
+    function ChangeType() {
+        SelectedValues = [];
+
+        FetchDataFromUrl();
+        TransferButtonVisibility();
+    }
+
+    function ValueIsSelected(Value) {
+        return SelectedValues.includes(Value);
+    }
+
+    function ValuesIsSelected(Value) {
+        var FilteredData = Data.filter(x => x.STOK_KODU == Value);
+
+        for (var i = 0; i < FilteredData.length; i++)
+        {
+            var SERI_NO = FilteredData[i].SERI_NO;
+
+            if (!ValueIsSelected(SERI_NO))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function TransferTableRowStyle(row, index) {
+        return {
+            css: {
+                "background-color": '#e9ebff'
+            }
+        }
+    }
+
+    function TransferButtonVisibility() {
+        if (SelectedValues.length > 0) {
+            $('#transfer-button').show();
+        }
+        else {
+            $('#transfer-button').hide();
+        }
+    }
+</script>
+
+<script>
+
+    var Data = [];
+
+    $(document).ready(() => {
+        FetchDataFromUrl();
+    });
+
+    function FetchDataFromUrl() {
+        ShowProgress();
+
+        var Type = $('input[name="transfer-islem"]:checked').val();
+
+        $('#transfer-button').html(Type == "55" ? "2. KALİTEYE AKTAR" : "HURDAYA AKTAR");
+
+        $.ajax({
+            url: `http://192.168.2.13:83/api/seri/hi/${Type}`,
+            type: 'GET',
+            error: (error) => { console.log(`Veri çekme aşamasında hata oluştu. (Detay: ${error})`); },
+            success: (response) => {
+                if (response.length > 0) {
+                    Data = response;
+
+                    $('#transfer-table').bootstrapTable("destroy");
+                    $('#transfer-table').bootstrapTable({ data: GroupByWithSum(response) });
+                }
+            }
+        })
+            .then(() => {
+                HideProgress();
+            });
+    }
+
+    function GroupByWithSum(Arr) {
+        var Result = [];
+
+        Arr.forEach(function (a) {
+            if (!this[a.STOK_KODU]) {
+                this[a.STOK_KODU] = { STOK_ADI: a.STOK_ADI, STOK_KODU: a.STOK_KODU, MIKTAR: 0 };
+
+                Result.push(this[a.STOK_KODU]);
+            }
+
+            this[a.STOK_KODU].MIKTAR += parseInt(a.MIKTAR);
+
+        }, Object.create(null));
+
+        return Result;
+    }
+
+    function SelectAllRow(Value, Row, Idx) {
+        var Selected = ValuesIsSelected(Row.STOK_KODU);
+
+        var Icon = Selected ? `<i class="bi bi-check-circle-fill"  style="cursor:pointer;color:#71dd37;font-size:x-large;"></i>` : `<i class="bi bi-check-circle"  style="cursor:pointer;color:red;font-size:x-large;"></i>`;
+
+        return `<div onclick="SelectAllValue('${Row.STOK_KODU}', this, '${Idx}')">${Icon}</div>`;
+    }
+
+    function SelectAllValue(Value, Button, RowId)
+    {
+        event.stopPropagation();
+
+        var FilteredData = Data.filter(x => x.STOK_KODU == Value);
+        var Icon = Button.getElementsByTagName('i')[0];
+
+        if (ValuesIsSelected(Value))
+        {
+            SelectedValues = SelectedValues.filter(item => FilteredData.indexOf(element => element.SERI_NO == item.SERI_NO) > 0);
+
+            Icon.style.color = 'red';
+            Icon.classList.remove("bi-check-circle-fill");
+            Icon.classList.add("bi-check-circle");
+        }
+        else
+        {
+            FilteredData?.forEach((item) => {
+                if (!ValueIsSelected(item.SERI_NO)) {
+                    SelectedValues.push(item.SERI_NO);
+                }
+            });
+
+            Icon.style.color = '#71dd37';
+            Icon.classList.add("bi-check-circle-fill");
+            Icon.classList.remove("bi-check-circle");
+        }
+
+        $(`#transfer-${RowId}-table`).bootstrapTable('toggleView');
+        $(`#transfer-${RowId}-table`).bootstrapTable('toggleView');
+
+        TransferButtonVisibility();
+    }
+
+</script>
+
+<script>
+    $('#transfer-table').on('expand-row.bs.table', function (e, index, row, $detail) {
+        $detail.html(`<div class="card-body p-2" style="background-color:mintcream;"> <div id="transfer-table-wrapper" class="tableWrapper table-responsive"> <table id="transfer-${index}-table" class="table-hover table-sm" data-search="false" data-show-refresh="false" data-show-toggle="false" data-show-fullscreen="false" data-show-columns="false" data-show-columns-toggle-all="false" data-detail-view="false" data-show-export="false" data-click-to-select="true" data-minimum-count-columns="2" data-show-pagination-switch="false" data-page-size="4" data-page-list="[5,20,50,100]" data-pagination-parts="['pageInfo','pageList']" data-pagination="false" data-id-field="id" data-show-footer="false" data-mobile-responsive="true" data-Filtered-handler="FilteredHandler" data-locale="tr-TR" data-row-style="DetailSatirStili"> <thead>
+                                                <tr>
+                                                    <th data-field="SERI_NO" data-halign="center" data-align="center">BARKOD NO</th>
+                                                    <th data-field="MIKTAR" data-halign="center" data-align="center">MİKTAR 1</th>
+                                                    <th data-field="MIKTAR2" data-halign="center" data-align="center">MİKTAR 2</th>
+                                                    <th data-width="50" data-formatter="SelectDetailRow" data-halign="center" data-align="center">İŞLEM</th>
+                                                </tr>
+                                                </thead> </table> </div></div><div id="parent-id-${row.STOK_KODU}" style="display:none;">${index}</div>`);
+
+        var DetailData = [];
+
+        DetailData = Data.filter(x => x.STOK_KODU == row.STOK_KODU);
+
+        $(`#transfer-${index}-table`).bootstrapTable({ data: DetailData });
+    });
+
+    function SelectDetailRow(Value, Row, Idx) {
+        var Selected = ValueIsSelected(Row.SERI_NO);
+
+        var Icon = Selected ? `<i class="bi bi-check-circle-fill ignored"  style="cursor:pointer;color:#71dd37;font-size:x-large;"></i>` : `<i class="bi bi-check-circle ignored"  style="cursor:pointer;color:red;font-size:x-large;"></i>`;
+
+        return `<div onclick="SelectValue('${Row.SERI_NO}', this, 'parent-id-${Row.STOK_KODU}')">${Icon}</div>`;
+    }
+
+    function SelectValue(Value, Button, ParentIconId) {
+        var Icon = Button.getElementsByTagName('i')[0];
+        var ParentIconIndex = parseInt(document.getElementById(ParentIconId).innerHTML);
+        var ParentIcon = $(`#transfer-table [data-index="${ParentIconIndex}"] td i:not(.ignored)`)[0];
+
+        if (ValueIsSelected(Value)) {
+            SelectedValues = SelectedValues.filter(x => x != Value);
+
+            Icon.style.color = 'red';
+            Icon.classList.remove("bi-check-circle-fill");
+            Icon.classList.add("bi-check-circle");
+
+            ParentIcon.style.color = 'red';
+            ParentIcon.classList.remove("bi-check-circle-fill");
+            ParentIcon.classList.add("bi-check-circle");
+        }
+        else {
+            SelectedValues.push(Value);
+
+            Icon.style.color = '#71dd37';
+            Icon.classList.add("bi-check-circle-fill");
+            Icon.classList.remove("bi-check-circle");
+
+            if (ValuesIsSelected(ParentIconId.substring(10)))
+            {
+                ParentIcon.style.color = '#71dd37';
+                ParentIcon.classList.add("bi-check-circle-fill");
+                ParentIcon.classList.remove("bi-check-circle");
+            }
+        }
+
+        TransferButtonVisibility();
+    }
+</script>

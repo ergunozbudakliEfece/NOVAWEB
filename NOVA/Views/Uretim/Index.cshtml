@@ -4642,16 +4642,17 @@
         function AmbarGirCik(value, mik) {
             ShowProgress();
             var stokkodu = stokkodlari.filter(x => x.SERI_NO == value)[0].STOK_KODU;
+            var yazici = $('#yazici1').val();
             $.ajax({
                 url: '@Url.Action("AmbarGirCik", "Uretim")',
                 type: 'POST',
-                data: { "seri":value,"stokkodu": stokkodu, "miktar": mik.toString() },
+                data: { "seri":value,"stokkodu": stokkodu, "miktar": mik.toString() ,"YAZICI":yazici},
                 error: function (data) {
                     alert(JSON.stringify(data));
                     HideProgress()
                 },
                 success: function (data) {
-                    if (data == 'Başarılı') {
+                    if (data.substring(0,4) != 'HATA') {
 
                         Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                     } else {
