@@ -687,8 +687,9 @@ namespace NOVA.Controllers
 
             return "BAŞARILI";
         }
-        public string AmbarGirCik(string seri,string miktar,string stokkodu)
+        public string AmbarGirCik(string seri,string miktar,string stokkodu,string YAZICI)
         {
+            var yeniseri = seri.Substring(0, 3) + ((seri[3].ToString().ToInt()) + 1).ToString() + seri.Substring(4);
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
@@ -697,6 +698,7 @@ namespace NOVA.Controllers
                                             "",
                                             Request.Cookies["UserName"].Value,
                                             LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                
                 fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarC);
                 fatUst = fatura.Ust();
                 fatUst.FATIRS_NO = fatura.YeniNumara("A");
@@ -707,13 +709,43 @@ namespace NOVA.Controllers
                 fatUst.ENTEGRE_TRH = DateTime.Now;
                 fatUst.FiiliTarih = DateTime.Now;
                 fatUst.Proje_Kodu = "1";
+                fatUst.KOD1 = "N";
+                fatUst.Aciklama = yeniseri;
+                fatKalem = fatura.kalemYeni(stokkodu);
+                fatKalem.DEPO_KODU = 45;
+                fatKalem.Olcubr = 1;
+                fatKalem.ProjeKodu = "1";
+                fatKalem.SeriEkle(seri,"","","",miktar.ToDouble(), 1);
+                fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                fatKalem.STra_GCMIK = miktar.ToDouble();
+                fatKalem.STra_GCMIK2 = 1;
+                fatKalem.STra_NF = 0;
+                fatKalem.STra_BF = 0;
+                fatKalem.STra_ACIK = yeniseri;
+
+
+                fatura.kayitYeni();
+               
+                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
+                fatUst = fatura.Ust();
+                fatUst.FATIRS_NO = fatura.YeniNumara("A");
+                fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                fatUst.CikisYeri = TCikisYeri.cySerbest;
+                fatUst.CariKod = "12035200100406";
+                fatUst.Tarih = DateTime.Now;
+                fatUst.ENTEGRE_TRH = DateTime.Now;
+                fatUst.FiiliTarih = DateTime.Now;
+                fatUst.Proje_Kodu = "1";
+                fatUst.KOD1 = "N";
                 fatUst.Aciklama = seri;
                 fatKalem = fatura.kalemYeni(stokkodu);
                 fatKalem.DEPO_KODU = 45;
                 fatKalem.Olcubr = 1;
                 fatKalem.ProjeKodu = "1";
+                fatKalem.SeriEkle(yeniseri, "", "", "", miktar.ToDouble(), 1);
                 fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
                 fatKalem.STra_GCMIK = miktar.ToDouble();
+                fatKalem.STra_GCMIK2 = 1;
                 fatKalem.STra_NF = 0;
                 fatKalem.STra_BF = 0;
                 fatKalem.STra_ACIK = seri;
@@ -740,14 +772,22 @@ namespace NOVA.Controllers
                 fatKalem.STra_ACIK = seri;
 
                 fatura.kayitYeni();
+                netRS = kernel.yeniNetRS(sirket);
+                netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + seri + "' AND GCKOD='G'");
+                var ACIK1 = netRS.FieldByName("ACIK1").AsString;
+                var ACIK2 = netRS.FieldByName("ACIK2").AsString;
+                var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
+                netRS.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE SERI_NO='"+yeniseri+"' AND GCKOD='G'");
             }
             catch (Exception ex)
             {
 
                 return "Hata "+ ex.Message;
             }
-
-            return "Başarılı";
+            List<string> seriList= new List<string>();
+            seriList.Add(yeniseri);
+            return UretilmisEtiketleriYazdir(seriList, "Sevkiyat", true, YAZICI); 
         }
         public class HurdaModel
         {
@@ -2422,61 +2462,62 @@ namespace NOVA.Controllers
         {
             try
             {
-                List<BarkodModel> EtiketBilgileri = UretilmisEtiketBilgileri(BarkodListesi);
+                //List<BarkodModel> EtiketBilgileri = UretilmisEtiketBilgileri(BarkodListesi);
 
-                Dictionary<string, string> Etiket;
+                //Dictionary<string, string> Etiket;
 
-                switch (EtiketDizayn)
-                {
-                    case "Uretim":
-                        Etiket = UretimEtiket(EtiketBilgileri);
-                        break;
-                    case "Sevkiyat":
-                        Etiket = SevkiyatEtiket(EtiketBilgileri);
-                        break;
-                    default:
-                        throw new Exception("Hatalı etiket türü.");
-                }
+                //switch (EtiketDizayn)
+                //{
+                //    case "Uretim":
+                //        Etiket = UretimEtiket(EtiketBilgileri);
+                //        break;
+                //    case "Sevkiyat":
+                //        Etiket = SevkiyatEtiket(EtiketBilgileri);
+                //        break;
+                //    default:
+                //        return "HATA: Yanlış etiketi türü.";
+                //}
 
-                if (Etiket != null)
-                {
-                    if (DirektYazdir)
-                    {
-                        try
-                        {
-                            using (var pdocument = PdfiumViewer.PdfDocument.Load(Etiket["Path"]))
-                            {
-                                using (var printDocument = pdocument.CreatePrintDocument())
-                                {
-                                    printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
-                                    printDocument.PrinterSettings.PrinterName = Yazici;
-                                    printDocument.DocumentName = "file.pdf";
-                                    printDocument.PrinterSettings.PrintFileName = "file.pdf";
-                                    printDocument.PrintController = new StandardPrintController();
-                                    printDocument.Print();
-                                }
-                            }
+                //if (Etiket != null)
+                //{
+                //    if (DirektYazdir)
+                //    {
+                //        try
+                //        {
+                //            using (var pdocument = PdfiumViewer.PdfDocument.Load(Etiket["Path"]))
+                //            {
+                //                using (var printDocument = pdocument.CreatePrintDocument())
+                //                {
+                //                    printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
+                //                    printDocument.PrinterSettings.PrinterName = Yazici;
+                //                    printDocument.DocumentName = "file.pdf";
+                //                    printDocument.PrinterSettings.PrintFileName = "file.pdf";
+                //                    printDocument.PrintController = new StandardPrintController();
+                //                    printDocument.Print();
+                //                }
+                //            }
 
-                            return "Etiket başarıyla oluşturuldu.";
-                        }
-                        catch (Exception ex)
-                        {
-                            return "Etiket yazdırma işleminde bir hata oluştu.";
-                        }
-                    }
-                    else
-                    {
-                        return Etiket["Base64"];
-                    }
-                }
-                else 
-                {
-                    return "Etiket verilerinde bir sorun oluştu.";
-                }
+                //            return "Etiket başarıyla oluşturuldu.";
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            return $"HATA: Etiket yazdırma işleminde bir hata oluştu. (Detay: {ex.Message})";
+                //        }
+                //    }
+                //    else
+                //    {
+                //        return Etiket["Base64"];
+                //    }
+                //}
+                //else 
+                //{
+                //    return "HATA: Etiket verilerinde bir sorun oluştu.";
+                //}
+                return "test";
             }
             catch (Exception ex) 
             {
-                return $"Etiket oluşturulurken bir hata oluştu. (Detay: {ex.Message})";
+                return $"HATA: Etiket oluşturulurken bir hata oluştu. (Detay: {ex.Message})";
             }
         }
 
@@ -2736,6 +2777,15 @@ namespace NOVA.Controllers
                 {"Path", pdfPath },
                 {"Base64", ToBase64String(pdfPath) }
             };
+        }
+
+        #endregion
+
+        #region Hurda & 2. Kalite Transfer
+
+        public async Task<ActionResult> HurdaVeIkinciKaliteTransfer() 
+        {
+            return View();
         }
 
         #endregion
