@@ -33,6 +33,7 @@ using System.Runtime.ConstrainedExecution;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using System.Drawing.Printing;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace NOVA.Controllers
 {
@@ -750,26 +751,6 @@ namespace NOVA.Controllers
                 fatKalem.STra_BF = 0;
                 fatKalem.STra_ACIK = seri;
 
-                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
-                fatUst = fatura.Ust();
-                fatUst.FATIRS_NO = fatura.YeniNumara("A");
-                fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
-                fatUst.CikisYeri = TCikisYeri.cySerbest;
-                fatUst.CariKod = "12035200100406";
-                fatUst.Tarih = DateTime.Now;
-                fatUst.ENTEGRE_TRH = DateTime.Now;
-                fatUst.FiiliTarih = DateTime.Now;
-                fatUst.Proje_Kodu = "1";
-                fatUst.Aciklama = seri;
-                fatKalem = fatura.kalemYeni(stokkodu);
-                fatKalem.DEPO_KODU = 45;
-                fatKalem.Olcubr = 1;
-                fatKalem.ProjeKodu = "1";
-                fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
-                fatKalem.STra_GCMIK = miktar.ToDouble();
-                fatKalem.STra_NF = 0;
-                fatKalem.STra_BF = 0;
-                fatKalem.STra_ACIK = seri;
 
                 fatura.kayitYeni();
                 netRS = kernel.yeniNetRS(sirket);
@@ -788,6 +769,127 @@ namespace NOVA.Controllers
             List<string> seriList= new List<string>();
             seriList.Add(yeniseri);
             return UretilmisEtiketleriYazdir(seriList, "Sevkiyat", true, YAZICI); 
+        }
+        public string AmbarGir(List<AmbarModel> datalist)
+        {
+            List<string> stoklist= new List<string>();
+            List<AmbarModel> stokgrup = new List<AmbarModel>();
+            for (int i = 0; i < datalist.Count; i++)
+            {
+                if (!stoklist.Contains(datalist[i].STOK_KODU))
+                {
+                    stoklist.Add(datalist[i].STOK_KODU);
+                }
+            }
+            for(int i = 0; i < stoklist.Count; i++)
+            {
+                var nd=datalist.Where(x => x.STOK_KODU == stoklist[i]).ToList();
+                double sum = 0;
+                AmbarModel nerAmbar=new AmbarModel();
+                for (int a=0; a<nd.Count; a++)
+                {
+                    sum += nd[a].MIKTAR;
+                }
+                nerAmbar.STOK_KODU = stoklist[i];
+                nerAmbar.MIKTAR = sum;
+                stokgrup.Add(nerAmbar);
+            }
+           
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                            "TEST2022",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                var belgeNo = "";
+
+                foreach (var item in stokgrup)
+                {
+
+                    fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarC);
+                    fatUst = fatura.Ust();
+                    belgeNo = fatura.YeniNumara("A");
+                    fatUst.FATIRS_NO = belgeNo;
+                    fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                    fatUst.CikisYeri = TCikisYeri.cySerbest;
+                    fatUst.CariKod = "12035200100406";
+                    fatUst.Tarih = DateTime.Now;
+                    fatUst.ENTEGRE_TRH = DateTime.Now;
+                    fatUst.FiiliTarih = DateTime.Now;
+                    fatUst.Proje_Kodu = "1";
+                    fatUst.KOD1 = "N";
+                    var d = datalist.Where(x => x.STOK_KODU == item.STOK_KODU).ToList();
+                    fatUst.Aciklama = d[0].HAT_KODU;
+                    
+                        fatKalem = fatura.kalemYeni(item.STOK_KODU);
+                        fatKalem.DEPO_KODU = d[0].TIP.ToInt();
+                        fatKalem.Olcubr = 1;
+                        fatKalem.ProjeKodu = "1";
+                    for (var i = 0; i < d.Count; i++)
+                    {
+                        fatKalem.SeriEkle(d[i].SERI_NO, "", "", "", d[i].MIKTAR, 1);
+                    }
+                        fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                    var mik = stokgrup.FirstOrDefault(x => x.STOK_KODU == item.STOK_KODU).MIKTAR;
+                    fatKalem.STra_GCMIK = mik;
+                        fatKalem.STra_GCMIK2 = 1;
+                        fatKalem.STra_NF = 0;
+                        fatKalem.STra_BF = 0;
+                        fatKalem.STra_ACIK = d[0].HAT_KODU;
+                    
+                    fatura.kayitYeni();
+
+                    fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
+                    fatUst = fatura.Ust();
+                    fatUst.FATIRS_NO = fatura.YeniNumara("A");
+                    fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                    fatUst.CikisYeri = TCikisYeri.cySerbest;
+                    fatUst.CariKod = "12035200100406";
+                    fatUst.Tarih = DateTime.Now;
+                    fatUst.ENTEGRE_TRH = DateTime.Now;
+                    fatUst.FiiliTarih = DateTime.Now;
+                    fatUst.Proje_Kodu = "1";
+                    fatUst.KOD1 = "N";
+                    fatUst.Aciklama = belgeNo;
+
+                    fatKalem = fatura.kalemYeni(d[0].TIP == "60" ? "HURDA" : "IKINCIKALITE");
+                    fatKalem.DEPO_KODU = 45;
+                    fatKalem.Olcubr = 1;
+                    fatKalem.ProjeKodu = "1";
+                    fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                    fatKalem.STra_GCMIK = mik;
+                    fatKalem.STra_GCMIK2 = 1;
+                    fatKalem.STra_NF = 0;
+                    fatKalem.STra_BF = 0;
+                    fatKalem.STra_ACIK = belgeNo;
+                    fatura.kayitYeni();
+                }
+                    
+                    
+                
+
+
+
+
+                
+            }
+            catch (Exception ex)
+            {
+
+                return "Hata " + ex.Message;
+            }
+
+            return "Başarılı";
+        }
+        public class AmbarModel
+        {
+            public string STOK_KODU { set; get; }
+            public string SERI_NO { set; get; }
+            public double MIKTAR { set; get; }
+            public string TIP { get; set; }
+            public string HAT_KODU { get; set; }
         }
         public class HurdaModel
         {
@@ -2665,7 +2767,7 @@ namespace NOVA.Controllers
             if (EtiketBilgileri.Count <= 0)
                 return null;
 
-            Document document = new Document(PageSize.A6, 10f, 10f, 10f, 10f);
+            iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
             string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
             string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Etiketler"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
