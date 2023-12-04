@@ -13,14 +13,14 @@
 <html>
 <head>
     <title>Nova | Üretim Kayıtları</title>
-    <link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <script src="~/Scripts/sweetAlert.js"></script>
+
+
     <link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-3.6.1.js"></script>
     <link href="~/Scripts/reorder-rows.css" rel="stylesheet" />
     <script src="~/Scripts/jqueryui-min.js"></script>
     <script src="~/Scripts/instascan.min.js"></script>
-    <link href="~/Scripts/sticky.css" rel="stylesheet" />
+    <script src="~/assets/vendor/js/bootstrap.js"></script>
     <style>
         .swal2-html-container {
             overflow: hidden !important;
@@ -42,12 +42,10 @@
 
         body {
             padding: 0 0 0 5rem !important;
+            overflow: hidden !important;
         }
 
-        .thead {
-            position: sticky !important;
-            top: 0 !important;
-        }
+
 
         .layout-wrapper, .layout-container {
             width: 90% !important;
@@ -56,8 +54,8 @@
             align-items: stretch !important;
         }
 
-        .th-inner {
-            white-space: unset !important;
+        #BekleyenIsEmirleriTable thead:nth-child(1) {
+            display: none !important
         }
 
         #qr-reader1__dashboard_section {
@@ -161,9 +159,7 @@
             display: none;
         }
 
-        th {
-            vertical-align: middle !important;
-        }
+      
 
         @@media screen and (max-width: 800px) {
             /*#makmobile1 {
@@ -451,11 +447,9 @@
                     </div>
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="BekleyenIsEmirleriTablo">
-                    <div class="table-responsive">
-                        <div class="tableClass" style="max-height:680px">
+                   
+                       
                             <table id="BekleyenIsEmirleriTable"
-                                   class="table"
-                                   data-toolbar="#toolbar1"
                                    data-search="true"
                                    data-show-refresh="false"
                                    data-show-toggle="false"
@@ -467,16 +461,14 @@
                                    data-detail-formatter="DetailFormatter"
                                    data-show-export="false"
                                    data-click-to-select="true"
-                                   data-minimum-count-columns="2"
                                    data-show-pagination-switch="false"
-                                   data-id-field="id"
                                    data-show-footer="false"
                                    data-mobile-responsive="true"
                                    data-detail-view-icon="false"
+                                   data-height="700"
                                    data-row-style="rowFormatter"
                                    data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
-                                   data-locale="tr-TR"
-                                   data-sticky-header="false">
+                                   data-locale="tr-TR">
                                 <thead>
                                     <tr>
                                         <th data-width="50" data-field="TARIH" data-halign="center" data-align="center" data-sortable="true">TARİH</th>
@@ -507,8 +499,8 @@
                                     </tr>
                                 </thead>
                             </table>
-                        </div>
-                    </div>
+                        
+                   
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="UretimeGirenlerTablo">
                     <div id="UretimeGirenlerTabloToolBar">
@@ -617,7 +609,7 @@
                                    data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
                                    data-locale="tr-TR"
                                    data-page-size="10"
-                                   data-height="750"
+                                   data-height="700"
                                    data-sticky-header="true">
                                 <thead>
                                     <tr>
@@ -698,9 +690,9 @@
                 var Makineler = `<div class="btn-group" style="grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) );display:grid;grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group">`;
 
                 for (var i = 0; i < data.length; i++) {
-                    var MachineType = data[i].HAT_KODU.substring(0, 2).toLowerCase();
+                    var MachineType = data[i].HAT_KODU.toLowerCase();
 
-                    if (MachineType != "sm") {
+                    if (MachineType != "sm03") {
                         Makineler += `<input type="radio" class="btn-check" name="makine-ieuk" id="${data[i].HAT_KODU}" onclick="c(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                     }
                 }
@@ -3203,12 +3195,12 @@
                            data-filter-control-multiple-search="true"
                            data-mobile-responsive="true"
                            data-show-footer="false"
-                           data-height="400" ;
+                           data-height="400" 
                            data-group-by-field="CARI_ISIM" style="overflow:auto !important"
                            data-row-style="rowFormatter"
                            data-loading-template="loadingTemplate">
                         <thead>
-                            <tr id="tabletr">
+                            <tr>
                                 <th data-field="ISEMRINO" data-halign="center" data-align="center" data-sortable="true">İş Emri No</th>
                                 <th data-field="MIKTAR" data-halign="center" data-align="center" data-sortable="true" data-formatter="mikFormatter">Miktar</th>
                                 <th data-field="URETILEN_MIKTAR" data-halign="center" data-align="center" data-sortable="true" data-formatter="mikFormatter">Üretilen Miktar</th>
@@ -3229,7 +3221,7 @@
         </div>
     </div>
     <div class="modal fade" id="HesaplaModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true" onclick="modalclick()">
-        <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 25% !important;top:10vh">
+        <div class="modal-dialog modal-sm modal-dialog-scrollable">
             <div class="modal-content" style="max-height:70vh;">
                 <div class="modal-header">
                     <div class="row w-100">
@@ -4046,7 +4038,7 @@
 
                 $('#UretilmisBarkodlarTablo').bootstrapTable("destroy");
                 $('#UretilmisBarkodlarTablo').bootstrapTable({ data:UretilmisBarkodlar })
-             
+
             }
         });
 
@@ -4111,39 +4103,39 @@
 
 
     function UretilmisEtiketleriYazdir()
+{
+    if (SecilenBarkodlar.length > 0)
     {
-        if (SecilenBarkodlar.length > 0)
-        {
-            ShowProgress();
+        ShowProgress();
 
-            document.body.style.pointerEvents = 'none';
+        document.body.style.pointerEvents = 'none';
 
-            var EtiketDizayn = $('#uretilmis-barkod-dizayn').val();
-            var Yazici = $("#uretilmis-barkod-yazici").val();
-            var DirektYazdir = $('#yazdirSwitch').is(':checked');
+        var EtiketDizayn = $('#uretilmis-barkod-dizayn').val();
+        var Yazici = $("#uretilmis-barkod-yazici").val();
+        var DirektYazdir = $('#yazdirSwitch').is(':checked');
 
-            var Data = { "BarkodListesi": SecilenBarkodlar.sort(), "EtiketDizayn": EtiketDizayn, "DirektYazdir": DirektYazdir, "Yazici": Yazici };
+        var Data = { "BarkodListesi": SecilenBarkodlar.sort(), "EtiketDizayn": EtiketDizayn, "DirektYazdir": DirektYazdir, "Yazici": Yazici, "Onizle": !DirektYazdir };
 
-            $.ajax({
-                url: '@Url.Action("UretilmisEtiketleriYazdir", "Uretim")',
-                type: 'POST',
-                data: Data,
-                error: (e) => {console.log(`Üretilmiş Barkod Yazdır: Hata oluştu.`); },
-                success: (Response) =>
-                {
-                        UretilmisEtiketOnizle(Response, SecilenBarkodlar[0]);
+        $.ajax({
+            url: '@Url.Action("UretilmisEtiketleriYazdir", "Uretim")',
+            type: 'POST',
+            data: Data,
+            error: (e) => {console.log(`Üretilmiş Barkod Yazdır: Hata oluştu.`); },
+            success: (Response) =>
+            {
+                    UretilmisEtiketOnizle(Response, SecilenBarkodlar[0]);
 
-                }
-            });
+            }
+        });
 
-            SecilenBarkodlar = [];
+        SecilenBarkodlar = [];
 
-            $('#uretilmis-barkod-yazdir').prop('disabled', SecilenBarkodlar.length < 1 ? true : false);
+        $('#uretilmis-barkod-yazdir').prop('disabled', SecilenBarkodlar.length < 1 ? true : false);
 
-            $('#UretilmisBarkodlarTablo').bootstrapTable('toggleView');
-            $('#UretilmisBarkodlarTablo').bootstrapTable('toggleView');
-        }
+        $('#UretilmisBarkodlarTablo').bootstrapTable('toggleView');
+        $('#UretilmisBarkodlarTablo').bootstrapTable('toggleView');
     }
+}
 
     function UretilmisEtiketOnizle(data, BarkodNo)
     {
@@ -4245,6 +4237,9 @@
 
             <span id="qr-box-information">TP01 MODU AKTİF</span>
         </div>
+        <div class="qr-scanner-loader" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:flex; justify-content: center; align-items: center; flex-direction: column;">
+            <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+        </div>
     </div>
 
 
@@ -4338,6 +4333,9 @@
 
             $('#TP01ModeButton').css('display', (ScanType == "uretime-al") ? 'block' : 'none');
 
+            SetFullscreen(document.getElementsByClassName('qr-scanner-area')[0]);
+            document.getElementsByClassName('qr-scanner-area')[0].style.display = "block";
+
             Scanner.addListener('scan', function (content) {
                 switch (ScanType) {
                     case "uretime-al":
@@ -4370,11 +4368,7 @@
                         document.getElementsByClassName('qr-camera-select')[0].value = cameras[1].id;
                     }
 
-                    Scanner.start(MultipleCamera ? cameras[1] : cameras[0])
-                        .then(() => {
-                            document.getElementsByClassName('qr-scanner-area')[0].style.display = "block";
-                            SetFullscreen(document.getElementsByClassName('qr-scanner-area')[0]);
-                        });
+                    Scanner.start(MultipleCamera ? cameras[1] : cameras[0]).then(() => { $('.qr-scanner-loader').fadeOut(); });
 
                     document.getElementsByClassName('qr-camera-select')[0].addEventListener("change", event => {
                         Scanner.start(this.Cameras.find(c => c.id == event.target.value));
@@ -4399,6 +4393,7 @@
                 .then(() => {
                     Scanner = null;
                     document.exitFullscreen();
+                    $('.qr-scanner-loader').fadeIn().css('display', 'flex');
                 });
         }
 

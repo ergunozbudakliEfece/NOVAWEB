@@ -5,19 +5,19 @@
 
 <link href="~/Content/table/bootstrap-table.min.css" rel="stylesheet" />
 <link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.min.css" rel="stylesheet" />
+<link href="~/assets/fontawesome.css" rel="stylesheet" />
+<link href="~/Scripts/select2.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<script src="~/assets/vendor/libs/popper/popper.js"></script>
+<script src="~/Scripts/sweetAlert.js"></script>
 <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
 <style>
-   
+
     body {
         padding: 0 0 0 4rem !important;
     }
+
     #goster {
         display: none;
     }
@@ -25,12 +25,15 @@
     #gizle {
         display: none;
     }
+
     .group-by {
         background-color: rgba(105, 108, 255, 0.12)
     }
+
     #table tr[data-index]:nth-child(odd) {
         background-color: rgba(105, 108, 255, 0.05)
     }
+
     #table i {
         color: #00AAFF;
         font-weight: 300;
@@ -112,12 +115,15 @@
         #filters {
             display: none;
         }
+
         #try {
             display: none;
         }
+
         #usd {
             display: none;
         }
+
         #euro {
             display: none;
         }
@@ -125,6 +131,9 @@
 </style>
 
 <div class="jumbotron vertical-center" onclick="hideAllPop()">
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+    </div>
     <div class="container-fluid h-100">
         <div class="card mt-2">
             <div class="card-body">
@@ -279,77 +288,84 @@
 
 
             </div>
-          
+
         </div>
-     
+
     </div>
-       
+
 </div>
 <script>
-   
+
     var teslimyerleri = [];
     var cariisimler = [];
     var carikodlari = [];
     var stokadlari = [];
     var dovtipler = ["TRY"];
-    $.getJSON("http://192.168.2.13:83/api/detayliSSIP", function (data) {
-        $("#table").bootstrapTable("destroy").bootstrapTable( {
-            data: data });
-        $("#table1").bootstrapTable("destroy").bootstrapTable( {
-            data: data
-        });
-        for (let i = 0; i < data.length; i++) {
-            if (!teslimyerleri.includes(data[i].TESLIM_YERI)) {
-                teslimyerleri.push(data[i].TESLIM_YERI);
+
+    ShowProgress();
+
+    $(document).ready(function () {
+        $.getJSON("http://192.168.2.13:83/api/detayliSSIP", function (data) {
+            $("#table").bootstrapTable("destroy").bootstrapTable({
+                data: data
+            });
+            $("#table1").bootstrapTable("destroy").bootstrapTable({
+                data: data
+            });
+            for (let i = 0; i < data.length; i++) {
+                if (!teslimyerleri.includes(data[i].TESLIM_YERI)) {
+                    teslimyerleri.push(data[i].TESLIM_YERI);
+                }
+                if (!carikodlari.includes(data[i].CARI_KODU)) {
+
+                    cariisimler.push(data[i].CARI_ISIM);
+                    carikodlari.push(data[i].CARI_KODU);
+                }
+                if (!dovtipler.includes(data[i].DOV_TIP) && data[i].DOV_TIP != null) {
+                    dovtipler.push(data[i].DOV_TIP);
+                }
+                if (!stokadlari.includes(data[i].STOK_ADI) && data[i].STOK_ADI != null) {
+                    stokadlari.push(data[i].STOK_ADI);
+                }
             }
-            if (!carikodlari.includes(data[i].CARI_KODU)) {
-               
-                cariisimler.push(data[i].CARI_ISIM);
-                carikodlari.push(data[i].CARI_KODU);
+            teslimyerleri.sort();
+            dovtipler.sort();
+            stokadlari.sort();
+            for (let i = 0; i < teslimyerleri.length; i++) {
+                var option = document.createElement("option");
+                option.value = teslimyerleri[i];
+                option.innerHTML = teslimyerleri[i];
+                document.getElementById("teslim").appendChild(option);
             }
-            if (!dovtipler.includes(data[i].DOV_TIP) && data[i].DOV_TIP!=null) {
-                dovtipler.push(data[i].DOV_TIP);
+            for (let i = 0; i < carikodlari.length; i++) {
+                var option = document.createElement("option");
+                option.value = carikodlari[i];
+                option.innerHTML = cariisimler[i];
+                document.getElementById("cari").appendChild(option);
             }
-            if (!stokadlari.includes(data[i].STOK_ADI) && data[i].STOK_ADI != null) {
-                stokadlari.push(data[i].STOK_ADI);
+            for (let i = 0; i < dovtipler.length; i++) {
+                var option = document.createElement("option");
+                option.value = dovtipler[i];
+                option.innerHTML = dovtipler[i];
+                document.getElementById("dovtip").appendChild(option);
             }
-        }
-        teslimyerleri.sort();
-        dovtipler.sort();
-        stokadlari.sort();
-        for (let i = 0; i < teslimyerleri.length; i++) {
-            var option = document.createElement("option");
-            option.value = teslimyerleri[i];
-            option.innerHTML = teslimyerleri[i];
-            document.getElementById("teslim").appendChild(option);
-        }
-        for (let i = 0; i < carikodlari.length; i++) {
-            var option = document.createElement("option");
-            option.value = carikodlari[i];
-            option.innerHTML = cariisimler[i];
-            document.getElementById("cari").appendChild(option);
-        }
-        for (let i = 0; i < dovtipler.length; i++) {
-            var option = document.createElement("option");
-            option.value = dovtipler[i];
-            option.innerHTML = dovtipler[i];
-            document.getElementById("dovtip").appendChild(option);
-        }
-        for (let i = 0; i < stokadlari.length; i++) {
-            var option = document.createElement("option");
-            option.value = stokadlari[i];
-            option.innerHTML = stokadlari[i];
-            document.getElementById("stokadi").appendChild(option);
-        }
-    }).done(function () {
-         sortOptions()
-        $("#teslim").select2({ placeholder: "Teslim Yeri" });
-        $("#cari").select2({ placeholder: "Cari İsim"});
-        $("#dovtip").select2({ placeholder: "Döviz Tipi" });
-        $("#stokadi").select2({ placeholder: "Stok Adı" });
-       
+            for (let i = 0; i < stokadlari.length; i++) {
+                var option = document.createElement("option");
+                option.value = stokadlari[i];
+                option.innerHTML = stokadlari[i];
+                document.getElementById("stokadi").appendChild(option);
+            }
+        }).done(function () {
+            sortOptions()
+            $("#teslim").select2({ placeholder: "Teslim Yeri" });
+            $("#cari").select2({ placeholder: "Cari İsim" });
+            $("#dovtip").select2({ placeholder: "Döviz Tipi" });
+            $("#stokadi").select2({ placeholder: "Stok Adı" });
+            HideProgress()
+        })
     })
-   
+    
+
     function sortOptions() {
         var allOptions = $("#cari option");
         allOptions.sort(function (op1, op2) {
@@ -359,7 +375,7 @@
         });
         allOptions.appendTo("#cari");
     }
-    
+
     if ($(window).width() < 600) {
         $("#divPartial2").show();
         document.getElementById("satinalma").className = "menu-item open active";
@@ -371,9 +387,17 @@
         document.getElementById("satinalma1").className = "nav__link active";
         document.getElementById("satinalmadetsip1").className = "nav__dropdown-item active";
     }
-   
-    var type = 'fa'
 
+    var type = 'fa'
+    function ShowProgress() {
+        document.body.style.overflow = 'hidden';
+        document.activeElement.blur();
+        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    }
+    function HideProgress() {
+        document.body.style.overflow = 'auto';
+        $('#nova-overlay').fadeOut('slow');
+    }
     function loadingTemplate(message) {
         if (type === 'fa') {
             return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
@@ -384,7 +408,7 @@
     }
     function sipFormatter(value, index, row) {
 
-        return "<span class='text-nowrap'>" +(value.substring(0, 1)) + (value.substring(3, 5)) + "-" + (value.substring(value.length - 5))+"</span>";
+        return "<span class='text-nowrap'>" + (value.substring(0, 1)) + (value.substring(3, 5)) + "-" + (value.substring(value.length - 5)) + "</span>";
     }
     function tarihFormatter(value, index, row) {
 
@@ -392,7 +416,7 @@
     }
     function teslimFormatter(value, index, row) {
 
-        return "<span class='text-nowrap'>" + value+"</span>";
+        return "<span class='text-nowrap'>" + value + "</span>";
     }
     function stokadiFormatter(value, index, row) {
 
@@ -433,14 +457,14 @@
             return "<span class='text-nowrap'>" + parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + (index.DOV_TIP == null ? "TRY" : index.DOV_TIP) + "</span>";
         }
 
-       
+
 
 
     }
     function nettutarFormatter2(value, index, row) {
-       
-            return "<span class='text-nowrap'>" + parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TRY</span>";
-        
+
+        return "<span class='text-nowrap'>" + parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TRY</span>";
+
     }
     function surecFormatter(value, index, row) {
 
@@ -461,7 +485,7 @@
 
 
                     var d = data.filter(x => new Date(x.TARIH.split("T")[0]) >= new Date(baslangic));
-                   
+
 
                 }
                 if (bitis != null && bitis != "") {
@@ -474,20 +498,22 @@
             $('#table').bootstrapTable("destroy");
             $('#table1').bootstrapTable("destroy");
             $('#table').bootstrapTable({
-                data: d })
+                data: d
+            })
             $('#table1').bootstrapTable({
-                data: d })
+                data: d
+            })
         })
 
     }
 
-    $('#toolbar').on('change',function (e) {
+    $('#toolbar').on('change', function (e) {
         var filterAlgorithm = $('#teslim').val()
         var plasiyerAlgorithm = $('#cari').val()
         var dovAlgorithm = $('#dovtip').val()
         var stokAlgorithm = $('#stokadi').val()
         var uretim = document.getElementById("uretimswitch").checked;
-         
+
         dovAlgorithm.sort();
         if (dovAlgorithm.includes("TRY")) {
             if (dovAlgorithm.includes("EURO")) {
@@ -495,22 +521,22 @@
             } else {
                 dovAlgorithm.splice(0, 1, null);
             }
-            
+
 
         }
         if (uretim == true) {
-           
-                filterAlgorithm.push("EFECE 4");
-            
+
+            filterAlgorithm.push("EFECE 4");
+
         }
-       
+
         $('#table').bootstrapTable('filterBy', {
             TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimyerleri),
             CARI_KODU: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : carikodlari),
             DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovtipler),
             STOK_ADI: (stokAlgorithm.length > 0 ? stokAlgorithm : stokadlari),
         })
-       
+
 
 
     })
@@ -522,9 +548,9 @@
         $("#baslangictarihi").val('').trigger('change');
         $("#bitistarihi").val('').trigger('change');
     }
-   
+
     function change() {
-        
+
         if (event.currentTarget.checked == true) {
             $("#card1").hide();
             $("#card2").show();
@@ -545,11 +571,11 @@
     function flex() {
 
         if (event.currentTarget.checked == true) {
-            
-           
+
+
         } else {
-           
-            
+
+
         }
     }
     function footerFormatter(items) {
@@ -569,13 +595,13 @@
             tumtotalPriceTRY = tumtotalPriceTRY + parseFloat(item.NET_TUTAR_KALEM);
         });
 
-        $('#dolar').text(" "+totalPriceUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $");
+        $('#dolar').text(" " + totalPriceUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $");
         $('#tl').text(" " + totalPriceTRY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺");
         $('#tumtl').text(" " + tumtotalPriceTRY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺");
-        $('#eur').text(" " +totalPriceEUR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €");
+        $('#eur').text(" " + totalPriceEUR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €");
     };
     function topfooterFormatter(items) {
-       
+
         return "Toplam";
 
     };
@@ -584,11 +610,11 @@
         items.forEach(function (item) {
 
             total = total + parseFloat(item.MIKTAR);
-           
-           
+
+
         });
         return total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-       
+
     };
     function mik2footerFormatter(items) {
         var total = 0;
@@ -640,7 +666,7 @@
         $("#goster").show();
         $("#gizle").hide();
         $("#filters").hide();
-    }  
+    }
 </script>
 
 

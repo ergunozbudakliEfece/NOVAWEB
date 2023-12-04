@@ -610,7 +610,7 @@ namespace NOVA.Controllers
                     return $"Hata: {exp}";
                 }
 
-                return UretilmisEtiketleriYazdir(SeriNoListesi, "Uretim", etiket, YAZICI);
+                return UretilmisEtiketleriYazdir(SeriNoListesi, "Uretim", etiket, YAZICI, onizleme);
 
             }
             catch (Exception e)
@@ -2560,62 +2560,68 @@ namespace NOVA.Controllers
 
         #region UretilmisBarkodlar
 
-        public string UretilmisEtiketleriYazdir(List<string> BarkodListesi, string EtiketDizayn, bool DirektYazdir, string Yazici) 
+        public string UretilmisEtiketleriYazdir(List<string> BarkodListesi, string EtiketDizayn, bool DirektYazdir, string Yazici, bool Onizle = false) 
         {
             try
             {
-                //List<BarkodModel> EtiketBilgileri = UretilmisEtiketBilgileri(BarkodListesi);
+                if (!(DirektYazdir || Onizle))
+                    return "";
 
-                //Dictionary<string, string> Etiket;
+                List<BarkodModel> EtiketBilgileri = UretilmisEtiketBilgileri(BarkodListesi);
 
-                //switch (EtiketDizayn)
-                //{
-                //    case "Uretim":
-                //        Etiket = UretimEtiket(EtiketBilgileri);
-                //        break;
-                //    case "Sevkiyat":
-                //        Etiket = SevkiyatEtiket(EtiketBilgileri);
-                //        break;
-                //    default:
-                //        return "HATA: Yanlış etiketi türü.";
-                //}
+                Dictionary<string, string> Etiket;
 
-                //if (Etiket != null)
-                //{
-                //    if (DirektYazdir)
-                //    {
-                //        try
-                //        {
-                //            using (var pdocument = PdfiumViewer.PdfDocument.Load(Etiket["Path"]))
-                //            {
-                //                using (var printDocument = pdocument.CreatePrintDocument())
-                //                {
-                //                    printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
-                //                    printDocument.PrinterSettings.PrinterName = Yazici;
-                //                    printDocument.DocumentName = "file.pdf";
-                //                    printDocument.PrinterSettings.PrintFileName = "file.pdf";
-                //                    printDocument.PrintController = new StandardPrintController();
-                //                    printDocument.Print();
-                //                }
-                //            }
+                switch (EtiketDizayn)
+                {
+                    case "Uretim":
+                        Etiket = UretimEtiket(EtiketBilgileri);
+                        break;
+                    case "Sevkiyat":
+                        Etiket = SevkiyatEtiket(EtiketBilgileri);
+                        break;
+                    default:
+                        return "HATA: Yanlış etiketi türü.";
+                }
 
-                //            return "Etiket başarıyla oluşturuldu.";
-                //        }
-                //        catch (Exception ex)
-                //        {
-                //            return $"HATA: Etiket yazdırma işleminde bir hata oluştu. (Detay: {ex.Message})";
-                //        }
-                //    }
-                //    else
-                //    {
-                //        return Etiket["Base64"];
-                //    }
-                //}
-                //else 
-                //{
-                //    return "HATA: Etiket verilerinde bir sorun oluştu.";
-                //}
-                return "test";
+                if (Etiket != null)
+                {
+                    if (Onizle)
+                    {
+                        return Etiket["Base64"];
+                    }
+                    else if (DirektYazdir)
+                    {
+                        try
+                        {
+                            //using (var pdocument = PdfiumViewer.PdfDocument.Load(Etiket["Path"]))
+                            //{
+                            //    using (var printDocument = pdocument.CreatePrintDocument())
+                            //    {
+                            //        printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
+                            //        printDocument.PrinterSettings.PrinterName = Yazici;
+                            //        printDocument.DocumentName = "file.pdf";
+                            //        printDocument.PrinterSettings.PrintFileName = "file.pdf";
+                            //        printDocument.PrintController = new StandardPrintController();
+                            //        printDocument.Print();
+                            //    }
+                            //}
+
+                            return "Etiket başarıyla yazdırıldı.";
+                        }
+                        catch (Exception ex)
+                        {
+                            return $"HATA: Etiket yazdırma işleminde bir hata oluştu. (Detay: {ex.Message})";
+                        }
+                    }
+                    else 
+                    {
+                        return "Etiket başarıyla oluşturuldu.";
+                    }
+                }
+                else
+                {
+                    return "HATA: Etiket verilerinde bir sorun oluştu.";
+                }
             }
             catch (Exception ex) 
             {

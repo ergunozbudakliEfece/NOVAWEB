@@ -1,144 +1,4 @@
-﻿@*<div class="modal fade" id="BarkodModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="BarkodModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="BarkodModalLabel">BARKOD OKUYUCU</h5>
-                    <button disabled type="button" id="barkodClose" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="BarkodKameraKapat()"></button>
-                </div>
-                <div class="modal-body d-flex justify-content-center align-items-center">
-                    <div class="vidparticipant">
-                        <span id="uretime-al-bildirim" style="display: none;justify-content: center;align-items: center;width: 100%;height: 100%;">.</span>
-                        <select class="form-select mb-1" id="cameras" style="width:200px;display:none"></select>
-                        <video id="qr-reader" class="object-fit-fill">
-                        </video>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        var scanner;
-        var BarkodKameraAcik = false;
-
-        function BarkodModal() {
-
-            scanner = new Instascan.Scanner({ video: document.getElementById('qr-reader'), mirror: false, refractoryPeriod: 2000 });
-            scanner.addListener('scan', function (decodedText) {
-
-                BarkodKontrol(decodedText);
-            })
-            Instascan.Camera.getCameras().then(function (cameras, image) {
-                //PC'de ki tüm kameraları algılayarak bizlere getirecektir.
-                $('#cameras').html('');
-                $('#cameras').css('display', cameras.length > 1 ? 'block' : 'none');
-
-                for (let i = 0; i < cameras.length; i++) {
-                    let cameraList = document.getElementById("cameras");
-                    let option = document.createElement("option");
-                    if (i == 0) {
-
-                        option.text = "Ön Kamera";
-                        option.value = cameras[i].id;
-                    } else {
-                        option.text = "Arka Kamera";
-                        option.value = cameras[i].id;
-                    }
-                    cameraList.add(option);
-                }
-                if (cameras.length > 0) {
-                    scanner.start(cameras[0]).then(function () {
-                        $("#barkodClose").prop('disabled', false);
-                    })
-                }
-
-            })
-
-
-            $('#BarkodModal').modal('show');
-        }
-
-
-    </script>
-
-    <script>
-
-        function BarkodKontrol(BarkodNo) {
-            var ProcUrl = "http://192.168.2.13:83/api/seri/bakiye/" + BarkodNo;
-
-            $.getJSON(ProcUrl, function (data) {
-                if (data.length > 0) {
-                    var Siparis = detayli.filter(x => x.SIPARIS_NO == $('#SİPARİS_NO').html() && x.STOK_KODU == data[0].STOK_KODU);
-
-                    if (Siparis.length > 0) {
-                        if (!BarkodNoTablodaVarMi(BarkodNo)) {
-                            if (data[0].MIKTAR > 0 || data[0].MIKTAR2 > 0) {
-                                StokAdiSec(data[0].STOK_KODU);
-
-                                $('#MIKTAR').val(data[0].MIKTAR.toFixed(2) <= Siparis[0].BAKIYE_MIKTARI.toFixed(2) ? (data[0].MIKTAR).toFixed(2) : (Siparis[0].BAKIYE_MIKTARI).toFixed(2));
-                                $('#MIKTAR2').val(data[0].MIKTAR2.toFixed(2));
-                                $('#SERI_NO').val(BarkodNo);
-                                $('#ACIK1').val(parseFloat(data[0].ACIK1.replace(",", ".")).toFixed(2).toString().replace(".", ","));
-                                $('#ACIK2').val(parseFloat(data[0].ACIK2.replace(",", ".")).toFixed(1).toString().replace(".", ","));
-                                $('#ACIK3').val(data[0].ACIK3);
-                                $('#SERI_NO_3').val(data[0].SERI_NO_3);
-                                $('#SERI_NO_4').val(data[0].SERI_NO_4);
-
-                                $('#MIKTAR').prop('max', data[0].MIKTAR.toFixed(2) <= Siparis[0].BAKIYE_MIKTARI.toFixed(2) ? (data[0].MIKTAR).toFixed(2) : (Siparis[0].BAKIYE_MIKTARI).toFixed(2));
-                                $('#MIKTAR2').prop('max', data[0].MIKTAR2.toFixed(2));
-
-                                SeciliBarkodVar = true;
-
-                                MiktarGirisKontrolu();
-                                GirisDurumlariniDegistir(false);
-                                SevkFormKayitDurumu();
-
-                                $('#SeriNoListeButton').prop('disabled', true);
-
-                                if (BarkodKameraAcik)
-                                {
-                                    BarkodKameraKapat();
-                                }
-
-                                $('#BarkodModal').modal('hide');
-                            }
-                            else {
-                                //UYARI -- miktar uyarısı
-                            }
-                        }
-                        else {
-                            Swal.fire({
-                                text: "Aynı barkod no tablo üzerinde mevcut.",
-                                icon: "error",
-                                showConfirmButton: false,
-                                timer: '1500'
-                            });
-                        }
-                    }
-                    else {
-                        Swal.fire({
-                            text: "Okunan barkod no sipariş içerisinde bulunmamaktadır.",
-                            icon: "error",
-                            showConfirmButton: false,
-                            timer: '1500'
-                        });
-                    }
-                }
-            });
-
-            MiktarGirisKontrolu();
-        }
-
-        function BarkodKameraKapat()
-        {
-            BarkodKameraAcik = false;
-            scanner.stop().then(_ => { }).catch(error => { });
-            $("#barkodClose").prop('disabled', true);
-        }
-    </script>*@
-
-
-
+﻿
 <div class="qr-scanner-area">
     <video id="qr-scanner"></video>
     <div class="qr-controls">
@@ -146,6 +6,9 @@
             <select class="qr-camera-select"></select>
         </div>
         <i class='bx bx-x qr-scanner-exit' onclick="Close()"></i>
+    </div>
+    <div class="qr-scanner-loader" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
     </div>
 </div>
 
@@ -210,6 +73,9 @@
     function BarkodModal() {
         Scanner = new Instascan.Scanner({ video: document.getElementById('qr-scanner'), mirror: false, refractoryPeriod: 2000 });
 
+        document.getElementsByClassName('qr-scanner-area')[0].style.display = "block";
+        SetFullscreen(document.getElementsByClassName('qr-scanner-area')[0]);
+
         Scanner.addListener('scan', function (content) {
             BarkodKontrol(content);
         });
@@ -234,12 +100,8 @@
                 if (MultipleCamera) {
                     document.getElementsByClassName('qr-camera-select')[0].value = cameras[1].id;
                 }
-
-                Scanner.start(MultipleCamera ? cameras[1] : cameras[0])
-                    .then(() => {
-                        document.getElementsByClassName('qr-scanner-area')[0].style.display = "block";
-                        SetFullscreen(document.getElementsByClassName('qr-scanner-area')[0]);
-                    });
+                
+                Scanner.start(MultipleCamera ? cameras[1] : cameras[0]).then(() => { $('.qr-scanner-loader').fadeOut(); });
 
                 document.getElementsByClassName('qr-camera-select')[0].addEventListener("change", event => {
                     Scanner.start(this.Cameras.find(c => c.id == event.target.value));
@@ -259,6 +121,7 @@
             .then(() => {
                 Scanner = null;
                 document.exitFullscreen();
+                $('.qr-scanner-loader').fadeIn().css('display', 'flex');
             });
     }
 
@@ -267,6 +130,7 @@
     function FullscreenChanged(event) {
         if (!document.fullscreenElement) {
             document.getElementsByClassName('qr-scanner-area')[0].style.display = "none";
+            $('.qr-scanner-loader').fadeIn().css('display', 'flex');
 
             if (Scanner != null) {
                 Scanner
