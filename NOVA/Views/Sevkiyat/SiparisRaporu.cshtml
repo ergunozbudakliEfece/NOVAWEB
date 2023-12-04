@@ -149,6 +149,23 @@
     }
 </style>
 <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
+
+<script>
+    function ShowProgress() {
+        document.body.style.overflow = 'hidden';
+        document.activeElement.blur();
+        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    }
+    function HideProgress() {
+        document.body.style.overflow = 'auto';
+        $('#nova-overlay').fadeOut('slow');
+    }
+</script>
+
+<div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:flex;justify-content:center;align-items:center;">
+    <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+</div>
+
 <div class="container-fluid d-flex">
 
     <div class="card mx-auto" style="font-size:12px">
@@ -160,9 +177,9 @@
 
 
         <div class="card-body">
-            <div class="centercontent" id="content" style="display:unset">
+            @*<div class="centercontent" id="content" style="display:unset">
                 <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
-            </div>
+            </div>*@
             <div>
                 <div id="toolbar">
                     <div class="row mt-1" onchange="datefilter()">
@@ -239,7 +256,7 @@
                         <tr id="tst">
                             <th data-field="SIPARIS_NO" data-sortable="true" data-halign="center" data-formatter="sipnoFormatter">Sipariş No</th>
                             <th data-field="TARIH" data-sortable="true" data-halign="center" data-formatter="tarihFormatter">Tarih</th>
-                            <th data-field="CARI_ISIM" data-sortable="true" data-halign="center" data-align="center">Cari İsim</th>
+                            <th data-field="CARI_ISIM" data-sortable="true" data-halign="center" data-align="center">Cari İSİM</th>
                             <th data-field="DOV_TIP" data-sortable="true" data-halign="center" data-align="center">Hesap Türü</th>
                             <th data-field="TESLIM_YERI" data-sortable="true" data-halign="center" data-align="center">Teslim Yeri</th>
                             <th data-field="ACIKLAMA" data-sortable="true" data-halign="center">Açıklama</th>
@@ -299,7 +316,7 @@
                 var d = data;
             }
             $('#table').bootstrapTable("destroy");
-            $('#table').bootstrapTable({ data: d })
+            $('#table').bootstrapTable({ data: d });
         })
 
     }
@@ -308,10 +325,14 @@
         $.getJSON("http://192.168.2.13:83/api/detaylisip", function (data) {
             detayli = data;
         }).done(function () {
-            $('#table').bootstrapTable("refresh", {
-                url: 'http://192.168.2.13:83/api/detaysizsip'
-            })
-            $('#progress').hide();
+
+            $.getJSON("http://192.168.2.13:83/api/detaysizsip", function (data) {
+                $('#table').bootstrapTable("destroy");
+                $('#table').bootstrapTable({ data: data })
+            }).done(function () {
+                HideProgress();
+            });
+
             for (let i = 0; i < detayli.length; i++) {
                 if (!teslimfilter.includes(detayli[i].TESLIM_YERI)) {
                     teslimfilter.push(detayli[i].TESLIM_YERI)

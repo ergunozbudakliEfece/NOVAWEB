@@ -444,6 +444,7 @@ namespace NOVA.Controllers
 
                 json1 = client1.DownloadString(url1);
                 JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                ser1.MaxJsonLength = int.MaxValue;
                 createdlog = ser1.Deserialize<LoginModel>(json1);
 
 
@@ -461,6 +462,7 @@ namespace NOVA.Controllers
 
                 json2 = client2.DownloadString(url2);
                 JavaScriptSerializer ser2 = new JavaScriptSerializer();
+                ser2.MaxJsonLength = int.MaxValue;
                 createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
 
                 if (createdlog1[0].SITUATION != false)
@@ -819,6 +821,7 @@ namespace NOVA.Controllers
 
             //JSON Parse START
             JavaScriptSerializer ser = new JavaScriptSerializer();
+            ser.MaxJsonLength = int.MaxValue;
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             return jsonList;
         }
@@ -833,6 +836,7 @@ namespace NOVA.Controllers
             client.Encoding = System.Text.Encoding.UTF8;
             string json = client.DownloadString(url);
             JavaScriptSerializer ser = new JavaScriptSerializer();
+            ser.MaxJsonLength = int.MaxValue;
             List<Modules> jsonList = ser.Deserialize<List<Modules>>(json);
 
             //END

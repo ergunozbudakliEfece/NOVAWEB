@@ -1044,6 +1044,8 @@
                 if ($('#IRS_NO').val().trim().length > 0) {
                     BelgeDurumKontrol().then((Durum) => {
                         if (Durum) {
+                            ShowProgress();
+
                             KalemleriSil().then(() => { SilinecekKalemler = []; });
 
                             var HataListesi = [];
@@ -1077,6 +1079,8 @@
                                         allowEnterKey: false,
                                         confirmButtonText: 'TAMAM', focusConfirm: true,
                                     });
+
+                                    HideProgress();
                                 }
                                 else {
                                     if (SaveType == 0) {
@@ -1128,6 +1132,7 @@
     }
 
     function ModalSil() {
+
         Swal.fire({
             html: `<b>${document.getElementById("BelgeNo").innerHTML}</b><br/> no'lu kabul formu silinecek, emin misiniz?`,
             icon: 'warning',
@@ -1140,6 +1145,10 @@
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
+
+
+                ShowProgress();
+
                 var Url = `http://192.168.2.13:83/api/shipping/${document.getElementById("BelgeNo").innerHTML}/0`;
 
                 $.ajax({
@@ -1150,6 +1159,9 @@
                         window.onpopstate = function () { history.back(); };
                         $('#TempTable').bootstrapTable("destroy");
                         $('#SiparisModal').modal('hide');
+
+                        HideProgress();
+
                         Swal.fire({
                             text: "İşlem başarılı.",
                             icon: "success",
@@ -1286,6 +1298,7 @@
                     GuncellenenKalem = -1;
 
                     $('#SiparisModal').modal('hide');
+                    HideProgress();
                 },
                 error: function (msg)
                 {
@@ -1296,6 +1309,7 @@
                         confirmButtonText: 'TAMAM',
                         confirmButtonColor: '#d33',
                     });
+                    HideProgress();
                 }
             });
         }
@@ -1356,6 +1370,7 @@
                     GuncellenenKalem = -1;
 
                     $('#SiparisModal').modal('hide');
+                    HideProgress();
                     },
                 error: function (msg)
                 {
@@ -1366,6 +1381,7 @@
                         confirmButtonText: 'TAMAM',
                         confirmButtonColor: '#d33',
                     });
+                    HideProgress();
                 }
                 });
         }

@@ -3,18 +3,19 @@
 }
 
 
-<link href="~/Content/table/bootstrap-table.min.css" rel="stylesheet" />
-<link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="~/Content/bootstrap-table-master/dist/bootstrap-table.min.css" rel="stylesheet" />
+<link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="~/Scripts/select2.css" rel="stylesheet" />
+<link href="~/assets/fontawesome.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<script src="~/assets/vendor/libs/popper/popper.js"></script>
+<link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+<script src="~/assets/sweetalert/sweetalert.js"></script>
 <style>
     body {
         padding: 0 0 0 4rem !important;
     }
+
     #table i {
         color: #00AAFF;
         font-weight: 300;
@@ -65,10 +66,10 @@
         input {
             font-size: 12px !important;
         }
-        .search{
-            width:50%;
+
+        .search {
+            width: 50%;
         }
-       
     }
 
     @@media screen and (min-width: 601px) {
@@ -98,56 +99,85 @@
     }
 
     @@-webkit-keyframes bounce {
-                0% {-webkit-transform: translateY(0); opacity: 1;}
-  60% { opacity: 0;}
+        0% {
+            -webkit-transform: translateY(0);
+            opacity: 1;
+        }
+
+        60% {
+            opacity: 0;
+        }
+
         100% {
             -webkit-transform: translateY(-8px);
             opacity: 1
         }
-}
-
-@@-moz-keyframes bounce {
-                0% {-webkit-transform: translateY(0); opacity: 1;}
-  60% { opacity: 0;}
-    100% {
-        -webkit-transform: translateY(-8px);
-        opacity: 1
     }
-}
 
-@@-o-keyframes bounce {
-                0% {-webkit-transform: translateY(0); opacity: 1;}
-  60% { opacity: 0;}
-    100% {
-        -webkit-transform: translateY(-8px);
-        opacity: 1
+    @@-moz-keyframes bounce {
+        0% {
+            -webkit-transform: translateY(0);
+            opacity: 1;
+        }
+
+        60% {
+            opacity: 0;
+        }
+
+        100% {
+            -webkit-transform: translateY(-8px);
+            opacity: 1
+        }
     }
-}
-@@keyframes bounce {
-                0% {-webkit-transform: translateY(0); opacity: 1;}
-  60% { opacity: 0;}
-    100% {
-        -webkit-transform: translateY(-8px);
-        opacity: 1
+
+    @@-o-keyframes bounce {
+        0% {
+            -webkit-transform: translateY(0);
+            opacity: 1;
+        }
+
+        60% {
+            opacity: 0;
+        }
+
+        100% {
+            -webkit-transform: translateY(-8px);
+            opacity: 1
+        }
     }
-}
 
+    @@keyframes bounce {
+        0% {
+            -webkit-transform: translateY(0);
+            opacity: 1;
+        }
 
+        60% {
+            opacity: 0;
+        }
 
+        100% {
+            -webkit-transform: translateY(-8px);
+            opacity: 1
+        }
+    }
 </style>
 
 <div class="jumbotron vertical-center" onclick="hideAllPop()">
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+    </div>
     @{ DateTime dateTime = DateTime.Now;
         var time = dateTime.ToShortTimeString();
         var tarih = dateTime.ToShortDateString();
         ;}
     <div class="container-fluid">
-       
-        
+
+
 
 
         <div id="employeeTableWrapper" class="tableWrapper">
-            <div id="toolbar"class="mt-2 w-100"></div>
+            <div id="toolbar" class="mt-2 w-100"></div>
             <table id="table"
                    class="table table-striped"
                    data-show-fullscreen="true"
@@ -192,20 +222,17 @@
         var type = 'fa'
 
         function loadingTemplate(message) {
-            if (type === 'fa') {
-                return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
-            }
-            if (type === 'pl') {
-                return '<div class="ph-item"><div class="ph-picture"></div></div>'
-            }
+         
+                return '<div class="text-center">YÜKLENİYOR..</div>'
+          
         }
         var sondurum = null;
         $(document).ready(function () {
+            ShowProgress()
             $('#pageName').html('<div class="dot"></div> Fiyat Listesi')
             $.getJSON("http://192.168.2.13:83/api/fiyat/exec/fiyatdurum", function (data) {
                 sondurum = data;
-            }).done(() =>
-            {
+            }).done(() => {
                 $("#table").bootstrapTable({
                     url: "http://192.168.2.13:83/api/fiyat/exec/000000000000001",
                     exportOptions: {
@@ -232,6 +259,8 @@
                         ignoreColumn: ['FIYAT3', 'FIYAT2']
 
                     }
+                }).after(function () {
+                    HideProgress();
                 });
 
                 document.getElementsByClassName("search-input")[0].onkeyup = function () {
@@ -241,21 +270,21 @@
                 }
 
             });
-            
-         
-                $("#divPartial").show();
 
-                document.getElementById("satis1").className = "nav__link active";
-                document.getElementById("fiyatlistesi1").className = "nav__dropdown-item active";
-            
-            
-            
+
+            $("#divPartial").show();
+
+            document.getElementById("satis1").className = "nav__link active";
+            document.getElementById("fiyatlistesi1").className = "nav__dropdown-item active";
+
+
+
 
         }).ajaxComplete(function () {
 
             $(".bx-info-circle").popover();
-           
-            
+
+
         })
         function formatterToptan(value, index, row) {
             var d = sondurum.filter(x => x.FIYATKODU == index.FIYATKODU);
@@ -312,11 +341,11 @@
                     return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</div></div>";
                 }
             }
-            
+
         }
         function perToptan(value, index, row) {
             var d = sondurum.filter(x => x.FIYATKODU == index.FIYATKODU);
-            if (d.length>0) {
+            if (d.length > 0) {
                 if (d[0].FIYAT3 == "YÜKSELDİ") {
                     if (index.FIYATDOVIZTIPI != "TRY") {
                         if (value > 2) {
@@ -370,7 +399,7 @@
                     return "<div class='row'><div class='col-6 text-end'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</div></div>";
                 }
             }
-           
+
         }
         function formatter(value, index, row) {
             if (index.FIYATKODU.substring(0, 3) == "ISK") {
@@ -437,7 +466,15 @@
         function hideAllPop() {
             $(".popover").hide();
         }
-       
+        function ShowProgress() {
+            document.body.style.overflow = 'hidden';
+            document.activeElement.blur();
+            $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+        }
+        function HideProgress() {
+            document.body.style.overflow = 'auto';
+            $('#nova-overlay').fadeOut('slow');
+        }
     </script>
 </div>
 

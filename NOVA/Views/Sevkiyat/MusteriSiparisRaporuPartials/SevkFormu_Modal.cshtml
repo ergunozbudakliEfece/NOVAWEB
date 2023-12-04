@@ -640,6 +640,7 @@
             KalemleriSil().then(() => {
                 BelgeDurumKontrol().then((Durum) => {
                     if (Durum) {
+                        ShowProgress();
                         var StokToplam = [];
                         var Hatalar = [];
 
@@ -722,6 +723,8 @@
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
+                ShowProgress();
+
                 var Url = `http://192.168.2.13:83/api/shipping/${$('#BELGE_NO').html()}/0`;
 
                 $.ajax({
@@ -730,6 +733,7 @@
                     success: function (result) {
                         $('#SevkFormuTable').bootstrapTable("destroy");
                         $('#SevkFormu').modal('hide');
+                        HideProgress();
                         window.onpopstate = function () { history.back(); };
                         Swal.fire({
                             text: "İşlem başarılı.",
@@ -827,6 +831,7 @@
                             );
 
                             $('#SevkFormu').modal('hide');
+                            HideProgress();
                         },
                         error: function (msg) {
                             Swal.fire(
@@ -834,6 +839,7 @@
                                 'Girilen Stok Miktarlarını Kontrol Ediniz.',
                                 'error'
                             );
+                            HideProgress();
                         }
                     });
                 }
@@ -841,6 +847,7 @@
             else
             {
                 BelgeNoDegisti();
+                HideProgress();
             }
 
             $('#SevkFormKaydetButton').prop('disabled', true);
@@ -903,6 +910,7 @@
                     GuncellenenKalem = -1;
 
                     $('#SevkFormu').modal('hide');
+                    HideProgress();
                 },
                 error: function (msg)
                 {
@@ -913,6 +921,7 @@
                         confirmButtonText: 'TAMAM',
                         confirmButtonColor: '#d33',
                     });
+                    HideProgress();
                 }
                 });
         }
@@ -1268,7 +1277,6 @@
             }
 
             $('#CIKIS_DEPOautocomplete-list').html('');
-            ModalKaydetButtonState();
 
         }, 150);
     });
@@ -1336,5 +1344,12 @@
 
     .belgedetailtbl .card-views .card-view {
         margin-top: 0 !important;
+    }
+    .detail-view td {
+        padding: 0 !important;
+    }
+
+    .pagination-info {
+        color: var(--text-color) !important;
     }
 </style>

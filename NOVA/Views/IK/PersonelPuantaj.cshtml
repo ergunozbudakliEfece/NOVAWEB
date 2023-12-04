@@ -10,8 +10,8 @@
     <meta name="viewport" content="width=device-width" />
     <title>PersonelPuantaj</title>
     <link href="~/assets/css/github_contribution_graph.css" rel="stylesheet" />
-    <script src="~/Scripts/jquery-3.6.4.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <link href="~/Content/animate.min.css" rel="stylesheet" />
     <style>
         body {
             padding: 0 0 0 3rem !important;
@@ -188,16 +188,16 @@
         }
     </style>
     <script src="~/assets/js/github_contribution.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="~/Scripts/select2.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
 
 </head>
 <body>
-    <div class="centercontent" id="content" style="display:none">
-        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
     </div>
-    <div class="container-fluid text-center">
+    <div class="container-fluid text-center mt-5">
         <div class="row" style="margin-bottom:-20vh;">
             <div class="col text-center">
                 <select class="form-control" style="width:20vw" id="select" onchange="change(this)">
@@ -255,7 +255,7 @@
 
         }
         function newclick() {
-            $("#content").show();
+            ShowProgress()
             var smartdate = "00:00";
             var bas = $("#baslangic").val();
             var bit = $("#bitis").val();
@@ -294,7 +294,7 @@
                                             'success'
                                         ).then((result) => {
                                             if (result.isConfirmed) {
-                                                $("#content").hide();
+                                                HideProgress()
                                         $("#select").trigger('change')
 
                                     }
@@ -307,7 +307,7 @@
                                         'success'
                                     ).then((result) => {
                                         if (result.isConfirmed) {
-                                            $("#content").hide();
+                                            HideProgress()
                                             $("#select").trigger('change')
 
                                         }
@@ -322,7 +322,7 @@
                                 'Girdiğiniz saat aralığında giriş bulunmaktadır',
                                 'warning'
                             ).then(function () {
-                                $("#content").hide();
+                                HideProgress()
                                 $("#select").trigger('change');
                             })
                         }
@@ -348,7 +348,7 @@
                                     'İşlem başarılı',
                                     'success'
                                 ).then(function () {
-                                    $("#content").hide();
+                                    HideProgress()
                                     $("#select").trigger('change');
                                 })
                             })
@@ -363,7 +363,7 @@
                     'Tüm alanları doldurduğunuzdan emin olun',
                     'warning'
                 ).then(function () {
-                    $("#content").hide();
+                    HideProgress()
                     $("#select").trigger('change');
                 })
             }
@@ -372,7 +372,7 @@
 
         }
         function oldclick() {
-            $("#content").show();
+            ShowProgress()
             var code = $("#izinselect").val();
             var userid = document.getElementById("select").value;
             var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
@@ -389,7 +389,7 @@
                                     'İşlem başarılı',
                                     'success'
                                 ).then(function () {
-                                    $("#content").hide();
+                                    HideProgress()
                                     $("#select").trigger('change');
                                 })
                             },
@@ -495,7 +495,7 @@
         var izinlercodes = [];
         $(document).ready(function () {
             $('#pageName').html('<div class="dot"></div> Personel Puantaj')
-            $("#content").hide();
+            HideProgress()
             $.getJSON("http://192.168.2.13:83/api/attendance/offday", function (data) {
                 tumizinler = data;
                 for (let i = 4; i < data.length; i++) {
@@ -542,7 +542,7 @@
         var list = [];
         function change(e) {
             if (e.value != null && e.value!="") {
-                $("#content").show();
+                ShowProgress()
                 list = [];
                 var val = e.value;
                 var name = document.getElementById("select2-select-container").innerHTML;
@@ -568,10 +568,10 @@
                         h_days: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
 
                     })
-                    $("#content").hide();
+                    HideProgress()
                 })
             }
-            
+
 
         }
         function deleteizin(value) {
@@ -1122,7 +1122,7 @@
             })
 
         }
-        
+
         function eklesat1(value) {
              var mesai = personaldata.filter(x => x.DATE === value);
              var userid = $("#select").val();
@@ -1175,7 +1175,7 @@
                          }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    
+
                     izindegistir()
                 }
             })
@@ -1408,8 +1408,8 @@
             }
         }
         function mesaidegistir() {
-            
-            $("#content").show();
+
+            ShowProgress()
                 var c = true;
                 var mes = document.getElementsByClassName("mesai");
                 var tarih = document.getElementById("swal2-title").innerHTML.split("-")[2] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[1] + "-" + document.getElementById("swal2-title").innerHTML.split("-")[0];
@@ -1443,7 +1443,7 @@
                                         dataType: "json",
                                         data: d,
                                         success: function (msg) {
-                                            $("#content").hide();
+                                            HideProgress()
                                             Swal.fire(
                                                 'Başarılı!',
                                                 'İşlem başarılı',
@@ -1467,7 +1467,7 @@
                             'Girdiğiniz saat aralığında giriş bulunmaktadır',
                             'warning'
                         ).then(function () {
-                            $("#content").hide();
+                            HideProgress()
                             $("#select").trigger('change');
                         })
                     }
@@ -1478,13 +1478,13 @@
 
 
 
-            $("#content").hide();
+            HideProgress()
 
 
         }
         function izindegistir() {
 
-            $("#content").show();
+            ShowProgress()
 
 
             if (list != null && list.length > 0) {
@@ -1531,7 +1531,7 @@
                                         error: function (msg) { alert(JSON.stringify(msg)); }
                                     });
                                     if (i == len.length - 1) {
-                                        $("#content").hide();
+                                        HideProgress()
                                         Swal.fire(
                                             'Başarılı!',
                                             'İşlem başarılı',
@@ -1551,17 +1551,17 @@
                                     'Girdiğiniz saat aralığında giriş bulunmaktadır',
                                     'warning'
                                 ).then(function () {
-                                    $("#content").hide();
+                                    HideProgress()
                                     $("#select").trigger('change');
                                     b = true;
                                 })
                             }
                         })
                     }
-                    
+
 
                 }
-                $("#content").hide();
+                HideProgress()
 
             }
             else {
@@ -1689,14 +1689,14 @@
             if (event.currentTarget.value.length == 5) {
                 if (event.currentTarget.value < baslangic) {
                     event.currentTarget.value = "";
-                   
-                   
+
+
                 }
             }
 
         }
         function lastkeyupduz() {
-            
+
             var baslangic = event.currentTarget.parentNode.parentNode.getElementsByTagName("input")[0].value;
             if (event.currentTarget.value.length == 5) {
                 if (event.currentTarget.value <= baslangic) {
@@ -1722,13 +1722,21 @@
                     $(".swal2-confirm").prop('disabled', false)
                 }
             }
-            
+
 
         }
         function keychange() {
             $(".swal2-confirm").prop('disabled', true);
         }
-
+        function ShowProgress() {
+            document.body.style.overflow = 'hidden';
+            document.activeElement.blur();
+            $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+        }
+        function HideProgress() {
+            document.body.style.overflow = 'auto';
+            $('#nova-overlay').fadeOut('slow');
+        }
     </script>
     <script src="~/assets/vendor/libs/popper/popper.js"></script>
     <script src="~/assets/js/ui-popover.js"></script>

@@ -5,22 +5,19 @@
 }
 
 
-
-<link href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css" rel="stylesheet">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-<link href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+<link href="~/Content/bootstrap-table-master/dist/bootstrap-table.min.css" rel="stylesheet" />
+<link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="~/Scripts/select2.css" rel="stylesheet" />
+<link href="~/assets/fontawesome.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<script src="~/assets/vendor/libs/popper/popper.js"></script>
 <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
 
 <style>
     body {
         padding: 0 0 0 4rem !important;
     }
+
     .card-view {
         border-bottom: 1px dashed gray;
         margin-top: 2px;
@@ -126,40 +123,39 @@
 </style>
 <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
 <div class="container-fluid d-flex h-100">
-
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+    </div>
     <div class="card mx-auto" style="font-size:12px">
-        
+
         <div class="card-body">
-            <div class="centercontent" id="content" style="display:unset">
-                <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
-            </div>
+
             <div id="employeeTableWrapper" class="tableWrapper table-responsive">
                 <div id="toolbar">
-                    <form id="form1">
-                        <div class="row">
-                            <div class="col">
-                                <select id="filter" multiple="multiple" name="filterAlgorithm" style="width: 15vw">
-                                </select>
+
+                    <div class="row">
+                        <div class="col">
+                            <select id="filter" multiple="multiple" name="filterAlgorithm" style="width: 15vw">
+                            </select>
+                        </div>
+                        <div class="col">
+                            <select id="plasiyer" multiple="multiple" name="plasiyerAlgorithm" style="width: 15vw">
+                            </select>
+                        </div>
+                        <div class="col">
+                            <select id="dovtip" multiple="multiple" name="dovAlgorithm" style="width: 15vw">
+                            </select>
+                        </div>
+                        <div class="col">
+                            <div class="class=form-check form-switch text-center">
+                                <input class="form-check-input" type="checkbox" onchange="switchchange()" id="flexSwitchCheckChecked" unchecked="">
                             </div>
-                            <div class="col">
-                                <select id="plasiyer" multiple="multiple" name="plasiyerAlgorithm" style="width: 15vw">
-                                </select>
-                            </div>
-                            <div class="col">
-                                <select id="dovtip" multiple="multiple" name="dovAlgorithm" style="width: 15vw">
-                                </select>
-                            </div>
-                            <div class="col">
-                                <div class="class=form-check form-switch text-center">
-                                    <input class="form-check-input" type="checkbox" onchange="switchchange()" id="flexSwitchCheckChecked" unchecked="">
-                                </div>
-                                <div class="row">
-                                    <label style="font-size: 10px; letter-spacing:1px">ÜRETİM</label>
-                                </div>
+                            <div class="row">
+                                <label style="font-size: 10px; letter-spacing:1px">ÜRETİM</label>
                             </div>
                         </div>
-                    </form>
-                   
+                    </div>
+
 
 
 
@@ -176,7 +172,7 @@
 
                     <div class="col">
                         <label for="baslagictarihi">Başlagıç Tarihi:</label>
-                        <input class="form-control" style="width: 15vw;height:32px" type="date" id="baslangictarihi" name="BASLANGIC_TARIH"  value=" " placeholder="Başlangıç Tarihi">
+                        <input class="form-control" style="width: 15vw;height:32px" type="date" id="baslangictarihi" name="BASLANGIC_TARIH" value=" " placeholder="Başlangıç Tarihi">
                     </div>
                     <div class="col">
                         <label for="bitistarihi">Bitiş Tarihi:</label>
@@ -184,10 +180,13 @@
                     </div>
                     <div class="col">
                         <button onclick="clearfilter()" class="btn btn-secondary btn-sm mt-3"><i class="bx bxs-trash"></i></button>
-                        
+
                     </div>
                     <div class="col">
-                        
+
+                    </div>
+                    <div class="col">
+
                     </div>
                     <div class="col">
 
@@ -210,10 +209,10 @@
                        data-locale="tr-TR"
                        data-filter-control="true"
                        data-filter-control-multiple-search="true"
-                       data-loading-template="loadingTemplate"
                        data-mobile-responsive="false"
                        data-show-footer="true"
                        data-height="680"
+                        data-loading-template="loadingTemplate"
                        data-detail-formatter="detailFormatter"
                        data-detail-view="true"
                        data-fixed-columns="true"
@@ -243,19 +242,15 @@
     </div>
 </div>
 <script>
-    if ($(window).width() < 600) {
-        $("#divPartial2").show();
-        document.getElementById("satis").className = "menu-item open active";
-        document.getElementById("detaylisip").className = "menu-item active";
-    }
-    else {
-        $("#divPartial").show();
 
-        document.getElementById("satis1").className = "nav__link active";
-        document.getElementById("detaylisip1").className = "nav__dropdown-item active";
-    }
-   
-    
+
+    $("#divPartial").show();
+
+    document.getElementById("satis1").className = "nav__link active";
+    document.getElementById("detaylisip1").className = "nav__dropdown-item active";
+
+
+
     var tumliste2 = null;
     var tumliste = null;
     var detayli = null;
@@ -265,40 +260,44 @@
     function datefilter() {
         var baslangic = $('#baslangictarihi').val()
         var bitis = $('#bitistarihi').val()
-        
-            $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
-                
-                if ((baslangic != null && baslangic != "") && (bitis != null && bitis != "")) {
-                    var d = data.filter(x => new Date(x.TARIH.split("T")[0]) <= new Date(bitis) && new Date(x.TARIH.split("T")[0]) >= new Date(baslangic));
-                } else if ((baslangic != null && baslangic != "") || (bitis != null && bitis != "")) {
-                   
-                    if (baslangic != null && baslangic != "") {
-                        
 
-                        var d = data.filter(x => new Date(x.TARIH.split("T")[0]) >= new Date(baslangic));
-                   
-                    }
-                    if (bitis != null && bitis != "") {
-                        var d = data.filter(x => new Date(x.TARIH.split("T")[0]) <= new Date(bitis));
-                    }
+        $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
+
+            if ((baslangic != null && baslangic != "") && (bitis != null && bitis != "")) {
+                var d = data.filter(x => new Date(x.TARIH.split("T")[0]) <= new Date(bitis) && new Date(x.TARIH.split("T")[0]) >= new Date(baslangic));
+            } else if ((baslangic != null && baslangic != "") || (bitis != null && bitis != "")) {
+
+                if (baslangic != null && baslangic != "") {
+
+
+                    var d = data.filter(x => new Date(x.TARIH.split("T")[0]) >= new Date(baslangic));
+
                 }
-                else {
-                    var d = data;
+                if (bitis != null && bitis != "") {
+                    var d = data.filter(x => new Date(x.TARIH.split("T")[0]) <= new Date(bitis));
                 }
-                $('#table').bootstrapTable("destroy");
-                $('#table').bootstrapTable({data: d})
+            }
+            else {
+                var d = data;
+            }
+            $('#table').bootstrapTable("destroy");
+            $('#table').bootstrapTable({ data: d }).done(function () {
+                HideProgress();
             })
-       
+        })
+
     }
     $(document).ready(function () {
+        ShowProgress()
         $('#pageName').html('<div class="dot"></div> Detaylı Siparis')
         $.getJSON("http://192.168.2.13:83/api/detaylisip", function (data) {
             detayli = data;
         }).done(function () {
             $('#table').bootstrapTable("refresh", {
                 url: 'http://192.168.2.13:83/api/detaysizsip'
+            }).after(function () {
+                HideProgress();
             })
-            $('#progress').hide();
             for (let i = 0; i < detayli.length; i++) {
                 if (!teslimfilter.includes(detayli[i].TESLIM_YERI)) {
                     teslimfilter.push(detayli[i].TESLIM_YERI)
@@ -337,32 +336,27 @@
             };
         })
 
-        
+
 
     })
     var type = 'fa'
 
-    function loadingTemplate(message) {
 
-        return '<div class="heart"><img src="/images/novasaydam.png" style="max-width:15vw"/></div>'
-
-
-    }
     function sipnoFormatter(value, index, row) {
         return value.substring(0, 1) + value.substring(3, 5) + "-" + value.substring(value.length - 5, value.length);
     }
-    function odemegunuFormatter(value,iindex,row) {
+    function odemegunuFormatter(value, iindex, row) {
         if (value == 0) {
             return "PEŞİN";
         } else {
-            return "<span class='text-nowrap'>"+value +" GÜN</span>";
+            return "<span class='text-nowrap'>" + value + " GÜN</span>";
         }
     }
     function tarihFormatter(value, index, row) {
         return new Date(value).toLocaleDateString();
     }
     function detailFormatter(index, row) {
- 
+
         var detail = detayli.filter(x => x.SIPARIS_NO == row.SIPARIS_NO);
         var t = "";
         var r = 0;
@@ -401,25 +395,25 @@
                 toptevkifat = detail[i].TEVKIFAT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 geneltop = detail[i].GENELTOPLAM.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
-            var ssiporangorsel=0;
+            var ssiporangorsel = 0;
 
-            var uretimorangorsel=0;
-            if(detail[i].TESLIMAT_ORANI_SSIP){
-                ssiporangorsel=Math.round(parseFloat(detail[i].TESLIMAT_ORANI_SSIP) * 100).toString();
-            }else{
-            ssiporangorsel=0;
-
-            }
-             if(detail[i].URETIM_ORANI){
-                uretimorangorsel=Math.round(parseFloat(detail[i].URETIM_ORANI) * 100).toString();
-            }else{
-            uretimorangorsel=0;
+            var uretimorangorsel = 0;
+            if (detail[i].TESLIMAT_ORANI_SSIP) {
+                ssiporangorsel = Math.round(parseFloat(detail[i].TESLIMAT_ORANI_SSIP) * 100).toString();
+            } else {
+                ssiporangorsel = 0;
 
             }
-            
-            t = t + "<tr><th>" + r + "</th><td class'text-center'>" + detail[i].STOK_ADI + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR1 + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR2 + "</td><td class='text-center'>" + brut_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + detail[i].SATIS_ISKONTOSU.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%" + "</td><td class='text-center'>" + net_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + net_tutar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].TESLIM_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].BAKIYE_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-nowrap text-center' style='background-color:#f2faf5'>" + "<p class='meter' id='meter-msip' style='height:18.36px;'><span style='width:" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].TESLIM_MIKTARI_SSIP == "null" ? detail[i].TESLIM_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].BAKIYE_MIKTARI_SSIP == "null" ? detail[i].BAKIYE_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + "<p class='meter' id='meter-ssip' style='height:18.36px;'><span style='width:" + ssiporangorsel + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + ssiporangorsel + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILEN_MIKTAR1 == "null" ? detail[i].URETILEN_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILECEK_MIKTAR1 == "null" ? detail[i].URETILECEK_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + "<p class='meter' id='meter' style='height:18.36px;'><span style='width:" + uretimorangorsel +"%'><span class='progress' id='progress-uretim'><span style='margin-bottom:10px;text-align:end;color:white'>"+uretimorangorsel+ "%" + "</td></tr>"
-            msipbekleyen=msipbekleyen+detail[i].BAKIYE_MIKTARI;
-            msipteslim=msipteslim+detail[i].TESLIM_MIKTARI;
+            if (detail[i].URETIM_ORANI) {
+                uretimorangorsel = Math.round(parseFloat(detail[i].URETIM_ORANI) * 100).toString();
+            } else {
+                uretimorangorsel = 0;
+
+            }
+
+            t = t + "<tr><th>" + r + "</th><td class'text-center'>" + detail[i].STOK_ADI + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR1 + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR2 + "</td><td class='text-center'>" + brut_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + detail[i].SATIS_ISKONTOSU.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%" + "</td><td class='text-center'>" + net_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + net_tutar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].TESLIM_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].BAKIYE_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-nowrap text-center' style='background-color:#f2faf5'>" + "<p class='meter' id='meter-msip' style='height:18.36px;'><span style='width:" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].TESLIM_MIKTARI_SSIP == "null" ? detail[i].TESLIM_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].BAKIYE_MIKTARI_SSIP == "null" ? detail[i].BAKIYE_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + "<p class='meter' id='meter-ssip' style='height:18.36px;'><span style='width:" + ssiporangorsel + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + ssiporangorsel + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILEN_MIKTAR1 == "null" ? detail[i].URETILEN_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILECEK_MIKTAR1 == "null" ? detail[i].URETILECEK_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + "<p class='meter' id='meter' style='height:18.36px;'><span style='width:" + uretimorangorsel + "%'><span class='progress' id='progress-uretim'><span style='margin-bottom:10px;text-align:end;color:white'>" + uretimorangorsel + "%" + "</td></tr>"
+            msipbekleyen = msipbekleyen + detail[i].BAKIYE_MIKTARI;
+            msipteslim = msipteslim + detail[i].TESLIM_MIKTARI;
             teslimoran = teslimoran + parseFloat
                 (parseFloat(detail[i].TESLIMAT_ORANI) * 100);
             if (detail[i].TESLIMAT_ORANI_SSIP != 0 && detail[i].TESLIMAT_ORANI_SSIP != "null" && detail[i].TESLIMAT_ORANI_SSIP != null) {
@@ -443,17 +437,17 @@
 
         var moranuretim = Math.round(teslimoranuretim) / r;
 
-       
-        var m = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment-msip' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moran + " " + (100 - moran) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent-msip' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moran) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>";
-        var n = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment-ssip' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moranssip + " " + (100 - moranssip) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent-ssip' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moranssip) +"<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>"
-        var o = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moranuretim + " " + (100 - moranuretim) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moranuretim) +"<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>"
 
-        return "<table class='table table-borderless'><thead><tr class'text-nowrap'><th class='text-nowrap'>Sıra No</th><th class='text-nowrap text-center' style='padding-left: 10px'>Stok Adı</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 1</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 2</th><th class='text-nowrap' style='padding-left: 10px'>Brüt Fiyat</th><th class='text-nowrap' style='padding-left: 10px'>İskonto</th><th class='text-nowrap' style='padding-left: 10px'>Net Fiyat</th><th class='text-nowrap' style='padding-left: 10px'>Net Tutar</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretilen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Bekleyen</th><th class='text-nowrap text-center' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Süreç</th></tr></thead><tbody>" + t + "<tr><td class='p-0'>" + m + "</td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Brüt Toplam:</b></td><td  class='text-center'>" + bruttop + "</td></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5'></td></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td class='p-0'>" + n + "</td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Toplam KDV:</b></td><td  class='text-center'>" + toplamkdv + "</td><td style='background-color:#f2faf5' class='text-center'><b>"+msipteslim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })+"</b></td><td style='background-color:#f2faf5' class='text-center'><b>"+msipbekleyen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })+"</b></td><td style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td class='p-0'>" + o + "</td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Tevkifat:</b></td><td  class='text-center'>" + toptevkifat + "</td><td colspan='3' style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td></td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Genel Toplam:</b></td><td  class='text-center'><b>" + geneltop + "</b></td><td colspan='3' style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr></tbody></table>";
+        var m = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment-msip' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moran + " " + (100 - moran) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent-msip' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moran) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>";
+        var n = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment-ssip' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moranssip + " " + (100 - moranssip) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent-ssip' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moranssip) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>"
+        var o = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moranuretim + " " + (100 - moranuretim) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moranuretim) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>"
+
+        return "<table class='table table-borderless'><thead><tr class'text-nowrap'><th class='text-nowrap'>Sıra No</th><th class='text-nowrap text-center' style='padding-left: 10px'>Stok Adı</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 1</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 2</th><th class='text-nowrap' style='padding-left: 10px'>Brüt Fiyat</th><th class='text-nowrap' style='padding-left: 10px'>İskonto</th><th class='text-nowrap' style='padding-left: 10px'>Net Fiyat</th><th class='text-nowrap' style='padding-left: 10px'>Net Tutar</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretilen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Bekleyen</th><th class='text-nowrap text-center' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Süreç</th></tr></thead><tbody>" + t + "<tr><td class='p-0'>" + m + "</td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Brüt Toplam:</b></td><td  class='text-center'>" + bruttop + "</td></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5'></td></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td class='p-0'>" + n + "</td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Toplam KDV:</b></td><td  class='text-center'>" + toplamkdv + "</td><td style='background-color:#f2faf5' class='text-center'><b>" + msipteslim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</b></td><td style='background-color:#f2faf5' class='text-center'><b>" + msipbekleyen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</b></td><td style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td class='p-0'>" + o + "</td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Tevkifat:</b></td><td  class='text-center'>" + toptevkifat + "</td><td colspan='3' style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td></td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Genel Toplam:</b></td><td  class='text-center'><b>" + geneltop + "</b></td><td colspan='3' style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr></tbody></table>";
     }
     function toplamFormatter(value, index, row) {
         return (index.DOV_TIP == "TRY" ? (value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })) : (index.DOV_GENELTOPLAM.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))) + " " + index.DOV_TIP;
     }
-   
+
     function footerFormatter(items) {
         var totalPriceUSD = 0;
         var totalPriceTRY = 0;
@@ -472,46 +466,150 @@
 
         $('#dolar').text(totalPriceUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $");
         $('#tl').text(totalPriceTRY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺");
-        $('#eur').text(totalPriceEUR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })+" €");
+        $('#eur').text(totalPriceEUR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €");
     };
-    $('#toolbar').change(function (e) {
-        var filterAlgorithm = $('#filter').val()
-        var plasiyerAlgorithm = $('#plasiyer').val()
-        var dovAlgorithm = $('#dovtip').val()
-            $('#table').bootstrapTable('filterBy', {
-                TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimfilter),
-                PLASIYER_ADI: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : plasiyerFilter),
-                DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovFilter),
+    $('select').change(function (e) {
+        filtre()
 
-            })
-       
 
 
     })
+    function filtre() {
+        var filterAlgorithm = $('#filter').val()
+        var plasiyerAlgorithm = $('#plasiyer').val()
+        var dovAlgorithm = $('#dovtip').val()
+        teslimfilter = []
+        plasiyerFilter = []
+        dovFilter = []
+        var data = detayli
+        if (filterAlgorithm.length > 0) {
+            data = data.filter(x => filterAlgorithm.includes(x.TESLIM_YERI))
+        }
+        if (plasiyerAlgorithm.length > 0) {
+            data = data.filter(x => plasiyerAlgorithm.includes(x.PLASIYER_ADI))
+        }
+        if (dovAlgorithm.length > 0) {
+            data = data.filter(x => dovAlgorithm.includes(x.DOV_TIP))
+        }
+        for (let i = 0; i < data.length; i++) {
+            if (!teslimfilter.includes(data[i].TESLIM_YERI)) {
+                teslimfilter.push(data[i].TESLIM_YERI)
+            }
+            if (!plasiyerFilter.includes(data[i].PLASIYER_ADI)) {
+                plasiyerFilter.push(data[i].PLASIYER_ADI)
+            }
+            if (!dovFilter.includes(data[i].DOV_TIP)) {
+                dovFilter.push(data[i].DOV_TIP)
+            }
+        }
+
+
+        if (!filterAlgorithm.length > 0) {
+            document.getElementById("filter").replaceChildren()
+            for (let i = 0; i < teslimfilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = teslimfilter[i];
+                option.innerHTML = teslimfilter[i];
+                document.getElementById("filter").appendChild(option);
+            }
+        }
+        if (!plasiyerAlgorithm.length > 0) {
+
+            document.getElementById("plasiyer").replaceChildren()
+            for (let i = 0; i < plasiyerFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = plasiyerFilter[i];
+                option.innerHTML = plasiyerFilter[i];
+                document.getElementById("plasiyer").appendChild(option);
+            }
+        }
+        if (!dovAlgorithm.length > 0) {
+            document.getElementById("dovtip").replaceChildren()
+            for (let i = 0; i < dovFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = dovFilter[i];
+                option.innerHTML = dovFilter[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+        }
+        if (filterAlgorithm.length == 0 && plasiyerAlgorithm.length && dovAlgorithm.length) {
+            for (let i = 0; i < teslimfilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = teslimfilter[i];
+                option.innerHTML = teslimfilter[i];
+                document.getElementById("filter").appendChild(option);
+            }
+            for (let i = 0; i < plasiyerFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = plasiyerFilter[i];
+                option.innerHTML = plasiyerFilter[i];
+                document.getElementById("plasiyer").appendChild(option);
+            }
+            for (let i = 0; i < dovFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = dovFilter[i];
+                option.innerHTML = dovFilter[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+        }
+        $('#table').bootstrapTable('filterBy', {
+            TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimfilter),
+            PLASIYER_ADI: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : plasiyerFilter),
+            DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovFilter),
+
+        })
+    }
     function clearfilter() {
         $("#filter").val('').trigger('change');
         $("#plasiyer").val('').trigger('change');
         $("#dovtip").val('').trigger('change');
+
+        $('#flexSwitchCheckChecked').prop('checked', false);
         $("#baslangictarihi").val('').trigger('change');
         $("#bitistarihi").val('').trigger('change');
     }
     function switchchange() {
+        $("#filter").val('')
+        $("#plasiyer").val('')
+        $("#dovtip").val('')
+        $("#baslangictarihi").val('')
+        $("#bitistarihi").val('')
         if ((event.currentTarget.checked)) {
 
             $('#table').bootstrapTable('destroy');
             $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
-                var b = data.filter(x => x.URETILECEKMI == "E");
-                $('#table').bootstrapTable({ data: b });
+                detayli = data.filter(x => x.URETILECEKMI == "E");
+                $('#table').bootstrapTable({ data: detayli }).after(function () {
+                    filtre()
+                });
             })
         } else {
             $('#table').bootstrapTable('destroy');
             $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
-                $('#table').bootstrapTable({ data: data });
+                detayli = data;
+                $('#table').bootstrapTable({ data: data }).after(function () {
+                    filtre()
+                });
             })
         }
     }
-</script>
+    function loadingTemplate(message) {
 
+        return '<div class="text-center">YÜKLENİYOR..</div>'
+
+    }
+</script>
+<script>
+    function ShowProgress() {
+        document.body.style.overflow = 'hidden';
+        document.activeElement.blur();
+        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    }
+    function HideProgress() {
+        document.body.style.overflow = 'auto';
+        $('#nova-overlay').fadeOut('slow');
+    }
+</script>
 
 
 

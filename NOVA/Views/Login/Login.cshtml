@@ -106,10 +106,10 @@
     <video id="myVideo" autoplay muted loop>
         <source src="/Content/Images/2.mp4" type="video/mp4">
     </video>
-    <div class="centercontent" id="content" style="display:none">
-        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
     </div>
-   
+
     <!-- Content -->
     @if (Session["AlertLogin"] != null)
     {
@@ -215,7 +215,7 @@
 
                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide" style="color: #0e387a"></i></span>
                                 </div>
-                                <input style="display:none" type="text" name="defurl" id="defurl"/>
+                                <input style="display:none" type="text" name="defurl" id="defurl" />
                             </div>
 
 
@@ -226,9 +226,9 @@
                             </div>
                             <script>
                                 function wait() {
-                                               document.body.style.cursor = 'wait';
-                                               document.getElementById("content").style.display = 'unset';
-                                           }
+                                    document.body.style.cursor = 'wait';
+                                    ShowProgress()
+                                }
                             </script>
 
                         </form>
@@ -258,14 +258,14 @@
                 <!-- /Register -->
             </div>
             @*<div class="container-xxl d-flex  text-nowrap justify-content-between py-2 flex-md-row flex-column mt-2">
-                <div class="login-footer" style="color: #0e387a">
-                    ©
-                   2022
-                    , designed by
-                    <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
+                    <div class="login-footer" style="color: #0e387a">
+                        ©
+                       2022
+                        , designed by
+                        <a href="#" target="_blank" class="footer-link fw-bolder"> <img src="/assets/img/icons/brands/Nova.png" height="auto" width="3%" class="mb-1" /> NOVA</a>
 
-                </div>
-            </div>*@
+                    </div>
+                </div>*@
         </div>
 
 
@@ -273,8 +273,8 @@
     </div>
     <script>
         var currentLocation = window.location;
-                                           document.getElementById("defurl").value = "~/"+currentLocation.toString().split("%2f")[1] + "/"+currentLocation.toString().split("%2f")[2];
-       
+        document.getElementById("defurl").value = "~/" + currentLocation.toString().split("%2f")[1] + "/" + currentLocation.toString().split("%2f")[2];
+
     </script>
 
     <div class="modal fade" id="mail" tabindex="-1" aria-hidden="true">
@@ -399,24 +399,9 @@
         </div>
     }
 
-   
-<script src="~/Scripts/sweetAlert.js"></script>
-    <script>
-        $("body").dblclick(function () {
-            if (this.requestFullscreen) {
-                this.requestFullscreen();
-            }
-            else if (this.mozRequestFullScreen) {
-                this.mozRequestFullScreen();
-            }
-            else if (this.webkitRequestFullscreen) {
-                this.webkitRequestFullscreen();
-            }
-            else if (this.msRequestFullscreen) {
-                this.msRequestFullscreen();
-            }
-        });
-    </script>
+
+    <script src="~/Scripts/sweetAlert.js"></script>
+
     @if (ViewBag.Mesaj == "Hata")
     {
 
@@ -455,7 +440,7 @@
 
     <!-- Page JS -->
     <!-- Place this tag in your head or just before your close body tag. -->
-    
+
     <script type="text/javascript">
         $(document).ready(function () {
             var cc = @Html.Raw(Json.Encode(ViewBag.Info));
@@ -465,7 +450,7 @@
                     title: cc,
                 });
             }
-                
+
 
             $("#just_load_please").on("click", function (e) {
                 e.preventDefault();
@@ -480,7 +465,7 @@
             });
             //ajax code here (example for $.post) using test page from https://reqres.in
             //Adding a delay so we can see the functionality of the loader while request processes
-          
+
         });
     </script>
     <script>
@@ -545,7 +530,15 @@
             logoff(data);
 
         }
-
+        function ShowProgress() {
+            document.body.style.overflow = 'hidden';
+            document.activeElement.blur();
+            $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+        }
+        function HideProgress() {
+            document.body.style.overflow = 'auto';
+            $('#nova-overlay').fadeOut('slow');
+        }
     </script>
 </body>
 

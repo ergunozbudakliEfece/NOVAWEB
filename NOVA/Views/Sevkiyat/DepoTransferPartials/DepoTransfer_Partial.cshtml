@@ -239,6 +239,7 @@
 
         BelgeNoGetir().then((data) => {
             $('#BELGE_NO').html(data);
+            HideProgress();
         });
     });
 
@@ -581,6 +582,7 @@
         if (GirisDepo != -1 && CikisDepo != -1)
         {
             if (Kayitlar.length > 0) {
+                ShowProgress();
 
                 KalemleriSil().then(() => {
                     GirisDepo = -1;
@@ -663,6 +665,7 @@
                             );
 
                             YeniBelge();
+                            HideProgress();
                         },
                         error: function (msg) {
                             Swal.fire(
@@ -670,6 +673,7 @@
                                 'Girilen Stok Miktarlarını Kontrol Ediniz.',
                                 'error'
                             );
+                            HideProgress();
                         }
                     });
                 }
@@ -729,6 +733,7 @@
                     });
 
                     YeniBelge();
+                    HideProgress();
                 },
                 error: function (msg)
                 {
@@ -739,6 +744,7 @@
                         confirmButtonText: 'TAMAM',
                         confirmButtonColor: '#d33',
                     });
+                    HideProgress();
                 }
                 });
         }
@@ -758,6 +764,8 @@
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
+                ShowProgress();
+
                 var Url = `http://192.168.2.13:83/api/shipping/${$('#BELGE_NO').html()}/0`;
 
                 $.ajax({
@@ -773,6 +781,7 @@
                         });
 
                         YeniBelge();
+                        HideProgress();
                     }
                 });
             }

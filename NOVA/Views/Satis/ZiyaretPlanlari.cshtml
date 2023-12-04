@@ -7,6 +7,7 @@
     img:hover {
         opacity: 0.7
     }
+
     body {
         padding: 0 0 0 4rem !important;
     }
@@ -80,14 +81,15 @@
         }
     }
 </style>
-<link href="~/assets/fontawesome.css" rel="stylesheet" />
+<link href="~/Content/fontawesome/css/all.min.css" rel="stylesheet" />
 <body>
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+    </div>
     <div class="container-fluid">
 
     </div>
-    <div class="centercontent" id="content" style="display:unset">
-        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
-    </div>
+
     <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true" style="display: none;">
 
         <div class="modal-dialog modal-dialog-scrollable" role="document" style="max-width: 85vw !important;">
@@ -163,17 +165,12 @@
 
                     </div>
                     <script>
-                        if ($(window).width() < 600) {
-                            $("#divPartial2").show();
-                            document.getElementById("satis").className = "menu-item open active";
-                            document.getElementById("ziyaretplanlari").className = "menu-item active";
-                        }
-                        else {
-                            $("#divPartial").show();
 
-                            document.getElementById("satis1").className = "nav__link active";
-                            document.getElementById("ziyaretplanlari1").className = "nav__dropdown-item active";
-                        }
+                        $("#divPartial").show();
+
+                        document.getElementById("satis1").className = "nav__link active";
+                        document.getElementById("ziyaretplanlari1").className = "nav__dropdown-item active";
+
 
                         function musteritakip() {
                             $('#basicModal').modal({ backdrop: 'static', keyboard: false })
@@ -878,10 +875,10 @@
                 return data;
         }
         async function getRandevuAsync() {
-            $("#content").show();
+           ShowProgress()
                 let response = await fetch(`@Url.Action("GetRandevu","Satis")`);
             let data = await response.json()
-            $("#content").hide();
+           HideProgress()
                 return data;
         }
 
@@ -950,7 +947,7 @@
 
 
                     }
-                    $("#content").hide();
+                   HideProgress()
                 }
 
             })
@@ -1121,7 +1118,15 @@
             refreshtable();
             $('#plasiyer').trigger("change");
         })
-
+        function ShowProgress() {
+            document.body.style.overflow = 'hidden';
+            document.activeElement.blur();
+            $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+        }
+        function HideProgress() {
+            document.body.style.overflow = 'auto';
+            $('#nova-overlay').fadeOut('slow');
+        }
     </script>
 
 </body>

@@ -159,6 +159,7 @@
 
                         </div>
                         <div class="col"></div>
+                        <div class="col"></div>
                     </div>
                     <div id="toolbar">
                         <form id="form1">
@@ -301,11 +302,12 @@
     var carikodlari = [];
     var stokadlari = [];
     var dovtipler = ["TRY"];
-
+    var allData;
     ShowProgress();
 
     $(document).ready(function () {
         $.getJSON("http://192.168.2.13:83/api/detayliSSIP", function (data) {
+            allData = data;
             $("#table").bootstrapTable("destroy").bootstrapTable({
                 data: data
             });
@@ -507,13 +509,27 @@
 
     }
 
-    $('#toolbar').on('change', function (e) {
+    $('select').change(function (e) {
+       
+        filtre()
+
+
+    })
+    $('#uretimswitch').change(function () {
+        filtre()
+    })
+    function filtre() {
         var filterAlgorithm = $('#teslim').val()
         var plasiyerAlgorithm = $('#cari').val()
         var dovAlgorithm = $('#dovtip').val()
         var stokAlgorithm = $('#stokadi').val()
         var uretim = document.getElementById("uretimswitch").checked;
-
+        teslimyerleri = []
+        cariisimler = []
+        carikodlari = []
+        dovtipler = []
+        stokadlari = []
+        var data = allData;
         dovAlgorithm.sort();
         if (dovAlgorithm.includes("TRY")) {
             if (dovAlgorithm.includes("EURO")) {
@@ -529,17 +545,165 @@
             filterAlgorithm.push("EFECE 4");
 
         }
+        if (filterAlgorithm.length > 0) {
+            data = data.filter(x => filterAlgorithm.includes(x.TESLIM_YERI))
+        }
+        if (plasiyerAlgorithm.length > 0) {
+            data = data.filter(x => plasiyerAlgorithm.includes(x.CARI_KODU))
+        }
+        if (dovAlgorithm.length > 0) {
+            data = data.filter(x => dovAlgorithm.includes(x.DOV_TIP))
+        }
+        if (stokAlgorithm.length > 0) {
+            data = data.filter(x => stokAlgorithm.includes(x.STOK_ADI))
+        }
+        if (filterAlgorithm.length == 0 && plasiyerAlgorithm.length == 0 && dovAlgorithm.length == 0 && stokAlgorithm.length == 0) {
+            data = allData
+        }
+
+        for (let i = 0; i < data.length; i++) {
+            if (!teslimyerleri.includes(data[i].TESLIM_YERI)) {
+                teslimyerleri.push(data[i].TESLIM_YERI);
+            }
+            if (!carikodlari.includes(data[i].CARI_KODU)) {
+
+                cariisimler.push(data[i].CARI_ISIM);
+                carikodlari.push(data[i].CARI_KODU);
+            }
+            if (!dovtipler.includes(data[i].DOV_TIP) && data[i].DOV_TIP != null) {
+                dovtipler.push(data[i].DOV_TIP);
+            }
+            if (!stokadlari.includes(data[i].STOK_ADI) && data[i].STOK_ADI != null) {
+                stokadlari.push(data[i].STOK_ADI);
+            }
+        }
+        teslimyerleri.sort();
+        dovtipler.sort();
+        stokadlari.sort();
+        var option;
+        if (!filterAlgorithm.length > 0) {
+
+            document.getElementById("teslim").replaceChildren();
+            for (let i = 0; i < teslimyerleri.length; i++) {
+                option = document.createElement("option");
+                option.value = teslimyerleri[i];
+                option.innerHTML = teslimyerleri[i];
+                document.getElementById("teslim").appendChild(option);
+            }
+        }
+        if (!plasiyerAlgorithm.length > 0) {
+
+            document.getElementById("cari").replaceChildren();
+            for (let i = 0; i < carikodlari.length; i++) {
+                option = document.createElement("option");
+                option.value = carikodlari[i];
+                option.innerHTML = cariisimler[i];
+                document.getElementById("cari").appendChild(option);
+            }
+        }
+        if (!dovAlgorithm.length > 0) {
+
+            document.getElementById("dovtip").replaceChildren();
+            for (let i = 0; i < dovtipler.length; i++) {
+
+                option = document.createElement("option");
+                option.value = dovtipler[i];
+                option.innerHTML = dovtipler[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+        }
+        if (!stokAlgorithm.length > 0) {
+            document.getElementById("stokadi").replaceChildren();
+            for (let i = 0; i < stokadlari.length; i++) {
+                option = document.createElement("option");
+                option.value = stokadlari[i];
+                option.innerHTML = stokadlari[i];
+
+                document.getElementById("stokadi").appendChild(option);
+            }
+        }
+
+        if (filterAlgorithm.length == 0 && plasiyerAlgorithm.length == 0 && dovAlgorithm.length == 0 && stokAlgorithm.length == 0) {
+
+            teslimyerleri = []
+            cariisimler = []
+            carikodlari = []
+            dovtipler = []
+            stokadlari = []
+            for (let i = 0; i < data.length; i++) {
+                if (!teslimyerleri.includes(data[i].TESLIM_YERI)) {
+                    teslimyerleri.push(data[i].TESLIM_YERI);
+                }
+                if (!carikodlari.includes(data[i].CARI_KODU)) {
+
+                    cariisimler.push(data[i].CARI_ISIM);
+                    carikodlari.push(data[i].CARI_KODU);
+                }
+                if (!dovtipler.includes(data[i].DOV_TIP) && data[i].DOV_TIP != null) {
+                    dovtipler.push(data[i].DOV_TIP);
+                }
+                if (!stokadlari.includes(data[i].STOK_ADI) && data[i].STOK_ADI != null) {
+                    stokadlari.push(data[i].STOK_ADI);
+                }
+            }
+            teslimyerleri.sort();
+            dovtipler.sort();
+            stokadlari.sort();
+
+            document.getElementById("dovtip").replaceChildren();
+            document.getElementById("teslim").replaceChildren();
+            document.getElementById("cari").replaceChildren();
+
+            document.getElementById("stokadi").replaceChildren();
+            for (let i = 0; i < teslimyerleri.length; i++) {
+                option = document.createElement("option");
+                option.value = teslimyerleri[i];
+                option.innerHTML = teslimyerleri[i];
+                document.getElementById("teslim").appendChild(option);
+            }
+
+
+            for (let i = 0; i < carikodlari.length; i++) {
+                option = document.createElement("option");
+                option.value = carikodlari[i];
+                option.innerHTML = cariisimler[i];
+                document.getElementById("cari").appendChild(option);
+            }
+
+
+            for (let i = 0; i < dovtipler.length; i++) {
+                option = document.createElement("option");
+                option.value = dovtipler[i];
+                option.innerHTML = dovtipler[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+
+
+            for (let i = 0; i < stokadlari.length; i++) {
+                option = document.createElement("option");
+                option.value = stokadlari[i];
+                option.innerHTML = stokadlari[i];
+                document.getElementById("stokadi").appendChild(option);
+            }
+
+        }
+
+
+
 
         $('#table').bootstrapTable('filterBy', {
             TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimyerleri),
             CARI_KODU: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : carikodlari),
             DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovtipler),
             STOK_ADI: (stokAlgorithm.length > 0 ? stokAlgorithm : stokadlari),
+        }).after(function () {
+            sortOptions()
+            $("#teslim").select2({ placeholder: "Teslim Yeri" });
+            $("#cari").select2({ placeholder: "Cari İsim" });
+            $("#dovtip").select2({ placeholder: "Döviz Tipi" });
+            $("#stokadi").select2({ placeholder: "Stok Adı" });
         })
-
-
-
-    })
+    }
     function clearfilter() {
         $("#teslim").val('').trigger('change');
         $("#cari").val('').trigger('change');

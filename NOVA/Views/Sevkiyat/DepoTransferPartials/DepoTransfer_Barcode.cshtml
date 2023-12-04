@@ -115,13 +115,15 @@
     function Close() {
         document.getElementsByClassName('qr-scanner-area')[0].style.display = "none";
 
-        Scanner
-            .stop()
-            .then(() => {
-                Scanner = null;
-                document.exitFullscreen();
-                $('.qr-scanner-loader').fadeIn().css('display', 'flex');
-            });
+        if (Scanner != null && Scanner != undefined) {
+            Scanner
+                .stop()
+                .then(() => {
+                    Scanner = null;
+                    document.exitFullscreen();
+                    $('.qr-scanner-loader').fadeIn().css('display', 'flex');
+                });
+        }
     }
 
     document.addEventListener("fullscreenchange", FullscreenChanged);
@@ -131,11 +133,13 @@
             document.getElementsByClassName('qr-scanner-area')[0].style.display = "none";
             $('.qr-scanner-loader').fadeIn().css('display', 'flex');
 
-            if (Scanner != null) {
+            if (Scanner != null && Scanner != undefined) {
                 Scanner
                     .stop()
                     .then(() => {
                         Scanner = null;
+                        document.exitFullscreen();
+                        $('.qr-scanner-loader').fadeIn().css('display', 'flex');
                     });
             }
         }

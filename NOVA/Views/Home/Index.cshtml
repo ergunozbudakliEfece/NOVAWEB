@@ -157,8 +157,8 @@
 
 <body onload="script();" onclose="close()" style="overflow-x:hidden;">
 
-    <div class="centercontent" id="content" style="display:unset">
-        <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
     </div>
     @if ((string)Session["Onay"] == "onay")
     {
@@ -603,13 +603,12 @@
             $(this).attr('scrollamount', 5);
         });
     });
-    function script() {
-
+        function script() {
+            ShowProgress()
             $("#divPartial").show();
             document.getElementById("anasayfa").className = "menu-item active";
        
             document.body.style.cursor = "default";
-            document.getElementById("content").style.display = "none";
             var online = null;
             var offline = null;
             $.getJSON('http://192.168.2.13:83/api/userlogin/exec/lastseen', function (data) {
@@ -753,9 +752,9 @@
                     document.getElementById("ranks").appendChild(li);
                 }
 
-            }).then(function () {
+            }).done(function () {
                 $('.durum').tooltip();
-
+                HideProgress()
             })
         $('#pageName').html('<div class="dot"></div> Anasayfa')
         };
@@ -820,7 +819,15 @@
                     infinite.play();
                 });
 
-
+        function ShowProgress() {
+            document.body.style.overflow = 'hidden';
+            document.activeElement.blur();
+            $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+        }
+        function HideProgress() {
+            document.body.style.overflow = 'auto';
+            $('#nova-overlay').fadeOut('slow');
+        }
 
 
 

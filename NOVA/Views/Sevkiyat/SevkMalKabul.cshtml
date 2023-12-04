@@ -19,9 +19,24 @@
         padding: 0 0 0 4rem !important;
     }
 </style>
-<div class="container-fluid d-flex flex-column h-100">
 
-    
+<script>
+    function ShowProgress() {
+        document.body.style.overflow = 'hidden';
+        document.activeElement.blur();
+        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    }
+    function HideProgress() {
+        document.body.style.overflow = 'auto';
+        $('#nova-overlay').fadeOut('slow');
+    }
+</script>
+
+<div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:flex;justify-content:center;align-items:center;">
+    <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+</div>
+
+<div class="container-fluid d-flex flex-column h-100">
 
     <div class="card mx-auto mt-3" style="font-size: 12px; width: inherit; height: inherit;">
         <div class="card-body">
@@ -59,9 +74,6 @@
             </div>
 
             <div class="row gy-3">
-                <div class="centercontent d-flex justify-content-center align-items-center" id="content">
-                    <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
-                </div>
 
                 <table id="SevkMalKabulTable"
                        class="table"
@@ -128,7 +140,7 @@
         $.getJSON("http://192.168.2.13:83/api/shipping", function (data) {
             Belgeler = data;
         }).done(function () {
-            $('#progress').hide();
+            HideProgress();
 
             TabloYenile();
         }).then(function () {
@@ -197,8 +209,7 @@
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'GIRIS_DEPO');
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'CIKIS_DEPO');
         }
-        else if (DocType == 9)
-        {
+        else if (DocType == 9) {
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'IRS_NO');
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'CARI_ISIM');
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'SIPARIS_NO');
@@ -206,8 +217,7 @@
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'GIRIS_DEPO');
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'CIKIS_DEPO');
         }
-        else
-        {
+        else {
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'IRS_NO');
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'CARI_ISIM');
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'SIPARIS_NO');
@@ -230,7 +240,7 @@
 
     function Yenile() {
 
-        $('#progress').show();
+        ShowProgress();
 
         $("#SevkMalKabulTable").bootstrapTable("load", []);
 
@@ -239,7 +249,7 @@
         $.getJSON("http://192.168.2.13:83/api/shipping", function (data) {
             Belgeler = data;
         }).done(function () {
-            $('#progress').hide();
+            HideProgress();
             TabloYenile();
         }).then(function () {
             document.querySelectorAll('input[type="search"]')[0].onkeyup = function () {
@@ -270,12 +280,10 @@
         return '<div class="heart"><img src="/images/novasaydam.png" style="max-width:15vw"/></div>'
     }
 
-    function DepoFormatter(value, index, row)
-    {
+    function DepoFormatter(value, index, row) {
         var Depo = Depolar.filter(x => x.DEPO_KODU == value);
 
-        if (Depo.length > 0)
-        {
+        if (Depo.length > 0) {
             return Depo[0].DEPO_ISMI;
         }
 
@@ -340,10 +348,8 @@
         return `<div class="d-flex justify-content-center align-items-center gap-1"><span>${value}</span><div onclick="StokKopyala('${value}')"><i class="bi bi-files" style="color:#595cd9;font-size:large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>Stok Kodu Kopyala</span>"></i></div></div>`;
     }
 
-    function DetailSatirStili(row, index)
-    {
-        if (row.ACTIVE)
-        {
+    function DetailSatirStili(row, index) {
+        if (row.ACTIVE) {
             return {
                 css: {
                     "background-color": '#f6f7ff'
@@ -436,8 +442,7 @@
         return result;
     }
 
-    function MiktarFormatla(value)
-    {
+    function MiktarFormatla(value) {
         return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
@@ -479,8 +484,7 @@
         });
     }
 
-    async function StokKopyala(StokKodu)
-    {
+    async function StokKopyala(StokKodu) {
         try {
             await copyToClipboard(StokKodu);
         } catch (error) {

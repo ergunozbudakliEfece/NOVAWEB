@@ -159,7 +159,7 @@
         pointer-events: none;
     }
 </style>
-<div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+<div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:flex;justify-content:center;align-items:center;">
     <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
 </div>
 <div class="jumbotron vertical-center" onclick="hideAllPop()">
@@ -261,6 +261,7 @@
                     <thead>
                         <tr>
                             <th data-field="SIPARIS_NO" data-halign="center" data-align="center" data-sortable="true" data-formatter="sipFormatter">Sipariş No</th>
+                            <th data-field="FIRMA_SIPNO" data-halign="center" data-align="center" data-sortable="true">Firma Sipariş No</th>
                             <th data-field="PLASIYER_ADI" data-halign="center" data-align="center" data-sortable="true">Plasiyer</th>
                             <th data-field="TARIH" data-halign="center" data-align="center" data-sortable="true" data-formatter="tarihFormatter">Tarih</th>
                             <th data-field="STOK_ADI" data-halign="center" data-align="center" data-sortable="true" data-formatter="stokadiFormatter">Stok Adı</th>
@@ -295,7 +296,7 @@
         var d = detayli.filter(x => x.SIPARIS_NO == 'X20230000000391');
 
         $("#table").bootstrapTable("destroy").bootstrapTable({
-            url: "http://192.168.2.13:83/api/detayliSSIP", formatColumnsToggleAll: function () {
+            data: data, formatColumnsToggleAll: function () {
                 return "Hepsi";
             }, groupByFormatter: (value, idx) => { return GroupFormatter(value, idx); }, paginationSuccessivelySize: 3, paginationPagesBySide: 1
         });
@@ -349,6 +350,7 @@
         $("#cari").select2({ placeholder: "Cari İsim" });
         $("#plasiyer").select2({ placeholder: "Plasiyer" });
         $("#stokadi").select2({ placeholder: "Stok Adı" });
+        HideProgress();
     })
 
     function sortOptions() {
