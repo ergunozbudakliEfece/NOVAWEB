@@ -4,8 +4,7 @@
     Layout = "~/Views/Shared/_Layout_common.cshtml";
     //Layout = "~/Views/Shared/_Layout _yonetim_stok.cshtml";
 }
-
-<script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+<script src="~/Scripts/instascan.min.js"></script>
 
 <style>
     body {
@@ -273,17 +272,11 @@
     </div>
 </div>
 <script>
-    if ($(window).width() < 600) {
-        $("#divPartial2").show();
-        document.getElementById("sevkiyat").className = "menu-item open active";
-        document.getElementById("mussiparisrap").className = "menu-item active";
-    }
-    else {
-        $("#divPartial").show();
+   
 
         document.getElementById("sevkiyat1").className = "nav__link active";
         document.getElementById("mussiparisrap1").className = "nav__dropdown-item active";
-    }
+  
 
 
     var tumliste2 = null;
@@ -486,14 +479,89 @@
 
 
 
-    $('#toolbar').change(function (e) {
+    $('select').change(function (e) {
         var filterAlgorithm = $('#filter').val()
         var plasiyerAlgorithm = $('#plasiyer').val()
         var dovAlgorithm = $('#dovtip').val()
+        teslimfilter = []
+        plasiyerFilter = []
+        dovFilter = []
+        var data = detayli
+        if (filterAlgorithm.length > 0) {
+            data = data.filter(x => filterAlgorithm.includes(x.TESLIM_YERI))
+        }
+        if (plasiyerAlgorithm.length > 0) {
+            data = data.filter(x => plasiyerAlgorithm.includes(x.PLASIYER_ADI))
+        }
+        if (dovAlgorithm.length > 0) {
+            data = data.filter(x => dovAlgorithm.includes(x.DOV_TIP))
+        }
+        for (let i = 0; i < data.length; i++) {
+            if (!teslimfilter.includes(data[i].TESLIM_YERI)) {
+                teslimfilter.push(data[i].TESLIM_YERI)
+            }
+            if (!plasiyerFilter.includes(data[i].PLASIYER_ADI)) {
+                plasiyerFilter.push(data[i].PLASIYER_ADI)
+            }
+            if (!dovFilter.includes(data[i].DOV_TIP)) {
+                dovFilter.push(data[i].DOV_TIP)
+            }
+        }
+
+
+        if (!filterAlgorithm.length > 0) {
+            document.getElementById("filter").replaceChildren()
+            for (let i = 0; i < teslimfilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = teslimfilter[i];
+                option.innerHTML = teslimfilter[i];
+                document.getElementById("filter").appendChild(option);
+            }
+        }
+        if (!plasiyerAlgorithm.length > 0) {
+
+            document.getElementById("plasiyer").replaceChildren()
+            for (let i = 0; i < plasiyerFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = plasiyerFilter[i];
+                option.innerHTML = plasiyerFilter[i];
+                document.getElementById("plasiyer").appendChild(option);
+            }
+        }
+        if (!dovAlgorithm.length > 0) {
+            document.getElementById("dovtip").replaceChildren()
+            for (let i = 0; i < dovFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = dovFilter[i];
+                option.innerHTML = dovFilter[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+        }
+        if (filterAlgorithm.length == 0 && plasiyerAlgorithm.length && dovAlgorithm.length) {
+            for (let i = 0; i < teslimfilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = teslimfilter[i];
+                option.innerHTML = teslimfilter[i];
+                document.getElementById("filter").appendChild(option);
+            }
+            for (let i = 0; i < plasiyerFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = plasiyerFilter[i];
+                option.innerHTML = plasiyerFilter[i];
+                document.getElementById("plasiyer").appendChild(option);
+            }
+            for (let i = 0; i < dovFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = dovFilter[i];
+                option.innerHTML = dovFilter[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+        }
         $('#table').bootstrapTable('filterBy', {
             TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimfilter),
             PLASIYER_ADI: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : plasiyerFilter),
             DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovFilter),
+
         })
     })
 
