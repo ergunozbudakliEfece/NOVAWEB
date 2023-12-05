@@ -84,7 +84,7 @@ namespace NOVA.Controllers
                 }
                 else
                 {
-                    ViewBag.Users = GetUsersApiData().OrderBy(t => t.USER_ID);
+                    ViewBag.Users = GetUsersApiData();
                 }
 
             }
@@ -1178,7 +1178,7 @@ namespace NOVA.Controllers
 
             return RedirectToAction("YetkiAyar");
         }
-        public List<User> GetUsersApiData()
+        public string GetUsersApiData()
         {
 
 
@@ -1191,14 +1191,9 @@ namespace NOVA.Controllers
 
             string json = client.DownloadString(url);
             //END
-
-            //JSON Parse START
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            ser.MaxJsonLength = int.MaxValue;
-            List<User> jsonList = ser.Deserialize<List<User>>(json);
             //END
 
-            return jsonList;
+            return json;
         }
         public List<Modules> GetModules(int id)
         {

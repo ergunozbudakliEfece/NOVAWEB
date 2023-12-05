@@ -70,6 +70,7 @@ namespace NOVA.Utils
                     bool? yetkiSevkMalKabul = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 42).USER_AUTH;
                     bool? depoTransfer = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 44).USER_AUTH;
                     bool? mes = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 45).USER_AUTH;
+                    bool? hurdaveikincikalite = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 23).USER_AUTH;
                     #endregion
 
                     #region SetViewBag
@@ -114,6 +115,7 @@ namespace NOVA.Utils
                     Controller.ViewBag.DisplaySevkMalKabul = yetkiSevkMalKabul is true ? "block" : "none";
                     Controller.ViewBag.DisplayDepoTransfer = depoTransfer is true ? "block" : "none";
                     Controller.ViewBag.DisplayMES = mes is true ? "block" : "none";
+                    Controller.ViewBag.DisplayHurdaVeIkinciKalite = hurdaveikincikalite is true ? "block" : "none";
                     #endregion
                 }
             }
