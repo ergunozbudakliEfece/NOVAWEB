@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Kiota.Abstractions;
 using NOVA.Models;
@@ -42,7 +43,7 @@ namespace NOVA.Controllers
             ViewBag.Name = Session["Name"];
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 13);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -412,9 +413,9 @@ namespace NOVA.Controllers
 
             return View();
         }
-        public List<User> GetYetki()
+        public List<User> GetYetki(int id)
         {
-            var apiUrl = "http://192.168.2.13:83/api/userwithroles";
+            var apiUrl = "http://192.168.2.13:83/api/user/auth/" + id;
 
             //Connect API
             Uri url = new Uri(apiUrl);
@@ -458,7 +459,7 @@ namespace NOVA.Controllers
             ViewBag.Name = Session["Name"];
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 14);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -861,7 +862,7 @@ namespace NOVA.Controllers
             ViewBag.Name = Session["Name"];
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
             ViewBag.Id = Request.Cookies["Id"].Value.ToString();
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 15);
             if (yetkiKontrol.SELECT_AUTH != true)
             {
@@ -1237,7 +1238,7 @@ namespace NOVA.Controllers
         }
         public ActionResult PersonelPuantaj()
         {
-            var yetki = GetYetki();
+            var yetki = GetYetki(Request.Cookies["Id"].Value.ToInt());
             var yetkiKontrol = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 38);
             if (yetkiKontrol.SELECT_AUTH != true)
             {

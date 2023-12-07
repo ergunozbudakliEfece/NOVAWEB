@@ -21,7 +21,7 @@ namespace NOVA.Utils
         {
             using (System.Net.Http.HttpClient Client = new System.Net.Http.HttpClient())
             {
-                using (HttpResponseMessage response = await Client.GetAsync($"http://192.168.2.13:83/api/userwithroles/{Controller.Request.Cookies["Id"].Value.ToInt()}"))
+                using (HttpResponseMessage response = await Client.GetAsync($"http://192.168.2.13:83/api/user/auth/{Controller.Request.Cookies["Id"].Value.ToInt()}"))
                 {
                     var byteArray = await response.Content.ReadAsByteArrayAsync();
                     var result = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
@@ -125,7 +125,7 @@ namespace NOVA.Utils
         {
             using (System.Net.Http.HttpClient Client = new System.Net.Http.HttpClient())
             {
-                using (HttpResponseMessage response = await Client.GetAsync($"http://192.168.2.13:83/api/userwithroles/{UserId.ToInt()}"))
+                using (HttpResponseMessage response = await Client.GetAsync($"http://192.168.2.13:83/api/user/auth/{UserId.ToInt()}"))
                 {
                     var byteArray = await response.Content.ReadAsByteArrayAsync();
                     var result = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);

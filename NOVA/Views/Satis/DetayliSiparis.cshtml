@@ -215,6 +215,7 @@
                         data-loading-template="loadingTemplate"
                        data-detail-formatter="detailFormatter"
                        data-detail-view="true"
+                       data-detail-view-by-click="true"
                        data-fixed-columns="true"
                        data-fixed-number="0"
                        data-trim-on-search="false">
@@ -577,20 +578,17 @@
         if ((event.currentTarget.checked)) {
 
             $('#table').bootstrapTable('destroy');
-            $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
-                detayli = data.filter(x => x.URETILECEKMI == "E");
+                
+                
+            $('#table').bootstrapTable({ data: detayli.filter(x => x.URETILECEKMI == "E") }).after(function () {
+                    filtre()
+                });
+        } else {
+            $('#table').bootstrapTable('destroy');
+           
                 $('#table').bootstrapTable({ data: detayli }).after(function () {
                     filtre()
                 });
-            })
-        } else {
-            $('#table').bootstrapTable('destroy');
-            $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
-                detayli = data;
-                $('#table').bootstrapTable({ data: data }).after(function () {
-                    filtre()
-                });
-            })
         }
     }
     function loadingTemplate(message) {
