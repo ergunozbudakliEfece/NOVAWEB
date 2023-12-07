@@ -1,0 +1,652 @@
+﻿@{
+    string ProfilePhotoPath = Request.Cookies["Id"].Value + ".png";
+}
+
+<style>
+    :root {
+        --hover-color: #4249800c;
+    }
+
+    #nova-sidebar {
+        width: 50px;
+        height: 100svh;
+        background-color: white;
+        overflow: hidden;
+        box-sizing: border-box;
+        box-shadow: 0 0 10px #00000016;
+        transition: all 0.3s ease-in-out;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.25rem 0 0.5rem 0;
+        z-index: 99;
+        border-right: 1px solid #d7d7d7;
+    }
+
+        #nova-sidebar:hover {
+            width: 250px !important;
+        }
+
+        #nova-sidebar a {
+            text-decoration: none !important;
+        }
+
+    .fadable {
+        opacity: 0;
+        transition: all 0.3s ease-in-out;
+    }
+
+    #nova-sidebar:hover .fadable {
+        opacity: 1;
+    }
+
+    #nova-sidebar .logo {
+        width: 250px;
+        height: 80px;
+        padding-left: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: all 0.3s ease-in-out;
+    }
+
+        #nova-sidebar .logo .square {
+            height: 30px;
+            transition: all 0.23s ease-in-out;
+            cursor: pointer;
+        }
+
+        #nova-sidebar .logo .text {
+            height: 0;
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+        }
+
+    #nova-sidebar:hover .logo .square {
+        padding-left: 1.15rem;
+    }
+
+    #nova-sidebar:hover .logo .square {
+        height: 45px !important;
+    }
+
+    #nova-sidebar:hover .logo .text {
+        height: 45px;
+        opacity: 1;
+    }
+
+    .brand {
+        width: 250px;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding-left: 0.55rem;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .brand .brand-logo {
+            height: 30px;
+            width: auto;
+            padding: 0;
+            transition: all 0.3s ease-in-out;
+        }
+
+    #nova-sidebar:hover .brand {
+        padding-left: 4.5rem;
+    }
+
+    #nova-sidebar .user {
+        width: 250px;
+        height: 80px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        #nova-sidebar .user .profile {
+            width: 70%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            padding: 0 0.45rem;
+            gap: 0.35rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        #nova-sidebar .user .logout {
+            height: 100%;
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: xx-large;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+            #nova-sidebar .user .logout .text {
+                font-size: small;
+            }
+
+        #nova-sidebar .user .profile .photo {
+            object-fit: cover;
+            height: 35px;
+            width: 35px;
+            border-radius: 50%;
+            transition: all 0.3s ease-in-out;
+        }
+
+    #nova-sidebar:hover .user .profile .photo {
+        height: 45px;
+        width: 45px;
+    }
+
+    #nova-sidebar .user .profile:hover {
+        background-color: var(--hover-color);
+    }
+
+    #nova-sidebar .user .logout:hover {
+        background-color: var(--hover-color);
+    }
+
+    #nova-sidebar .menu {
+        width: 250px;
+        height: calc(100svh - 180px);
+        max-height: calc(100svh - 180px);
+        overflow-x: hidden;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+        #nova-sidebar .menu::-webkit-scrollbar {
+            display: none;
+        }
+
+    #nova-sidebar .menu-item {
+        width: 250px;
+        cursor: pointer;
+        color: inherit;
+    }
+
+        #nova-sidebar .menu-item i {
+            font-size: 16pt;
+        }
+
+        #nova-sidebar .menu-item .module {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 0.9rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+            #nova-sidebar .menu-item .module:hover {
+                background-color: var(--hover-color);
+            }
+
+    .bxs-chevron-left {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .chevron-down {
+        transform: rotate(-90deg);
+    }
+
+    .active-item {
+        background-color: #f7f6fd !important;
+        color: #5961a3 !important;
+    }
+
+    #nova-sidebar .menu-item .module .information {
+        width: 100%;
+        height: fit-content;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    #nova-sidebar .inner-menu {
+        display: none;
+    }
+
+        #nova-sidebar .inner-menu .module {
+            width: 100%;
+            height: auto;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 0 0 2.5rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        #nova-sidebar .inner-menu i {
+            font-size: 5pt;
+        }
+
+        #nova-sidebar .inner-menu .module .information span:before {
+            content: "• ";
+        }
+</style>
+
+<aside id="nova-sidebar">
+    <div class="logo">
+        <img class="square" src="~/Content/Images/logoefece.png" onclick="SidebarToggle()">
+        <img class="text" src="~/Content/Images/efeceyazi.png">
+    </div>
+
+    <a class="menu-item" href="/">
+        <div class="module">
+            <div class="information">
+                <i class='bx bxs-home-circle'></i>
+                <span class="fadable">Ana Sayfa</span>
+            </div>
+        </div>
+    </a>
+
+    <div class="menu">
+        @*Satış*@
+        <div class="menu-item expandable" data-module=1>
+            <div class="module">
+                <div class="information">
+                    <i class='bx bxs-dollar-circle'></i>
+                    <span class="fadable">Satış</span>
+                </div>
+
+                <i class='bx bxs-chevron-left'></i>
+            </div>
+            <div class="inner-menu">
+                <a class="menu-item" href="/Satis/Index" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Stok</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Satis/FiyatListesi" data-module=3>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Fiyat Listesi</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Satis/FiyatYonetimi" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Fiyat Yönetimi</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Satis/DetayliSiparis" data-module=3>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Detaylı Sipariş Raporu</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Satis/HammaddeListesi" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Fabrika Stok</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Satis/ZiyaretPlanlari" data-module=3>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Müşteri İlişkileri Yönetimi</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Satis/Teklif" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Teklif Oluştur</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Satis/Tekliflerim" data-module=3>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Tekliflerim</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        @*Sevkiyat*@
+        <div class="menu-item expandable" data-module=1>
+            <div class="module">
+                <div class="information">
+                    <i class='bx bxs-truck'></i>
+                    <span class="fadable">Sevkiyat</span>
+                </div>
+
+                <i class='bx bxs-chevron-left'></i>
+            </div>
+            <div class="inner-menu">
+                <a class="menu-item" href="/Sevkiyat/SiparisRaporu" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Müşteri Siparişi Raporu</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Sevkiyat/SaticiSiparisRaporu" data-module=3>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Satıcı Siparişi Raporu</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Sevkiyat/SevkMalKabul" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Sevk & Kabul İşlemleri</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Sevkiyat/DepoTransfer" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Depo Transfer</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        @*Üretim*@
+        <div class="menu-item expandable" data-module=1>
+            <div class="module">
+                <div class="information">
+                    <i class='bx bxs-hard-hat'></i>
+                    <span class="fadable">Üretim</span>
+                </div>
+
+                <i class='bx bxs-chevron-left'></i>
+            </div>
+            <div class="inner-menu">
+                <a class="menu-item" href="/IsEmri/IsEmri" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">İş Emri</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Uretim/Index" data-module=3>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Üretim Kayıtları</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Uretim/MES" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">MES</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        @*Satın Alma*@
+        <div class="menu-item expandable" data-module=1>
+            <div class="module">
+                <div class="information">
+                    <i class='bx bxs-credit-card'></i>
+                    <span class="fadable">Satın Alma</span>
+                </div>
+
+                <i class='bx bxs-chevron-left'></i>
+            </div>
+            <div class="inner-menu">
+                <a class="menu-item" href="/SatinAlma/SatinAlmaRaporu" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Detaylı Sipariş Raporu</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        @*Finans*@
+        <div class="menu-item expandable" data-module=1>
+            <div class="module">
+                <div class="information">
+                    <i class='bx bx-trending-up'></i>
+                    <span class="fadable">Finans</span>
+                </div>
+
+                <i class='bx bxs-chevron-left'></i>
+            </div>
+            <div class="inner-menu">
+                <a class="menu-item" href="/Finans/Index" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Kur Yönetimi</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/Finans/DetayliRiskLimiti" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Detaylı Risk Limiti</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        @*Muhasebe*@
+        <a class="menu-item">
+            <div class="module">
+                <div class="information">
+                    <i class='bx bxs-calculator'></i>
+                    <span class="fadable">Muhasebe</span>
+                </div>
+            </div>
+        </a>
+
+        @*İnsan Kaynakları*@
+        <div class="menu-item expandable" data-module=1>
+            <div class="module">
+                <div class="information">
+                    <i class='bx bx-male-female'></i>
+                    <span class="fadable">İnsan Kaynakları</span>
+                </div>
+
+                <i class='bx bxs-chevron-left'></i>
+            </div>
+            <div class="inner-menu">
+                <a class="menu-item" href="/IK/PersonelBilgi" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Personel Bilgi Girişi</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/IK/PersonelBilgiYonetim" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Personel Bilgi Yönetimi</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/IK/PersonelSubeYonetim" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Şube Bazında Personel Bilgi Yönetimi</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/IK/PersonelPuantaj" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Puantaj</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        @*Yönetim*@
+        <div class="menu-item expandable" data-module=1>
+            <div class="module">
+                <div class="information">
+                    <i class='bx bx-sitemap'></i>
+                    <span class="fadable">Yönetim</span>
+                </div>
+
+                <i class='bx bxs-chevron-left'></i>
+            </div>
+            <div class="inner-menu">
+                <a class="menu-item" href="/Yonetim/Stok" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Stok Değeri</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        @*Yönetim Paneli*@
+        <div class="menu-item expandable" data-module=1>
+            <div class="module">
+                <div class="information">
+                    <i class='bx bxs-report'></i>
+                    <span class="fadable">Yönetim Paneli</span>
+                </div>
+
+                <i class='bx bxs-chevron-left'></i>
+            </div>
+            <div class="inner-menu">
+                <a class="menu-item" href="/YonetimPaneli/KullaniciAyar" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Uygulama Ayarları</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a class="menu-item" href="/YonetimPaneli/UygulamaIstatistik" data-module=2>
+                    <div class="module">
+                        <div class="information">
+                            <span class="fadable">Uygulama İstatistikleri</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="user">
+        <a class="menu-item profile" href="/Profil/Index">
+            <img class="photo" src="/assets/img/avatars/@ProfilePhotoPath" onerror="this.onerror=null;this.src='/assets/img/avatars/10000.png';">
+            <span class="fadable">Dinçer ŞİPKA</span>
+        </a>
+        <div class="logout" onclick="ShowExit()" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>Çıkış Yap</span>">
+            <i class='bx bx-power-off'></i>
+        </div>
+    </div>
+
+    <div class="brand">
+        <img class="brand-logo" src="~/assets/img/icons/brands/Nova_White.png">
+        <span class="fadable">&copy; NOVA</span>
+    </div>
+</aside>
+
+<script type="text/javascript">
+    function ToggleInnerMenu(Item) {
+        $('.expandable').not(Item).find('.bxs-chevron-left').removeClass('chevron-down');
+
+        $('.expandable').not(Item).find('.inner-menu').slideUp('fast');
+
+        Item.find('.bxs-chevron-left').toggleClass('chevron-down');
+
+        Item.find('.inner-menu').slideToggle('fast');
+    }
+
+    function CloseAllInnerMenu() {
+        $('.expandable').find('.bxs-chevron-left').removeClass('chevron-down');
+
+        $('.expandable').find('.inner-menu').slideUp('fast');
+    }
+
+    function SetActiveMenuItem() {
+        var Path = window.location.pathname;
+
+        if ($(`#nova-sidebar a[href='${Path}']`).parent().parent().hasClass("expandable")) {
+            $(`#nova-sidebar a[href='${Path}']`).find('.module').addClass('active-item');
+            $(`#nova-sidebar a[href='${Path}']`).parent().parent().find('.module').first().addClass('active-item')
+        }
+        else {
+            $(`#nova-sidebar a[href='${Path}']`).addClass('active-item');
+        }
+    }
+
+    $('.expandable').on('click', function () {
+        ToggleInnerMenu($(this));
+    });
+
+    $('#nova-sidebar')
+        .hover(
+            function () {
+                if ($('.active-item').first().parent().hasClass("expandable")) {
+                    ToggleInnerMenu($('.active-item').first().parent());
+                }
+            },
+            function () {
+                CloseAllInnerMenu();
+            }
+        );
+
+    SetActiveMenuItem();
+
+    var SidebarIsToggle = false;
+
+    function SidebarToggle() {
+        if (SidebarIsToggle) {
+            $('#nova-sidebar').css('width', '50px');
+            $('#nova-sidebar').css('pointer-events', 'all');
+            $('body').css('padding-left', '50px');
+        }
+        else {
+            $('#nova-sidebar').css('width', '0');
+            $('#nova-sidebar').css('pointer-events', 'none');
+            $('body').css('padding-left', '0');
+        }
+
+        SidebarIsToggle = !SidebarIsToggle;
+    }
+</script>

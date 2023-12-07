@@ -17,11 +17,12 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.Security;
+using static NOVA.Controllers.IKController.Tarih;
 using static NOVA.Controllers.LoginController;
 
 namespace NOVA.Controllers
 {
-  
+
     public class IKController : Controller
     {
         // GET: IK
@@ -38,7 +39,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.PersonelBilgi = x[0];
             }
-            
+
             ViewBag.Page = 1;
             ViewBag.Name = Session["Name"];
             ViewBag.RoleName = Request.Cookies["RoleName"].Value.ToString();
@@ -53,58 +54,58 @@ namespace NOVA.Controllers
             else
             {
 
-                 //Kullanıcının en son logid si bulunur
-                    string json1 = null;
-                    LoginModel createdlog = null;
-                    var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
-                    Uri url1 = new Uri(apiUrl1);
-                    WebClient client1 = new WebClient();
-                    client1.Encoding = System.Text.Encoding.UTF8;
+                //Kullanıcının en son logid si bulunur
+                string json1 = null;
+                LoginModel createdlog = null;
+                var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
+                Uri url1 = new Uri(apiUrl1);
+                WebClient client1 = new WebClient();
+                client1.Encoding = System.Text.Encoding.UTF8;
 
-                    json1 = client1.DownloadString(url1);
-                    JavaScriptSerializer ser1 = new JavaScriptSerializer();
-                    createdlog = ser1.Deserialize<LoginModel>(json1);
-
-
+                json1 = client1.DownloadString(url1);
+                JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                createdlog = ser1.Deserialize<LoginModel>(json1);
 
 
 
-                    //Kullanıcının en son logid si bulunur
 
-                    string json2 = null;
-                    List<ExecModel> createdlog1 = null;
-                    var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
-                    Uri url2 = new Uri(apiUrl2);
-                    WebClient client2 = new WebClient();
-                    client2.Encoding = System.Text.Encoding.UTF8;
 
-                    json2 = client2.DownloadString(url2);
-                    JavaScriptSerializer ser2 = new JavaScriptSerializer();
-                    createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+                //Kullanıcının en son logid si bulunur
 
-                    if (createdlog1[0].SITUATION != false)
+                string json2 = null;
+                List<ExecModel> createdlog1 = null;
+                var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
+                Uri url2 = new Uri(apiUrl2);
+                WebClient client2 = new WebClient();
+                client2.Encoding = System.Text.Encoding.UTF8;
+
+                json2 = client2.DownloadString(url2);
+                JavaScriptSerializer ser2 = new JavaScriptSerializer();
+                createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+
+                if (createdlog1[0].SITUATION != false)
+                {
+                    LoginModel login = new LoginModel();
+                    login.LOG_ID = createdlog.LOG_ID;
+                    login.LAST_ACTIVITY = 13;
+                    var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                    var httpClientnew = new System.Net.Http.HttpClient();
+                    var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
                     {
-                        LoginModel login = new LoginModel();
-                        login.LOG_ID = createdlog.LOG_ID;
-                        login.LAST_ACTIVITY = 13;
-                        var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+                        Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                    };
 
-                        var httpClientnew = new System.Net.Http.HttpClient();
-                        var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
-                        {
-                            Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
-                        };
-
-                        var responsenew = httpClientnew.SendAsync(requestnew);
-                    }
-                    else
-                    {
-                        FormsAuthentication.SignOut();
-                        return RedirectToAction("Login", "Login");
-                    }
+                    var responsenew = httpClientnew.SendAsync(requestnew);
+                }
+                else
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
 
 
-                
+
             }
             if (yetkiKontrol.UPDATE_AUTH == true)
             {
@@ -464,64 +465,64 @@ namespace NOVA.Controllers
             if (yetkiKontrol.SELECT_AUTH != true)
             {
                 Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
-                
+
                 return RedirectToAction("Index", "Home");
             }
             else
             {
                 //Kullanıcının en son logid si bulunur
-                    string json1 = null;
-                    LoginModel createdlog = null;
-                    var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
-                    Uri url1 = new Uri(apiUrl1);
-                    WebClient client1 = new WebClient();
-                    client1.Encoding = System.Text.Encoding.UTF8;
+                string json1 = null;
+                LoginModel createdlog = null;
+                var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
+                Uri url1 = new Uri(apiUrl1);
+                WebClient client1 = new WebClient();
+                client1.Encoding = System.Text.Encoding.UTF8;
 
-                    json1 = client1.DownloadString(url1);
-                    JavaScriptSerializer ser1 = new JavaScriptSerializer();
-                    createdlog = ser1.Deserialize<LoginModel>(json1);
-
-
+                json1 = client1.DownloadString(url1);
+                JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                createdlog = ser1.Deserialize<LoginModel>(json1);
 
 
 
-                    //Kullanıcının en son logid si bulunur
 
-                    string json2 = null;
-                    List<ExecModel> createdlog1 = null;
-                    var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
-                    Uri url2 = new Uri(apiUrl2);
-                    WebClient client2 = new WebClient();
-                    client2.Encoding = System.Text.Encoding.UTF8;
 
-                    json2 = client2.DownloadString(url2);
-                    JavaScriptSerializer ser2 = new JavaScriptSerializer();
-                    createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+                //Kullanıcının en son logid si bulunur
 
-                    if (createdlog1[0].SITUATION != false)
+                string json2 = null;
+                List<ExecModel> createdlog1 = null;
+                var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
+                Uri url2 = new Uri(apiUrl2);
+                WebClient client2 = new WebClient();
+                client2.Encoding = System.Text.Encoding.UTF8;
+
+                json2 = client2.DownloadString(url2);
+                JavaScriptSerializer ser2 = new JavaScriptSerializer();
+                createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+
+                if (createdlog1[0].SITUATION != false)
+                {
+                    LoginModel login = new LoginModel();
+                    login.LOG_ID = createdlog.LOG_ID;
+                    login.LAST_ACTIVITY = 14;
+                    var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                    var httpClientnew = new System.Net.Http.HttpClient();
+                    var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
                     {
-                        LoginModel login = new LoginModel();
-                        login.LOG_ID = createdlog.LOG_ID;
-                        login.LAST_ACTIVITY = 14;
-                        var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+                        Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                    };
 
-                        var httpClientnew = new System.Net.Http.HttpClient();
-                        var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
-                        {
-                            Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
-                        };
-
-                        var responsenew = httpClientnew.SendAsync(requestnew);
-                    }
-                    else
-                    {
-                        FormsAuthentication.SignOut();
-                        return RedirectToAction("Login", "Login");
-                    }
-
-
+                    var responsenew = httpClientnew.SendAsync(requestnew);
                 }
-            
+                else
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+
+
+            }
+
             if (yetkiKontrol.UPDATE_AUTH == true)
             {
                 ViewBag.Yetki = "yetkili";
@@ -825,7 +826,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.Display6 = "unset";
             }
-            ViewBag.Personels = GetPersonels().OrderBy(t=>t.ISIM);
+            ViewBag.Personels = GetPersonels().OrderBy(t => t.ISIM);
             if (Session["Personel"] != null)
             {
                 ViewBag.Personel = Session["Personel"];
@@ -872,58 +873,58 @@ namespace NOVA.Controllers
             }
             else
             {
-                 //Kullanıcının en son logid si bulunur
-                    string json1 = null;
-                    LoginModel createdlog = null;
-                    var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
-                    Uri url1 = new Uri(apiUrl1);
-                    WebClient client1 = new WebClient();
-                    client1.Encoding = System.Text.Encoding.UTF8;
+                //Kullanıcının en son logid si bulunur
+                string json1 = null;
+                LoginModel createdlog = null;
+                var apiUrl1 = "http://192.168.2.13:83/api/UserLogin/" + Request.Cookies["Id"].Value.ToInt();
+                Uri url1 = new Uri(apiUrl1);
+                WebClient client1 = new WebClient();
+                client1.Encoding = System.Text.Encoding.UTF8;
 
-                    json1 = client1.DownloadString(url1);
-                    JavaScriptSerializer ser1 = new JavaScriptSerializer();
-                    createdlog = ser1.Deserialize<LoginModel>(json1);
-
-
+                json1 = client1.DownloadString(url1);
+                JavaScriptSerializer ser1 = new JavaScriptSerializer();
+                createdlog = ser1.Deserialize<LoginModel>(json1);
 
 
 
-                    //Kullanıcının en son logid si bulunur
 
-                    string json2 = null;
-                    List<ExecModel> createdlog1 = null;
-                    var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
-                    Uri url2 = new Uri(apiUrl2);
-                    WebClient client2 = new WebClient();
-                    client2.Encoding = System.Text.Encoding.UTF8;
 
-                    json2 = client2.DownloadString(url2);
-                    JavaScriptSerializer ser2 = new JavaScriptSerializer();
-                    createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+                //Kullanıcının en son logid si bulunur
 
-                    if (createdlog1[0].SITUATION != false)
+                string json2 = null;
+                List<ExecModel> createdlog1 = null;
+                var apiUrl2 = "http://192.168.2.13:83/api/UserLogin/exec/" + Request.Cookies["LogId"].Value;
+                Uri url2 = new Uri(apiUrl2);
+                WebClient client2 = new WebClient();
+                client2.Encoding = System.Text.Encoding.UTF8;
+
+                json2 = client2.DownloadString(url2);
+                JavaScriptSerializer ser2 = new JavaScriptSerializer();
+                createdlog1 = ser2.Deserialize<List<ExecModel>>(json2);
+
+                if (createdlog1[0].SITUATION != false)
+                {
+                    LoginModel login = new LoginModel();
+                    login.LOG_ID = createdlog.LOG_ID;
+                    login.LAST_ACTIVITY = 15;
+                    var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+
+                    var httpClientnew = new System.Net.Http.HttpClient();
+                    var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
                     {
-                        LoginModel login = new LoginModel();
-                        login.LOG_ID = createdlog.LOG_ID;
-                        login.LAST_ACTIVITY = 15;
-                        var apiUrlnew = "http://192.168.2.13:83/api/UserLogin";
+                        Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
+                    };
 
-                        var httpClientnew = new System.Net.Http.HttpClient();
-                        var requestnew = new HttpRequestMessage(HttpMethod.Put, apiUrlnew)
-                        {
-                            Content = new StringContent(new JavaScriptSerializer().Serialize(login), Encoding.UTF8, "application/json")
-                        };
-
-                        var responsenew = httpClientnew.SendAsync(requestnew);
-                    }
-                    else
-                    {
-                        FormsAuthentication.SignOut();
-                        return RedirectToAction("Login", "Login");
-                    }
+                    var responsenew = httpClientnew.SendAsync(requestnew);
+                }
+                else
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
 
 
-                
+
             }
 
             if (yetkiKontrol.UPDATE_AUTH == true)
@@ -1605,7 +1606,7 @@ namespace NOVA.Controllers
             {
                 ViewBag.Display6 = "unset";
             }
-            
+
             return View();
         }
         public List<SignIn> GetSession(int id)
@@ -1651,11 +1652,12 @@ namespace NOVA.Controllers
         public async Task<ActionResult> Personel(Personel personel)
         {
             try
-            {   
-                if (personel.USER_ID == 0 && Session["Ekle"]==null)
+            {
+                if (personel.USER_ID == 0 && Session["Ekle"] == null)
                 {
                     personel.USER_ID = Request.Cookies["Id"].Value.ToInt();
-                }else if(personel.USER_ID == 0 && Session["Ekle"] != null)
+                }
+                else if (personel.USER_ID == 0 && Session["Ekle"] != null)
                 {
                     personel.USER_ID = Request.Cookies["Id"].Value.ToInt();
                     personel.KAYIT_TARIH = DateTime.Now.AddHours(3);
@@ -1674,30 +1676,30 @@ namespace NOVA.Controllers
                     Session["Alert"] = "Personel başarılı bir şekilde eklenmiştir.";
                     return RedirectToAction("PersonelBilgi");
                 }
-               
-                    personel.KAYIT_TARIH = DateTime.Now.AddHours(3);
-                    var apiUrl = "http://192.168.2.13:83/api/personel/" + personel.USER_ID;
+
+                personel.KAYIT_TARIH = DateTime.Now.AddHours(3);
+                var apiUrl = "http://192.168.2.13:83/api/personel/" + personel.USER_ID;
 
 
-                    var httpClient = new HttpClient();
-                    var request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
-                    {
-                        Content = new StringContent(new JavaScriptSerializer().Serialize(personel), Encoding.UTF8, "application/json")
-                    };
+                var httpClient = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+                {
+                    Content = new StringContent(new JavaScriptSerializer().Serialize(personel), Encoding.UTF8, "application/json")
+                };
 
-                    var response = await httpClient.SendAsync(request);
+                var response = await httpClient.SendAsync(request);
 
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    Session["Alert"] = "Personel başarılı bir şekilde güncellenmiştir.";
-                
-               
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                Session["Alert"] = "Personel başarılı bir şekilde güncellenmiştir.";
+
+
             }
             catch (Exception)
             {
 
                 Session["Alert"] = "Personel kaydı başarısız!";
             }
-            
+
             return RedirectToAction("PersonelBilgi");
         }
         [HttpPost]
@@ -1813,27 +1815,27 @@ namespace NOVA.Controllers
         [HttpPost]
         public async Task<ActionResult> PostData(PersonalOffdateModel personel)
         {
-           
 
 
-                var apiUrl1 = "http://192.168.2.13:83/api/attendance";
+
+            var apiUrl1 = "http://192.168.2.13:83/api/attendance";
 
 
-                var httpClient1 = new HttpClient();
-                var request1 = new HttpRequestMessage(HttpMethod.Post, apiUrl1)
-                {
-                    Content = new StringContent(new JavaScriptSerializer().Serialize(personel), Encoding.UTF8, "application/json")
-                };
+            var httpClient1 = new HttpClient();
+            var request1 = new HttpRequestMessage(HttpMethod.Post, apiUrl1)
+            {
+                Content = new StringContent(new JavaScriptSerializer().Serialize(personel), Encoding.UTF8, "application/json")
+            };
 
-                var response1 = await httpClient1.SendAsync(request1);
+            var response1 = await httpClient1.SendAsync(request1);
 
-                string apiResponse1 = await response1.Content.ReadAsStringAsync();
+            string apiResponse1 = await response1.Content.ReadAsStringAsync();
             return Json(false, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
         public async Task<ActionResult> PostDataMesai(PersonalMesModel personel)
         {
-            if (personel.START_INCKEY!=0)
+            if (personel.START_INCKEY != 0)
             {
                 PersonalMesaiModel personel1 = new PersonalMesaiModel();
                 personel1.INCKEY = personel.START_INCKEY;
@@ -1858,12 +1860,12 @@ namespace NOVA.Controllers
                 if (personel.START_DATE.ToString().Split(' ')[1] != "00:00:00")
                 {
                     var tarih = personel.START_DATE.ToString().Split('.')[2].Substring(0, 4) + "-" + personel.START_DATE.ToString().Split('.')[1] + "-" + personel.START_DATE.ToString().Split('.')[0] + " " + personel.START_DATE.ToString().Split(' ')[1];
-                    var apiUrl1 = "http://192.168.2.13:83/api/attendance/manual/" + personel.USER_ID + "/" + tarih + "/S";
+                    var apiUrl1 = "http://192.168.2.13:83/api/attendance/manual/" + personel.USER_ID + "/S";
 
 
                     var httpClient1 = new HttpClient();
                     var request1 = new HttpRequestMessage(HttpMethod.Get, apiUrl1);
-                    var response1 = await httpClient1.SendAsync(request1); 
+                    var response1 = await httpClient1.SendAsync(request1);
                 }
             }
             if (personel.END_INCKEY != 0)
@@ -1887,19 +1889,30 @@ namespace NOVA.Controllers
                 string apiResponse2 = await response2.Content.ReadAsStringAsync();
             }
             else
-            {   if(personel.END_DATE.ToString().Split(' ')[1] != "00:00:00")
+            {
+                if (personel.END_DATE.ToString().Split(' ')[1] != "00:00:00")
                 {
                     var tarih = personel.END_DATE.ToString().Split('.')[2].Substring(0, 4) + "-" + personel.END_DATE.ToString().Split('.')[1] + "-" + personel.END_DATE.ToString().Split('.')[0] + " " + personel.END_DATE.ToString().Split(' ')[1];
-                    var apiUrl1 = "http://192.168.2.13:83/api/attendance/manual/" + personel.USER_ID + "/" + tarih + "/E"+"/"+ personel.START_INCKEY;
+                    Tarih t = new Tarih();
+                    t.TARIH = tarih;
+                   
+                    var apiUrl1 = "http://http://192.168.35.86:84/api/attendance/manual/" + personel.USER_ID + "/E" + "/" + personel.START_INCKEY;
                     var httpClient1 = new HttpClient();
-                    var request1 = new HttpRequestMessage(HttpMethod.Get, apiUrl1);
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, apiUrl1)
+                    {
+                         Content = new StringContent(new JavaScriptSerializer().Serialize(t), Encoding.UTF8, "application/json")
+                    };
                     var response1 = await httpClient1.SendAsync(request1);
                 }
-                
+
             }
 
 
             return Json(false, JsonRequestBehavior.AllowGet);
+        }
+        public class Tarih
+        {
+            public string TARIH { get; set; }
         }
         [HttpPost]
         public async Task<ActionResult> PutData(PersonalOffdateModel personel)
@@ -1919,7 +1932,7 @@ namespace NOVA.Controllers
             {
                 personel.END_DATE = personel.END_DATE.Value.AddHours(3);
             }
-            
+
             var request1 = new HttpRequestMessage(HttpMethod.Put, apiUrl1)
             {
                 Content = new StringContent(new JavaScriptSerializer().Serialize(personel), Encoding.UTF8, "application/json")
@@ -1966,22 +1979,22 @@ namespace NOVA.Controllers
         [HttpPost]
         public ActionResult UploadFile(HttpPostedFileBase file)
         {
-           
-                if (file.ContentLength > 0)
+
+            if (file.ContentLength > 0)
+            {
+                try
                 {
-                    try
-                    {
-                        var filename = Request.Cookies["Id"].Value.ToString() + ".png";
-                        var path = Path.Combine(Server.MapPath("/assets/img/avatars/"), filename);
-                        file.SaveAs(path);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw ex;
-                    }
+                    var filename = Request.Cookies["Id"].Value.ToString() + ".png";
+                    var path = Path.Combine(Server.MapPath("/assets/img/avatars/"), filename);
+                    file.SaveAs(path);
                 }
-            
-            
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+
+
 
             return RedirectToAction("PersonelBilgi");
         }
@@ -2078,7 +2091,7 @@ namespace NOVA.Controllers
             List<User> jsonList = ser.Deserialize<List<User>>(json);
             return jsonList;
         }
-        
+
         public List<Personel> GetPersonels()
         {
 
@@ -2105,7 +2118,7 @@ namespace NOVA.Controllers
         {
 
 
-            var apiUrl = "http://192.168.2.13:83/api/personel/sube:"+sube;
+            var apiUrl = "http://192.168.2.13:83/api/personel/sube:" + sube;
 
             //Connect API
             Uri url = new Uri(apiUrl);
@@ -2128,12 +2141,12 @@ namespace NOVA.Controllers
         {
             if (id == 0)
             {
-                
+
                 return RedirectToAction("PersonelBilgiYonetim");
             }
             Session["Personel"] = GetPersonelById(id)[0];
             Session["Select"] = id;
-            
+
             return RedirectToAction("PersonelBilgiYonetim");
         }
         public ActionResult GetSube(int id)
@@ -2151,7 +2164,7 @@ namespace NOVA.Controllers
 
         public List<Personel> GetPersonelById(int id)
         {
-            var apiUrl = "http://192.168.2.13:83/api/personel/id:"+id;
+            var apiUrl = "http://192.168.2.13:83/api/personel/id:" + id;
 
             //Connect API
             Uri url = new Uri(apiUrl);
@@ -2165,6 +2178,6 @@ namespace NOVA.Controllers
 
             return jsonList;
 
-        }  
+        }
     }
 }
