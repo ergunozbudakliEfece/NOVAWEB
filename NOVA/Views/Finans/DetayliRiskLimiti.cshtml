@@ -1,6 +1,10 @@
 ﻿@{
-    Layout = "/Views/Shared/_Layout_Genel.cshtml";
+    Layout = "/Views/Shared/_Layout_Common.cshtml";
 }
+
+<div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+    <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+</div>
 
 <div class="row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-3 p-1">
@@ -19,6 +23,45 @@
         @Html.Partial("Partials/DetayliRiskLimiti/Riskler")
     </div>
 </div>
+
+<style>
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+</style>
+<script>
+    function ShowProgress() {
+        document.body.style.overflow = 'hidden';
+        document.activeElement.blur();
+        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    }
+    function HideProgress() {
+        document.body.style.overflow = 'auto';
+        $('#nova-overlay').fadeOut('slow');
+    }
+</script>
 
 <style>
     .money-unit {
@@ -40,8 +83,7 @@
         CarileriGetir();
     });
 
-    function ParaBirimiFormat(Value, Locale = 'tr-TR', Currency = 'TRY')
-    {
+    function ParaBirimiFormat(Value, Locale = 'tr-TR', Currency = 'TRY') {
         return (Value == null || Value == 0) ? "₺0,00" : Value.toLocaleString(Locale, { style: 'currency', currency: Currency, minimumFractionDigits: 2 });
     }
 
@@ -57,3 +99,10 @@
         return Value == undefined ? 0 : Math.abs(Value);
     }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/&#64popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js" integrity="sha512-42PE0rd+wZ2hNXftlM78BSehIGzezNeQuzihiBCvUEB3CVxHvsShF86wBWwQORNxNINlBPuq7rG4WWhNiTVHFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/i18n/tr.js"></script>

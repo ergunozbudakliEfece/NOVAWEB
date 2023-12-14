@@ -154,19 +154,65 @@
             }
         }
     </style>
-    <script src="~/Scripts/jquery-3.6.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
 </head>
 
 <body onload="script();" onclose="close()" style="overflow-x:hidden;">
 
-    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 5000;display:none;justify-content:center;align-items:center;">
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
     </div>
+
+
+    <div class="modal fade" style="z-index:7000 !important;" id="update-overlay" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="update-overlayLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-center align-items-center">
+                    <h1 class="modal-title fs-5" id="update-overlayLabel">GÜNCELLEME</h1>
+                </div>
+                <div class="modal-body d-flex flex-column justify-content-start align-items-center gap-3 p-4">
+                    <span>Yeni yapılan güncelleme ile mobil görünümde ekran verimliliğini arttırmak için menü gizlenebilir hale getirilmiştir.</span>
+
+                    <video style=" width: 100%; height: 389px;" autoplay controls muted loop>
+                        <source src="~/Content/Images/menu.mp4" type="video/mp4" />
+                    </video>
+                </div>
+                <div class="modal-footer d-flex justify-content-center align-items-center">
+                    <button type="button" class="btn btn-secondary" onclick="HideUpdate()">KAPAT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @@media (max-width: 767.98px) {
+            .modal .modal-dialog:not(.modal-fullscreen) {
+                padding: 0 !important;
+                padding-left: 0 !important;
+            }
+        }
+
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(() => {
+            var UpdateShowed = localStorage.getItem("update-showed") === "true";
+
+            $('#update-overlay').modal(UpdateShowed ? 'hide' : 'show');
+        });
+
+        function HideUpdate() {
+            localStorage.setItem("update-showed", true);
+
+            $('#update-overlay').modal('hide');
+        }
+    </script>
+
     @if ((string)Session["Onay"] == "onay")
     {
         <script>
-            
+
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'bottom-end',
@@ -245,175 +291,175 @@
             <div class="row">
                 <div class="col-lg-12 mb-4 order-0">
                     @*@{
-            if (Request.Cookies["UserId"].Value == "10002" || Request.Cookies["UserId"].Value == "10001" /*|| Request.Cookies["UserId"].Value == "10002" || Request.Cookies["UserId"].Value == "10003" || Request.Cookies["UserId"].Value == "10005" || Request.Cookies["UserId"].Value == "10004" || Request.Cookies["UserId"].Value == "10021" || Request.Cookies["UserId"].Value == "10020"*/)
-            {
-                <div class="marquee">
-                                        <div>
-                                            <span>
+                            if (Request.Cookies["UserId"].Value == "10002" || Request.Cookies["UserId"].Value == "10001" /*|| Request.Cookies["UserId"].Value == "10002" || Request.Cookies["UserId"].Value == "10003" || Request.Cookies["UserId"].Value == "10005" || Request.Cookies["UserId"].Value == "10004" || Request.Cookies["UserId"].Value == "10021" || Request.Cookies["UserId"].Value == "10020"*/)
+                            {
+                                <div class="marquee">
+                                                        <div>
+                                                            <span>
 
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (5)<label class="ps-2 5"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (10)<label class="ps-2 10"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (15)<label class="ps-2 15"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (20)<label class="ps-2 20"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (25)<label class="ps-2 25"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (30)<label class="ps-2 30"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (35)<label class="ps-2 35"></label>
-                                                </label>
-                                                <img style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (5)<label class="ps-2 5"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (10)<label class="ps-2 10"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (15)<label class="ps-2 15"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (20)<label class="ps-2 20"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (25)<label class="ps-2 25"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (30)<label class="ps-2 30"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (35)<label class="ps-2 35"></label>
+                                                                </label>
+                                                                <img style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
 
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (40)<label class="ps-2 40"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (45)<label class="ps-2 45"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (50)<label class="ps-2 50"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (55)<label class="ps-2 55"></label>
-                                                </label>
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                                <label class="ps-2">
-                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                                    </label>USD/TRY (60)<label class="ps-2 60"></label>
-                                                </label>
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (40)<label class="ps-2 40"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (45)<label class="ps-2 45"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (50)<label class="ps-2 50"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (55)<label class="ps-2 55"></label>
+                                                                </label>
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <label class="ps-2">
+                                                                    <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                                        <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                                    </label>USD/TRY (60)<label class="ps-2 60"></label>
+                                                                </label>
 
-                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                                            </span>
-                                             <span>
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (5)<label class="ps-2 5"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (10)<label class="ps-2 10"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (15)<label class="ps-2 15"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (20)<label class="ps-2 20"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (25)<label class="ps-2 25"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (30)<label class="ps-2 30"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (35)<label class="ps-2 35"></label>
-                            </label>
-                            <img style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                                <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                                            </span>
+                                                             <span>
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (5)<label class="ps-2 5"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (10)<label class="ps-2 10"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (15)<label class="ps-2 15"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (20)<label class="ps-2 20"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (25)<label class="ps-2 25"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (30)<label class="ps-2 30"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (35)<label class="ps-2 35"></label>
+                                            </label>
+                                            <img style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
 
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (40)<label class="ps-2 40"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (45)<label class="ps-2 45"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (50)<label class="ps-2 50"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (55)<label class="ps-2 55"></label>
-                            </label>
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
-                            <label class="ps-2">
-                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
-                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
-                                </label>USD/TRY (60)<label class="ps-2 60"></label>
-                            </label>
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (40)<label class="ps-2 40"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (45)<label class="ps-2 45"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (50)<label class="ps-2 50"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (55)<label class="ps-2 55"></label>
+                                            </label>
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <label class="ps-2">
+                                                <label class="tv-circle-logo-pair tv-circle-logo-pair--xsmall tv-ticker-item-tape__icon">
+                                                    <img class="mb-2" style="margin-right:-3px" src="~/images/dolartlpng.png" alt="">
+                                                </label>USD/TRY (60)<label class="ps-2 60"></label>
+                                            </label>
 
-                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
+                                            <img class="mb-1" style="margin-right: -3px; margin-left: 25px; height: 15px " src="~/images/efecelogo.png" alt="">
 
-                        </span>
-                                        </div>
-                </div>
+                                        </span>
+                                                        </div>
+                                </div>
 
-            }
-        }*@
+                            }
+                        }*@
 
 
 
                     @*<div class="col">
-            <iframe src="~/assets/happy-new-year2022/dist/index.html" height="350" width="100%"></iframe>
-        </div>*@
+                            <iframe src="~/assets/happy-new-year2022/dist/index.html" height="350" width="100%"></iframe>
+                        </div>*@
 
                     <div class="card">
                         <label id="test"></label>
@@ -437,118 +483,121 @@
                                     <p class="mb-1 card-title text-primary" id="saat"></p>
                                 </div>
                             </div>
-                            
 
-                    
+
+
                             <script>
-                                    setInterval(function () {
-                                        $.ajax({
-                                            // edit to add steve's suggestion.
-                                            //url: "/ControllerName/ActionName",
-                                            url: '@Url.Action("GetDate","Home")',
-                                            success: function (data) {
-                                                // your data could be a View or Json or what ever you returned in your action method
-                                                // parse your data here
-                                                $('#saat').html(data)
-                                            }
-                                        });
-                                    }, 1000)
+
+                                var interval = setInterval(function () {
+
+
+
+                                    $.ajax({
+                                        url: 'http://192.168.2.13:83/api/date',
+                                        success: function (data) {
+                                            $('#saat').html(new Date(data[0].DATE).toLocaleString('tr-TR'))
+                                        }
+                                    });
+
+
+
+                                }, 1000)
                             </script>
-                       
-                            
+
+
                         </div>
                     </div>
-                   
-                        <script>
-                            const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-                                "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
-                            ];
-                        </script>
-                        @{ var onlineusers = ViewBag.OnlineUsers; int a = 0;}
+
+                    <script>
+                        const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+                            "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+                        ];
+                    </script>
+                    @{ var onlineusers = ViewBag.OnlineUsers; int a = 0;}
                     @{
-        if (Request.Cookies["RoleName"].Value != "uretim4")
-            {
-                                        <div class="card col" style="display:unset">
-                                            <div class="table-responsive text-nowrap mt-3">
-                                                <table class="table table-hover results sorttable centered" id="sortTable">
-                                                    <thead class="centered">
-                                                        <tr>
+                        if (Request.Cookies["RoleName"].Value != "uretim4")
+                        {
+                            <div class="card col" style="display:unset">
+                                <div class="table-responsive text-nowrap mt-3">
+                                    <table class="table table-hover results sorttable centered" id="sortTable">
+                                        <thead class="centered">
+                                            <tr>
 
-                                                            <th>
-                                                                <script>document.write(monthNames[new Date().getMonth()]);</script> Ayı Kullanım Sıralaması
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="table-border-bottom-0">
-                                                        <tr>
-                                                            <td>
-                                                                <ul id="ranks" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
+                                                <th>
+                                                    <script>document.write(monthNames[new Date().getMonth()]);</script> Ayı Kullanım Sıralaması
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-border-bottom-0">
+                                            <tr>
+                                                <td>
+                                                    <ul id="ranks" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                                    </ul>
+                                                </td>
+                                            </tr>
 
-                                                    </tbody>
-                                                </table>
+                                        </tbody>
+                                    </table>
 
-                                            </div>
-                                            <div class="table-responsive text-nowrap mt-3">
-                                                <table class="table table-hover results sorttable centered" id="sortTable">
-                                                    <thead class="centered">
-                                                        <tr>
-                                                            <th>Çevrimiçi Kullanıcılar(<span id="cevrimicisayi"></span>)</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="table-border-bottom-0">
-                                                        <tr>
-                                                            <td>
-                                                                <ul id="onlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
+                                </div>
+                                <div class="table-responsive text-nowrap mt-3">
+                                    <table class="table table-hover results sorttable centered" id="sortTable">
+                                        <thead class="centered">
+                                            <tr>
+                                                <th>Çevrimiçi Kullanıcılar(<span id="cevrimicisayi"></span>)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-border-bottom-0">
+                                            <tr>
+                                                <td>
+                                                    <ul id="onlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                                    </ul>
+                                                </td>
+                                            </tr>
 
-                                                    </tbody>
-                                                </table>
+                                        </tbody>
+                                    </table>
 
-                                            </div>
-                                            <div class="table-responsive text-nowrap">
-                                                <table class="table table-hover results sorttable centered" id="sortTable">
-                                                    <thead class="centered">
-                                                        <tr>
-                                                            <th>Çevrimdışı Kullanıcılar(<span id="cevrimdisisayi"></span>)</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="table-border-bottom-0">
-                                                        @{ var offlineusers = ViewBag.OfflineUsers; int b = 0;
+                                </div>
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table table-hover results sorttable centered" id="sortTable">
+                                        <thead class="centered">
+                                            <tr>
+                                                <th>Çevrimdışı Kullanıcılar(<span id="cevrimdisisayi"></span>)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-border-bottom-0">
+                                            @{ var offlineusers = ViewBag.OfflineUsers; int b = 0;
 
-}
-                                                        <tr>
-                                                            <td>
-                                                                <ul id="offlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
-                                                                </ul>
-                                                            </td>
-
-
-
-                                                        </tr>
+                                            }
+                                            <tr>
+                                                <td>
+                                                    <ul id="offlines" class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                                                    </ul>
+                                                </td>
 
 
 
+                                            </tr>
 
 
-                                                    </tbody>
-                                                </table>
 
-                                            </div>
 
-                                        </div>
-}
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+                            </div>
+                        }
 
                     }
-                        
 
 
-                    </div>
+
                 </div>
+            </div>
 
 
 
@@ -617,7 +666,7 @@
             }
             $("#divPartial").show();
             document.getElementById("anasayfa").className = "menu-item active";
-       
+
             document.body.style.cursor = "default";
             var online = null;
             var offline = null;

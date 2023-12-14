@@ -16,11 +16,12 @@
 
 
     <link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
-    <script src="~/Scripts/jquery-3.6.1.js"></script>
     <link href="~/Scripts/reorder-rows.css" rel="stylesheet" />
     <script src="~/Scripts/jqueryui-min.js"></script>
     <script src="~/Scripts/instascan.min.js"></script>
     <script src="~/assets/vendor/js/bootstrap.js"></script>
+
+    <link href="~/assets/boxicons/css/boxicons.min.css" rel="stylesheet" />
     <style>
         .swal2-html-container {
             overflow: hidden !important;
@@ -159,7 +160,7 @@
             display: none;
         }
 
-      
+
 
         @@media screen and (max-width: 800px) {
             /*#makmobile1 {
@@ -630,6 +631,12 @@
                         <audio id="giris">
                             <source src="~/Content/giris.mp3" type="audio/mpeg" />
                         </audio>
+                        <audio id="onay">
+                            <source src="~/Content/onay.mp3" type="audio/mpeg" />
+                        </audio>
+                        <audio id="hata1">
+                            <source src="~/Content/hatanew.mp3" type="audio/mpeg" />
+                        </audio>
                         <audio id="cikis">
                             <source src="~/Content/cıkıs.mp3" type="audio/mpeg" />
                         </audio>
@@ -639,9 +646,9 @@
                         <button style="display:none" onclick="playAudio()" type="button">Play Audio</button>
 
                         @*<div class="justify-content-center" style="display:flex">
-                                <div id="qr-reader1" style="width:900px;"></div>
-                                <div id="qr-reader-results1"></div>
-                            </div>*@
+            <div id="qr-reader1" style="width:900px;"></div>
+            <div id="qr-reader-results1"></div>
+        </div>*@
                     </div>
                 </div>
             </div>
@@ -1116,6 +1123,7 @@
                             error: function (data) {  alert(JSON.stringify(data)); },
                             success: function (data)
                             {
+                                playOnay()
                                 Swal.fire('Başarılı!','Kayıt başarılı','success');
 
                                 KapatilacakIsEmirleri = [];
@@ -1434,12 +1442,9 @@
             });
 
         });
-        if ($(window).width() < 600) {
-            $("#divPartial2").show();
-        }
-        else {
+       
             $("#divPartial").show();
-        }
+        
         $('.js-example-basic-single').select2({
             tags: true,
             "language": "tr-TR"
@@ -1947,12 +1952,14 @@
                 success: function (data) {
                     HideProgress();
                     if (data.substring(0, 4) == "Hata") {
+                        playHata1()
                         Swal.fire(
                             'Başarısız!',
                             data,
                             'success'
                         )
                     } else {
+                        playOnay()
                         Swal.fire(
                             'Başarılı!',
                             'Kayıt başarılı',
@@ -1964,6 +1971,7 @@
                 }
             })
         } else {
+            playHata1()
             Swal.fire(
                 'Başarısız!',
                 'Eksik bileşen',
@@ -1993,7 +2001,8 @@
                   url: '@Url.Action("IsEmirleriniKapat", "Uretim")',
                  type: 'POST',
                  data: { "isemrimod": listIsemri },
-                            error: function (data) {
+                 error: function (data) {
+                     playHata1()
                                 Swal.fire(
                                     'Başarısız!',
                                     'Kapatılamadı',
@@ -2003,6 +2012,7 @@
                             },
                             success: function (data) {
                                 HideProgress();
+                                playOnay()
                                 Swal.fire(
                                     'Başarılı!',
                                     'Kayıt başarılı',
@@ -2023,6 +2033,8 @@
         var x = document.getElementById("giris");
         var y = document.getElementById("cikis");
         var z = document.getElementById("hata");
+        var q = document.getElementById("hata1");
+        var b = document.getElementById("onay");
         function playGiris() {
             x.play();
         }
@@ -2031,6 +2043,12 @@
         }
         function playHata() {
             z.play();
+        }
+        function playOnay() {
+            b.play();
+        }
+        function playHata1() {
+            q.play();
         }
 
         //function docReady(fn) {
@@ -2576,6 +2594,7 @@
                             },
                             success: function (data) {
                                 HideProgress();
+                                playOnay()
                                 Swal.fire(
                                     'Başarılı!',
                                     'Kayıt başarılı',
@@ -2603,6 +2622,7 @@
                             },
                             success: function (data) {
                                 HideProgress();
+                                playOnay()
                                 Swal.fire(
                                     'Başarılı!',
                                     'Kayıt başarılı',
@@ -2644,6 +2664,7 @@
                             console.log(data);
                             HideProgress();
                             $("#SiparisModal").modal('hide');
+                            playHata1()
                             Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                         },
                         success: function (data) {
@@ -2656,12 +2677,14 @@
                                     } else {
                                         HideProgress();
                                         $("#SiparisModal").modal('hide');
+                                        playHata1()
                                         Swal.fire('Başarısız!', data, 'error');
                                         document.getElementById(btnid).onclick();
                                     }
                                 } else {
                                     HideProgress();
                                     $("#SiparisModal").modal('hide');
+                                    playOnay()
                                     Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                     document.getElementById(btnid).onclick();
                                     loadDongu = 0;
@@ -2672,6 +2695,7 @@
                             } else {
                                 HideProgress();
                                 $("#SiparisModal").modal('hide');
+                                playOnay()
                                 Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                 document.getElementById(btnid).onclick();
                                 loadDongu = 0;
@@ -2688,6 +2712,7 @@
                             console.log(data);
                             HideProgress();
                             $("#SiparisModal").modal('hide');
+                            playHata1()
                             Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                             loadDongu = 0;
                         },
@@ -2697,12 +2722,14 @@
                                 HideProgress();
                                 $("#SiparisModal").modal('hide');
                             if (data.substring(0, 4) == "Hata") {
+                                playHata1()
                                 Swal.fire(
                                     'Başarısız!',
                                     data,
                                     'error'
                                 )
                             } else {
+                                playOnay()
                                 Swal.fire(
                                     'Başarılı!',
                                     'Kayıt başarılı',
@@ -2807,12 +2834,14 @@
                                 HideProgress();
                                 $("#SiparisModal").modal('hide');
                                 if (data.substring(0, 4) == "Hata") {
+                                    playHata1()
                                     Swal.fire(
                                         'Başarısız!',
                                         data,
                                         'error'
                                     )
                                 } else {
+                                    playOnay()
                                     Swal.fire(
                                         'Başarılı!',
                                         'Kayıt başarılı',
@@ -2923,6 +2952,7 @@
 
                 }
             } else {
+                playHata1()
                 Swal.fire(
                     'Başarısız!',
                     'Eksik bileşen',
@@ -2959,6 +2989,7 @@
                         console.log(data1);
                         HideProgress();
                         $("#SiparisModal").modal('hide');
+                        playHata1()
                         Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                     },
                     success: function (data1) {
@@ -2976,6 +3007,7 @@
                             } else {
                                 HideProgress();
                                 $("#SiparisModal").modal('hide');
+                                playOnay()
                                 Swal.fire('Başarılı!', 'Başarılı!!', 'success');
 
                                 if ($("#etiketyazdir").is(':checked')) {
@@ -2987,6 +3019,7 @@
                         } else {
                             HideProgress();
                             $("#SiparisModal").modal('hide');
+                            playHata1()
                             Swal.fire('Başarısız!', data1, 'error');
                             document.getElementById(btnid).onclick();
 
@@ -3609,6 +3642,7 @@
      success: function (data) {
          HideProgress();
          $("#SiparisModal").modal('hide');
+         playOnay()
          Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
          document.getElementById(btnid).onclick();
      }
@@ -3639,12 +3673,14 @@
                                 if (data == "BAŞARILI") {
                                     HideProgress();
                                     $("#SiparisModal").modal('hide');
+                                    playOnay()
                                     Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                     document.getElementById(btnid).onclick();
                                     HurdaModalKapat()
                                 } else {
                                     HideProgress();
                                     $("#SiparisModal").modal('hide');
+                                    playHata1()
                                     Swal.fire('Başarısız!', data, 'error');
                                     document.getElementById(btnid).onclick();
                                     HurdaModalKapat()
@@ -3673,6 +3709,7 @@
                                             } else {
                                                 HideProgress();
                                                 $("#SiparisModal").modal('hide');
+                                                playOnay()
                                                 Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                                 document.getElementById(btnid).onclick();
                                                 HurdaModalKapat()
@@ -3720,6 +3757,7 @@
 
                             HideProgress();
                             $("#SiparisModal").modal('hide');
+                            playHata1()
                             Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                         },
                         success: function (data) {
@@ -3730,8 +3768,10 @@
                                 HideProgress();
                                 $("#HurdaModal").modal('hide');
                                 if (data.substring(0, 4) != 'Hata') {
+                                    playOnay()
                                     Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                 } else {
+                                    playHata1()
                                     Swal.fire('Başarısız!', data, 'error');
                                 }
 
@@ -3799,14 +3839,7 @@
         //    window.open(fileURL);
         //}
 
-        function playOkundu() {
-            var x = document.getElementById("okundu");
-            x.play();
-        }
-        function playHata() {
-            var x = document.getElementById("hata");
-            x.play();
-        }
+       
         function UretimeAl() {
             var hat = $('input[name="makine-ie"]:checked').val();
             var seri = $('#filter').val();
@@ -3835,8 +3868,10 @@
                             error: function (data) { alert(JSON.stringify(data)); },
                             success: function (data) {
                                 if (data == "Başarılı") {
+                                    playOnay()
                                     Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                                 } else {
+                                    playHata1()
                                     Swal.fire('Başarısız!', data, 'error');
                                 }
                                 HideProgress();
@@ -3901,8 +3936,10 @@
                         error: function (data) { alert(JSON.stringify(data)); },
                         success: function (data) {
                             if (data == "Başarılı") {
+                                playOnay()
                                 Swal.fire('Başarılı!', 'Silme işlemi tamamlandı', 'success');
                             } else {
+                                playHata1()
                                 Swal.fire('Başarısız!', data, 'error');
                             }
                             HideProgress();
@@ -3916,13 +3953,7 @@
 
         }
     </script>
-    <audio id="okundu">
-        <source src="~/Content/Barcode-scanner-beep-sound.mp3" type="audio/mpeg" />
-    </audio>
-    <audio id="hata">
-        <source src="~/Content/hata.mp3" type="audio/mpeg" />
-    </audio>
-    <button style="display:none" onclick="playAudio()" type="button">Play Audio</button>
+
 
 
     <!--Üretime Al-->
@@ -4394,6 +4425,7 @@
                     Scanner = null;
                     document.exitFullscreen();
                     $('.qr-scanner-loader').fadeIn().css('display', 'flex');
+                    $('#uretimkaydird').trigger('click');
                 });
         }
 
@@ -4449,7 +4481,7 @@
             if (uretimControl == '') {
                         $.getJSON(u2, function (data) {
                             if (data.length > 0 && data[0].HG_CONTROL == 'True') {
-                                playOkundu()
+                                playGiris()
                                 Swal.fire({
                                     text: data[0].SERI_NO + " seri numaralı ürünü " + data[0].HATKODU + " kodlu makinede üretime almayı onaylıyor musunuz?",
                                     showCancelButton: true,
@@ -4464,6 +4496,7 @@
                                         $.getJSON(u, function () {
 
                                         }).done(function () {
+                                            playGiris()
                                             swal.fire({
                                                 title: "Başarılı!",
                                                 text: "Kayıt başarılı",
@@ -4496,7 +4529,7 @@
                         $.getJSON(u, function (data) {
 
                             if (data.length != 0 && data[0].HG_CONTROL == 'True') {
-                                playOkundu()
+                                playGiris()
                                 Swal.fire({
                                     text: decodedText + " seri numaralı ürünü TP01 kodlu makinede üretime almayı onaylıyor musunuz?",
                                     showCancelButton: true,
@@ -4511,6 +4544,7 @@
                                         $.getJSON(u, function () {
 
                                         }).done(function () {
+                                            playOnay()
                                             swal.fire({
                                                 title: "Başarılı!",
                                                 text: "Kayıt başarılı",
@@ -4523,7 +4557,7 @@
                                     }
                                 })
                             } else {
-                                playHata();
+                                playHata1();
 
                                 swal.fire({
                                     title: "Başarısız!",
@@ -4586,9 +4620,10 @@
                 },
                 success: function (data) {
                     if (data == 'Başarılı') {
-
+                        playOnay()
                         Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                     } else {
+                        playHata1()
                         Swal.fire('Başarısız!', data, 'error');
                     }
                     HideProgress()
@@ -4655,9 +4690,10 @@
                 },
                 success: function (data) {
                     if (data.substring(0,4) != 'HATA') {
-
+                        playOnay()
                         Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
                     } else {
+                        playHata1()
                         Swal.fire('Başarısız!', data, 'error');
                     }
                     HideProgress()

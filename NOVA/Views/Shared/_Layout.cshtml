@@ -8,12 +8,11 @@
     <title>Nova | Efece Galvaniz</title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/img/icons/brands/Nova_White.png" />
-    <script src="~/Scripts/jquery-3.6.1.min.js"></script>
-    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
-    <link href="~/assets/boxicons-2.1.2/css/boxicons.css" rel="stylesheet" />
-    <link href="~/assets/boxicons-2.1.2/css/boxicons.min.css" rel="stylesheet" />
-    <link href="~/assets/boxicons-2.1.2/css/animations.css" rel="stylesheet" />
-    <link href="~/assets/boxicons-2.1.2/css/transformations.css" rel="stylesheet" />
+
+    <link href="~/assets/boxicons/css/boxicons.css" rel="stylesheet" />
+    <link href="~/assets/boxicons/css/boxicons.min.css" rel="stylesheet" />
+    <link href="~/assets/boxicons/css/animations.css" rel="stylesheet" />
+    <link href="~/assets/boxicons/css/transformations.css" rel="stylesheet" />
 
     <!-- Core CSS -->
     <link rel="stylesheet" type="text/css" href="\assets\vendor\css\core.css" class="template-customizer-core-css" />
@@ -24,9 +23,16 @@
     <link rel="stylesheet" type="text/css" href="\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
 
     <link rel="stylesheet" type="text/css" href="\assets\vendor\libs/apex-charts/apex-charts.css" />
+    <link href="~/Content/bootstrap-table-master/dist/bootstrap-table.min.css" rel="stylesheet" />
+    <link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
+    <link href="~/assets/vendor/css/font-awesome.min.css" rel="stylesheet" />
 
+    <link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/Scripts/select2.css" rel="stylesheet" />
     <!-- Page CSS -->
     <!-- Helpers -->
+    <script src="~/Scripts/jquery-3.7.1.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="\assets\vendor\js\helpers.js"></script>
 
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
@@ -37,13 +43,10 @@
 
     <script src="~/Scripts/sweetAlert.js"></script>
     <script>
-        var stoklar = null;
-        async function getstokAsync() {
-            var url = "http://192.168.2.13:83/api/stok/giriscikis/";
-            let response = await fetch(url);
-            let data = await response.json()
-            return data;
-        }
+        var stoklar;
+        $.getJSON('http://192.168.2.13:83/api/stok/giriscikis', function (data) {
+            stoklar = data;
+        })
         var stokfiatlar = null;
         async function getstokfiatAsync() {
             var url = "http://192.168.2.13:83/api/stok/stokfiat";
@@ -51,8 +54,18 @@
             let data = await response.json()
             return data;
         }
+        async function getozelAsync() {
+            var url = "http://192.168.2.13:83/api/stok/ozelkosul";
+            let response = await fetch(url);
+            let data = await response.json()
+            return data;
+        }
     </script>
-
+    <style>
+        .swal2-container {
+            z-index: 1000000;
+        }
+    </style>
 </head>
 <body>
     <script>
@@ -152,6 +165,7 @@
     <script src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/export/bootstrap-table-export.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.22.1/dist/extensions/mobile/bootstrap-table-mobile.min.js"></script>
+    <script src="~/Content/bootstrap-table-master/src/locale/bootstrap-table-tr-TR.js"></script>
     <script src="~/Scripts/xlsx.core.min.js"></script>
 
     <!-- Core JS -->

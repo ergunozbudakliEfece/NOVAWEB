@@ -4,13 +4,18 @@
 
 
 <link href="~/Content/bootstrap-table-master/dist/bootstrap-table.min.css" rel="stylesheet" />
+
 <link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.css" rel="stylesheet" />
 <link href="~/Scripts/select2.css" rel="stylesheet" />
 <link href="~/assets/fontawesome.css" rel="stylesheet" />
+
+<link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery-3.7.1.js"></script>
+<script src="~/assets/sweetalert/sweetalert.js"></script>
 <script src="~/Scripts/select2.min.js"></script>
 <script src="~/assets/vendor/libs/popper/popper.js"></script>
-<link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
-<script src="~/assets/sweetalert/sweetalert.js"></script>
+
 <style>
     body {
         padding: 0 0 0 4rem !important;
@@ -222,67 +227,72 @@
         var type = 'fa'
 
         function loadingTemplate(message) {
-         
-                return '<div class="text-center">YÜKLENİYOR..</div>'
-          
+
+            return '<div class="text-center">YÜKLENİYOR..</div>'
+
         }
         var sondurum = null;
+        var ozelkosullar;
+        async function getozelAsync() {
+            var url = "http://192.168.2.13:83/api/stok/ozelkosul";
+            let response = await fetch(url);
+            let data = await response.json()
+            return data;
+        }
         $(document).ready(function () {
             ShowProgress()
             $('#pageName').html('<div class="dot"></div> Fiyat Listesi')
-            $.getJSON("http://192.168.2.13:83/api/fiyat/exec/fiyatdurum", function (data) {
-                sondurum = data;
-            }).done(() => {
-                $("#table").bootstrapTable({
-                    url: "http://192.168.2.13:83/api/fiyat/exec/000000000000001",
-                    exportOptions: {
-                        fileName: function () {
-                            var dat = new Date();
-                            return "Güncel_Fiyat_Listesi_" + dat.toLocaleDateString() + "_" + dat.getHours() + "." + dat.getMinutes();
-                        },
-                        jspdf: {
-                            orientation: 'l',
-                            format: 'a4',
-                            autotable: {
-                                tableWidth: 'auto',
-                                columnStyles: {
-                                    4: {
-                                        columnMargin: 0
-                                    }
+            getozelAsync().then(function (ddd) {
+                ozelkosullar = ddd
+                $.getJSON("http://192.168.2.13:83/api/fiyat/exec/fiyatdurum", function (data) {
+                    sondurum = data;
+                }).done(() => {
+                    $("#table").bootstrapTable({
+                        url: "http://192.168.2.13:83/api/fiyat/exec/000000000000001",
+                        exportOptions: {
+                            fileName: function () {
+                                var dat = new Date();
+                                return "Güncel_Fiyat_Listesi_" + dat.toLocaleDateString() + "_" + dat.getHours() + "." + dat.getMinutes();
+                            },
+                            jspdf: {
+                                orientation: 'l',
+                                format: 'a4',
+                                autotable: {
+                                    tableWidth: 'auto',
+                                    columnStyles: {
+                                        4: {
+                                            columnMargin: 0
+                                        }
+                                    },
+
                                 },
 
+
+
                             },
-
-
+                            ignoreColumn: ['FIYAT3', 'FIYAT2']
 
                         },
-                        ignoreColumn: ['FIYAT3', 'FIYAT2']
+                        onPostBody: function () {
+                            $("[data-bs-toggle='popover']").popover();
+                        }
+                    }).after(function () {
+                        HideProgress();
+                    });
 
+                    document.getElementsByClassName("search-input")[0].oninput = function () {
+
+                        document.getElementsByClassName("search-input")[0].value = document.getElementsByClassName("search-input")[0].value.toUpperCase();
+                        document.getElementsByClassName("search-input")[0].value = document.getElementsByClassName("search-input")[0].value.replace("İ", "I").replace("Ö", "O").replace("Ü", "U").replace("Ş", "S").replace("Ç", "C").replace("Ğ", "G");
                     }
-                }).after(function () {
-                    HideProgress();
+
                 });
-
-                document.getElementsByClassName("search-input")[0].onkeyup = function () {
-                    document.getElementsByClassName("search-input")[0].value = document.getElementsByClassName("search-input")[0].value.toUpperCase();
-                    document.getElementsByClassName("search-input")[0].value = document.getElementsByClassName("search-input")[0].value.replace("İ", "I").replace("Ö", "O").replace("Ü", "U").replace("Ş", "S").replace("Ç", "C").replace("Ğ", "G");
-
-                }
-
-            });
-
+            })
 
             $("#divPartial").show();
 
-            document.getElementById("satis1").className = "nav__link active";
-            document.getElementById("fiyatlistesi1").className = "nav__dropdown-item active";
 
 
-
-
-        }).ajaxComplete(function () {
-
-            $(".bx-info-circle").popover();
 
 
         })
@@ -453,8 +463,14 @@
         }
 
         function formatterAciklama(value, index, row) {
-            if (index.OZELKOSULLAR != "null" && index.OZELKOSULLAR != null) {
-                return value + " <i style='cursor:help' class='bx bx-info-circle mt-2' data-bs-toggle='popover' data-bs-offset='0,14' data-bs-placement='right' data-bs-html='true' data-bs-content='<p>" + (index.OZELKOSULLAR == "null" ? "Özel koşul bulunmamakta." : index.OZELKOSULLAR.replaceAll("::", "<br/>").replaceAll("&.&", "+").replaceAll("&yuzde&", "%").replaceAll("&tire&", "/").replaceAll("&eksi&", "-").replaceAll("&gulucuk&", "😀").replaceAll("&gulucuk&", "😀")) + "</p>' title='Ek Bilgiler'></i>";
+            var ozel = ozelkosullar.filter(x => x.FIYATKODU == index.FIYATKODU)
+            if (ozel.length > 0 && ozel != null) {
+                if (ozel[0].OZELKOSULLAR != null) {
+                    return value + " <i style='cursor:help' class='bx bx-info-circle mt-2' data-bs-toggle='popover' data-bs-offset='0,14' data-bs-placement='right' data-bs-html='true' data-bs-content='<p>" + (ozel[0].OZELKOSULLAR == null ? "Özel koşul bulunmamakta." : ozel[0].OZELKOSULLAR.replaceAll("::", "<br/>").replaceAll(':', '').replaceAll("&.&", "+").replaceAll("&yuzde&", "%").replaceAll("&tire&", "/").replaceAll("&eksi&", "-").replaceAll("&gulucuk&", "D").replaceAll("&gulucuk&", "D")) + "</p>' title='Ek Bilgiler'></i>";
+                } else {
+                    return value;
+                }
+
             } else {
                 return value;
             }

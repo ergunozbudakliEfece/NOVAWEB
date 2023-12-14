@@ -86,6 +86,10 @@
         .menu2 {
             display: none;
         }
+
+        body {
+            padding: 0 0 0 2rem !important;
+        }
         /* .btn-group {
             display: none;
         }*/
@@ -149,6 +153,7 @@
 </style>
 <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
 
+<link href="~/assets/boxicons/css/boxicons.min.css" rel="stylesheet" />
 <script>
     function ShowProgress() {
         document.body.style.overflow = 'hidden';
@@ -177,8 +182,8 @@
 
         <div class="card-body">
             @*<div class="centercontent" id="content" style="display:unset">
-                <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
-            </div>*@
+                    <div class="heart"><img id="progress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
+                </div>*@
             <div>
                 <div id="toolbar">
                     <div class="row mt-1" onchange="datefilter()">
@@ -272,11 +277,9 @@
     </div>
 </div>
 <script>
-   
 
-        document.getElementById("sevkiyat1").className = "nav__link active";
-        document.getElementById("mussiparisrap1").className = "nav__dropdown-item active";
-  
+
+
 
 
     var tumliste2 = null;
@@ -313,57 +316,76 @@
         })
 
     }
+    var detaysiz=[];
+    function getData() {
+        $.ajax({
+            url: 'http://192.168.2.13:83/api/detaylisip',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            error: function (xhr) {
+                getData()
+            },
+            success: function (data) {
+                detayli = data;
+                $.getJSON("http://192.168.2.13:83/api/detaysizsip", function (data) {
+                    detaysiz = data
+                    $('#table').bootstrapTable("destroy");
+                    $('#table').bootstrapTable({ data: data })
+                }).done(function () {
+                    document.querySelectorAll('input[type="search"]')[0].onkeyup = function (e) {
+                        document.querySelectorAll('input[type="search"]')[0].value = e.currentTarget.value.replaceAll("ı", "I").replaceAll("i", "İ").toUpperCase();
+                    };
+                    HideProgress();
+                    for (let i = 0; i < detayli.length; i++) {
+
+                        if (!plasiyerFilter.includes(detayli[i].PLASIYER_ADI)) {
+                            plasiyerFilter.push(detayli[i].PLASIYER_ADI)
+                        }
+                        if (!dovFilter.includes(detayli[i].DOV_TIP)) {
+                            dovFilter.push(detayli[i].DOV_TIP)
+                        }
+                    }
+                    for (let i = 0; i < detaysiz.length; i++) {
+                        if (!teslimfilter.includes(detaysiz[i].TESLIM_YERI)) {
+                            teslimfilter.push(detaysiz[i].TESLIM_YERI)
+                        }
+                    }
+                    teslimfilter = teslimfilter.sort()
+                    for (let i = 0; i < teslimfilter.length; i++) {
+                        var option = document.createElement("option");
+                        option.value = teslimfilter[i];
+                        option.innerHTML = teslimfilter[i];
+                        document.getElementById("filter").appendChild(option);
+                    }
+                    for (let i = 0; i < plasiyerFilter.length; i++) {
+                        var option = document.createElement("option");
+                        option.value = plasiyerFilter[i];
+                        option.innerHTML = plasiyerFilter[i];
+                        document.getElementById("plasiyer").appendChild(option);
+                    }
+                    for (let i = 0; i < dovFilter.length; i++) {
+                        var option = document.createElement("option");
+                        option.value = dovFilter[i];
+                        option.innerHTML = dovFilter[i];
+                        document.getElementById("dovtip").appendChild(option);
+                    }
+                });
+
+                
+                $('#filter').select2({ placeholder: "Teslim Yeri" });
+                $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
+                $('#dovtip').select2({ placeholder: "Döviz Tipi" });
+            },
+            async: true,
+            processData: false
+        });
+    }
     $(document).ready(function () {
         $('#pageName').html('<div class="dot"></div> Müşteri Sipariş Raporu')
-        $.getJSON("http://192.168.2.13:83/api/detaylisip", function (data) {
-            detayli = data;
-        }).done(function () {
-
-            $.getJSON("http://192.168.2.13:83/api/detaysizsip", function (data) {
-                $('#table').bootstrapTable("destroy");
-                $('#table').bootstrapTable({ data: data })
-            }).done(function () {
-                HideProgress();
-            });
-
-            for (let i = 0; i < detayli.length; i++) {
-                if (!teslimfilter.includes(detayli[i].TESLIM_YERI)) {
-                    teslimfilter.push(detayli[i].TESLIM_YERI)
-                }
-                if (!plasiyerFilter.includes(detayli[i].PLASIYER_ADI)) {
-                    plasiyerFilter.push(detayli[i].PLASIYER_ADI)
-                }
-                if (!dovFilter.includes(detayli[i].DOV_TIP)) {
-                    dovFilter.push(detayli[i].DOV_TIP)
-                }
-            }
-            for (let i = 0; i < teslimfilter.length; i++) {
-                var option = document.createElement("option");
-                option.value = teslimfilter[i];
-                option.innerHTML = teslimfilter[i];
-                document.getElementById("filter").appendChild(option);
-            }
-            for (let i = 0; i < plasiyerFilter.length; i++) {
-                var option = document.createElement("option");
-                option.value = plasiyerFilter[i];
-                option.innerHTML = plasiyerFilter[i];
-                document.getElementById("plasiyer").appendChild(option);
-            }
-            for (let i = 0; i < dovFilter.length; i++) {
-                var option = document.createElement("option");
-                option.value = dovFilter[i];
-                option.innerHTML = dovFilter[i];
-                document.getElementById("dovtip").appendChild(option);
-            }
-            $('#filter').select2({ placeholder: "Teslim Yeri" });
-            $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
-            $('#dovtip').select2({ placeholder: "Döviz Tipi" });
-
-        }).then(function () {
-            document.querySelectorAll('input[type="search"]')[0].onkeyup = function () {
-                document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.replaceAll("ı", "I").replaceAll("i", "İ").toUpperCase();
-            };
-        })
+       
+        getData()
+       
 
 
     })
@@ -487,8 +509,9 @@
         plasiyerFilter = []
         dovFilter = []
         var data = detayli
+        var data2 = detaysiz;
         if (filterAlgorithm.length > 0) {
-            data = data.filter(x => filterAlgorithm.includes(x.TESLIM_YERI))
+            data2 = data2.filter(x => filterAlgorithm.includes(x.TESLIM_YERI))
         }
         if (plasiyerAlgorithm.length > 0) {
             data = data.filter(x => plasiyerAlgorithm.includes(x.PLASIYER_ADI))
@@ -497,9 +520,7 @@
             data = data.filter(x => dovAlgorithm.includes(x.DOV_TIP))
         }
         for (let i = 0; i < data.length; i++) {
-            if (!teslimfilter.includes(data[i].TESLIM_YERI)) {
-                teslimfilter.push(data[i].TESLIM_YERI)
-            }
+            
             if (!plasiyerFilter.includes(data[i].PLASIYER_ADI)) {
                 plasiyerFilter.push(data[i].PLASIYER_ADI)
             }
@@ -507,8 +528,13 @@
                 dovFilter.push(data[i].DOV_TIP)
             }
         }
+        for (let i = 0; i < data2.length; i++) {
+            if (!teslimfilter.includes(data2[i].TESLIM_YERI)) {
+                teslimfilter.push(data2[i].TESLIM_YERI)
+            }
+        }
 
-
+        teslimfilter = teslimfilter.sort()
         if (!filterAlgorithm.length > 0) {
             document.getElementById("filter").replaceChildren()
             for (let i = 0; i < teslimfilter.length; i++) {
@@ -537,7 +563,7 @@
                 document.getElementById("dovtip").appendChild(option);
             }
         }
-        if (filterAlgorithm.length == 0 && plasiyerAlgorithm.length && dovAlgorithm.length) {
+        if (filterAlgorithm.length == 0 && plasiyerAlgorithm.length==0 && dovAlgorithm.length==0) {
             for (let i = 0; i < teslimfilter.length; i++) {
                 var option = document.createElement("option");
                 option.value = teslimfilter[i];

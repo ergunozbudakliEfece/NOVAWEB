@@ -3,23 +3,19 @@
 }
 
 
-<link href="~/Content/bootstrap-table-master/dist/bootstrap-table.min.css" rel="stylesheet" />
-<link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
-<link href="~/assets/vendor/css/font-awesome.min.css" rel="stylesheet" />
-<link href="~/Scripts/select2.css" rel="stylesheet" />
+
 <script src="~/Scripts/select2.min.js"></script>
 <script src="~/assets/vendor/libs/popper/popper.js"></script>
-<script src="~/assets/sweetalert/sweetalert.js"></script>
-<link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.min.css" rel="stylesheet" />
 <style>
     body {
         padding: 0 0 0 4rem !important;
     }
 </style>
 <style>
-    #navbar{
-        z-index:99999999;
+    #navbar {
+        z-index: 99999999;
     }
+
     #table i {
         color: #00AAFF;
         font-weight: 300;
@@ -95,6 +91,7 @@
         .menu2 {
             display: none;
         }
+
         body {
             padding: 0 0 0 2rem !important;
         }
@@ -176,14 +173,13 @@
                            data-trim-on-search="false">
                         <thead>
                             <tr>
-                                <th data-field="STOK_ADI" data-halign="center" data-sortable="true" data-width="50" data-width-unit="px" data-formatter="formatterAd">Stok Adı</th>
-                                <th data-field="OZELKOSULLAR" data-visible="false" data-export-force="true" data-halign="center" data-sortable="true" data-width="200" data-formatter="ozelkosulFormatter" data-width-unit="px">Özel Koşullar</th>
+                                <th data-field="STOK_ADI" data-halign="center" data-sortable="true" data-width="50" data-width-unit="px" data-formatter="formatterAciklama">Stok Adı</th>
                                 <th data-field="SATISA_HAZIR" data-halign="center" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
                                 <th data-field="BEKLEYEN_SIPARIS" data-halign="center" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
                                 <th data-field="BAKIYE" data-halign="center" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
                                 <th data-field="BEKL_IE_MIKTAR" data-halign="center" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
                                 <th data-field="FAB_STOK_MIK" data-halign="center" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
-                                <th data-field="GRUP_ISIM" data-halign="center" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
+                                <th data-field="GRUP_KODU" data-halign="center" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
                                 <th data-formatter="girisFormatter" data-halign="center" data-searchable="false">Son Girişler</th>
                                 <th data-formatter="cikisFormatter" data-halign="center" data-searchable="false">Son Çıkışlar</th>
                                 @{
@@ -194,7 +190,7 @@
                                         <th data-formatter="fiyatlarFormatter" data-halign="center" data-searchable="false">Toptan/Perakende<br /> <span style="color:red">KDV HARİÇ</span></th>
                                     }
                                 }
-                                <th data-sortable="true" data-visible="false" data-halign="center" data-formatter="terminFormatter">Termin Tarihi</th>
+                                <th data-field="TESLIM_TARIHI" data-sortable="true" data-visible="false" data-halign="center">Termin Tarihi</th>
 
                             </tr>
                         </thead>
@@ -226,8 +222,6 @@
                            data-locale="tr-TR"
                            data-filter-control="true"
                            data-filter-control-multiple-search="true"
-                           data-url="http://192.168.2.13:83/api/stok"
-                           data-loading-template="loadingTemplate"
                            data-mobile-responsive="true">
                         <thead>
                             <tr>
@@ -246,8 +240,8 @@
                                 <th data-field="ALISFIYAT2" data-sortable="true" data-formatter="fabadFormatter">Alış Fiyatı 2</th>
                                 <th data-field="SATISFIYAT1" data-sortable="true" data-formatter="fabadFormatter">Satış Fiyatı</th>
                                 <th data-field="SATISFIYAT2" data-sortable="true" data-formatter="fabadFormatter">Satış Fiyatı 2</th>
-                                <th data-field="GRUP_ISIM" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
-                                <th data-sortable="true" data-formatter="terminFormatter">Termin Tarihi</th>
+                                <th data-field="GRUP_KODU" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
+                                <th data-field="TESLIM_TARIHI" data-sortable="true">Termin Tarihi</th>
                             </tr>
                         </thead>
                     </table>
@@ -270,56 +264,21 @@
 
     function loadingTemplate(message) {
         ShowProgress()
-            return '<div class="text-center">YÜKLENİYOR..</div>'
-        
-       
+        return '<div class="text-center">YÜKLENİYOR..</div>'
+
+
     }
     var grupisimleri = [];
-    var termin = [];
-    $.getJSON('http://192.168.2.13:83/api/UretimTermin', function (data) {
-        termin = data;
+   
 
-    })
-    $.getJSON('http://192.168.2.13:83/api/stok', function (data) {
-        for (let i = 0; i < data.length; i++) {
-            if (!grupisimleri.includes(data[i].GRUP_ISIM)) {
-                grupisimleri.push(data[i].GRUP_ISIM);
-            }
-        }
-
-    }).done(function () {
-        for (let i = 0; i < grupisimleri.length; i++) {
-            var opt = document.createElement("option");
-            opt.innerHTML = grupisimleri[i];
-            var opt2 = document.createElement("option");
-            opt2.innerHTML = grupisimleri[i];
-            document.getElementById("filter").appendChild(opt);
-            document.getElementById("filter2").appendChild(opt2);
-        }
-    })
-    $('#filter').select2({ placeholder: 'Grup Filtresi', width: '300px' });
-    $('#filter2').select2({ width: '25vw', placeholder: 'Grup Filtresi' });
+    
     function ozelkosulFormatter(value, row, index) {
         if (value != null) {
             return value.replaceAll("::", "<br/>");
         }
 
     }
-    function terminFormatter(value, row, index) {
-        var val = termin.find(x => x.STOK_KODU == row.STOK_KODU);
-        var str = "";
-        if (val != null) {
-            var old = val.TESLIM_TARIHI.split('T')[0];
-            var year = old.split('-')[0];
-            var month = old.split('-')[1];
-            var day = old.split('-')[2];
-            var newdate = day + "/" + month + "/" + year;
-            str = newdate;
-        } else {
-            str = "-"
-        }
-        return "<div class='col text-center'>" + str + "</div>";
-    }
+   
     function alisFormatter(value, row, index) {
         var val = "";
         var val2 = "";
@@ -444,13 +403,13 @@
 
 </script>
 <script>
-    $('#toolbar').change(function (e) {
+    $('#filter').change(function (e) {
         var filterAlgorithm = $('[name="filterAlgorithm"]').val()
 
 
         if (filterAlgorithm.length > 0) {
             $('#table').bootstrapTable('filterBy', {
-                GRUP_ISIM: filterAlgorithm
+                GRUP_KODU: filterAlgorithm
             })
         } else {
             $('#table').bootstrapTable('filterBy', {});
@@ -458,13 +417,13 @@
         }
 
     })
-    $('#toolbar2').change(function (e) {
+    $('#filter2').change(function (e) {
         var filterAlgorithm2 = $('[name="filterAlgorithm2"]').val()
 
 
         if (filterAlgorithm2.length > 0) {
             $('#table2').bootstrapTable('filterBy', {
-                GRUP_ISIM: filterAlgorithm2
+                GRUP_KODU: filterAlgorithm2
             })
         } else {
             $('#table2').bootstrapTable('filterBy', {});
@@ -482,37 +441,86 @@
         }
     }
     var sondurum = null;
+    var ozelkosullar;
     $(document).ready(function () {
         $('#pageName').html('<div class="dot"></div> Stok')
         $('#employeeTableWrapper2').hide();
-        
-        getstokAsync().then(function (data) {
-            stoklar = data;
-        })
+
+
         getstokfiatAsync().then(function (data) {
             stokfiatlar = data;
         })
-        $("#table").bootstrapTable({
-            url: "http://192.168.2.13:83/api/stok",
-            onPostBody: function () {
-                $("[data-bs-toggle='popover']").popover();
+        getozelAsync().then(function (ddd) {
+            ozelkosullar = ddd
+            const filt = document.getElementById("filter");
+            const filt2 = document.getElementById("filter2");
+            $.getJSON('http://192.168.2.13:83/api/stok/gruplar', function (data) {
+                for (let i = 0; i < data.length; i++) {
 
-                HideProgress()
-            }
+                    var opt = document.createElement("option");
+                    opt.innerHTML = data[i].GRUP_ISIM;
+                    opt.value = data[i].GRUP_KOD;
+                    var opt2 = document.createElement("option");
+                    opt2.innerHTML = data[i].GRUP_ISIM;
+                    opt2.value = data[i].GRUP_KOD;
+                    filt.appendChild(opt);
+                    filt2.appendChild(opt2);
+
+
+                }
+
+
+            }).done(function () {
+                $('#filter').select2({ placeholder: 'Grup Filtresi', width: '300px' });
+                $('#filter2').select2({ width: '25vw', placeholder: 'Grup Filtresi' });
+                $.getJSON('http://192.168.2.13:83/api/stok/yedek1', function (data) {
+                    $("#table").bootstrapTable('destroy').bootstrapTable({
+                        data: data,
+                        onPostBody: function () {
+                            $("[data-bs-toggle='popover']").popover();
+                        }
+                    }).after(function () {
+                        HideProgress()
+
+                        document.getElementsByClassName("search-input")[0].oninput = function () {
+
+                            document.getElementsByClassName("search-input")[0].value = document.getElementsByClassName("search-input")[0].value.toUpperCase();
+                        }
+                    })
+                    $("#table2").bootstrapTable('destroy').bootstrapTable({
+                        data: data
+                    }).after(function () {
+                            HideProgress()
+                        })
+                })
+               
+                
+            })
         })
+
+
         $.getJSON("http://192.168.2.13:83/api/fiyat/exec/fiyatdurum", function (data) {
             sondurum = data;
         })
 
     })
     function girisFormatter(index, row) {
-        var stok = stoklar.filter(x => x.STOK_KODU == row.STOK_KODU);
+        var stok =[]
+        if (stoklar!=null ){
+            stok = stoklar.filter(x => x.STOK_KODU == row.STOK_KODU);
+        }
+        
 
 
         if (stok.length > 0) {
 
-
-            return "<table class='table table-responsive table-borderless'><tr><td class='text-center' style='color:green;font-size:12px'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON1_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON1_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center' style='color:green;font-size:12px'>" + (stok[0].SON1_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON1_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON1_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr><tr><td class='text-center' style='color:green;font-size:12px'>" + (stok[0].SON2_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON2_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON2_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center ' style='color:green;font-size:12px'>" + (stok[0].SON2_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON2_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON2_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr><tr><td class='text-center' style='color:green;font-size:12px'>" + (stok[0].SON3_GIRIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON3_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON3_GIRIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center' style='color:green;font-size:12px'>" + (stok[0].SON3_GIRIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON3_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON3_GIRIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr></table>";
+            var girismik1 = stok[0].SON1_GIRIS_BIRIM_MIKTAR;
+            var girismik2 = stok[0].SON2_GIRIS_BIRIM_MIKTAR;
+            var girismik3 = stok[0].SON3_GIRIS_BIRIM_MIKTAR;
+            var metrajmik1 = stok[0].SON1_GIRIS_METRAJ_MIKTAR
+            var metrajmik2 = stok[0].SON2_GIRIS_METRAJ_MIKTAR
+            var metrajmik3 = stok[0].SON3_GIRIS_METRAJ_MIKTAR
+            return "<table class='table table-responsive table-borderless'><tr><td class='text-center' style='color:green;font-size:12px'>" + (girismik1 ? parseFloat(girismik1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(girismik1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center' style='color:green;font-size:12px'>" + (metrajmik1 ? parseFloat(metrajmik1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(metrajmik1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr><tr><td class='text-center' style='color:green;font-size:12px'>" + (girismik2 ? parseFloat(girismik2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(girismik2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center ' style='color:green;font-size:12px'>" + (metrajmik2 ? parseFloat(metrajmik2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(metrajmik2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr><tr><td class='text-center' style='color:green;font-size:12px'>" + (girismik3 ? parseFloat(girismik3).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(girismik3).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center' style='color:green;font-size:12px'>" + (metrajmik3 ? parseFloat(metrajmik3).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(metrajmik3).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr></table>";
         } else {
             return "<div class='text-center'>-</div>";
         }
@@ -528,8 +536,13 @@
 
         if (stok.length > 0) {
 
-            /*return "<table class='table table-responsive table-borderless'><tr><th class='text-center' style='color:green'>GİRİŞ 1</th><th class='text-center' style='color:green'>GİRİŞ 2</th><th class='text-center' style='color:green'>GİRİŞ 3</th><th class='text-center' style='color:red'>ÇIKIŞ 1</th><th class='text-center' style='color:red'>ÇIKIŞ 2</th><th class='text-center' style='color:red'>ÇIKIŞ 3</th></tr><tr><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON1_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:green'>" + (stok[0].SON3_GIRIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON1_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON2_CIKIS_BIRIM_MIKTAR ?? "-") + "</td><td class='text-center' style='color:red'>" + (stok[0].SON3_CIKIS_BIRIM_MIKTAR ?? "-") + "</td></tr></table>";*/
-            return "<table class='table table-responsive table-borderless'><tr><td class='text-center' style='color:red;font-size:12px'>" + (stok[0].SON1_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON1_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON1_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center' style='color:red;font-size:12px'>" + (stok[0].SON1_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON1_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON1_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr><tr><td class='text-center' style='color:red;font-size:12px'>" + (stok[0].SON2_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON2_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON2_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center ' style='color:red;font-size:12px'>" + (stok[0].SON2_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON2_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON2_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr><tr><td class='text-center' style='color:red;font-size:12px'>" + (stok[0].SON3_CIKIS_BIRIM_MIKTAR ? parseFloat(stok[0].SON3_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON3_CIKIS_BIRIM_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center' style='color:red;font-size:12px'>" + (stok[0].SON3_CIKIS_METRAJ_MIKTAR ? parseFloat(stok[0].SON3_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(stok[0].SON3_CIKIS_METRAJ_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr></table>";
+            var cikismik1 = stok[0].SON1_CIKIS_BIRIM_MIKTAR;
+            var cikismik2 = stok[0].SON2_CIKIS_BIRIM_MIKTAR;
+            var cikismik3 = stok[0].SON3_CIKIS_BIRIM_MIKTAR;
+            var metrajcikmik1 = stok[0].SON1_CIKIS_METRAJ_MIKTAR
+            var metrajcikmik2 = stok[0].SON2_CIKIS_METRAJ_MIKTAR
+            var metrajcikmik3 = stok[0].SON3_CIKIS_METRAJ_MIKTAR
+            return "<table class='table table-responsive table-borderless'><tr><td class='text-center' style='color:red;font-size:12px'>" + (cikismik1 ? parseFloat(cikismik1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(cikismik1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center' style='color:red;font-size:12px'>" + (metrajcikmik1 ? parseFloat(metrajcikmik1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(metrajcikmik1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr><tr><td class='text-center' style='color:red;font-size:12px'>" + (cikismik2 ? parseFloat(cikismik2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(cikismik2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center ' style='color:red;font-size:12px'>" + (metrajcikmik2 ? parseFloat(metrajcikmik2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(metrajcikmik2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr><tr><td class='text-center' style='color:red;font-size:12px'>" + (cikismik3 ? parseFloat(cikismik3).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(cikismik3).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/AD</span>" : "-") + "</td><td class='text-center' style='color:red;font-size:12px'>" + (metrajcikmik3 ? parseFloat(metrajcikmik3).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[0] + ",<span style='font-size:10px'>" + parseFloat(metrajcikmik3).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',')[1] + "KG/MT</span>" : "-") + "</td></tr></table>";
         } else {
             return "<div class='text-center'>-</div>";
         }
@@ -541,7 +554,11 @@
     }
 
     function toptanFormatter(value, row, index) {
-        var stok1 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
+        var stok1;
+        if (stokfiatlar.length > 0) {
+
+            stok1 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
+        }
         if (stok1.length > 0) {
             return "<div class='text-center'>" + (stok1[0].TOPTAN_FIYAT ? parseFloat(stok1[0].TOPTAN_FIYAT).toFixed(2).toString().replace('.', ',') + " " + stok1[0].FIYATDOVIZTIPI : "-") + "</div>";
         } else {
@@ -551,7 +568,12 @@
 
     }
     function fiyatlarFormatter(value, row, index) {
-        var stok2 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
+
+        var stok2;
+        if (stokfiatlar.length > 0) {
+
+            stok2 = stokfiatlar.filter(x => x.STOK_KODU == row.STOK_KODU);
+        }
         var sayi = 0;
         var f2 = " ";
         var f3 = " ";
@@ -561,7 +583,11 @@
 
 
         if (row.FIYATKODU != null) {
-            var d = sondurum.filter(x => x.FIYATKODU == row.FIYATKODU);
+            var d;
+            if (sondurum!=null) {
+                d = sondurum.filter(x => x.FIYATKODU == row.FIYATKODU);
+            }
+            
             if (d.length > 0) {
                 if (d[0].FIYAT3 == "YÜKSELDİ") {
                     f3 = " <i class='bx bxs-up-arrow' style='color:#00ee00'></i>";
@@ -637,6 +663,20 @@
     function HideProgress() {
         document.body.style.overflow = 'auto';
         $('#nova-overlay').fadeOut('slow');
+    }
+    function formatterAciklama(value, index, row) {
+        var ozel = ozelkosullar.filter(x => x.FIYATKODU == index.FIYATKODU)
+        if (ozel.length > 0 && ozel != null) {
+            if (ozel[0].OZELKOSULLAR != null && ozel[0].OZELKOSULLAR.trim() != '::::::') {
+                return value + " <i style='cursor:help' class='bx bx-info-circle mt-2' data-bs-toggle='popover' data-bs-offset='0,14' data-bs-placement='right' data-bs-html='true' data-bs-content='<p>" + (ozel[0].OZELKOSULLAR == null ? "Özel koşul bulunmamakta." : ozel[0].OZELKOSULLAR.replaceAll("::", "<br/>").replaceAll(':', '').replaceAll("&.&", "+").replaceAll("&yuzde&", "%").replaceAll("&tire&", "/").replaceAll("&eksi&", "-").replaceAll("&gulucuk&", "D").replaceAll("&gulucuk&", "D")) + "</p>' title='Ek Bilgiler'></i>";
+            } else {
+                return value;
+            }
+            
+        } else {
+            return value;
+        }
+
     }
 </script>
 

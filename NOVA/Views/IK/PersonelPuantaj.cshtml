@@ -511,16 +511,9 @@
                 }
             })
 
-            if ($(window).width() < 600) {
-                $("#divPartial2").show();
-                document.getElementById("ik").className = "menu-item open active";
-                document.getElementById("puantaj").className = "menu-item active";
-            }
-            else {
+           
                 $("#divPartial").show();
-                document.getElementById("ik1").className = "nav__link active";
-                document.getElementById("puantaj1").className = "nav__dropdown-item active";
-            }
+            
             var myData = [];
             var url = "http://192.168.2.13:83/api/attendance/find/" + 10000;
             $.getJSON(url, function (data) {
@@ -1441,7 +1434,7 @@
                         }).done(function () {
                             if (c == true) {
                                 var d = { START_INCKEY: inc, END_INCKEY: incend, USER_ID: userid, DATE: tarih, START_DATE: tarih + " " + bas, END_DATE: tarih + " " + bit, OFFDAY_CODE: null, CONFIRM_CODE: 1 }
-                                if (incend != 0) {
+                                if (incend != 0 && inc!=0) {
                                     $.ajax({
                                         type: "POST",
                                         url: "@Url.Action("PostDataMesai")",
@@ -1466,30 +1459,58 @@
                                     });
 
                                 } else {
-                                    var p = { "DATE": tarih + " " + bit, "USER_ID": userid, "START_INCKEY": inc }
+                                    if (incend == 0) {
+                                        var p = { "DATE": tarih + " " + bit, "USER_ID": userid, "START_INCKEY": inc, "STARTEND": 'E' }
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "http://192.168.2.13:83/api/attendance/manualend",
+                                            contentType: 'application/json',
+                                            data: JSON.stringify(p),
+                                            success: function (msg) {
+                                                HideProgress()
+                                                Swal.fire(
+                                                    'Başarılı!',
+                                                    'İşlem başarılı',
+                                                    'success'
+                                                ).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        $("#select").trigger('change')
+
+                                                    }
+                                                })
+
+
+                                            },
+                                            error: function (msg) { alert(JSON.stringify(msg)); }
+                                        });
+                                    } else {
+                                        var p = { "DATE": tarih + " " + bit, "USER_ID": userid, "START_INCKEY": inc, "STARTEND": 'S', "LASTINC": incend }
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "http://192.168.2.13:83/api/attendance/manualend",
+                                            contentType: 'application/json',
+                                            data: JSON.stringify(p),
+                                            success: function (msg) {
+                                                HideProgress()
+                                                Swal.fire(
+                                                    'Başarılı!',
+                                                    'İşlem başarılı',
+                                                    'success'
+                                                ).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        $("#select").trigger('change')
+
+                                                    }
+                                                })
+
+
+                                            },
+                                            error: function (msg) { alert(JSON.stringify(msg)); }
+                                        });
+                                    }
                                     
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "http://192.168.2.13:83/api/attendance/manualend",
-                                        contentType: 'application/json',
-                                        data: JSON.stringify(p),
-                                        success: function (msg) {
-                                            HideProgress()
-                                            Swal.fire(
-                                                'Başarılı!',
-                                                'İşlem başarılı',
-                                                'success'
-                                            ).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    $("#select").trigger('change')
-
-                                                }
-                                            })
-
-
-                                        },
-                                        error: function (msg) { alert(JSON.stringify(msg)); }
-                                    });
                                 
                                 }
 

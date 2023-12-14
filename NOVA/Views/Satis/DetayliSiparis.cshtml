@@ -13,6 +13,7 @@
 <script src="~/assets/vendor/libs/popper/popper.js"></script>
 <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
 
+<link href="~/assets/boxicons/css/boxicons.min.css" rel="stylesheet" />
 <style>
     body {
         padding: 0 0 0 4rem !important;
@@ -212,9 +213,10 @@
                        data-mobile-responsive="false"
                        data-show-footer="true"
                        data-height="680"
-                        data-loading-template="loadingTemplate"
+                       data-loading-template="loadingTemplate"
                        data-detail-formatter="detailFormatter"
                        data-detail-view="true"
+                       data-detail-view-by-click="true"
                        data-fixed-columns="true"
                        data-fixed-number="0"
                        data-trim-on-search="false">
@@ -246,8 +248,6 @@
 
     $("#divPartial").show();
 
-    document.getElementById("satis1").className = "nav__link active";
-    document.getElementById("detaylisip1").className = "nav__dropdown-item active";
 
 
 
@@ -292,12 +292,6 @@
         $('#pageName').html('<div class="dot"></div> Detaylı Siparis')
         $.getJSON("http://192.168.2.13:83/api/detaylisip", function (data) {
             detayli = data;
-        }).done(function () {
-            $('#table').bootstrapTable("refresh", {
-                url: 'http://192.168.2.13:83/api/detaysizsip'
-            }).after(function () {
-                HideProgress();
-            })
             for (let i = 0; i < detayli.length; i++) {
                 if (!teslimfilter.includes(detayli[i].TESLIM_YERI)) {
                     teslimfilter.push(detayli[i].TESLIM_YERI)
@@ -327,6 +321,13 @@
                 option.innerHTML = dovFilter[i];
                 document.getElementById("dovtip").appendChild(option);
             }
+        }).done(function () {
+            $('#table').bootstrapTable("refresh", {
+                url: 'http://192.168.2.13:83/api/detaysizsip'
+            }).after(function () {
+                HideProgress();
+            })
+
             $('#filter').select2({ placeholder: "Teslim Yeri" });
             $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
             $('#dovtip').select2({ placeholder: "Döviz Tipi" });
@@ -378,8 +379,8 @@
             var geneltop = 0;
 
             if (detail[i].DOV_TIP != "TRY") {
-                brut_fiyat = detail[i].BRUT_FIYAT / detail[i].KUR;
-                net_fiyat = detail[i].DOV_NET_FIYAT;
+                brut_fiyat = (detail[i].BRUT_FIYAT / detail[i].KUR).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+                net_fiyat = detail[i].DOV_NET_FIYAT.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
                 net_tutar = detail[i].DOV_TUTAR;
                 bruttop = detail[i].DOV_BRUTTUTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 toplamkdv = detail[i].DOV_TOPLAM_KDV.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -387,8 +388,8 @@
                 geneltop = detail[i].DOV_GENELTOPLAM.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
             else {
-                brut_fiyat = detail[i].BRUT_FIYAT;
-                net_fiyat = detail[i].NET_FIYAT;
+                brut_fiyat = detail[i].BRUT_FIYAT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                net_fiyat = detail[i].NET_FIYAT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 net_tutar = detail[i].NET_TUTAR_KALEM;
                 bruttop = detail[i].BRUTTUTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 toplamkdv = detail[i].TOPLAM_KDV.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -411,7 +412,7 @@
 
             }
 
-            t = t + "<tr><th>" + r + "</th><td class'text-center'>" + detail[i].STOK_ADI + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR1 + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR2 + "</td><td class='text-center'>" + brut_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + detail[i].SATIS_ISKONTOSU.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%" + "</td><td class='text-center'>" + net_fiyat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center'>" + net_tutar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].TESLIM_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].BAKIYE_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-nowrap text-center' style='background-color:#f2faf5'>" + "<p class='meter' id='meter-msip' style='height:18.36px;'><span style='width:" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].TESLIM_MIKTARI_SSIP == "null" ? detail[i].TESLIM_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].BAKIYE_MIKTARI_SSIP == "null" ? detail[i].BAKIYE_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + "<p class='meter' id='meter-ssip' style='height:18.36px;'><span style='width:" + ssiporangorsel + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + ssiporangorsel + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILEN_MIKTAR1 == "null" ? detail[i].URETILEN_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILECEK_MIKTAR1 == "null" ? detail[i].URETILECEK_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + "<p class='meter' id='meter' style='height:18.36px;'><span style='width:" + uretimorangorsel + "%'><span class='progress' id='progress-uretim'><span style='margin-bottom:10px;text-align:end;color:white'>" + uretimorangorsel + "%" + "</td></tr>"
+            t = t + "<tr><th>" + r + "</th><td class'text-center'>" + detail[i].STOK_ADI + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR1 + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR2 + "</td><td class='text-center'>" + brut_fiyat + "</td><td class='text-center'>" + detail[i].SATIS_ISKONTOSU.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%" + "</td><td class='text-center'>" + net_fiyat + "</td><td class='text-center'>" + net_tutar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].TESLIM_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].BAKIYE_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-nowrap text-center' style='background-color:#f2faf5'>" + "<p class='meter' id='meter-msip' style='height:18.36px;'><span style='width:" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].TESLIM_MIKTARI_SSIP == "null" ? detail[i].TESLIM_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].BAKIYE_MIKTARI_SSIP == "null" ? detail[i].BAKIYE_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + "<p class='meter' id='meter-ssip' style='height:18.36px;'><span style='width:" + ssiporangorsel + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + ssiporangorsel + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILEN_MIKTAR1 == "null" ? detail[i].URETILEN_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILECEK_MIKTAR1 == "null" ? detail[i].URETILECEK_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + "<p class='meter' id='meter' style='height:18.36px;'><span style='width:" + uretimorangorsel + "%'><span class='progress' id='progress-uretim'><span style='margin-bottom:10px;text-align:end;color:white'>" + uretimorangorsel + "%" + "</td></tr>"
             msipbekleyen = msipbekleyen + detail[i].BAKIYE_MIKTARI;
             msipteslim = msipteslim + detail[i].TESLIM_MIKTARI;
             teslimoran = teslimoran + parseFloat
@@ -577,20 +578,17 @@
         if ((event.currentTarget.checked)) {
 
             $('#table').bootstrapTable('destroy');
-            $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
-                detayli = data.filter(x => x.URETILECEKMI == "E");
-                $('#table').bootstrapTable({ data: detayli }).after(function () {
-                    filtre()
-                });
-            })
+
+
+            $('#table').bootstrapTable({ data: detayli.filter(x => x.URETILECEKMI == "E") }).after(function () {
+                filtre()
+            });
         } else {
             $('#table').bootstrapTable('destroy');
-            $.getJSON('http://192.168.2.13:83/api/detaysizsip', function (data) {
-                detayli = data;
-                $('#table').bootstrapTable({ data: data }).after(function () {
-                    filtre()
-                });
-            })
+
+            $('#table').bootstrapTable({ data: detayli }).after(function () {
+                filtre()
+            });
         }
     }
     function loadingTemplate(message) {
