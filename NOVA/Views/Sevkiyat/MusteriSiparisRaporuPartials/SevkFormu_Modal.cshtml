@@ -310,7 +310,7 @@
         var Liste = []
 
         $.ajax({
-            url: "http://192.168.2.13:83/api/seri/rehber/" + STOK_KODU,
+            url: "http://192.168.2.13:83/api/seri/rehber/" + STOK_KODU + "/" + CikisDepo,
             type: 'GET',
             success: function (result) {
                 for (var i = 0; i < result.length; i++) {
@@ -506,6 +506,7 @@
                 $('#SevkFormuTable').bootstrapTable('load', Kayitlar);
 
                 DurumAyarla(0);
+                DepoDegisimDurumu();
             }
             else {
                 Swal.fire({
@@ -562,6 +563,7 @@
                 $("#SevkFormuTable").bootstrapTable('load', Kayitlar);
 
                 DurumAyarla(0);
+                DepoDegisimDurumu();
             }
         });
     }
@@ -1269,7 +1271,7 @@
                     }
                 }
 
-                KayitDepolariDegistir();
+                StokRehberBilgisi($('#STOK_SECIM').val());
             } else {
                 GirisleriSifirla();
                 DurumAyarla(0);
@@ -1285,6 +1287,10 @@
         for (var i = 0; i < Kayitlar.length; i++) {
             Kayitlar[i].CIKIS_DEPO = CikisDepo;
         }
+    }
+
+    function DepoDegisimDurumu() {
+        $('#CIKIS_DEPO').prop('disabled', (Kayitlar.length > 0) ? true : false);
     }
 </script>
 

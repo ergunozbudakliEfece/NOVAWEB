@@ -11,6 +11,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -186,17 +187,26 @@ namespace NOVA.Controllers
 
         #region BarkodPDF
         [HttpPost]
-        public string SevkiyatBarkodCiktisi(SevkiyatBarkodFormModel Model, bool Yazdir, string Yazici)
+        public string SevkiyatEtiket(Etiket EtiketBilgileri, string Yazici, bool Yazdir)
         {
-            Document document = new Document(PageSize.A6, 10f, 10f, 10f, 10f);
+            if (EtiketBilgileri is null)
+                return null;
 
-            string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
-            string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Etiketler"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+            iTextSharp.text.Document document = new iTextSharp.text.Document(new iTextSharp.text.Rectangle(246.61417323f, 462.04724409f), 10f, 10f, 10f, 10f);
+
+            string imagePath = System.IO.Path.Combine(Server.MapPath("~\\Outputs\\Sources"), "EFECE_ETIKET.png");
+            string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\Outputs\\Labels\\Shipment"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
 
             FileStream Memory = new FileStream(pdfPath, FileMode.Create);
             PdfWriter writer = PdfWriter.GetInstance(document, Memory);
 
             document.Open();
+
+            PdfContentByte cb = writer.DirectContent;
+
+            iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 13, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
 
             iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
             BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
@@ -204,127 +214,117 @@ namespace NOVA.Controllers
             BackgroundImage.SetAbsolutePosition(0, 0);
             document.Add(BackgroundImage);
 
-            PdfContentByte cb = writer.DirectContent;
+            PdfPTable table = new PdfPTable(3);
+            table.TotalWidth = 210;
+            table.SetWidths(new float[] { 4f, 0.5f, 5.5f });
 
-            iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
-            iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
-            iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 10, iTextSharp.text.Font.BOLD);
+            // Header row.
+            table.AddCell(GetHeaderCell(EtiketBilgileri.SERI_NO, fontBoldHeader, 3, 1));
+            table.AddCell(GetHeaderCell(EtiketBilgileri.STOK_ADI, fontBoldHeader, 3, 2));
 
-            ColumnText Header = new ColumnText(cb);
-            Header.SetSimpleColumn(45, 125, 270, 335);
-            Header.AddElement(new Paragraph(Model.STOK_KODU) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
-            Header.AddElement(new Paragraph(Model.STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
-            Header.AddElement(new Paragraph(Model.BARKOD_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
-            Header.Go();
+            PdfPCell cellBlankRow = new PdfPCell(new Phrase(" "));
+            cellBlankRow.Border = 0;
+            cellBlankRow.Colspan = 3;
+            cellBlankRow.HorizontalAlignment = 1;
+            table.AddCell(cellBlankRow);
 
-            ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
-            Content.SetSimpleColumn(35, 65, 280, 270);
+            // Inner middle row.
+            table.AddCell(GetContentCell("GRUP İSİM", fontBoldContent));
+            table.AddCell(GetContentCell(":", fontBoldContent));
+            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.GRUP_ISIM)}", fontBoldContent));
 
-            Paragraph GrupIsim = new Paragraph("GRUP İSİM    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            GrupIsim.Add(new Chunk($": {BosDegerKontrolu(Model.GRUP_ISIM)}", fontNormal));
-            Content.AddElement(GrupIsim);
+            table.AddCell(GetContentCell("MİKTAR 1", fontBoldContent));
+            table.AddCell(GetContentCell(":", fontBoldContent));
+            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MIKTAR1)} {BosDegerKontrolu(EtiketBilgileri.OLCU_BR1)}", fontBoldContent));
 
-            Paragraph Miktar1 = new Paragraph("MİKTAR 1      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Miktar1.Add(new Chunk($": {BosDegerKontrolu(Model.MIKTAR)} {BosDegerKontrolu(Model.OLCU_BR1)}", fontNormal));
-            Content.AddElement(Miktar1);
-
-
-            if (Model.OLCU_BR1 != Model.OLCU_BR2)
+            if (EtiketBilgileri.OLCU_BR1 != EtiketBilgileri.OLCU_BR2)
             {
-                Paragraph Miktar2 = new Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Miktar2.Add(new Chunk($": {BosDegerKontrolu(Model.MIKTAR2)} {BosDegerKontrolu(Model.OLCU_BR2)}", fontNormal));
-                Content.AddElement(Miktar2);
+                table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri.OLCU_BR2)}", fontBoldContent));
 
-                Paragraph BirimMiktar = new Paragraph("BİRİM MİKTAR  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                BirimMiktar.Add(new Chunk($": {BosDegerKontrolu(Model.BIRIM_MIKTAR)} {BosDegerKontrolu(Model.OLCU_BR1)}/{BosDegerKontrolu(Model.OLCU_BR2)}", fontNormal));
-                Content.AddElement(BirimMiktar);
+                table.AddCell(GetContentCell("BİRİM MİKTAR", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MIKTAR1 / EtiketBilgileri.MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri.OLCU_BR1)}/{BosDegerKontrolu(EtiketBilgileri.OLCU_BR2)}", fontBoldContent));
             }
             else
             {
-                Paragraph Miktar2 = new Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Miktar2.Add(new Chunk($": -", fontNormal));
-                Content.AddElement(Miktar2);
+                table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"-", fontBoldContent));
 
-                Paragraph BirimMiktar = new Paragraph("BİRİM MİKTAR  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                BirimMiktar.Add(new Chunk($": -", fontNormal));
-                Content.AddElement(BirimMiktar);
+                table.AddCell(GetContentCell("BİRİM MİKTAR", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"-", fontBoldContent));
             }
 
-            Paragraph Kalinlik = new Paragraph("KALINLIK      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Kalinlik.Add(new Chunk($": {BosDegerKontrolu(Model.KALINLIK)}", fontNormal));
-            Content.AddElement(Kalinlik);
+            table.AddCell(GetContentCell("KALINLIK", fontBoldContent));
+            table.AddCell(GetContentCell(":", fontBoldContent));
+            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.KALINLIK)}", fontBoldContent));
 
-            Paragraph Genislik = new Paragraph("GENİŞLİK      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Genislik.Add(new Chunk($": {BosDegerKontrolu(Model.GENISLIK)}", fontNormal));
-            Content.AddElement(Genislik);
+            table.AddCell(GetContentCell("GENİŞLİK", fontBoldContent));
+            table.AddCell(GetContentCell(":", fontBoldContent));
+            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.GENISLIK)}", fontBoldContent));
 
-            Paragraph Kalite = new Paragraph("KALİTE        ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Kalite.Add(new Chunk($": {BosDegerKontrolu(Model.KALITE)}", fontNormal));
-            Content.AddElement(Kalite);
+            table.AddCell(GetContentCell("KALİTE", fontBoldContent));
+            table.AddCell(GetContentCell(":", fontBoldContent));
+            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.KALITE)}", fontBoldContent));
 
-            Paragraph Kaplama = new Paragraph("KAPLAMA       ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Kaplama.Add(new Chunk($": {BosDegerKontrolu(Model.KAPLAMA)}", fontNormal));
-            Content.AddElement(Kaplama);
+            table.AddCell(GetContentCell("KAPLAMA", fontBoldContent));
+            table.AddCell(GetContentCell(":", fontBoldContent));
+            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.KAPLAMA)}", fontBoldContent));
 
-            Paragraph Tarih = new Paragraph("TARİH         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Tarih.Add(new Chunk($": {BosDegerKontrolu(Model.TARIH)}", fontNormal));
-            Content.AddElement(Tarih);
+            table.AddCell(GetContentCell("TARİH", fontBoldContent));
+            table.AddCell(GetContentCell(":", fontBoldContent));
+            table.AddCell(GetContentCell($"{TarihFormat(EtiketBilgileri.KAYITTARIHI)}", fontBoldContent));
 
-            Paragraph Mensei = new Paragraph("MENŞEİ        ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            Mensei.Add(new Chunk($": {BosDegerKontrolu(Model.MENSEI)}", fontNormal));
-            Mensei.SpacingBefore = 5f;
-            Mensei.MultipliedLeading = 1f;
-            Content.AddElement(Mensei);
+            table.AddCell(GetContentCell("MENŞEİ/SN", fontBoldContent));
+            table.AddCell(GetContentCell(":", fontBoldContent));
+            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MENSEI?.Split(' ')[0])}/{BosDegerKontrolu(EtiketBilgileri.FIRMA_SERI_NO)}", fontBoldContent));
 
-            Paragraph FirmaSeriNo = new Paragraph("FİRMA SERİ NO ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-            FirmaSeriNo.Add(new Chunk($": {BosDegerKontrolu(Model.FIRMA_SERI_NO)}", fontNormal));
-            Content.AddElement(FirmaSeriNo);
-            Content.Go();
+            table.WriteSelectedRows(0, -1, 20, 390, cb);
 
             var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(Model.BARKOD_NO, QRCodeGenerator.ECCLevel.Q);
+            var qrCodeData = qrGenerator.CreateQrCode(EtiketBilgileri.SERI_NO, QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
-            System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, Color.Black, Color.Transparent, true);
+            System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
 
             iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
-            QR.ScaleToFit(75, 75);
+            QR.ScaleToFit(85, 85);
             QR.Alignment = iTextSharp.text.Image.UNDERLYING;
-            QR.SetAbsolutePosition(195, 12);
+            QR.SetAbsolutePosition(155, 60);
             document.Add(QR);
 
             document.Close();
             Memory.Close();
 
+
             if (Yazdir)
             {
-                using (var pdocument = PdfiumViewer.PdfDocument.Load(pdfPath))
+                try
                 {
-                    using (var printDocument = pdocument.CreatePrintDocument())
+                    using (var pdocument = PdfiumViewer.PdfDocument.Load(pdfPath))
                     {
-                        printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
-                        printDocument.PrinterSettings.PrinterName = Yazici;
-                        printDocument.DocumentName = "file.pdf";
-                        printDocument.PrinterSettings.PrintFileName = "file.pdf";
-                        printDocument.PrintController = new StandardPrintController();
-                        printDocument.Print();
+                        using (var printDocument = pdocument.CreatePrintDocument())
+                        {
+                            printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
+                            printDocument.PrinterSettings.PrinterName = Yazici;
+                            printDocument.DocumentName = "file.pdf";
+                            printDocument.PrinterSettings.PrintFileName = "file.pdf";
+                            printDocument.PrintController = new StandardPrintController();
+                            printDocument.Print();
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    return $"HATA: Etiket yazdırma işleminde bir hata oluştu. (Detay: {ex.Message})";
                 }
             }
 
-            return ToBase64String(pdfPath);
+            return "Başarılı.";
         }
-        private byte[] ImageToByteArray(System.Drawing.Image img)
-        {
-            using (var stream = new MemoryStream())
-            {
-                img.Save(stream, ImageFormat.Png);
-                return stream.ToArray();
-            }
-        }
-        private string BosDegerKontrolu(string Deger)
-        {
-            return string.IsNullOrEmpty(Deger) ? "-" : Deger;
-        }
+
         public string ToBase64String(string fileName)
         {
             using (FileStream reader = new FileStream(fileName, FileMode.Open))
@@ -333,6 +333,87 @@ namespace NOVA.Controllers
                 reader.Read(buffer, 0, (int)reader.Length);
                 return Convert.ToBase64String(buffer);
             }
+        }
+
+        private byte[] ImageToByteArray(System.Drawing.Image img)
+        {
+            using (var stream = new MemoryStream())
+            {
+                img.Save(stream, ImageFormat.Png);
+                return stream.ToArray();
+            }
+        }
+
+        private string DegerFormat(double? Deger, string Tip)
+        {
+            if (Deger == 0)
+            {
+
+                return "-";
+            }
+            else
+            {
+                if (Tip == "BOY")
+                    return Deger.ToString() + " MM";
+                else
+                    return Deger.ToString();
+            }
+
+        }
+
+        private string BosDegerKontrolu(string Deger)
+        {
+            return (string.IsNullOrEmpty(Deger) || string.IsNullOrWhiteSpace(Deger)) ? "-" : Deger;
+        }
+
+        private string BosDegerKontrolu(double? Deger)
+        {
+            return (Deger == 0 || Deger == 0.0 || Deger is null) ? "-" : Deger.ToString();
+        }
+
+        private string TarihFormat(DateTime? Tarih)
+        {
+            return Tarih is null ? "-" : Tarih?.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        private string MiktarFormat(double? Miktar, string OlcuBirimi)
+        {
+            if (Miktar == 0)
+            {
+                return "-";
+            }
+
+            return $"{Miktar?.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
+        }
+
+        private string MetrajFormat(double? Metraj, string OlcuBirimi)
+        {
+            if (Metraj == 0)
+            {
+                return "-";
+            }
+
+            return $"{Metraj?.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
+        }
+
+        private PdfPCell GetHeaderCell(string text, iTextSharp.text.Font font, int colSpan = 1, int rowSpan = 1)
+        {
+            PdfPCell cell = new PdfPCell(new Phrase(text, font));
+            cell.Border = 0;
+            cell.HorizontalAlignment = 1;
+            cell.Colspan = colSpan;
+            cell.Rowspan = rowSpan;
+
+            return cell;
+        }
+
+        private PdfPCell GetContentCell(string text, iTextSharp.text.Font font)
+        {
+            PdfPCell cell = new PdfPCell(new Phrase(text, font));
+            cell.HorizontalAlignment = 0;
+            cell.Border = 0;
+
+            return cell;
         }
         #endregion
 

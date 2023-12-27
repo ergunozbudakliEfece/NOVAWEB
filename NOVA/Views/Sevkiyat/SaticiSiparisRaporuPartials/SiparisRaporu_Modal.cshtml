@@ -633,6 +633,8 @@
         var Aciklama4 = null;
         var Aciklama5 = null;
 
+        var Tarih = new Date().toLocaleString();
+
         return Item = {
             "ID": KalemId,
             "ACTIVE": true,
@@ -650,7 +652,7 @@
             "SERI_NO_4": SeriNo4,
             "ACIKLAMA_4": Aciklama4,
             "ACIKLAMA_5": Aciklama5,
-            "TARIH": (new Date()).toLocaleDateString(),
+            "TARIH": Tarih,
             "GIRIS_DEPO": GirisDepo,
             "CIKIS_DEPO": null
         };
@@ -1648,10 +1650,10 @@
         {
             var Model = {
                 "GRUP_ISIM": FiltreliDetay[0].GRUP_ISIM,
-                "BARKOD_NO": Kayit[0].SERI_NO,
+                "SERI_NO": Kayit[0].SERI_NO,
                 "STOK_KODU": Kayit[0].STOK_KODU,
                 "STOK_ADI": Kayit[0].STOK_ADI,
-                "MIKTAR": `${parseFloat(Kayit[0].MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
+                "MIKTAR1": `${parseFloat(Kayit[0].MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
                 "OLCU_BR1": `${Kayit[0].OLCU_BR1}`,
                 "MIKTAR2": `${parseFloat(Kayit[0].MIKTAR2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
                 "OLCU_BR2": `${Kayit[0].OLCU_BR2}`,
@@ -1660,15 +1662,15 @@
                 "GENISLIK": Kayit[0].ACIK2.toString().replace('.', ','),
                 "KALITE": Kayit[0].SERI_NO_3,
                 "KAPLAMA": Kayit[0].SERI_NO_4,
-                "TARIH": Kayit[0].TARIH,
+                "KAYITTARIHI": Kayit[0].TARIH,
                 "MENSEI": FiltreliDetay[0].CARI_ISIM,
                 "FIRMA_SERI_NO": Kayit[0].ACIK3
             };
 
             $.ajax({
-                url: "@Url.Action("SevkiyatBarkodCiktisi", "Sevkiyat")",
+                url: "@Url.Action("SevkiyatEtiket", "Sevkiyat")",
                 type: 'POST',
-                data: { "Model": Model, Yazdir: true, Yazici: Printer },
+                data: { "EtiketBilgileri": Model, "Yazdir": Yazdir, "Yazici": Printer },
                 success: (data) => { YaziciModalKapat(); }
             });
         }
