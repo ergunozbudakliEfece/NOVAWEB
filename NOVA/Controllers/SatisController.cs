@@ -2659,7 +2659,7 @@ namespace NOVA.Controllers
         //    try
         //    {
         //        sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-        //                                        "TEST2022",
+        //                                        "EFECE2023",
         //                                        "TEMELSET",
         //                                        "",
         //                                        "nova",
@@ -2721,7 +2721,7 @@ namespace NOVA.Controllers
         //    try
         //    {
         //        sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-        //                                         "TEST2022",
+        //                                         "EFECE2023",
         //                                         "TEMELSET",
         //                                         "",
         //                                         "nova",

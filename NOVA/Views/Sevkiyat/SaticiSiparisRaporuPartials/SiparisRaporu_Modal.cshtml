@@ -98,14 +98,14 @@
                                         <div class="row gy-3">
                                             <div class="col-sm">
                                                 <div class="form-label-group outline m-0">
-                                                    <input type="number" id="ACIK1" class="form-control" step="0.01" autocomplete="off" value="" />
-                                                    <span><label for="ACIK1">KALINLIK</label></span>
+                                                    <input type="number" id="ACIK2" class="form-control" step="0.01" autocomplete="off" value="" />
+                                                    <span><label for="ACIK2">KALINLIK</label></span>
                                                 </div>
                                             </div>
                                             <div class="col-sm">
                                                 <div class="form-label-group outline m-0">
-                                                    <input type="number" id="ACIK2" class="form-control" step="0.1" autocomplete="off" value="" />
-                                                    <span><label for="ACIK2">GENİŞLİK</label></span>
+                                                    <input type="number" id="ACIK1" class="form-control" step="0.1" autocomplete="off" value="" />
+                                                    <span><label for="ACIK1">GENİŞLİK</label></span>
                                                 </div>
                                             </div>
                                             <div class="col-sm">
@@ -204,8 +204,8 @@
                                             <th data-field="OLCU_BR1" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">BİRİM 1</th>
                                             <th data-field="MIKTAR2" data-formatter="MiktarFormatla" data-sortable="true" data-halign="center" data-align="center">MİKTAR 2</th>
                                             <th data-field="OLCU_BR2" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">BİRİM 2</th>
-                                            <th data-field="ACIK1" data-formatter="KalinlikFormatter" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
-                                            <th data-field="ACIK2" data-formatter="GenislikFormatter" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
+                                            <th data-field="ACIK2" data-formatter="GenislikFormatter" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
+                                            <th data-field="ACIK1" data-formatter="KalinlikFormatter" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
                                             <th data-field="ACIK3" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">ÜRÜN NO</th>
                                             <th data-field="SERI_NO_3" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">KALİTE</th>
                                             <th data-field="SERI_NO_4" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
@@ -633,6 +633,8 @@
         var Aciklama4 = null;
         var Aciklama5 = null;
 
+        var Tarih = new Date().toLocaleString();
+
         return Item = {
             "ID": KalemId,
             "ACTIVE": true,
@@ -650,7 +652,7 @@
             "SERI_NO_4": SeriNo4,
             "ACIKLAMA_4": Aciklama4,
             "ACIKLAMA_5": Aciklama5,
-            "TARIH": (new Date()).toLocaleDateString(),
+            "TARIH": Tarih,
             "GIRIS_DEPO": GirisDepo,
             "CIKIS_DEPO": null
         };
@@ -1648,10 +1650,10 @@
         {
             var Model = {
                 "GRUP_ISIM": FiltreliDetay[0].GRUP_ISIM,
-                "BARKOD_NO": Kayit[0].SERI_NO,
+                "SERI_NO": Kayit[0].SERI_NO,
                 "STOK_KODU": Kayit[0].STOK_KODU,
                 "STOK_ADI": Kayit[0].STOK_ADI,
-                "MIKTAR": `${parseFloat(Kayit[0].MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
+                "MIKTAR1": `${parseFloat(Kayit[0].MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
                 "OLCU_BR1": `${Kayit[0].OLCU_BR1}`,
                 "MIKTAR2": `${parseFloat(Kayit[0].MIKTAR2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
                 "OLCU_BR2": `${Kayit[0].OLCU_BR2}`,
@@ -1660,15 +1662,15 @@
                 "GENISLIK": Kayit[0].ACIK2.toString().replace('.', ','),
                 "KALITE": Kayit[0].SERI_NO_3,
                 "KAPLAMA": Kayit[0].SERI_NO_4,
-                "TARIH": Kayit[0].TARIH,
+                "KAYITTARIHI": Kayit[0].TARIH,
                 "MENSEI": FiltreliDetay[0].CARI_ISIM,
                 "FIRMA_SERI_NO": Kayit[0].ACIK3
             };
 
             $.ajax({
-                url: "@Url.Action("SevkiyatBarkodCiktisi", "Sevkiyat")",
+                url: "@Url.Action("SevkiyatEtiket", "Sevkiyat")",
                 type: 'POST',
-                data: { "Model": Model, Yazdir: true, Yazici: Printer },
+                data: { "EtiketBilgileri": Model, "Yazdir": Yazdir, "Yazici": Printer },
                 success: (data) => { YaziciModalKapat(); }
             });
         }

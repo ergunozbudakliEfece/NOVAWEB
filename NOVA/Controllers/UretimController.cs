@@ -37,6 +37,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using static iTextSharp.text.pdf.qrcode.Version;
 using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json.Converters;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace NOVA.Controllers
 {
@@ -54,7 +55,7 @@ namespace NOVA.Controllers
         FatKalem fatKalem = default(FatKalem);
         // GET: Uretim
         public async Task<ActionResult> Index()
-        { 
+        {
             int moduleId = 26;
 
             List<Modules> Modules = await AuthHelper.GetModules(moduleId);
@@ -63,11 +64,11 @@ namespace NOVA.Controllers
             {
                 return RedirectToAction("Maintenance", "Home");
             }
-            if(Request.Cookies["Id"] == null)
+            if (Request.Cookies["Id"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
-           
+
             User UserData = await RoleHelper.RoleControl(Request.Cookies["Id"].Value, moduleId);
 
             if (UserData.SELECT_AUTH != true)
@@ -228,7 +229,7 @@ namespace NOVA.Controllers
             {
                 var stokadlari = GetStokAdlari();
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -275,8 +276,8 @@ namespace NOVA.Controllers
 
 
                     }
-                    
-                    
+
+
 
                     var stokkodu1 = stokadlari.Where(x => x.STOK_ADI == isemri[i].STOKADI);
 
@@ -370,7 +371,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -396,7 +397,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -420,7 +421,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -446,7 +447,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -481,7 +482,7 @@ namespace NOVA.Controllers
 
 
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -570,7 +571,7 @@ namespace NOVA.Controllers
                             if (hatkodu == "DL01")
                             {
 
-                                uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR,1);
+                                uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, 1);
                             }
                             else
                             {
@@ -723,7 +724,7 @@ namespace NOVA.Controllers
                             }
 
                         }
-                       
+
 
                     }
 
@@ -752,27 +753,12 @@ namespace NOVA.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<string> PrintPDF(List<string> BarkodNoList, string Yazici, bool Yazdir, bool Onizle)
-        {
-            try
-            {
-                var EtiketString = UretilmisEtiketleriYazdir(BarkodNoList, "Uretim", Yazdir, Yazici, Onizle);
-
-                return EtiketString;
-            }
-            catch(Exception ex)
-            {
-                return ex.Message;
-            }
-        }
-
         public string Hurda(string hatkodu, string mik1, string stokkodu)
         {
             Kernel kernel1 = new Kernel();
             NetRS netRS1 = default(NetRS);
             Sirket sirket1 = kernel1.yeniSirket(TVTTipi.vtMSSQL,
-                                           "TEST2022",
+                                           "EFECE2023",
                                            "TEMELSET",
                                            "",
                                            Request.Cookies["UserName"].Value,
@@ -830,18 +816,18 @@ namespace NOVA.Controllers
 
             return "BAŞARILI";
         }
-        public string AmbarGirCik(string seri,string miktar,string stokkodu,string YAZICI)
+        public string AmbarGirCik(string seri, string miktar, string stokkodu, string YAZICI)
         {
             var yeniseri = seri.Substring(0, 3) + ((seri[3].ToString().ToInt()) + 1).ToString() + seri.Substring(4);
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
                                             LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
-                
+
                 fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarC);
                 fatUst = fatura.Ust();
                 fatUst.FATIRS_NO = fatura.YeniNumara("A");
@@ -858,7 +844,7 @@ namespace NOVA.Controllers
                 fatKalem.DEPO_KODU = 45;
                 fatKalem.Olcubr = 1;
                 fatKalem.ProjeKodu = "1";
-                fatKalem.SeriEkle(seri,"","","",miktar.ToDouble(), 1);
+                fatKalem.SeriEkle(seri, "", "", "", miktar.ToDouble(), 1);
                 fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
                 fatKalem.STra_GCMIK = miktar.ToDouble();
                 fatKalem.STra_GCMIK2 = 1;
@@ -868,7 +854,7 @@ namespace NOVA.Controllers
 
 
                 fatura.kayitYeni();
-               
+
                 fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
                 fatUst = fatura.Ust();
                 fatUst.FATIRS_NO = fatura.YeniNumara("A");
@@ -901,20 +887,20 @@ namespace NOVA.Controllers
                 var ACIK2 = netRS.FieldByName("ACIK2").AsString;
                 var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
                 var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
-                netRS.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE SERI_NO='"+yeniseri+"' AND GCKOD='G'");
+                netRS.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE SERI_NO='" + yeniseri + "' AND GCKOD='G'");
             }
             catch (Exception ex)
             {
 
-                return "Hata "+ ex.Message;
+                return "Hata " + ex.Message;
             }
-            List<string> seriList= new List<string>();
+            List<string> seriList = new List<string>();
             seriList.Add(yeniseri);
-            return UretilmisEtiketleriYazdir(seriList, "Sevkiyat", true, YAZICI); 
+            return UretilmisEtiketleriYazdir(seriList, "Sevkiyat", true, YAZICI);
         }
         public string AmbarGir(List<AmbarModel> datalist)
         {
-            List<string> stoklist= new List<string>();
+            List<string> stoklist = new List<string>();
             List<AmbarModel> stokgrup = new List<AmbarModel>();
             for (int i = 0; i < datalist.Count; i++)
             {
@@ -923,12 +909,12 @@ namespace NOVA.Controllers
                     stoklist.Add(datalist[i].STOK_KODU);
                 }
             }
-            for(int i = 0; i < stoklist.Count; i++)
+            for (int i = 0; i < stoklist.Count; i++)
             {
-                var nd=datalist.Where(x => x.STOK_KODU == stoklist[i]).ToList();
+                var nd = datalist.Where(x => x.STOK_KODU == stoklist[i]).ToList();
                 double sum = 0;
-                AmbarModel nerAmbar=new AmbarModel();
-                for (int a=0; a<nd.Count; a++)
+                AmbarModel nerAmbar = new AmbarModel();
+                for (int a = 0; a < nd.Count; a++)
                 {
                     sum += nd[a].MIKTAR;
                 }
@@ -936,11 +922,11 @@ namespace NOVA.Controllers
                 nerAmbar.MIKTAR = sum;
                 stokgrup.Add(nerAmbar);
             }
-           
+
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -964,23 +950,23 @@ namespace NOVA.Controllers
                     fatUst.KOD1 = "N";
                     var d = datalist.Where(x => x.STOK_KODU == item.STOK_KODU).ToList();
                     fatUst.Aciklama = d[0].HAT_KODU;
-                    
-                        fatKalem = fatura.kalemYeni(item.STOK_KODU);
-                        fatKalem.DEPO_KODU = d[0].TIP.ToInt();
-                        fatKalem.Olcubr = 1;
-                        fatKalem.ProjeKodu = "1";
+
+                    fatKalem = fatura.kalemYeni(item.STOK_KODU);
+                    fatKalem.DEPO_KODU = d[0].TIP.ToInt();
+                    fatKalem.Olcubr = 1;
+                    fatKalem.ProjeKodu = "1";
                     for (var i = 0; i < d.Count; i++)
                     {
                         fatKalem.SeriEkle(d[i].SERI_NO, "", "", "", d[i].MIKTAR, 1);
                     }
-                        fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                    fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
                     var mik = stokgrup.FirstOrDefault(x => x.STOK_KODU == item.STOK_KODU).MIKTAR;
                     fatKalem.STra_GCMIK = mik;
-                        fatKalem.STra_GCMIK2 = 1;
-                        fatKalem.STra_NF = 0;
-                        fatKalem.STra_BF = 0;
-                        fatKalem.STra_ACIK = d[0].HAT_KODU;
-                    
+                    fatKalem.STra_GCMIK2 = 1;
+                    fatKalem.STra_NF = 0;
+                    fatKalem.STra_BF = 0;
+                    fatKalem.STra_ACIK = d[0].HAT_KODU;
+
                     fatura.kayitYeni();
 
                     fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
@@ -1008,14 +994,7 @@ namespace NOVA.Controllers
                     fatKalem.STra_ACIK = belgeNo;
                     fatura.kayitYeni();
                 }
-                    
-                    
-                
 
-
-
-
-                
             }
             catch (Exception ex)
             {
@@ -1023,6 +1002,69 @@ namespace NOVA.Controllers
                 return "Hata " + ex.Message;
             }
 
+            return "Başarılı";
+        }
+
+        [HttpPost]
+        public string AmbarGiris(string a)
+        {
+            var data = JsonConvert.DeserializeObject<List<AmbarGirModel>>(a);
+            List<string> StokKodlari=new List<string>();
+            for(int i=0;i< data.Count;i++)
+            {
+                if (!StokKodlari.Contains(data[i].STOK_KODU))
+                    StokKodlari.Add(data[i].STOK_KODU);
+            }
+            try
+            {
+                sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                                           "EFECE2023",
+                                                           "TEMELSET",
+                                                           "",
+                                                           Request.Cookies["UserName"].Value,
+                                                           LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                for(int i=0;i<StokKodlari.Count;i++)
+                {
+                    fatura = kernel.yeniFatura(sirket, TFaturaTip.ftAmbarG);
+                    fatUst = fatura.Ust();
+                    fatUst.FATIRS_NO = fatura.YeniNumara("A");
+                    fatUst.AMBHARTUR = TAmbarHarTur.htDevir;
+                    fatUst.CikisYeri = TCikisYeri.cySerbest;
+                    fatUst.CariKod = "12035200100406";
+                    fatUst.Tarih = DateTime.Now;
+                    fatUst.ENTEGRE_TRH = DateTime.Now;
+                    fatUst.FiiliTarih = DateTime.Now;
+                    fatUst.Proje_Kodu = "1";
+                    fatUst.Aciklama = "FABRİKA STOK DÜZELTME";
+                    fatUst.DovBazTarihi = DateTime.Now;
+                    var altkalemler = data.Where(x => x.STOK_KODU == StokKodlari[i]).ToList();
+                    for(int j=0;j<altkalemler.Count;j++)
+                    {
+                        fatKalem = fatura.kalemYeni(StokKodlari[i]);
+                        fatKalem.DEPO_KODU = 45;
+                        fatKalem.Olcubr = 1;
+                        fatKalem.ProjeKodu = "1";
+                        fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                        fatKalem.STra_GCMIK = altkalemler[j].MIKTAR;
+                        fatKalem.STra_GCMIK2 = altkalemler[j].MIKTAR2;
+                        fatKalem.STra_DOVTIP = 1;
+                        fatKalem.DOVTIP = 1;
+                        fatKalem.STra_DOVFIAT = altkalemler[j].FIYAT;
+                        fatKalem.STra_ACIK = StokKodlari[i];
+                        fatKalem.SeriEkle(altkalemler[j].SERI_NO, altkalemler[j].ACIK1, altkalemler[j].ACIK2, altkalemler[j].ACIKLAMA_4, altkalemler[j].MIKTAR, altkalemler[j].MIKTAR2, altkalemler[j].SERI_NO_3, altkalemler[j].SERI_NO_4, altkalemler[j].ACIK3, altkalemler[j].ACIKLAMA_5);
+                    }
+                    fatura.kayitYeni();
+                }
+                
+                
+                
+            }
+            catch (Exception e)
+            {
+
+                return "Hata: " + e.Message;
+            }
+           
             return "Başarılı";
         }
         public class AmbarModel
@@ -1050,7 +1092,7 @@ namespace NOVA.Controllers
             {
 
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -1273,7 +1315,7 @@ namespace NOVA.Controllers
 
 
                     sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -1348,7 +1390,10 @@ namespace NOVA.Controllers
                         netRS.Ac("UPDATE TBLISEMRIREC SET HAM_KODU='" + seritraStok + "' WHERE ISEMRINO='" + ISEMRINO + "'");
                         netRS.Ac("UPDATE TBLISEMRI SET KAPALI='H' WHERE ISEMRINO='" + ISEMRINO + "'");
                     }
-
+                    if (ISEMRINO.Substring(0, 2) == "PB")
+                    {
+                        netRS.Ac("UPDATE TBLISEMRIREC SET KAPALI='H',MIKTAR='1' WHERE ISEMRINO='" + ISEMRINO + "'");
+                    }
                     uretim.FisUret();
                     uretim.Kaydet();
                     if (ISEMRINO == stokkodu + "23000001001" || ISEMRINO == stokkodu + "23000001002")
@@ -1387,9 +1432,9 @@ namespace NOVA.Controllers
                     //var yeni = miktar2.ToDouble() * oran;
                     if (hurdamik != "0")
                     {
-                        KULL_MIKTAR = (KULL_MIKTAR.ToDouble()-hurdamik.ToDouble()).ToString();
+                        KULL_MIKTAR = (KULL_MIKTAR.ToDouble() - hurdamik.ToDouble()).ToString();
                     }
-                    if(ikincimik1 != "0")
+                    if (ikincimik1 != "0")
                     {
                         KULL_MIKTAR = (KULL_MIKTAR.ToDouble() - ikincimik1.ToDouble()).ToString();
                     }
@@ -1527,7 +1572,7 @@ namespace NOVA.Controllers
 
 
                     sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -1549,7 +1594,7 @@ namespace NOVA.Controllers
                     netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WHERE GCKOD='G' AND SIPNO='" + ISEMRINO + "' ORDER BY BELGENO DESC");
                     var karsi = netRS.FieldByName("SERI_NO").AsString;
                     netRS.Ac("SELECT * FROM TBLSTOKURS WHERE URETSON_SIPNO='" + ISEMRINO + "'");
-                    var fisno= netRS.FieldByName("URETSON_FISNO").AsString;
+                    var fisno = netRS.FieldByName("URETSON_FISNO").AsString;
                     Fatura fatura = default(Fatura);
                     FatUst fatUst = default(FatUst);
                     FatKalem fatKalem = default(FatKalem);
@@ -1649,7 +1694,7 @@ namespace NOVA.Controllers
 
 
                     sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -1874,16 +1919,16 @@ namespace NOVA.Controllers
             return seri;
         }
         [HttpPost]
-        public string DepoTransfer(string seri,string stokkodu,string miktar,string depo)
+        public string DepoTransfer(string seri, string stokkodu, string miktar, string depo)
         {
-            
+
             try
-            {   
+            {
                 Fatura fatura = default(Fatura);
                 FatUst fatUst = default(FatUst);
                 FatKalem fatKalem = default(FatKalem);
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                           "TEST2022",
+                                           "EFECE2023",
                                            "TEMELSET",
                                            "",
                                            Request.Cookies["UserName"].Value,
@@ -1918,7 +1963,7 @@ namespace NOVA.Controllers
             }
             catch (Exception ex)
             {
-                return "Hata: "+ex.Message;
+                return "Hata: " + ex.Message;
             }
             finally
             {
@@ -1946,7 +1991,7 @@ namespace NOVA.Controllers
             {
                 var stokadlari = GetStokAdlari();
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -2042,373 +2087,9 @@ namespace NOVA.Controllers
                 return View("Index");
             }
 
-
-
-
-
-
             return RedirectToAction("Index");
         }
-        #region BarkodPDF
-        public string UretimKaydiSonuBarkodCiktisi(List<BarkodModel> EtiketBilgileri, bool ETIKET_ONIZLEME,string YAZICI)
-        {
-            iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
 
-            string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
-            string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
-
-            FileStream Memory = new FileStream(pdfPath, FileMode.Create);
-            PdfWriter writer = PdfWriter.GetInstance(document, Memory);
-
-            document.Open();
-
-            for (int i = 0; i < EtiketBilgileri.Count; i++)
-            {
-                document.NewPage();
-                iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
-                BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
-                BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
-                BackgroundImage.SetAbsolutePosition(0, 0);
-                document.Add(BackgroundImage);
-
-                PdfContentByte cb = writer.DirectContent;
-
-                iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 13, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
-
-                ColumnText Header = new ColumnText(cb);
-                Header.SetSimpleColumn(45, 130, 270, 340);
-                Header.AddElement(new iTextSharp.text.Paragraph(EtiketBilgileri[i].SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
-                Header.AddElement(new iTextSharp.text.Paragraph(EtiketBilgileri[i].STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 3f, MultipliedLeading = 1f });
-                Header.Go();
-
-                ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
-                Content.SetSimpleColumn(35, 75, 280, 290);
-
-                //iTextSharp.text.Paragraph GrupIsim = new iTextSharp.text.Paragraph("GRUP İSİM   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //GrupIsim.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].GRUP_ISIM)}", fontNormal));
-                //Content.AddElement(GrupIsim);
-
-                iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Miktar1.Add(new Chunk($": {MiktarFormat(EtiketBilgileri[i].MIKTAR1, EtiketBilgileri[i].OLCU_BR1)}", fontNormal));
-                Content.AddElement(Miktar1);
-
-                iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Miktar2.Add(new Chunk($": {MiktarFormat(EtiketBilgileri[i].MIKTAR2, EtiketBilgileri[i].OLCU_BR2)}", fontNormal));
-                Content.AddElement(Miktar2);
-
-                iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {(EtiketBilgileri[i].MAK_KODU == "TP01" || EtiketBilgileri[i].MAK_KODU == "MH01" ? "-" : BosDegerKontrolu(EtiketBilgileri[i].KALINLIK))}", fontNormal));
-                Content.AddElement(Kalinlik);
-
-                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {(EtiketBilgileri[i].MAK_KODU == "TP01" || EtiketBilgileri[i].MAK_KODU == "MH01" ? "-" : DegerFormat(EtiketBilgileri[i].GENISLIK, "GENISLIK"))}", fontNormal));
-                Content.AddElement(Genislik);
-
-                iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Boy.Add(new Chunk($": {DegerFormat((int)EtiketBilgileri[i].BOY, "BOY")}", fontNormal));
-                Content.AddElement(Boy);
-
-                iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Metraj.Add(new Chunk($": {MetrajFormat(EtiketBilgileri[i].METRAJ, "M")}", fontNormal));
-                Content.AddElement(Metraj);
-
-                iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH/SAAT  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Tarih.Add(new Chunk($": {TarihFormat(EtiketBilgileri[i].KAYITTARIHI)}", fontNormal));
-                Content.AddElement(Tarih);
-
-                iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR. ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                MakineOperator.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].MAK_KODU)}/{BosDegerKontrolu(EtiketBilgileri[i].KAYITYAPANKUL)}", fontNormal));
-                Content.AddElement(MakineOperator);
-
-                iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ     ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Musteri.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].SIPARIS_CARI)}", fontNormal));
-                Content.AddElement(Musteri);
-
-                if (EtiketBilgileri[i].REF_HAT_KODU != null)
-                {
-                    iTextSharp.text.Paragraph Ref = new iTextSharp.text.Paragraph("HEDEF       ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                    Ref.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].REF_HAT_KODU)}/{BosDegerKontrolu(EtiketBilgileri[i].REF_STOK_ADI)}", fontNormal));
-                    Content.AddElement(Ref);
-                }
-
-                Content.Go();
-
-                var qrGenerator = new QRCodeGenerator();
-                var qrCodeData = qrGenerator.CreateQrCode(EtiketBilgileri[i].SERI_NO, QRCodeGenerator.ECCLevel.Q);
-                QRCode qrCode = new QRCode(qrCodeData);
-                System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
-
-                iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
-                QR.ScaleToFit(75, 75);
-                QR.Alignment = iTextSharp.text.Image.UNDERLYING;
-                QR.SetAbsolutePosition(195, 12);
-                document.Add(QR);
-            }
-
-            document.Close();
-            Memory.Close();
-
-            if (!ETIKET_ONIZLEME)
-            {
-                try
-                {
-                    //PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
-
-                    using (var pdocument = PdfiumViewer.PdfDocument.Load(pdfPath))
-                    {
-                        using (var printDocument = pdocument.CreatePrintDocument())
-                        {
-                            printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
-                            printDocument.PrinterSettings.PrinterName = YAZICI;
-                            printDocument.DocumentName = "file.pdf";
-                            printDocument.PrinterSettings.PrintFileName = "file.pdf";
-                            printDocument.PrintController = new StandardPrintController();
-                            printDocument.Print();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message;
-                }
-            }
-
-            return ToBase64String(pdfPath);
-        }
-        private string DegerFormat(double? Deger, string Tip)
-        {
-            if (Deger == 0)
-            {
-
-                return "-";
-            }
-            else
-            {
-                if (Tip == "BOY")
-                    return Deger.ToString() + " MM";
-                else
-                    return Deger.ToString();
-            }
-
-        }
-
-        [HttpPost]
-        public string TrpzUretimKaydiSonuBarkodCiktisi(string BARKOD_NO, bool ETIKET_ONIZLEME, string YAZICI)
-        {
-
-            try
-            {
-                WebClient Client = new WebClient() { Encoding = Encoding.UTF8 };
-
-                string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + BARKOD_NO));
-                List<BarkodModel> Result = new JavaScriptSerializer().Deserialize<List<BarkodModel>>(Response);
-
-                if (Result.Count < 1)
-                    return "";
-
-                BarkodModel Model = Result[0];
-
-                iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
-
-                string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
-                string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
-
-                FileStream Memory = new FileStream(pdfPath, FileMode.Create);
-                PdfWriter writer = PdfWriter.GetInstance(document, Memory);
-
-                document.Open();
-
-                iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
-                BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
-                BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
-                BackgroundImage.SetAbsolutePosition(0, 0);
-                document.Add(BackgroundImage);
-
-                PdfContentByte cb = writer.DirectContent;
-
-                iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 13, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
-
-                ColumnText Header = new ColumnText(cb);
-                Header.SetSimpleColumn(45, 130, 270, 340);
-                Header.AddElement(new iTextSharp.text.Paragraph(Model.SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
-                Header.AddElement(new iTextSharp.text.Paragraph(Model.STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 3f, MultipliedLeading = 1f });
-                Header.Go();
-
-                ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
-                Content.SetSimpleColumn(35, 75, 280, 290);
-
-                //iTextSharp.text.Paragraph GrupIsim = new iTextSharp.text.Paragraph("GRUP İSİM   ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                //GrupIsim.Add(new Chunk($": {BosDegerKontrolu(Model.GRUP_ISIM)}", fontNormal));
-                //Content.AddElement(GrupIsim);
-
-                iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Miktar1.Add(new Chunk($": {MiktarFormat(Model.MIKTAR1, Model.OLCU_BR1)}", fontNormal));
-                Content.AddElement(Miktar1);
-
-                iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Miktar2.Add(new Chunk($": {MiktarFormat(Model.MIKTAR2, Model.OLCU_BR2)}", fontNormal));
-                Content.AddElement(Miktar2);
-
-                iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {(Model.MAK_KODU == "TP01" || Model.MAK_KODU == "MH01" ? "-" : BosDegerKontrolu(Model.KALINLIK))}", fontNormal));
-                Content.AddElement(Kalinlik);
-
-                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {(Model.MAK_KODU == "TP01" || Model.MAK_KODU == "MH01" ? "-" : DegerFormat(Model.GENISLIK, "GENISLIK"))}", fontNormal));
-                Content.AddElement(Genislik);
-
-                iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Boy.Add(new Chunk($": {DegerFormat((int)Model.BOY, "BOY")}", fontNormal));
-                Content.AddElement(Boy);
-
-                iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Metraj.Add(new Chunk($": {MetrajFormat(Model.METRAJ, "M")}", fontNormal));
-                Content.AddElement(Metraj);
-
-                iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH/SAAT  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Tarih.Add(new Chunk($": {TarihFormat(Model.KAYITTARIHI)}", fontNormal));
-                Content.AddElement(Tarih);
-
-                iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR. ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                MakineOperator.Add(new Chunk($": {BosDegerKontrolu(Model.MAK_KODU)}/{BosDegerKontrolu(Model.KAYITYAPANKUL)}", fontNormal));
-                Content.AddElement(MakineOperator);
-
-                iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ     ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Musteri.Add(new Chunk($": {BosDegerKontrolu(Model.SIPARIS_CARI)}", fontNormal));
-                Content.AddElement(Musteri);
-
-                if (Model.REF_HAT_KODU != null)
-                {
-                    iTextSharp.text.Paragraph Ref = new iTextSharp.text.Paragraph("HEDEF       ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                    Ref.Add(new Chunk($": {BosDegerKontrolu(Model.REF_HAT_KODU)}/{BosDegerKontrolu(Model.REF_STOK_ADI)}", fontNormal));
-                    Content.AddElement(Ref);
-                }
-
-                Content.Go();
-
-                var qrGenerator = new QRCodeGenerator();
-                var qrCodeData = qrGenerator.CreateQrCode(Model.SERI_NO, QRCodeGenerator.ECCLevel.Q);
-                QRCode qrCode = new QRCode(qrCodeData);
-                System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
-
-                iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
-                QR.ScaleToFit(75, 75);
-                QR.Alignment = iTextSharp.text.Image.UNDERLYING;
-                QR.SetAbsolutePosition(195, 12);
-                document.Add(QR);
-
-                document.Close();
-                Memory.Close();
-
-                //Eğer önizleme kapalıysa direkt yazdır.
-                if (!ETIKET_ONIZLEME)
-                {
-                    //PrintHelper.Print(pdfPath, "Olivetti d-COPIA 4023MF MUHASEBE");
-
-                    using (var pdocument = PdfiumViewer.PdfDocument.Load(pdfPath))
-                    {
-                        using (var printDocument = pdocument.CreatePrintDocument())
-                        {
-                            printDocument.PrinterSettings.PrintFileName = "Report_9ae93aa7-4359-444e-a033-eb5bf17f5ce6.pdf";
-                            printDocument.PrinterSettings.PrinterName = YAZICI;
-                            printDocument.DocumentName = "file.pdf";
-                            printDocument.PrinterSettings.PrintFileName = "file.pdf";
-                            printDocument.PrintController = new StandardPrintController();
-                            printDocument.Print();
-                        }
-                    }
-                }
-
-                return ToBase64String(pdfPath);
-            }
-            catch (Exception e)
-            {
-                return e.Message;
-            }
-        }
-
-        public class BarkodModel
-        {
-            public string SERI_NO { get; set; }
-            public string STOK_ADI { get; set; }
-            public double? MIKTAR1 { get; set; }
-            public string OLCU_BR1 { get; set; }
-            public double? MIKTAR2 { get; set; }
-            public string OLCU_BR2 { get; set; }
-            public string STOK_KODU { get; set; }
-            public double? GENISLIK { get; set; }
-            public string GRUP_ISIM { get; set; }
-            public double? BOY { get; set; }
-            public string KAYITYAPANKUL { get; set; }
-            public DateTime KAYITTARIHI { get; set; }
-            public string SIPARIS_CARI { get; set; }
-            public string MAK_KODU { get; set; }
-            public string KALINLIK { get; set; }
-            public double? METRAJ { get; set; }
-
-            public double? BIRIM_MIKTAR { get; set; }
-            public double? KALITE { get; set; }
-            public double? KAPLAMA { get; set; }
-            public string MENSEI { get; set; }
-            public string FIRMA_SERI_NO { get; set; }
-
-            public string REF_HAT_KODU { get; set; }
-            public string REF_STOK_ADI { get; set; }
-
-            public bool ETIKET_ONIZLEME { get; set; }
-        }
-        public string ToBase64String(string fileName)
-        {
-            using (FileStream reader = new FileStream(fileName, FileMode.Open))
-            {
-                byte[] buffer = new byte[reader.Length];
-                reader.Read(buffer, 0, (int)reader.Length);
-                return Convert.ToBase64String(buffer);
-            }
-        }
-        private byte[] ImageToByteArray(System.Drawing.Image img)
-        {
-            using (var stream = new MemoryStream())
-            {
-                img.Save(stream, ImageFormat.Png);
-                return stream.ToArray();
-            }
-        }
-        private string BosDegerKontrolu(string Deger)
-        {
-            return string.IsNullOrEmpty(Deger) ? "-" : Deger;
-        }
-        private string BosDegerKontrolu(double? Deger)
-        {
-            return Deger == 0 || Deger == 0.0 ? "-" : Deger.ToString();
-        }
-        private string TarihFormat(DateTime Tarih)
-        {
-            return Tarih.ToString("yyyy-MM-dd HH:mm:ss");
-        }
-        private string MiktarFormat(double? Miktar, string OlcuBirimi)
-        {
-            if (Miktar == 0)
-            {
-                return "-";
-            }
-
-            return $"{Miktar?.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
-        }
-        private string MetrajFormat(double? Metraj, string OlcuBirimi)
-        {
-            if (Metraj == 0)
-            {
-                return "-";
-            }
-
-            return $"{Metraj?.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
-        }
-        #endregion
         public List<HatModel> UretimTipi(string hatKodu)
         {
 
@@ -2697,14 +2378,15 @@ namespace NOVA.Controllers
 
         #region UretilmisBarkodlar
 
-        public string UretilmisEtiketleriYazdir(List<string> BarkodListesi, string EtiketDizayn, bool DirektYazdir, string Yazici, bool Onizle = false) 
+        [HttpPost]
+        public string UretilmisEtiketleriYazdir(List<string> BarkodListesi, string EtiketDizayn, bool DirektYazdir, string Yazici, bool Onizle = false)
         {
             try
             {
                 if (!(DirektYazdir || Onizle))
                     return "";
 
-                List<BarkodModel> EtiketBilgileri = UretilmisEtiketBilgileri(BarkodListesi);
+                List<Etiket> EtiketBilgileri = UretilmisEtiketBilgileri(BarkodListesi);
 
                 Dictionary<string, string> Etiket;
 
@@ -2724,7 +2406,7 @@ namespace NOVA.Controllers
                 {
                     if (Onizle)
                     {
-                        return Etiket["Base64"];
+                        return System.IO.Path.GetFileName(Etiket["Path"]);
                     }
                     else if (DirektYazdir)
                     {
@@ -2743,6 +2425,17 @@ namespace NOVA.Controllers
                                 }
                             }
 
+                            var httpClient1 = new HttpClient();
+
+                            foreach (string Barkod in BarkodListesi) 
+                            {
+                                var apiUrl1 = $"http://192.168.2.13:83/api/uretim/Yazdirilanlar/{Barkod}";
+
+                                var request1 = new HttpRequestMessage(HttpMethod.Get, apiUrl1) { };
+
+                                httpClient1.SendAsync(request1);
+                            }
+                            
                             return "Etiket başarıyla yazdırıldı.";
                         }
                         catch (Exception ex)
@@ -2750,7 +2443,7 @@ namespace NOVA.Controllers
                             return $"HATA: Etiket yazdırma işleminde bir hata oluştu. (Detay: {ex.Message})";
                         }
                     }
-                    else 
+                    else
                     {
                         return "Etiket başarıyla oluşturuldu.";
                     }
@@ -2760,23 +2453,23 @@ namespace NOVA.Controllers
                     return "HATA: Etiket verilerinde bir sorun oluştu.";
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return $"HATA: Etiket oluşturulurken bir hata oluştu. (Detay: {ex.Message})";
             }
         }
 
-        public List<BarkodModel> UretilmisEtiketBilgileri(List<string> BarkodListesi)
+        public List<Etiket> UretilmisEtiketBilgileri(List<string> BarkodListesi)
         {
             try
             {
-                List<BarkodModel> Etiketler = new List<BarkodModel>();
+                List<Etiket> Etiketler = new List<Etiket>();
                 WebClient Client = new WebClient() { Encoding = Encoding.UTF8 };
 
                 foreach (var item in BarkodListesi)
                 {
                     string Response = Client.DownloadString(new Uri("http://192.168.2.13:83/api/seri/kontrol/" + item));
-                    List<BarkodModel> Result = JsonConvert.DeserializeObject<List<BarkodModel>>(Response, new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" });
+                    List<Etiket> Result = JsonConvert.DeserializeObject<List<Etiket>>(Response, new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" });
 
                     if (Result.Count > 0)
                     {
@@ -2788,102 +2481,114 @@ namespace NOVA.Controllers
             }
             catch (Exception ex)
             {
-                return new List<BarkodModel>();
+                return null;
             }
         }
 
-        public Dictionary<string, string> UretimEtiket(List<BarkodModel> EtiketBilgileri) 
+        public Dictionary<string, string> UretimEtiket(List<Etiket> EtiketBilgileri)
         {
-            if(EtiketBilgileri.Count <= 0)
+            if (EtiketBilgileri.Count <= 0)
                 return null;
 
             iTextSharp.text.Document document = new iTextSharp.text.Document(new iTextSharp.text.Rectangle(246.61417323f, 462.04724409f), 10f, 10f, 10f, 10f);
 
-            string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
-            string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Uretim\\UretimSonuKaydi"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+            string imagePath = System.IO.Path.Combine(Server.MapPath("~\\Outputs\\Sources"), "EFECE_ETIKET.png");
+            string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\Outputs\\Labels\\Production"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
 
             FileStream Memory = new FileStream(pdfPath, FileMode.Create);
             PdfWriter writer = PdfWriter.GetInstance(document, Memory);
 
             document.Open();
 
+            PdfContentByte cb = writer.DirectContent;
+
+            iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 13, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
+
             for (int i = 0; i < EtiketBilgileri.Count; i++)
             {
                 document.NewPage();
-                iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
-                BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
-                BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
-                BackgroundImage.SetAbsolutePosition(0, 0);
-                document.Add(BackgroundImage);
 
-                PdfContentByte cb = writer.DirectContent;
+                if(EtiketBilgileri[i].MAK_KODU == "DL01")
+                {
+                    iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
+                    BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
+                    BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
+                    BackgroundImage.SetAbsolutePosition(0, 0);
+                    document.Add(BackgroundImage);
+                }
 
-                iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 13, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
+                PdfPTable table = new PdfPTable(3);
+                table.TotalWidth = 210;
+                table.SetWidths(new float[] { 4f, 0.5f, 5.5f });
 
-                ColumnText Header = new ColumnText(cb);
-                Header.SetSimpleColumn(0, 150, 246.61417323f, 400);
-                Header.AddElement(new iTextSharp.text.Paragraph(EtiketBilgileri[i].SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
-                Header.AddElement(new iTextSharp.text.Paragraph(EtiketBilgileri[i].STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 3f, MultipliedLeading = 1f });
-                Header.Go();
+                // Header row.
+                table.AddCell(GetHeaderCell(EtiketBilgileri[i].SERI_NO, fontBoldHeader, 3, 1));
+                table.AddCell(GetHeaderCell(EtiketBilgileri[i].STOK_ADI, fontBoldHeader, 3, 2));
 
-                ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
-                Content.SetSimpleColumn(30, 135, 246.61417323f, 335);
+                PdfPCell cellBlankRow = new PdfPCell(new Phrase(" "));
+                cellBlankRow.Border = 0;
+                cellBlankRow.Colspan = 3;
+                cellBlankRow.HorizontalAlignment = 1;
+                table.AddCell(cellBlankRow);
 
-                iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Miktar1.Add(new Chunk($": {MiktarFormat(EtiketBilgileri[i].MIKTAR1, EtiketBilgileri[i].OLCU_BR1)}", fontNormal));
-                Content.AddElement(Miktar1);
+                // Inner middle row.
+                table.AddCell(GetContentCell("MİKTAR", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{MiktarFormat(EtiketBilgileri[i].MIKTAR1, EtiketBilgileri[i].OLCU_BR1)}", fontBoldContent));
+
 
                 if ((EtiketBilgileri[i].OLCU_BR1 != EtiketBilgileri[i].OLCU_BR2) && EtiketBilgileri[i].MIKTAR2 != 0)
                 {
-                    iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                    Miktar2.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri[i].OLCU_BR2)}", fontNormal));
-                    Content.AddElement(Miktar2);
+                    table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"{MiktarFormat(EtiketBilgileri[i].MIKTAR2, EtiketBilgileri[i].OLCU_BR2)}", fontBoldContent));
                 }
                 else
                 {
-                    iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                    Miktar2.Add(new Chunk($": -", fontNormal));
-                    Content.AddElement(Miktar2);
+                    table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"-", fontBoldContent));
                 }
 
-                iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {(EtiketBilgileri[i].MAK_KODU == "TP01" || EtiketBilgileri[i].MAK_KODU == "MH01" ? "-" : BosDegerKontrolu(EtiketBilgileri[i].KALINLIK))}", fontNormal));
-                Content.AddElement(Kalinlik);
 
-                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK    ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {(EtiketBilgileri[i].MAK_KODU == "TP01" || EtiketBilgileri[i].MAK_KODU == "MH01" ? "-" : DegerFormat(EtiketBilgileri[i].GENISLIK, "GENISLIK"))}", fontNormal));
-                Content.AddElement(Genislik);
+                table.AddCell(GetContentCell("KALINLIK", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{(EtiketBilgileri[i].MAK_KODU == "DL01" || EtiketBilgileri[i].MAK_KODU == "TP01" || EtiketBilgileri[i].MAK_KODU == "MH01" ? "-" : BosDegerKontrolu(EtiketBilgileri[i].KALINLIK))}", fontBoldContent));
 
-                iTextSharp.text.Paragraph Boy = new iTextSharp.text.Paragraph("BOY         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Boy.Add(new Chunk($": {DegerFormat((int)EtiketBilgileri[i].BOY, "BOY")}", fontNormal));
-                Content.AddElement(Boy);
+                table.AddCell(GetContentCell("GENİŞLİK", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{(EtiketBilgileri[i].MAK_KODU == "TP01" || EtiketBilgileri[i].MAK_KODU == "MH01" ? "-" : DegerFormat(EtiketBilgileri[i].GENISLIK, "GENISLIK"))}", fontBoldContent));
 
-                iTextSharp.text.Paragraph Metraj = new iTextSharp.text.Paragraph("METRAJ      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Metraj.Add(new Chunk($": {MetrajFormat(EtiketBilgileri[i].METRAJ, "M")}", fontNormal));
-                Content.AddElement(Metraj);
+                table.AddCell(GetContentCell("BOY", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{DegerFormat((int)EtiketBilgileri[i].BOY, "BOY")}", fontBoldContent));
 
-                iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH/SAAT  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Tarih.Add(new Chunk($": {TarihFormat(EtiketBilgileri[i].KAYITTARIHI)}", fontNormal));
-                Content.AddElement(Tarih);
+                table.AddCell(GetContentCell("METRAJ", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{MetrajFormat(EtiketBilgileri[i].METRAJ, "M")}", fontBoldContent));
 
-                iTextSharp.text.Paragraph MakineOperator = new iTextSharp.text.Paragraph("MAKİNE/OPR. ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                MakineOperator.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].MAK_KODU)}/{BosDegerKontrolu(EtiketBilgileri[i].KAYITYAPANKUL)}", fontNormal));
-                Content.AddElement(MakineOperator);
+                table.AddCell(GetContentCell("TARİH/SAAT", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{TarihFormat(EtiketBilgileri[i].KAYITTARIHI)}", fontBoldContent));
 
-                iTextSharp.text.Paragraph Musteri = new iTextSharp.text.Paragraph("MÜŞTERİ     ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Musteri.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].SIPARIS_CARI)}", fontNormal));
-                Content.AddElement(Musteri);
+                table.AddCell(GetContentCell("MAKİNE/OPR.", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].MAK_KODU)}/{BosDegerKontrolu(EtiketBilgileri[i].KAYITYAPANKUL)}", fontBoldContent));
 
-                if (EtiketBilgileri[i].REF_HAT_KODU != null) 
+                table.AddCell(GetContentCell("MÜŞTERİ", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].SIPARIS_CARI)}", fontBoldContent));
+
+                if (EtiketBilgileri[i].REF_HAT_KODU != null)
                 {
-                    iTextSharp.text.Paragraph Ref = new iTextSharp.text.Paragraph("HEDEF       ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                    Ref.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].REF_HAT_KODU)}/{BosDegerKontrolu(EtiketBilgileri[i].REF_STOK_ADI)}", fontNormal));
-                    Content.AddElement(Ref);
+                    table.AddCell(GetContentCell("HEDEF", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].REF_HAT_KODU)}/{BosDegerKontrolu(EtiketBilgileri[i].REF_STOK_ADI)}", fontBoldContent));
                 }
 
-                Content.Go();
+                table.WriteSelectedRows(0, -1, 20, 390, cb);
 
                 var qrGenerator = new QRCodeGenerator();
                 var qrCodeData = qrGenerator.CreateQrCode(EtiketBilgileri[i].SERI_NO, QRCodeGenerator.ECCLevel.Q);
@@ -2891,37 +2596,37 @@ namespace NOVA.Controllers
                 System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
 
                 iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
-                QR.ScaleToFit(75, 75);
+                QR.ScaleToFit(85, 85);
                 QR.Alignment = iTextSharp.text.Image.UNDERLYING;
-                QR.SetAbsolutePosition(155, 60);
+                QR.SetAbsolutePosition(155, 70);
                 document.Add(QR);
             }
 
             document.Close();
             Memory.Close();
 
-            return new Dictionary<string, string>() 
+            return new Dictionary<string, string>()
             {
                 {"Path", pdfPath },
                 {"Base64", ToBase64String(pdfPath) }
             };
         }
 
-        public Dictionary<string, string> SevkiyatEtiket(List<BarkodModel> EtiketBilgileri)
+        public Dictionary<string, string> SevkiyatEtiket(List<Etiket> EtiketBilgileri)
         {
             if (EtiketBilgileri.Count <= 0)
                 return null;
 
-            iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A6, 10f, 10f, 10f, 10f);
+            iTextSharp.text.Document document = new iTextSharp.text.Document(new iTextSharp.text.Rectangle(246.61417323f, 462.04724409f), 10f, 10f, 10f, 10f);
 
-            string imagePath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Content"), "SevkiyatDesign.png");
-            string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\DesignOutput\\Sevkiyat\\Etiketler"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+            string imagePath = System.IO.Path.Combine(Server.MapPath("~\\Outputs\\Sources"), "EFECE_ETIKET.png");
+            string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\Outputs\\Labels\\Shipment"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
 
             FileStream Memory = new FileStream(pdfPath, FileMode.Create);
             PdfWriter writer = PdfWriter.GetInstance(document, Memory);
 
-            document.Open(); 
-            
+            document.Open();
+
             PdfContentByte cb = writer.DirectContent;
 
             iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
@@ -2938,71 +2643,80 @@ namespace NOVA.Controllers
                 BackgroundImage.SetAbsolutePosition(0, 0);
                 document.Add(BackgroundImage);
 
-                ColumnText Header = new ColumnText(cb);
-                Header.SetSimpleColumn(45, 125, 270, 335);
-                Header.AddElement(new iTextSharp.text.Paragraph(EtiketBilgileri[i].STOK_ADI) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader, SpacingBefore = 10f, MultipliedLeading = 1f });
-                Header.AddElement(new iTextSharp.text.Paragraph(EtiketBilgileri[i].SERI_NO) { Alignment = Element.ALIGN_CENTER, Font = fontBoldHeader });
-                Header.Go();
+                PdfPTable table = new PdfPTable(3);
+                table.TotalWidth = 210; 
+                table.SetWidths(new float[] { 4f, 0.5f, 5.5f });
 
-                ColumnText Content = new ColumnText(cb) { Alignment = Element.ALIGN_CENTER };
-                Content.SetSimpleColumn(35, 70, 280, 270);
+                // Header row.
+                table.AddCell(GetHeaderCell(EtiketBilgileri[i].SERI_NO, fontBoldHeader, 3, 1));
+                table.AddCell(GetHeaderCell(EtiketBilgileri[i].STOK_ADI, fontBoldHeader, 3, 2));
 
-                iTextSharp.text.Paragraph GrupIsim = new iTextSharp.text.Paragraph("GRUP İSİM     ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                GrupIsim.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].GRUP_ISIM)}", fontNormal));
-                Content.AddElement(GrupIsim);
+                PdfPCell cellBlankRow = new PdfPCell(new Phrase(" "));
+                cellBlankRow.Border = 0;
+                cellBlankRow.Colspan = 3;
+                cellBlankRow.HorizontalAlignment = 1;
+                table.AddCell(cellBlankRow);
 
-                iTextSharp.text.Paragraph Miktar1 = new iTextSharp.text.Paragraph("MİKTAR 1      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Miktar1.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].MIKTAR1)} {BosDegerKontrolu(EtiketBilgileri[i].OLCU_BR1)}", fontNormal));
-                Content.AddElement(Miktar1);
+                // Inner middle row.
+                table.AddCell(GetContentCell("GRUP İSİM", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].GRUP_ISIM)}", fontBoldContent));
 
+                table.AddCell(GetContentCell("MİKTAR 1", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].MIKTAR1)} {BosDegerKontrolu(EtiketBilgileri[i].OLCU_BR1)}", fontBoldContent));
 
                 if (EtiketBilgileri[i].OLCU_BR1 != EtiketBilgileri[i].OLCU_BR2)
                 {
-                    iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                    Miktar2.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri[i].OLCU_BR2)}", fontNormal));
-                    Content.AddElement(Miktar2);
+                    table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri[i].OLCU_BR2)}", fontBoldContent));
 
-                    iTextSharp.text.Paragraph BirimMiktar = new iTextSharp.text.Paragraph("BİRİM MİKTAR  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                    BirimMiktar.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].BIRIM_MIKTAR)} {BosDegerKontrolu(EtiketBilgileri[i].OLCU_BR1)}/{BosDegerKontrolu(EtiketBilgileri[i].OLCU_BR2)}", fontNormal));
-                    Content.AddElement(BirimMiktar);
+                    table.AddCell(GetContentCell("BİRİM MİKTAR", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].MIKTAR1/ EtiketBilgileri[i].MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri[i].OLCU_BR1)}/{BosDegerKontrolu(EtiketBilgileri[i].OLCU_BR2)}", fontBoldContent));
                 }
                 else
                 {
-                    iTextSharp.text.Paragraph Miktar2 = new iTextSharp.text.Paragraph("MİKTAR 2      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                    Miktar2.Add(new Chunk($": -", fontNormal));
-                    Content.AddElement(Miktar2);
+                    table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"-", fontBoldContent));
 
-                    iTextSharp.text.Paragraph BirimMiktar = new iTextSharp.text.Paragraph("BİRİM MİKTAR  ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                    BirimMiktar.Add(new Chunk($": -", fontNormal));
-                    Content.AddElement(BirimMiktar);
+                    table.AddCell(GetContentCell("BİRİM MİKTAR", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"-", fontBoldContent));
                 }
 
-                iTextSharp.text.Paragraph Kalinlik = new iTextSharp.text.Paragraph("KALINLIK      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalinlik.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].KALINLIK)}", fontNormal));
-                Content.AddElement(Kalinlik);
+                table.AddCell(GetContentCell("KALINLIK", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].KALINLIK)}", fontBoldContent));
 
-                iTextSharp.text.Paragraph Genislik = new iTextSharp.text.Paragraph("GENİŞLİK      ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Genislik.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].GENISLIK)}", fontNormal));
-                Content.AddElement(Genislik);
+                table.AddCell(GetContentCell("GENİŞLİK", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].GENISLIK)}", fontBoldContent));
 
-                iTextSharp.text.Paragraph Kalite = new iTextSharp.text.Paragraph("KALİTE        ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kalite.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].KALITE)}", fontNormal));
-                Content.AddElement(Kalite);
+                table.AddCell(GetContentCell("KALİTE", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].KALITE)}", fontBoldContent));
 
-                iTextSharp.text.Paragraph Kaplama = new iTextSharp.text.Paragraph("KAPLAMA       ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Kaplama.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].KAPLAMA)}", fontNormal));
-                Content.AddElement(Kaplama);
+                table.AddCell(GetContentCell("KAPLAMA", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].KAPLAMA)}", fontBoldContent));
 
-                iTextSharp.text.Paragraph Tarih = new iTextSharp.text.Paragraph("TARİH         ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Tarih.Add(new Chunk($": {TarihFormat(EtiketBilgileri[i].KAYITTARIHI)}", fontNormal));
-                Content.AddElement(Tarih);
+                table.AddCell(GetContentCell("TARİH", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{TarihFormat(EtiketBilgileri[i].KAYITTARIHI)}", fontBoldContent));
 
-                iTextSharp.text.Paragraph Mensei = new iTextSharp.text.Paragraph("MENŞEİ/SN     ", fontBoldContent) { Alignment = Element.ALIGN_LEFT };
-                Mensei.Add(new Chunk($": {BosDegerKontrolu(EtiketBilgileri[i].MENSEI?.Split(' ')[0])}/{BosDegerKontrolu(EtiketBilgileri[i].FIRMA_SERI_NO)}", fontNormal));
-                Mensei.SpacingBefore = 5f;
-                Mensei.MultipliedLeading = 1f;
-                Content.AddElement(Mensei);
-                Content.Go();
+                table.AddCell(GetContentCell("MENŞEİ/SN", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].MENSEI?.Split(' ')[0])}/{BosDegerKontrolu(EtiketBilgileri[i].FIRMA_SERI_NO)}", fontBoldContent));
+
+
+                table.AddCell(GetContentCell("ESKİ BOBİN NO", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].ACIKLAMA_5)}", fontBoldContent));
+
+                table.WriteSelectedRows(0, -1, 20, 390, cb);
 
                 var qrGenerator = new QRCodeGenerator();
                 var qrCodeData = qrGenerator.CreateQrCode(EtiketBilgileri[i].SERI_NO, QRCodeGenerator.ECCLevel.Q);
@@ -3010,9 +2724,9 @@ namespace NOVA.Controllers
                 System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
 
                 iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
-                QR.ScaleToFit(75, 75);
+                QR.ScaleToFit(85, 85);
                 QR.Alignment = iTextSharp.text.Image.UNDERLYING;
-                QR.SetAbsolutePosition(195, 12);
+                QR.SetAbsolutePosition(155, 60);
                 document.Add(QR);
             }
 
@@ -3025,11 +2739,102 @@ namespace NOVA.Controllers
                 {"Base64", ToBase64String(pdfPath) }
             };
         }
+
+        public string ToBase64String(string fileName)
+        {
+            using (FileStream reader = new FileStream(fileName, FileMode.Open))
+            {
+                byte[] buffer = new byte[reader.Length];
+                reader.Read(buffer, 0, (int)reader.Length);
+                return Convert.ToBase64String(buffer);
+            }
+        }
+
+        private byte[] ImageToByteArray(System.Drawing.Image img)
+        {
+            using (var stream = new MemoryStream())
+            {
+                img.Save(stream, ImageFormat.Png);
+                return stream.ToArray();
+            }
+        }
+
+        private string DegerFormat(double? Deger, string Tip)
+        {
+            if (Deger == 0)
+            {
+
+                return "-";
+            }
+            else
+            {
+                if (Tip == "BOY")
+                    return Deger.ToString() + " MM";
+                else
+                    return Deger.ToString();
+            }
+
+        }
+
+        private string BosDegerKontrolu(string Deger)
+        {
+            return (string.IsNullOrEmpty(Deger) || string.IsNullOrWhiteSpace(Deger)) ? "-" : Deger;
+        }
+
+        private string BosDegerKontrolu(double? Deger)
+        {
+            return (Deger == 0 || Deger == 0.0 || Deger is null) ? "-" : Deger.ToString();
+        }
+
+        private string TarihFormat(DateTime? Tarih)
+        {
+            return Tarih is null ? "-" : Tarih?.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        private string MiktarFormat(double? Miktar, string OlcuBirimi)
+        {
+            if (Miktar == 0)
+            {
+                return "-";
+            }
+
+            return $"{Miktar?.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
+        }
+       
+        private string MetrajFormat(double? Metraj, string OlcuBirimi)
+        {
+            if (Metraj == 0)
+            {
+                return "-";
+            }
+
+            return $"{Metraj?.ToString("c", new CultureInfo("tr-TR"))} {OlcuBirimi}";
+        }
+
+        private PdfPCell GetHeaderCell(string text, iTextSharp.text.Font font, int colSpan = 1, int rowSpan = 1)
+        {
+            PdfPCell cell = new PdfPCell(new Phrase(text, font));
+            cell.Border = 0;
+            cell.HorizontalAlignment = 1;
+            cell.Colspan = colSpan;
+            cell.Rowspan = rowSpan;
+
+            return cell;
+        }
+
+        private PdfPCell GetContentCell(string text, iTextSharp.text.Font font)
+        {
+            PdfPCell cell = new PdfPCell(new Phrase(text, font));
+            cell.HorizontalAlignment = 0;
+            cell.Border = 0;
+
+            return cell;
+        }
         #endregion
 
         #region Hurda & 2. Kalite Transfer
 
-        public async Task<ActionResult> HurdaVeIkinciKaliteTransfer() 
+        public async Task<ActionResult> HurdaVeIkinciKaliteTransfer()
         {
             int moduleId = 23;
 
