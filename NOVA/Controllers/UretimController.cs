@@ -229,7 +229,7 @@ namespace NOVA.Controllers
             {
                 var stokadlari = GetStokAdlari();
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -371,7 +371,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -397,7 +397,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -421,7 +421,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -447,7 +447,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -482,7 +482,7 @@ namespace NOVA.Controllers
 
 
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -758,7 +758,7 @@ namespace NOVA.Controllers
             Kernel kernel1 = new Kernel();
             NetRS netRS1 = default(NetRS);
             Sirket sirket1 = kernel1.yeniSirket(TVTTipi.vtMSSQL,
-                                           "TEST2022",
+                                           "EFECE2023",
                                            "TEMELSET",
                                            "",
                                            Request.Cookies["UserName"].Value,
@@ -822,7 +822,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -926,7 +926,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -1018,7 +1018,7 @@ namespace NOVA.Controllers
             try
             {
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                                           "TEST2022",
+                                                           "EFECE2023",
                                                            "TEMELSET",
                                                            "",
                                                            Request.Cookies["UserName"].Value,
@@ -1092,7 +1092,7 @@ namespace NOVA.Controllers
             {
 
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -1315,7 +1315,7 @@ namespace NOVA.Controllers
 
 
                     sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -1390,7 +1390,10 @@ namespace NOVA.Controllers
                         netRS.Ac("UPDATE TBLISEMRIREC SET HAM_KODU='" + seritraStok + "' WHERE ISEMRINO='" + ISEMRINO + "'");
                         netRS.Ac("UPDATE TBLISEMRI SET KAPALI='H' WHERE ISEMRINO='" + ISEMRINO + "'");
                     }
-
+                    if (ISEMRINO.Substring(0, 2) == "PB")
+                    {
+                        netRS.Ac("UPDATE TBLISEMRIREC SET KAPALI='H',MIKTAR='1' WHERE ISEMRINO='" + ISEMRINO + "'");
+                    }
                     uretim.FisUret();
                     uretim.Kaydet();
                     if (ISEMRINO == stokkodu + "23000001001" || ISEMRINO == stokkodu + "23000001002")
@@ -1569,7 +1572,7 @@ namespace NOVA.Controllers
 
 
                     sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -1691,7 +1694,7 @@ namespace NOVA.Controllers
 
 
                     sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -1925,7 +1928,7 @@ namespace NOVA.Controllers
                 FatUst fatUst = default(FatUst);
                 FatKalem fatKalem = default(FatKalem);
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                           "TEST2022",
+                                           "EFECE2023",
                                            "TEMELSET",
                                            "",
                                            Request.Cookies["UserName"].Value,
@@ -1988,7 +1991,7 @@ namespace NOVA.Controllers
             {
                 var stokadlari = GetStokAdlari();
                 sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
-                                            "TEST2022",
+                                            "EFECE2023",
                                             "TEMELSET",
                                             "",
                                             Request.Cookies["UserName"].Value,
@@ -2403,7 +2406,6 @@ namespace NOVA.Controllers
                 {
                     if (Onizle)
                     {
-
                         return System.IO.Path.GetFileName(Etiket["Path"]);
                     }
                     else if (DirektYazdir)
@@ -2423,6 +2425,17 @@ namespace NOVA.Controllers
                                 }
                             }
 
+                            var httpClient1 = new HttpClient();
+
+                            foreach (string Barkod in BarkodListesi) 
+                            {
+                                var apiUrl1 = $"http://192.168.2.13:83/api/uretim/Yazdirilanlar/{Barkod}";
+
+                                var request1 = new HttpRequestMessage(HttpMethod.Get, apiUrl1) { };
+
+                                httpClient1.SendAsync(request1);
+                            }
+                            
                             return "Etiket başarıyla yazdırıldı.";
                         }
                         catch (Exception ex)
@@ -2585,7 +2598,7 @@ namespace NOVA.Controllers
                 iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
                 QR.ScaleToFit(85, 85);
                 QR.Alignment = iTextSharp.text.Image.UNDERLYING;
-                QR.SetAbsolutePosition(155, 60);
+                QR.SetAbsolutePosition(155, 70);
                 document.Add(QR);
             }
 
@@ -2697,6 +2710,11 @@ namespace NOVA.Controllers
                 table.AddCell(GetContentCell("MENŞEİ/SN", fontBoldContent));
                 table.AddCell(GetContentCell(":", fontBoldContent));
                 table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].MENSEI?.Split(' ')[0])}/{BosDegerKontrolu(EtiketBilgileri[i].FIRMA_SERI_NO)}", fontBoldContent));
+
+
+                table.AddCell(GetContentCell("ESKİ BOBİN NO", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri[i].ACIKLAMA_5)}", fontBoldContent));
 
                 table.WriteSelectedRows(0, -1, 20, 390, cb);
 

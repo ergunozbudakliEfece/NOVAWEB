@@ -20,6 +20,7 @@ namespace NOVA.Models
         public string MAK_KODU { get; set; }
         public string KALINLIK { get; set; }
         public double? METRAJ { get; set; }
+        public string ACIKLAMA_5 { get; set; }
 
         public double? KALITE { get; set; }
         public double? KAPLAMA { get; set; }

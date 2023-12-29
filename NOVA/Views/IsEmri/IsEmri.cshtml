@@ -714,7 +714,10 @@
         function rehberAc() {
 
             $("#rehberSec").modal("show");
-            $('#urunler').bootstrapTable("destroy").bootstrapTable()
+            ShowProgress()
+            $('#urunler').bootstrapTable("destroy").bootstrapTable().after(function () {
+                HideProgress()
+            })
 
         }
     function rehberAktar(seri) {
@@ -1287,12 +1290,14 @@
                 if (val.value.substring(0, 2) != "TP") {
                     if (hamkod != null) {
                         if (OldStokAdi != $("#stokadi").html()) {
+                            ShowProgress();
                             var url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/0/"+ val.value
                             if (val.value.substring(0, 2) == "BK") {
                                 var gen = $('#genislik').val();
                                 url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/" + gen + "/" + val.value
                             }
                             $.getJSON(url, function (d1) {
+                               
                                 var $sel3 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1];
                                 $sel3.replaceChildren();
                                 var opt2 = document.createElement("option");
@@ -1307,6 +1312,8 @@
                                     opt3.text = d1[i].STOK_ADI;
                                     $sel3.appendChild(opt3);
                                 }
+                            }).done(function () {
+                                HideProgress();
                             })
                             OldStokAdi = null;
 
