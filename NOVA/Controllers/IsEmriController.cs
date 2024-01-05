@@ -29,6 +29,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using ServiceStack.Text;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace NOVA.Controllers
 {
@@ -1089,6 +1091,7 @@ namespace NOVA.Controllers
 
                 TempData["Hata"] = ex.Message;
                 return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+
             }
             finally
             {
@@ -1101,8 +1104,9 @@ namespace NOVA.Controllers
 
             return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
         }
+
         [HttpPost]
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult PostBKPBRF(List<IsEmriModel> isemri, bool TamamiKullanilsin)
+        public string PostBKPBRF(List<IsEmriModel> isemri, bool TamamiKullanilsin)
         {
 
             var isemridis = isemri.GroupBy(x => x.ISEMRINO).Select(x => x.First()).ToList();
@@ -1159,7 +1163,7 @@ namespace NOVA.Controllers
                     {
                         netRS2.Ac("UPDATE TBLISEMRIEK SET KT_SIPNO='" + isemridis[i].SIPARISNO + "' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
                     }
-                    if (TamamiKullanilsin == true && isemridis[i].ISEMRINO.Substring(0,2)!="RF")
+                    if (TamamiKullanilsin == true && isemridis[i].ISEMRINO.Substring(0, 2) != "RF" && isemridis[i].ISEMRINO.Substring(0, 2) != "PB")
                     {
                         
                         netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',DEPO_KODU='45',MIKTAR=" + mik +",MIKTARSABITLE='E' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
@@ -1175,7 +1179,7 @@ namespace NOVA.Controllers
             {
 
                 TempData["Hata"] = ex.Message;
-                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+                return ex.Message;
             }
             finally
             {
@@ -1184,8 +1188,9 @@ namespace NOVA.Controllers
 
 
 
-            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+            return "başarılı";
         }
+
         [HttpPost]
         public ActionResult Post1()
         {

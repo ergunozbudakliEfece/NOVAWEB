@@ -22,8 +22,8 @@
     <script src="~/assets/vendor/js/bootstrap.js"></script>
 
     <link href="~/assets/boxicons/css/boxicons.min.css" rel="stylesheet" />
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf_viewer.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/Content/pdf.min.js"></script>
+    <link href="~/Content/pdf_viewer.min.css" rel="stylesheet" />
     <style>
         .swal2-html-container {
             overflow: hidden !important;
@@ -342,7 +342,7 @@
             $('#nova-overlay').fadeOut('slow');
         }
     </script>
-    <script src="https://acrobatservices.adobe.com/view-sdk/viewer.js"></script>
+    <script src="~/Content/viewer.js"></script>
     <style type="text/css">
         #pdf_container {
             background: #ccc;
@@ -518,16 +518,16 @@
                 </div>
                 <div class="row" style="min-height:33%;display:none" id="UretimeGirenlerTablo">
                     <div id="UretimeGirenlerTabloToolBar">
-                        <div class="row mt-1">
-                            <div class="col">
-                                <select id="filter" name="filterAlgorithm" style="width: 15vw">
+                        <div class="row gap-0 mt-1">
+                            <div class="col p-0">
+                                <select id="filter" name="filterAlgorithm" style="width: 25vw !important;">
                                 </select>
 
                             </div>
-                            <div class="col">
+                            <div class="col p-1">
                                 <button type="button" id="UretimeAlButton" onclick="UretimeAl()" class="btn btn-primary" style="height: 28px; white-space: nowrap; text-align: center; padding-top: 2px !important;">ÜRETİME AL</button>
                             </div>
-                            <div class="col" id="siralama">
+                            <div class="col p-0" id="siralama">
                                 <div class="class=form-check form-switch text-center">
                                     <input class="form-check-input" type="checkbox" onchange="HatGirdiSıralama()" id="HatGirdiSiralamaSwitch">
                                 </div>
@@ -1325,6 +1325,8 @@
                     $('#UretimListeTable').find('tbody')[0].scrollTo(0, ScrollHeight);
                 }
 
+                $('#UretimListeTable > tbody').scrollTop(0)
+
                 $('[data-bs-toggle="tooltip"]').tooltip({
                     container: 'body',
                     trigger: 'hover'
@@ -1424,9 +1426,6 @@
             change(0);
             $(`input:radio[name="uretim-islem"][value='0']`).prop('checked', true);
             $.getJSON('http://192.168.2.13:83/api/printers/list', function (data) {
-                var opt = $("<option>").val("Microsoft Print to PDF").text("Microsoft Print to PDF");
-
-                $('#yazici').append(opt);
                 for (let i = 0; i < data.length; i++) {
                    opt = $("<option>").val(data[i].PRINTER_NAME).text(data[i].PRINTER_NAME);
 
@@ -1444,6 +1443,14 @@
                             return markup;
                         }
                     });
+
+                if (localStorage.getItem("yazici") == undefined || localStorage.getItem("yazici") == null || localStorage.getItem("yazici") == 'null') {
+                    localStorage.setItem("yazici", $('#yazici').val());
+                }
+                else {
+                    $('#yazici').val(localStorage.getItem("yazici"));
+                    $('#yazici').trigger('change');
+                }
             })
 
             $(function () {
@@ -2096,6 +2103,14 @@
             const mid = document.getElementById(modal);
             let myModal = new bootstrap.Modal(mid);
             myModal.show();
+
+            if (localStorage.getItem("yazici") == undefined || localStorage.getItem("yazici") == null || localStorage.getItem("yazici") == 'null') {
+                localStorage.setItem("yazici", $('#yazici').val());
+            }
+            else {
+                $('#yazici').val(localStorage.getItem("yazici"));
+                $('#yazici').trigger('change');
+            }
         }
         function showhurdamodal(value) {
             hat = value.dataset.hat;
@@ -2866,6 +2881,12 @@
                                             if (response.trim().length > 0 && etiketOnizleme && etiket) {
                                                 UretilmisEtiketOnizle(response);
                                             }
+
+                                            if (response.substring(0, 4) == "HATA") {
+                                                playHata1();
+
+                                                Swal.fire('Yazdırma başarısız, üretilmiş barkodlar alanından tekrar deneyiniz!', response, 'error');
+                                            }
                                         }
                                     });
 
@@ -3103,7 +3124,7 @@
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <select id="yazici" class="form-select" style="width:250px">
+                                    <select id="yazici" class="form-select" style="width:250px" onchange="YaziciOnChange()">
                                     </select>
                                 </div>
 
@@ -4067,12 +4088,22 @@
         function yazdirchange() {
             var check = $('#etiketyazdir:checked').val()
             if (check) {
-
+                if (localStorage.getItem("yazici") == undefined || localStorage.getItem("yazici") == null || localStorage.getItem("yazici") == 'null') {
+                    localStorage.setItem("yazici", $('#yazici').val());
+                }
+                else {
+                    $('#yazici').val(localStorage.getItem("yazici"));
+                    $('#yazici').trigger('change');
+                }
                 $('#yazici').next(".select2-container").show();
             } else {
 
                 $('#yazici').next(".select2-container").hide();
             }
+        }
+
+        function YaziciOnChange() {
+            localStorage.setItem("yazici", $('#yazici').val());
         }
     </script>
 
@@ -4122,11 +4153,12 @@
             {
                 UretilmisBarkodlar = Response ?? [];
 
-                var Data = Makine == "all" ? UretilmisBarkodlar : UretilmisBarkodlar.filter(x => x.MAKINE == Makine)
+                if (Response.length > 0) {
+                    var Data = (Makine == "all") ? Response : Response.filter(x => x.MAKINE == Makine);
 
-                $('#UretilmisBarkodlarTablo').bootstrapTable("destroy");
-                $('#UretilmisBarkodlarTablo').bootstrapTable({ data: Data })
-
+                    $('#UretilmisBarkodlarTablo').bootstrapTable("destroy");
+                    $('#UretilmisBarkodlarTablo').bootstrapTable({ data: Data })
+                }
             }
         });
 
@@ -4216,6 +4248,14 @@
                 if (!DirektYazdir) {
                     UretilmisEtiketOnizle(Response);
                 }
+
+
+
+                if (Response.substring(0, 4) == "HATA") {
+                    playHata1();
+
+                    Swal.fire('Yazdırma başarısız, üretilmiş barkodlar alanından tekrar deneyiniz!', Response, 'error');
+                }
             }
         }).then(() => {
             document.body.style.pointerEvents = 'auto';
@@ -4278,7 +4318,15 @@
                 "Onizle": false
             },
             error: (e) => { console.log(JSON.stringify(e)); },
-            success: (response) => { }
+            success: (response) => {
+
+
+                if (response.substring(0, 4) == "HATA") {
+                    playHata1();
+
+                    Swal.fire('Yazdırma başarısız, üretilmiş barkodlar alanından tekrar deneyiniz!', response, 'error');
+                }
+            }
         }).then(() => {
             SecilenBarkodlar = [];
             document.body.style.pointerEvents = 'auto';
@@ -4749,9 +4797,7 @@
                 allowOutsideClick: false,
                 didOpen: function () {
                     $.getJSON('http://192.168.2.13:83/api/printers/list', function (data) {
-                        //var opt = $("<option>").val("Microsoft Print to PDF").text("Microsoft Print to PDF");
 
-                        //$('#yazici1').append(opt);
                         for (let i = 0; i < data.length; i++) {
                            var opt = $("<option>").val(data[i].PRINTER_NAME).text(data[i].PRINTER_NAME);
 

@@ -702,7 +702,7 @@
         </div>
     </div>
     @Html.Partial("IsEmriPartials/RehberPartial")
-    <script>
+<script>
 
         if ($(window).width() < 600) {
             $("#divPartial2").show();
@@ -1297,7 +1297,7 @@
                                 url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/" + gen + "/" + val.value
                             }
                             $.getJSON(url, function (d1) {
-                               
+
                                 var $sel3 = document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1];
                                 $sel3.replaceChildren();
                                 var opt2 = document.createElement("option");
@@ -1935,9 +1935,9 @@
                                 var sonrefisemri = "-";
                                 for (let a = 0; a < adet; a++) {
                                     var refadet = tr[i].getElementsByTagName("td")[9].innerHTML;
-                                    var sonisemri = makine + "23" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (a + 1).toString().padStart(3, '0');
+                                    var sonisemri = makine + "24" + (s[s.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (a + 1).toString().padStart(3, '0');
                                     if (s1.length > 0) {
-                                        sonrefisemri = makineref + "23" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (a + 1).toString().padStart(3, '0');
+                                        sonrefisemri = makineref + "24" + (s1[s1.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (a + 1).toString().padStart(3, '0');
                                         if (isemrilist.includes(sonrefisemri)) {
                                             var is1 = isemrilist.filter(x => x.includes(makineref));
                                             sonrefisemri = is1[is1.length - 1].substring(0, 12) + (parseFloat(is1[is1.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
@@ -2541,7 +2541,7 @@
     type: 'POST',
                     data: { isemri: lis, TamamiKullanilsin: TamamiAktarilsin },
     success: function () {
-
+        console.log(@TempData["Hata"]);
         HideProgress()
 
         $("#seri").val(null).trigger("input");
@@ -2562,6 +2562,7 @@
         document.getElementById("genislikalti").value = 0;
     },
     error: function () {
+        console.log(@TempData["Hata"]);
         document.body.style.cursor = 'default';
         HideProgress()
         const Toast = Swal.mixin({
@@ -2675,9 +2676,10 @@
                                      url: '@Url.Action("PostBKPBRF", "IsEmri")',
                                     type: 'POST',
                                     data: { isemri: lis, TamamiKullanilsin: TamamiAktarilsin },
-    success: function () {
+    success: function (e) {
 
         HideProgress()
+        console.log(e)
 
         $("#seri").val(null).trigger("input");
         mail();
@@ -2702,9 +2704,10 @@
         $("#seri").val(null);
         document.getElementById("genislikalti").value = 0;
     },
-    error: function () {
+    error: function (e) {
         document.body.style.cursor = 'default';
         HideProgress()
+        console.log(e)
         const Toast = Swal.mixin({
             toast: true,
             position: 'center',
@@ -3226,7 +3229,7 @@
                         var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
                         var Musteri = item.getElementsByTagName("select")[2].value;
 
-                        var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+                        var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
                         if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
                             SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
@@ -3419,7 +3422,7 @@ $.ajax({
         var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
         var Musteri = item.getElementsByTagName("select")[2].value;
 
-        var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+        var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
         if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
             SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
@@ -3607,7 +3610,7 @@ $.ajax({
                     var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
                     var Musteri = item.getElementsByTagName("select")[2].value;
 
-                    var SonIsEmri = Makine + "23" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+                    var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
                     if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
                         SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
@@ -3744,14 +3747,7 @@ $.ajax({
                 break;
 
         }
-        $.ajax({
-            url: '@Url.Action("Mail", "IsEmri")',
-            type: 'POST',
-            data: { mail: result, hamkod: Tip },
-            success: function () {
-                alert('Mail gönderildi!')
-            }
-        })
+
 
     }
     function chcked() {
@@ -3774,7 +3770,7 @@ $.ajax({
         $('#nova-overlay').fadeOut('slow');
     }
 //#endregion
-    </script>
+</script>
 </body>
 
 

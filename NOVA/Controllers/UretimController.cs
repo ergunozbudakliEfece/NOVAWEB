@@ -1390,10 +1390,6 @@ namespace NOVA.Controllers
                         netRS.Ac("UPDATE TBLISEMRIREC SET HAM_KODU='" + seritraStok + "' WHERE ISEMRINO='" + ISEMRINO + "'");
                         netRS.Ac("UPDATE TBLISEMRI SET KAPALI='H' WHERE ISEMRINO='" + ISEMRINO + "'");
                     }
-                    if (ISEMRINO.Substring(0, 2) == "PB")
-                    {
-                        netRS.Ac("UPDATE TBLISEMRIREC SET KAPALI='H',MIKTAR='1' WHERE ISEMRINO='" + ISEMRINO + "'");
-                    }
                     uretim.FisUret();
                     uretim.Kaydet();
                     if (ISEMRINO == stokkodu + "23000001001" || ISEMRINO == stokkodu + "23000001002")
@@ -1478,7 +1474,7 @@ namespace NOVA.Controllers
                             fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
 
                             fatUst = fatura.Ust();
-                            fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                            fatUst.FATIRS_NO = fatura.YeniNumara("D");
                             fatUst.CariKod = "12035200100406";
                             fatUst.TIPI = TFaturaTipi.ft_Bos;
                             fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
@@ -1508,7 +1504,7 @@ namespace NOVA.Controllers
                             fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
 
                             fatUst = fatura.Ust();
-                            fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                            fatUst.FATIRS_NO = fatura.YeniNumara("D");
                             fatUst.CariKod = "12035200100406";
                             fatUst.TIPI = TFaturaTipi.ft_Bos;
                             fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
@@ -1603,7 +1599,7 @@ namespace NOVA.Controllers
                         fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
 
                         fatUst = fatura.Ust();
-                        fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                        fatUst.FATIRS_NO = fatura.YeniNumara("D");
                         fatUst.TIPI = TFaturaTipi.ft_Bos;
                         fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                         fatUst.Tarih = DateTime.Now;
@@ -1632,7 +1628,7 @@ namespace NOVA.Controllers
                         fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
 
                         fatUst = fatura.Ust();
-                        fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                        fatUst.FATIRS_NO = fatura.YeniNumara("D");
                         fatUst.TIPI = TFaturaTipi.ft_Bos;
                         fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                         fatUst.Tarih = DateTime.Now;
@@ -1835,7 +1831,7 @@ namespace NOVA.Controllers
                         fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
 
                         fatUst = fatura.Ust();
-                        fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                        fatUst.FATIRS_NO = fatura.YeniNumara("D");
                         fatUst.TIPI = TFaturaTipi.ft_Bos;
                         fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                         fatUst.Tarih = DateTime.Now;
@@ -1864,7 +1860,7 @@ namespace NOVA.Controllers
                         fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
 
                         fatUst = fatura.Ust();
-                        fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                        fatUst.FATIRS_NO = fatura.YeniNumara("D");
                         fatUst.TIPI = TFaturaTipi.ft_Bos;
                         fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                         fatUst.Tarih = DateTime.Now;
@@ -1936,7 +1932,7 @@ namespace NOVA.Controllers
                 fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
 
                 fatUst = fatura.Ust();
-                fatUst.FATIRS_NO = fatura.YeniNumara("E");
+                fatUst.FATIRS_NO = fatura.YeniNumara("D");
                 fatUst.CariKod = "12035200100406";
                 fatUst.TIPI = TFaturaTipi.ft_Bos;
                 fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
@@ -2555,7 +2551,7 @@ namespace NOVA.Controllers
 
                 table.AddCell(GetContentCell("KALINLIK", fontBoldContent));
                 table.AddCell(GetContentCell(":", fontBoldContent));
-                table.AddCell(GetContentCell($"{(EtiketBilgileri[i].MAK_KODU == "DL01" || EtiketBilgileri[i].MAK_KODU == "TP01" || EtiketBilgileri[i].MAK_KODU == "MH01" ? "-" : BosDegerKontrolu(EtiketBilgileri[i].KALINLIK))}", fontBoldContent));
+                table.AddCell(GetContentCell($"{(EtiketBilgileri[i].MAK_KODU == "DL01" ? BosDegerKontrolu(EtiketBilgileri[i].KALINLIK) : "-")}", fontBoldContent));
 
                 table.AddCell(GetContentCell("GENİŞLİK", fontBoldContent));
                 table.AddCell(GetContentCell(":", fontBoldContent));
@@ -2761,7 +2757,7 @@ namespace NOVA.Controllers
 
         private string DegerFormat(double? Deger, string Tip)
         {
-            if (Deger == 0)
+            if (Deger == 0 || Deger == null)
             {
 
                 return "-";
@@ -2783,7 +2779,7 @@ namespace NOVA.Controllers
 
         private string BosDegerKontrolu(double? Deger)
         {
-            return (Deger == 0 || Deger == 0.0 || Deger is null) ? "-" : Deger.ToString();
+            return (Deger == 0 || Deger == 0.0 || Deger == null) ? "-" : Deger.ToString();
         }
 
         private string TarihFormat(DateTime? Tarih)
@@ -2793,7 +2789,7 @@ namespace NOVA.Controllers
 
         private string MiktarFormat(double? Miktar, string OlcuBirimi)
         {
-            if (Miktar == 0)
+            if (Miktar == 0 || Miktar == null)
             {
                 return "-";
             }
@@ -2803,7 +2799,7 @@ namespace NOVA.Controllers
        
         private string MetrajFormat(double? Metraj, string OlcuBirimi)
         {
-            if (Metraj == 0)
+            if (Metraj == 0 || Metraj == null)
             {
                 return "-";
             }
