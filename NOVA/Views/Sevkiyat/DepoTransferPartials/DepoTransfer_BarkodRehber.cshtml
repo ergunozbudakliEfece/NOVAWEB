@@ -76,7 +76,7 @@
         $('#BarkodRehberTableProgress').show();
 
         if (SeciliStokKodu != "") {
-            var ProcUrl = "http://192.168.2.13:83/api/seri/rehber/" + SeciliStokKodu + "/" + 0;
+            var ProcUrl = "http://192.168.2.13:83/api/seri/rehber/" + SeciliStokKodu + "/" + CikisDepo;
 
             var BarkodNoListesi = [];
 
@@ -168,7 +168,7 @@
 
     let BarkodVerileriGetir = async () => {
         const result = await Promise.all(SeciliBarkodNo.map(each =>
-            $.getJSON("http://192.168.2.13:83/api/seri/bakiye/" + each, function (data) {
+            $.getJSON("http://192.168.2.13:83/api/seri/bakiye/" + each + "/" + CikisDepo, function (data) {
                 if (data.length > 0)
                 {
                     if (!BarkodNoTablodaVarMi(each))
@@ -183,8 +183,8 @@
                             "MIKTAR2": data[0].MIKTAR2.toFixed(2),
                             "OLCU_BR2": $('#OLCU_BR2').val(),
                             "SERI_NO": each,
-                            "ACIK1": parseFloat(data[0].ACIK1.replace(",", ".")).toFixed(2).toString().replace(".", ","),
-                            "ACIK2": parseFloat(data[0].ACIK2.replace(",", ".")).toFixed(1).toString().replace(".", ","),
+                            "ACIK1": data[0].ACIK2,
+                            "ACIK2": data[0].ACIK1,
                             "ACIK3": data[0].ACIK3,
                             "SERI_NO_3": data[0].SERI_NO_3,
                             "SERI_NO_4": data[0].SERI_NO_4,

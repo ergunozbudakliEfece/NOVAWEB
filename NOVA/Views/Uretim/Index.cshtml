@@ -305,6 +305,9 @@
                 max-height: 1600px !important;
             }
         }
+        .th-inner {
+            white-space: break-spaces !important
+        }
     </style>
     <link href="~/Scripts/select2.css" rel="stylesheet" />
 
@@ -433,7 +436,7 @@
                     </div>
 
                     <div class="col-sm-auto" style="padding-right: 0;">
-                        <div class="tableClass" style="max-height:680px">
+                        <div class="tableClass" style="max-height:85vh !important">
                             <table id="UretimListeTable"
                                    class="table"
                                    data-show-refresh="false"
@@ -472,7 +475,6 @@
                            data-show-columns-toggle-all="false"
                            data-detail-view="true"
                            data-detail-view-by-click="true"
-                           data-detail-formatter="DetailFormatter"
                            data-show-export="false"
                            data-click-to-select="true"
                            data-show-pagination-switch="false"
@@ -481,6 +483,7 @@
                            data-detail-view-icon="false"
                            data-height="700"
                            data-row-style="rowFormatter"
+                           data-fixed-number="0"
                            data-pagination-parts="['pageSize', 'pageInfo', 'pageList']"
                            data-locale="tr-TR">
                         <thead>
@@ -497,7 +500,9 @@
                                 <th data-width="0" data-field="ACIKLAMA_5" data-halign="center" data-align="center" data-sortable="true">ACIKLAMA 5</th>
                                 <th data-width="0" data-field="HAM_KALITE" data-halign="center" data-align="center" data-sortable="true">HAMMADE KALITE</th>
                                 <th data-width="0" data-field="HAM_KAP_KALINLIK" data-halign="center" data-align="center" data-sortable="true">HAMMADE KAP KALINLIK</th>
+
                                 <th data-width="0" data-field="HAM_MIKTAR" data-halign="center" data-align="center" data-sortable="true">HAMMADE MIKTAR</th>
+
                                 <th data-width="0" data-field="USTISEMRI" data-halign="center" data-align="center" data-sortable="true">USTISEMRI</th>
                                 <th data-width="0" data-field="ALT_ISEMRI" data-halign="center" data-align="center" data-sortable="true">ALT ISEMRI</th>
                                 <th data-width="0" data-field="SIRA" data-halign="center" data-align="center" data-sortable="true">SIRA</th>
@@ -510,6 +515,7 @@
                                 <th data-width="0" data-field="REFISEMRINO" data-halign="center" data-align="center" data-sortable="true">REFISEMRINO</th>
                                 <th data-width="0" data-field="REF_STOK_KODU" data-halign="center" data-align="center" data-sortable="true">REF_STOK_KODU</th>
                                 <th data-width="0" data-field="REF_STOK_ADI" data-halign="center" data-align="center" data-sortable="true">REF_STOK_ADI</th>
+                                <th data-width="5" data-field="ISLEM" data-halign="center" data-align="center" data-sortable="false" data-formatter="BekleyenIslemFormatter">İŞLEM</th>
                             </tr>
                         </thead>
                     </table>
@@ -801,11 +807,19 @@
         {
             var Sütunlar = MakineKoduIleDetaySutunFiltrele();
 
+            var MakineKodu = $('input:radio[name="makine-ie"]:checked').val();
+
+            var MakineKodu = $('input:radio[name="makine-ie"]:checked').val();
+
             $detail.html(`<div class="card-body p-2" style="background-color:mintcream;"><div class="table-responsive"><table id="BekleyenIsEmirleri${index}DetailTable" class="table" data-search="false" data-show-refresh="false" data-show-toggle="false" data-show-fullscreen="false" data-show-columns="false" data-show-columns-toggle-all="false" data-detail-view="false" data-detail-view-by-click="false" data-show-export="false" data-click-to-select="true" data-minimum-count-columns="2" data-show-pagination-switch="false" data-pagination="false" data-id-field="id" data-show-footer="false" data-mobile-responsive="true" data-row-style="DetailSatirStili" data-response-handler="responseHandler" data-pagination-parts="['pageSize', 'pageInfo', 'pageList']" data-locale="tr-TR"><thead><tr>
                                         ${Sütunlar}
-                                        </tr></thead></table></div></div>`);
+                                        </tr></thead></table></div></div><div id="parent-id-${MakineKodu == "DL01" ? row.HAM_SERINO : row.URT_STOK_KODU}" style="display:none;">${index}</div>`);
 
-            $(`#BekleyenIsEmirleri${index}DetailTable`).bootstrapTable({ data: MakineKoduIleDetayTabloFiltrele(row) });
+            var DetailData = [];
+
+            DetailData = MakineKoduIleDetayTabloFiltrele(row);
+
+            $(`#BekleyenIsEmirleri${index}DetailTable`).bootstrapTable({ data: DetailData });
         });
 
         function MakineKoduIleIsEmriUstBilgiDuzenle()
@@ -886,6 +900,7 @@
                     $('#BekleyenIsEmirleriTable').bootstrapTable('hideColumn', 'ACIKLAMA_5');
                     $('#BekleyenIsEmirleriTable').bootstrapTable('showColumn', 'HAM_KALITE');
                     $('#BekleyenIsEmirleriTable').bootstrapTable('showColumn', 'HAM_KAP_KALINLIK');
+                    $('#BekleyenIsEmirleriTable').bootstrapTable('showColumn', 'ISLEM');
                     $('#BekleyenIsEmirleriTable').bootstrapTable('showColumn', 'HAM_MIKTAR');
                     $('#BekleyenIsEmirleriTable').bootstrapTable('hideColumn', 'USTISEMRI');
                     $('#BekleyenIsEmirleriTable').bootstrapTable('hideColumn', 'ALT_ISEMRI');
@@ -936,6 +951,7 @@
                     $('#BekleyenIsEmirleriTable').bootstrapTable('hideColumn', 'REFISEMRINO');
                     $('#BekleyenIsEmirleriTable').bootstrapTable('hideColumn', 'REF_STOK_KODU');
                     $('#BekleyenIsEmirleriTable').bootstrapTable('hideColumn', 'REF_STOK_ADI');
+                    $('#BekleyenIsEmirleriTable').bootstrapTable('showColumn', 'ISLEM');
                     break;
             };
         }
@@ -1062,12 +1078,15 @@
         {
             if(row.KAPALI == "H")
             {
-                var ButonSinifi = KapatilacakIsEmirleri.indexOf(row.ALT_ISEMRI) > -1 ? "bi bi-check-circle-fill" : "bi bi-check-circle";
+                var ButonSinifi = KapatilacakIsEmirleri.indexOf(row.ALT_ISEMRI) > -1 ? "bi bi-check-circle-fill ignored" : "bi bi-check-circle ignored";
                 var ButonStili = KapatilacakIsEmirleri.indexOf(row.ALT_ISEMRI) > -1 ? "color:#71dd37;font-size:x-large;" : "color:red;font-size:x-large;" ;
 
                 var IslemIkon = `<i class="${ButonSinifi}" style="${ButonStili}"></i>`;
 
-                return `<div style="cursor:pointer" onclick="KapatilacakIsEmriSec(this, '${row.ALT_ISEMRI}')">${IslemIkon}</div>`;
+                var MakineKodu = $('input:radio[name="makine-ie"]:checked').val();
+                var Data = MakineKodu == "DL01" ? row.HAM_SERINO : row.URT_STOK_KODU;
+
+                return `<div style="cursor:pointer" onclick="SelectValue('${row.ALT_ISEMRI}', this, '${Data}')")">${IslemIkon}</div>`;
             }
             else
             {
@@ -1075,31 +1094,45 @@
             }
         }
 
-        function KapatilacakIsEmriSec(btn, value)
-        {
+        function SelectValue(Value, Button, ParentIconId) {
             event.stopPropagation();
 
-            if (KapatilacakIsEmirleri.filter(item => item.ISEMRINO === value).length > 0)
-            {
-                KapatilacakIsEmirleri = KapatilacakIsEmirleri.filter(item => item.ISEMRINO !== value);
+            var Icon = Button.getElementsByTagName('i')[0];
+            var ParentIconIndex = parseInt(document.getElementById(`parent-id-${ParentIconId}`).innerHTML);
+            var ParentIcon = $(`#BekleyenIsEmirleriTable [data-index="${ParentIconIndex}"] td i:not(.ignored)`)[0];
 
-                btn.getElementsByTagName("i")[0].className = "bi bi-check-circle";
-                btn.getElementsByTagName("i")[0].style = "color:red;font-size:x-large;";
+            var MakineKodu = $('input:radio[name="makine-ie"]:checked').val();
+            var Filter = (MakineKodu == "DL01" ? "HAM_SERINO" : "URT_STOK_KODU");
+
+            if (ValueIsSelected(Value)) {
+                KapatilacakIsEmirleri = KapatilacakIsEmirleri.filter(x => x != Value);
+
+                Icon.style.color = 'red';
+                Icon.classList.remove("bi-check-circle-fill");
+                Icon.classList.add("bi-check-circle");
+
+                ParentIcon.style.color = 'red';
+                ParentIcon.classList.remove("bi-check-circle-fill");
+                ParentIcon.classList.add("bi-check-circle");
             }
-            else
-            {
-                KapatilacakIsEmirleri.push({ "ISEMRINO": value });
+            else {
+                KapatilacakIsEmirleri.push(Value);
 
-                btn.getElementsByTagName("i")[0].className = "bi bi-check-circle-fill";
-                btn.getElementsByTagName("i")[0].style = "color:#71dd37;font-size:x-large;";
+                Icon.style.color = '#71dd37';
+                Icon.classList.add("bi-check-circle-fill");
+                Icon.classList.remove("bi-check-circle");
+
+                if (AllValueIsSelected(ParentIconId, Filter)) {
+                    ParentIcon.style.color = '#71dd37';
+                    ParentIcon.classList.add("bi-check-circle-fill");
+                    ParentIcon.classList.remove("bi-check-circle");
+                }
             }
 
-            if(KapatilacakIsEmirleri.length > 0)
-            {
+            if (KapatilacakIsEmirleri.length > 0) {
                 $('#isemirlerinikapatbtn').show();
             }
-            else
-            {
+            else {
                 $('#isemirlerinikapatbtn').hide();
             }
         }
@@ -1112,7 +1145,7 @@
 
                 for (var i = 0; i < KapatilacakIsEmirleri.length; i++)
                 {
-                    Liste += `<b>${KapatilacakIsEmirleri[i].ISEMRINO}<br/>`;
+                    Liste += `<b>${KapatilacakIsEmirleri[i]}<br/>`;
                 }
 
                 Swal.fire({
@@ -1361,7 +1394,7 @@
 
             #UretimListeTable tbody {
                 display: block;
-                max-height: 400px;
+                max-height: 100vh;
                 overflow-y: auto;
             }
 
@@ -1493,9 +1526,10 @@
                 $("#UretimListeTable").show();
                 $('#UretimeAlMakine').html(null).hide();
                 MakineListeleUK();
-
+                $('#UretimListeTable').rep
                 $('#UretimKaydiMakine').show();
-
+                $('#UretimListeTable').bootstrapTable('destroy');
+                $('#UretimListeTable').bootstrapTable({ data: [] });
                 $('#UretilmisBarkodlar').hide();
                 $('#uretilmis-barkod-makineler').hide();
             }
@@ -2159,9 +2193,10 @@
                 $("#miktar22").prop("disabled", true);
                 $("#miktar11").prop("disabled", false);
                 $("#SiparisModal").modal('show');
+                $('#yazici').next(".select2-container").show();
                 $("#ModalSaveButton").prop("disabled", true)
                 $("#kontrol").prop('checked', true);
-                $("#etiketyazdir").prop('checked', false);
+                $("#etiketyazdir").prop('checked', true);
                 $("#ikincimik2").prop("disabled", true);
                 $("#hurdamik").prop("disabled", true);
                 $("#ikincimik1").prop("disabled", true);
@@ -2185,7 +2220,6 @@
                 $("#hurdamik1").val(null);
                 $("#hurdaMHdiv").hide();
                 $("#hurdaMHdiv1").hide();
-                $('#yazici').next(".select2-container").hide();
                 if (hat == 'DL01') {
                     $("#kontrolcol").show();
                     $("#kontrol").prop('disabled', false);
@@ -2610,6 +2644,30 @@
 
             return '<div style="cursor:pointer" onclick="Select(this)"><i class="bi bi-check-circle" data-isemri="'+index.ISEMRINO+'" style="color:red;font-size:x-large;"></i></div>';
         }
+        function BekleyenIslemFormatter(value, index, row) {
+
+            var MakineKodu = $('input:radio[name="makine-ie"]:checked').val();
+
+            switch (MakineKodu) {
+                case "DL01":
+                    return `<div style="cursor:pointer" onclick="SelectAll('${index.HAM_SERINO}', 'HAM_SERINO', this, ${row})"><i class="bi bi-check-circle" style="color:red;font-size:x-large;"></i></div>`;
+                    break;
+                case "BK01":
+                case "MH01":
+                case "PB01":
+                case "PB02":
+                case "RF01":
+                case "RF02":
+                case "RF03":
+                case "SM01":
+                case "SM02":
+                case "SM03":
+                case "TP01":
+                    return `<div style="cursor:pointer" onclick="SelectAll('${index.URT_STOK_KODU}', 'URT_STOK_KODU', this, ${row})"><i class="bi bi-check-circle" style="color:red;font-size:x-large;"></i></div>`;
+                    break;
+            }
+
+        }
         function Select(value) {
             if (value.getElementsByTagName("i")[0].className != "bi bi-check-circle-fill") {
                 value.getElementsByTagName("i")[0].className = "bi bi-check-circle-fill";
@@ -2625,6 +2683,60 @@
                 }
             }
 
+        }
+        function SelectAll(Value, Filter, Button, Id) {
+            event.stopPropagation();
+
+            var Icon = Button.getElementsByTagName('i')[0];
+
+            FiltrelenmisIsEmirleri = IsEmirleri.filter(x => x[Filter] == Value);
+
+
+            if (AllValueIsSelected(Value, Filter)) {
+                var MappedData = FiltrelenmisIsEmirleri.map((item) => { return item.ALT_ISEMRI });
+                KapatilacakIsEmirleri = KapatilacakIsEmirleri.filter(x => !MappedData.includes(x));
+
+                Icon.style.color = 'red';
+                Icon.classList.remove("bi-check-circle-fill");
+                Icon.classList.add("bi-check-circle");
+            }
+            else {
+                FiltrelenmisIsEmirleri?.forEach((item) => {
+                    if (!ValueIsSelected(item.ALT_ISEMRI)) {
+                        KapatilacakIsEmirleri.push(item.ALT_ISEMRI);
+                    }
+                });
+
+                Icon.style.color = '#71dd37';
+                Icon.classList.add("bi-check-circle-fill");
+                Icon.classList.remove("bi-check-circle");
+            }
+
+            $(`#BekleyenIsEmirleri${Id}DetailTable`).bootstrapTable('toggleView');
+            $(`#BekleyenIsEmirleri${Id}DetailTable`).bootstrapTable('toggleView');
+
+            if (KapatilacakIsEmirleri.length > 0) {
+                $('#isemirlerinikapatbtn').show();
+            }
+            else {
+                $('#isemirlerinikapatbtn').hide();
+            }
+
+        }
+        function AllValueIsSelected(Value, Filter)
+        {
+            FiltrelenmisIsEmirleri = IsEmirleri.filter(x => x[Filter] == Value);
+
+            for (var i = 0; i < FiltrelenmisIsEmirleri.length; i++) {
+                if (!(KapatilacakIsEmirleri.includes(FiltrelenmisIsEmirleri[i].ALT_ISEMRI))) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        function ValueIsSelected(Value) {
+            return KapatilacakIsEmirleri.includes(Value);
         }
         function VerileriGonder() {
             ShowProgress();
@@ -2910,21 +3022,12 @@
                         if (hurdamik != "" && hurdamik != null) {
                             top1 = top1 + parseFloat(hurdamik);
                         }
-                        var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/0/" + top1.toString().trim() + "/" + top2.toString().trim() + "/0";
-                        if (top1 <= max) {
+                        if (mik1 <= max) {
 
-                            $.getJSON(url, function (dataa) {
-                                var list = dataa;
-                                if (dataa.length > 0) {
-                                    Pbsayac = 0;
-                                    sonMu = false;
-                                    if (Pbsayac == dataa.length - 1) {
-                                        sonMu = true;
-                                    }
-                                    loadPB(list)
-                                }
+                           
 
-                            })
+                            loadPB(hat, stok, mik1.toString().trim(), mik2.toString().trim())
+                              
 
                         } else {
                             HideProgress();
@@ -3006,8 +3109,9 @@
         var type = 'fa'
         var Pbsayac = 0;
         var sonMu = false;
-        function loadPB(result) {
-            var r = result;
+        var ek = 0;
+        function loadPB(hat,stok,miktar1,miktar2) {
+           
             var ikincimik1 = $("#ikincimik1").val();
             var ikincimik2 = $("#ikincimik2").val();
             var hurdamik = $("#hurdamik").val();
@@ -3022,10 +3126,15 @@
             var etiketOnizleme = $("#etiket-onizleme").is(':checked');
             var k = $("#kontrol").is(':checked');
 
-                $.ajax({
-                    url: '@Url.Action("TrpzUretim", "Uretim")',
-                    type: 'POST',
-                    data: { "stokkodu": stok, "ISEMRINO": r[Pbsayac].ISEMRINO, "SERI_NO": r[Pbsayac].SERI_NO, "KULL_MIKTAR": r[Pbsayac].KULL_MIKTAR, "mik2": Math.round(r[Pbsayac].MIKTAR2), "kontrol": k, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": Pbsayac, "sonMu": sonMu },
+                
+                 var etiket = $("#etiketyazdir").is(':checked');
+                 var etiketOnizleme = $("#etiket-onizleme").is(':checked');
+                 var k = $("#kontrol").is(':checked');
+
+            $.ajax({
+                url: '@Url.Action("TrpzUretim", "Uretim")',
+                type: 'POST',
+                data: { "stokkodu": stok, "ISEMRINO": hat, "SERI_NO": "", "KULL_MIKTAR":miktar1, "mik2":miktar2, "kontrol": k, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": 0, "sonMu": sonMu },
                     error: function (data1) {
                         console.log(data1);
                         HideProgress();
@@ -3037,15 +3146,7 @@
 
                         if (data1.substring(0, 4) != 'Hata') {
 
-                            Pbsayac++;
-                            if (Pbsayac == r.length - 1) {
-                                sonMu=true;
-                            }
-                            if (Pbsayac < r.length) {
-
-                                loadPB(r)
-
-                            } else {
+                         
                                 HideProgress();
                                 $("#SiparisModal").modal('hide');
                                 playOnay()
@@ -3055,7 +3156,7 @@
                                     TrpzBarkod(data1);
                                 }
                                 document.getElementById(btnid).onclick();
-                            }
+                            
 
                         } else {
                             HideProgress();
@@ -3644,7 +3745,7 @@
                     $('#miktar22').attr('onkeyup', 'ikinciKaliteKeyUp()')
                     $('#ModalSaveButton').attr('onclick', 'ikinciKaliteKaydet(\'ikinci\')')
                     $("#etiketyazdir").prop('disabled', true);
-                    $("#etiketyazdir").prop('checked', false);
+                    $("#etiketyazdir").prop('checked', true);
                     $("#etiket-onizleme").prop('disabled', true);
                     $("#etiket-onizleme").prop('checked', false);
                     break;
@@ -3657,7 +3758,7 @@
                     $('#miktar22').attr('onkeyup', 'ikinciKaliteKeyUp()')
                     $('#ModalSaveButton').attr('onclick', 'ikinciKaliteKaydet(\'hurda\')')
                     $("#etiketyazdir").prop('disabled', true);
-                    $("#etiketyazdir").prop('checked', false);
+                    $("#etiketyazdir").prop('checked', true);
                     $("#etiket-onizleme").prop('disabled', true);
                     $("#etiket-onizleme").prop('checked', false);
                     break;
@@ -4144,6 +4245,7 @@
         $('#uretilmis-barkod-dizayn').html('');
         $('#uretilmis-barkod-dizayn').append(new Option('Üretim', 'Uretim'));
         $('#uretilmis-barkod-dizayn').append(new Option('Sevkiyat', 'Sevkiyat'));
+        $('#uretilmis-barkod-dizayn').append(new Option('DL01 Üretim', 'DL01Uretim'));
 
         $.ajax({
             url: 'http://192.168.2.13:83/api/seri/serirehbertumu',

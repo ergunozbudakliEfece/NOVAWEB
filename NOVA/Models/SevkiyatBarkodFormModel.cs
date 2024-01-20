@@ -22,8 +22,8 @@ namespace NOVA.Models
         public double? METRAJ { get; set; }
         public string ACIKLAMA_5 { get; set; }
 
-        public double? KALITE { get; set; }
-        public double? KAPLAMA { get; set; }
+        public string KALITE { get; set; }
+        public string KAPLAMA { get; set; }
         public string MENSEI { get; set; }
         public string FIRMA_SERI_NO { get; set; }
 

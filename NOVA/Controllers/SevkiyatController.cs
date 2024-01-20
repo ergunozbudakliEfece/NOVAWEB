@@ -282,6 +282,10 @@ namespace NOVA.Controllers
             table.AddCell(GetContentCell(":", fontBoldContent));
             table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MENSEI?.Split(' ')[0])}/{BosDegerKontrolu(EtiketBilgileri.FIRMA_SERI_NO)}", fontBoldContent));
 
+            table.AddCell(GetContentCell("BOBİN NO", fontBoldContent));
+            table.AddCell(GetContentCell(":", fontBoldContent));
+            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.ACIKLAMA_5)}", fontBoldContent));
+
             table.WriteSelectedRows(0, -1, 20, 390, cb);
 
             var qrGenerator = new QRCodeGenerator();
@@ -368,7 +372,8 @@ namespace NOVA.Controllers
 
         private string BosDegerKontrolu(double? Deger)
         {
-            return (Deger == 0 || Deger == 0.0 || Deger is null) ? "-" : Deger.ToString();
+            var culture = new CultureInfo("tr-TR");
+            return (Deger == 0 || Deger == 0.0 || Deger is null) ? "-" : ((double)Deger).ToString("c", culture); 
         }
 
         private string TarihFormat(DateTime? Tarih)

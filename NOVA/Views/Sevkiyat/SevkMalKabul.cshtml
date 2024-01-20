@@ -17,6 +17,9 @@
 <link href="~/assets/boxicons/css/boxicons.min.css" rel="stylesheet" />
 <link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
 <style>
+    html {
+        overflow: hidden auto;
+    }
     body {
         padding: 0 0 0 4rem !important;
     }
@@ -330,13 +333,13 @@
     }
 
     var DurumTooltip = "";
-
+    
     function DurumDetailFormatter(value, index, row) {
         var checkState = index.ACTIVE ? "checked" : "";
 
         DurumTooltip = index.ACTIVE ? "AÇIK" : "KAPALI";
 
-        return `<div class="form-check form-switch" style=" display: flex; justify-content: center; gap: 0.25rem; align-items: center;" > <input class="form-check-input" type="checkbox" id="durum${index.INCKEY}Check" ${checkState} style="transform:Scale(1.5);" onclick="BelgeDurumDetailDegistir(event, '${index.BELGE_NO}', '${index.SIPARIS_NO}', '${index.STOK_KODU}' , '${index.INCKEY}', '${index.STOK_ADI}')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>${DurumTooltip}</span>"> </div>`;
+        return `<div class="form-check form-switch" style=" display: flex; justify-content: center; gap: 0.25rem; align-items: center;" > <input class="form-check-input" type="checkbox" id="durum${index.INCKEY}Check" ${checkState} style="transform:Scale(1.5);" onclick="BelgeDurumDetailDegistir(event, '${index.BELGE_NO}', '${index.SIPARIS_NO}', '${index.STOK_KODU}' , '${index.INCKEY}', \`${index.STOK_ADI}\`)" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>${DurumTooltip}</span>"> </div>`;
     }
 
     function StokKoduFormatter(value, index, row) {
@@ -463,7 +466,7 @@
         var KopyaVerisi = "";
 
         for (var i = 0; i < Filtered.length; i++) {
-            KopyaVerisi += `${Filtered[i].SERI_NO}	${GenislikFormat(Filtered[i].ACIK2)}	${Filtered[i].SERI_NO_3}	${Filtered[i].SERI_NO_4}	${MiktarFormatla(Filtered[i].MIKTAR1)}	${MiktarFormatla(Filtered[i].MIKTAR2)}	${GenislikKalinlikFormat(Filtered[i].ACIK1)}	${Filtered[i].ACIK3}\n`;
+            KopyaVerisi += `${Filtered[i].SERI_NO}	${DecimalSeperator(Filtered[i].ACIK1) }	${Filtered[i].SERI_NO_3}	${Filtered[i].SERI_NO_4}	${MiktarFormatla(Filtered[i].MIKTAR1)}	${MiktarFormatla(Filtered[i].MIKTAR2)}	${GenislikFormat(Filtered[i].ACIK2)}	${Filtered[i].ACIK3}	${Filtered[i].ACIKLAMA_4}	${Filtered[i].ACIKLAMA_5}\n`;
         }
 
         try {
@@ -646,3 +649,21 @@
         width: 30%;
     }
 </style>
+
+<script>
+    function DecimalSeperator(value) {
+        if (value?.toString().trim().length > 0)
+        {
+            if (Number.isInteger(parseFloat(value.replace(',', '.'))))
+            {
+                return parseInt(value.replace(',', '.'));
+            }
+            else
+            {
+                return value.replace('.', ',');
+            }
+        }
+
+        return "-";
+    }
+</script>

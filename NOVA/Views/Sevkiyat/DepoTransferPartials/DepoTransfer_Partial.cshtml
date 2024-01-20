@@ -1,6 +1,5 @@
 ﻿<div class="flex-column px-0 pt-2">
-    <div class="row w-100 d-flex justify-content-start belge-bilgi" style="padding-left:1rem;">
-        <div class="row d-flex justify-content-start align-items-center" style="row-gap:0.5rem;">
+    <div class="row w-100 d-flex justify-content-start align-items-center belge-bilgi" style="padding-left: 1rem; row-gap: 0.5rem;">
             <div class="col-sm-auto" style="padding-right: 0;"><span>İlgili Belge No: <b id="BELGE_NO">-</b></span></div>
             <div class="col-sm-auto d-flex justify-content-start align-items-center" style="line-height: normal; gap: 0.5rem;">
                 <div class="form-check form-switch mx-1" style="min-height:0 !important;">
@@ -11,19 +10,18 @@
                 <i data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Yeni Belge Oluştur</span>" onclick="YeniBelgeOlustur()" id="YeniBelgeOlusturButton" class="bi bi-file-earmark-plus-fill i-disabled" style="color:#203289; font-size: x-large;"></i>
             </div>
 
-            <div class="col-sm-3 col-12">
+            <div class="col-12 col-sm-6 col-md-3">
                 <div class="form-label-group outline m-0">
                     <input type="text" id="CIKIS_DEPO" class="form-control" placeholder="ÇIKIŞ DEPO" autocomplete="off" />
                     <span><label for="CIKIS_DEPO">ÇIKIŞ DEPO</label></span>
                 </div>
             </div>
-            <div class="col-sm-3 col-12">
+            <div class="col-12 col-sm-6 col-md-3">
                 <div class="form-label-group outline m-0">
                     <input type="text" id="GIRIS_DEPO" class="form-control" placeholder="GİRİŞ DEPO" autocomplete="off" />
                     <span><label for="GIRIS_DEPO">GİRİŞ DEPO</label></span>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 <div id="ScrollArea" class="modal-body p-0" style="overflow-x:hidden !important;">
@@ -94,31 +92,31 @@
                         <div class="accordion-body p-3">
 
                             <div class="row gy-3">
-                                <div class="col-sm">
+                                <div class="col-12 col-sm-4 col-lg">
                                     <div class="form-label-group outline m-0">
                                         <input type="text" id="ACIK1" class="form-control" autocomplete="off" value="-" disabled />
                                         <span><label for="ACIK1">KALINLIK</label></span>
                                     </div>
                                 </div>
-                                <div class="col-sm">
+                                <div class="col-12 col-sm-4 col-lg">
                                     <div class="form-label-group outline m-0">
                                         <input type="text" id="ACIK2" class="form-control" autocomplete="off" value="-" disabled />
                                         <span><label for="ACIK2">GENİŞLİK</label></span>
                                     </div>
                                 </div>
-                                <div class="col-sm">
+                                <div class="col-12 col-sm-4 col-lg">
                                     <div class="form-label-group outline m-0">
                                         <input type="text" id="ACIK3" class="form-control" autocomplete="off" value="-" disabled />
                                         <span><label for="ACIK3">ÜRÜN NO</label></span>
                                     </div>
                                 </div>
-                                <div class="col-sm">
+                                <div class="col-12 col-sm-4 col-lg">
                                     <div class="form-label-group outline m-0">
                                         <input type="text" id="SERI_NO_3" class="form-control" autocomplete="off" value="-" disabled />
                                         <span><label for="SERI_NO_3">KALİTE</label></span>
                                     </div>
                                 </div>
-                                <div class="col-sm">
+                                <div class="col-12 col-sm-4 col-lg">
                                     <div class="form-label-group outline m-0">
                                         <input type="text" id="SERI_NO_4" class="form-control" autocomplete="off" value="-" disabled />
                                         <span><label for="SERI_NO_4">KAPLAMA</label></span>
@@ -147,11 +145,16 @@
             <div class="card-body p-0">
                 <div id="TempTableToolbar">
                     <div class="row my-2 gap-2">
-                        <div class="col-sm-auto d-flex justify-content-start gap-2">
+                        <div class="col-sm-auto d-flex justify-content-start gap-2 pe-0">
                             <div class="d-flex justify-content-center align-items-center mx-2"><div style="width: 1.25rem; height: 1.25rem; background-color: #e9ebff; margin-right: 0.2rem; "></div>AÇIK</div>
                             <div class="d-flex justify-content-center align-items-center"><div style="width: 1.25rem; height: 1.25rem; background-color: #FAEAEA; margin-right: 0.2rem; "></div>KAPALI</div>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary" style="margin-left: 0.2rem;" onclick="TOPLAM_OZET()">
+                                    +
+                                </button>
+                            </div>
                         </div>
-                        <div class="col">
+                        <div class="col ps-0">
                             <input class="form-control" type="text" placeholder="Ara" id="customSearchTempTable" />
                         </div>
                     </div>
@@ -233,6 +236,7 @@
         DurumDegisikligi(0);
         BelgeyiKaydetButonKontrol();
         EkranBoyutDegisikligi();
+        LocalStorageCheck();
 
         $('#DepoTransferTable').bootstrapTable('destroy');
         $('#DepoTransferTable').bootstrapTable({ data: Kayitlar });
@@ -347,7 +351,7 @@
         var Liste = [];
 
         $.ajax({
-            url: "http://192.168.2.13:83/api/seri/rehber/" + STOK_KODU + "/" + 0,
+            url: "http://192.168.2.13:83/api/seri/rehber/" + STOK_KODU + "/" + CikisDepo,
             type: 'GET',
             success: function (result) {
                 for (var i = 0; i < result.length; i++) {
@@ -444,7 +448,7 @@
             let ESKI_MIKTAR2 = Kayit[0].MIKTAR2;
 
             $.ajax({
-                url: "http://192.168.2.13:83/api/seri/bakiye/" + Kayit[0].SERI_NO,
+                url: "http://192.168.2.13:83/api/seri/bakiye/" + Kayit[0].SERI_NO + "/" + CikisDepo,
                 type: 'GET',
                 success: function (result) {
                     switch (KayitTipi) {
@@ -481,7 +485,7 @@
         if ($('#SERI_NO').val().trim().length != 0) {
             Kayitlar.push(BilgileriOku());
             KayitId += 1;
-
+            LocalStorageTrigger();
             DurumDegisikligi(0);
             $('#STOK_ADLARI').prop("disabled", false);
             $('#BarkodButton').prop("disabled", false);
@@ -517,6 +521,7 @@
         GuncellenenId = -1;
 
         $('#DepoTransferTable').bootstrapTable('load', Kayitlar);
+        LocalStorageTrigger();
 
         DurumDegisikligi(0);
     }
@@ -548,6 +553,11 @@
                         setTimeout("YeniBelge()", 50);
                     });
                 }
+
+                if (KayitTipi == 0) {
+                    LocalStorageTrigger();
+                }
+
 
                 $("#DepoTransferTable").bootstrapTable('load', Kayitlar);
 
@@ -667,6 +677,7 @@
 
                             YeniBelge();
                             HideProgress();
+                            LocalStorageTrigger();
                         },
                         error: function (msg) {
                             Swal.fire(
@@ -1447,7 +1458,119 @@
             $('#SERI_NOautocomplete-list').html('');
         }
     });
-    
+
+
+    function LocalStorageTrigger() {
+        localStorage.setItem('DEPO_TRANSFER', Kayitlar.length > 0 ? JSON.stringify(Kayitlar) : null);
+    }
+
+    function LocalStorageCheck() {
+
+        if (localStorage.getItem('DEPO_TRANSFER') == 'null' || localStorage.getItem('DEPO_TRANSFER') == null) {
+            console.log("Herhangi bir veri bulunamadı.");
+        }
+        else {
+            Swal.fire({
+                html: `Kurtarılmış veriler bulundu, tekrar yüklemek ister misiniz?`,
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'HAYIR',
+                cancelButtonColor: '#d33',
+                confirmButtonColor: '#3085d6',
+                allowEnterKey: false,
+                confirmButtonText: 'EVET',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Kayitlar = JSON.parse(localStorage.getItem('DEPO_TRANSFER'));
+                    var requests = [];
+
+                    for (const Kayit of Kayitlar) {
+                        requests.push($.ajax({
+                            url: `http://192.168.2.13:83/api/seri/bakiye/${Kayit.SERI_NO}/${Kayit.CIKIS_DEPO}`,
+                            type: "GET",
+                            error: (e) => { reject("Kurtarılmış veriler kontrol edilirken bir sorun oluştu."); },
+                            success: (response) => {
+                                if (response.length <= 0) {
+                                    Kayitlar = Kayitlar.filter(x => x.SERI_NO != Kayit.SERI_NO);
+                                }
+                            }
+                        }));
+                    }
+
+                    $.when.apply($, requests).done(function () {
+                        $('#DepoTransferTable').bootstrapTable('destroy');
+                        $('#DepoTransferTable').bootstrapTable({ data: Kayitlar });
+                    });
+
+                }
+                else {
+                    localStorage.setItem('DEPO_TRANSFER', null);
+                    Kayitlar = [];
+                    $('#DepoTransferTable').bootstrapTable('destroy');
+                    $('#DepoTransferTable').bootstrapTable({ data: Kayitlar });
+                }
+            });
+        }
+    }
+
+    function TOPLAM_OZET()
+    {
+        if (Kayitlar.length > 0)
+        {
+            const GRUPLANMIS_VERI = Object.groupBy(Kayitlar, ({ STOK_ADI }) => STOK_ADI);
+
+            var tableBody = "";
+
+            var GENEL_TOPLAM_MIKTAR1 = 0;
+            var GENEL_TOPLAM_MIKTAR2 = 0;
+
+            for (const STOK_ADI of Object.getOwnPropertyNames(GRUPLANMIS_VERI))
+            {
+                var TOPLAM_MIKTAR1 = 0;
+                var TOPLAM_MIKTAR2 = 0;
+
+                for (const VERI of GRUPLANMIS_VERI[STOK_ADI])
+                {
+                    TOPLAM_MIKTAR1 += parseFloat(VERI.MIKTAR);
+                    TOPLAM_MIKTAR2 += parseFloat(VERI.MIKTAR2);
+                }
+
+                GENEL_TOPLAM_MIKTAR1 += parseFloat(TOPLAM_MIKTAR1);
+                GENEL_TOPLAM_MIKTAR2 += parseFloat(TOPLAM_MIKTAR2);
+
+                tableBody += `<tr>
+                    <td>${STOK_ADI}</td>
+                    <td>${MiktarFormatla(TOPLAM_MIKTAR2)}</td>  
+                    <td>${MiktarFormatla(TOPLAM_MIKTAR1)}</td>
+                </tr>`;
+            }
+
+            var STR = `<table class="table table-striped table-bordered" style="text-align: center;vertical-align: middle;width: 100%; word-break: auto-phrase;">
+                <thead>
+                    <th>STOK ADI</th>
+                    <th>MİKTAR 2</th>
+                    <th>MİKTAR 1</th>
+                </thead>
+                <tbody>
+                ${tableBody}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><b>GENEL TOPLAM</b></td>
+                        <td><b>${MiktarFormatla(GENEL_TOPLAM_MIKTAR2)}</b></td>  
+                        <td><b>${MiktarFormatla(GENEL_TOPLAM_MIKTAR1)}</b></td>
+                    </tr>
+                </tfoot>
+            </table>`
+
+            Swal.fire({
+                title: "BELGE ÖZETİ",
+                html: STR,
+                confirmButtonText: 'TAMAM'
+            });
+        }
+    }
 </script>
 
 <style>

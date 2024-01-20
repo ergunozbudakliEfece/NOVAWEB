@@ -848,9 +848,11 @@ namespace NOVA.Controllers
                         Isemri.DepoKodu = 45;
                         Isemri.CikisDepoKodu = 45;
                         Isemri.SeriNo = null;
+                        Isemri.SipKont = isemri[i].SIPKONT;
+                        Isemri.SiparisNo = isemri[i].SIPARISNO;
                         Isemri.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
-                        Isemri.TeslimTarihi = Convert.ToDateTime("2023-12-31");
-                        
+                        Isemri.TeslimTarihi = Convert.ToDateTime(DateTime.Now.Year + "-12-31");
+
                         double m2 = 0;
                         if (isemri[i].AGIRLIK.Contains('.'))
                         {
@@ -883,6 +885,8 @@ namespace NOVA.Controllers
                     Isemri1.Kapali = false;
                     Isemri1.ReceteSaklansin = true;
                     Isemri1.ProjeKodu = "1";
+                    Isemri1.SipKont = isemri[i].SIPKONT;
+                    Isemri1.SiparisNo = isemri[i].SIPARISNO;
                     Isemri1.Oncelik = 0;
                     if (isemri[i].REF_ISEMRINO != "-")
                     {
@@ -905,7 +909,7 @@ namespace NOVA.Controllers
                     }
                     Isemri1.Miktar = mik;
                     
-                    Isemri1.TeslimTarihi = Convert.ToDateTime("2023-12-31");
+                    Isemri1.TeslimTarihi = Convert.ToDateTime(DateTime.Now.Year+"-12-31");
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
@@ -952,8 +956,9 @@ namespace NOVA.Controllers
             public string REF_ISEMRINO { get; set; }
             public string REF_STOKOLCUSU { get; set; }
             public string SIPARIS_NO { get; set; }
-            public string SIPKONT { get; set; }
+            public int SIPKONT { get; set; }
             public string MUSTERI { get; set; }
+            public string SIPARISNO { get; set; }
 
         }
         [HttpPost]
@@ -1000,9 +1005,9 @@ namespace NOVA.Controllers
                         Isemri.DepoKodu = 45;
                         Isemri.CikisDepoKodu = 45;
                         Isemri.SeriNo = null;
-                        Isemri.SeriNo2 = isemridis[i].GENISLIK;
+                        Isemri.SeriNo2 = isemridis[i].GENISLIK.ReplaceAll(".", ",");
                         Isemri.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
-                        Isemri.TeslimTarihi = Convert.ToDateTime("2023-12-31");
+                        Isemri.TeslimTarihi = Convert.ToDateTime(DateTime.Now.Year + "-12-31");
                         Isemri.SipKont = isemridis[i].SIPKONT;
                         Isemri.SiparisNo = isemridis[i].SIPARISNO;
 
@@ -1046,7 +1051,7 @@ namespace NOVA.Controllers
                     Isemri1.CikisDepoKodu = 45;
                     if (isemridis[i].GIRDI2 != "-")
                     {
-                        Isemri1.SeriNo = isemridis[i].GIRDI2;
+                        Isemri1.SeriNo = isemridis[i].GIRDI2.ReplaceAll(".", ",");
                     }
                     else
                     {
@@ -1055,7 +1060,7 @@ namespace NOVA.Controllers
                         
                     if (isemridis[i].ISEMRINO.Substring(0, 2) == "DL")
                     {
-                        Isemri1.SeriNo2 = isemridis[i].GENISLIK;
+                        Isemri1.SeriNo2 = isemridis[i].GENISLIK.ReplaceAll(".", ",");
                     }
                     double mik = 0;
                     if (isemridis[i].AGIRLIK.Contains('.'))
@@ -1067,7 +1072,7 @@ namespace NOVA.Controllers
                         mik = Double.Parse(isemridis[i].AGIRLIK);
                     }
                     Isemri1.Miktar = mik;
-                    Isemri1.TeslimTarihi = Convert.ToDateTime("2023-12-31");
+                    Isemri1.TeslimTarihi = Convert.ToDateTime(DateTime.Now.Year + "-12-31");
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
@@ -1144,7 +1149,7 @@ namespace NOVA.Controllers
                     Isemri1.Oncelik = 0;
                     Isemri1.DepoKodu = 45;
                     Isemri1.CikisDepoKodu = 45;
-                    Isemri1.SeriNo2 = isemridis[i].GENISLIK;
+                    Isemri1.SeriNo2 = isemridis[i].GENISLIK.ReplaceAll(".", ",");
                     double mik = 0;
                     if (isemridis[i].AGIRLIK.Contains('.'))
                     {
@@ -1155,7 +1160,7 @@ namespace NOVA.Controllers
                         mik = Double.Parse(isemridis[i].AGIRLIK);
                     }
                     Isemri1.Miktar = mik;
-                    Isemri1.TeslimTarihi = Convert.ToDateTime("2023-12-31");
+                    Isemri1.TeslimTarihi = Convert.ToDateTime(DateTime.Now.Year + "-12-31");
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
@@ -1228,31 +1233,55 @@ namespace NOVA.Controllers
             return RedirectToAction("Index");
         }
         [HttpPost]
-        public ActionResult Mail(List<MailModel> mail,string hamkod)
+        public ActionResult Mail(List<MailModel2> mail)
         {
 
             string subject = "";
             List<string> makineler = new List<string>();
             List<string> makinelerref = new List<string>();
-         
-             
 
 
-            var subject2 = hamkod + " İŞ EMRİ - " + Request.Cookies["UserName"].Value;
-            string body = "<tr style='outline: thin solid;margin-bottom:15px'><th style='margin-right:10px'>MUSTERI</th><th style='margin-right:10px'>STOKOLCULERI</th><th style='margin-right:10px'>KALINLIK</th><th style='margin-right:10px'>KALITE</th><th style='margin-right:10px'>KAPLAMA</th><th style='margin-right:10px'>ADET</th><th style='margin-right:10px'>AĞIRLIK</th></tr>";
+
+
+            var subject2 = mail[0].MAKINE + " İŞ EMRİ - " + Request.Cookies["UserName"].Value;
+            string body = "<tr style='outline: thin solid;margin-bottom:15px'><th style='margin-right:10px'>STOK ADI</th><th style='margin-right:10px'>MAKİNE</th><th style='margin-right:10px'>TOPLAM</th></tr>";
             for (int i = 0; i < mail.Count; i++)
             {
-                body = body + "<tr style='outline: thin solid;margin-bottom:10px'>" + "<td style='border-collapse: collapse;margin-right:10px' >" + mail[i].MUSTERI + "</td>" + "<td style='border-collapse: collapse;margin-right:10px'' >" + mail[i].STOKADI + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + mail[i].KALINLIK + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + mail[i].KALITE + "</td>" + "<td style='border-collapse: collapse' style='text-align: center;margin-right:10px'' >" + mail[i].KAPLAMA + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + String.Format("{0:n0}", mail[i].ADET) + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px'' >" + String.Format("{0:n0}", mail[i].AGIRLIK) + "</td>" + "</tr>";
+                body = body + "<tr style='outline: thin solid;margin-bottom:10px'>" + "<td style='border-collapse: collapse;margin-right:10px' >" + mail[i].STOK_ADI + "</td>" + "<td style='border-collapse: collapse;margin-right:10px'' >" + mail[i].MAKINE + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + mail[i].TOPLAM + "</td></tr>";
             }
 
 
 
             WebMail.SmtpServer = "192.168.2.13";
             WebMail.Send(Request.Cookies["Mail"].Value, subject2, "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
-            /* WebMail.Send("ugurkonakci@efecegalvaniz.com", subject2, "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);*/
-            WebMail.Send("ergunozbudakli@efecegalvaniz.com", subject2 + TempData["Hata"], "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+
             return RedirectToAction("Index");
         }
+        //public ActionResult Mail(List<MailModel> mail,string hamkod)
+        //{
+
+        //    string subject = "";
+        //    List<string> makineler = new List<string>();
+        //    List<string> makinelerref = new List<string>();
+
+
+
+
+        //    var subject2 = hamkod + " İŞ EMRİ - " + Request.Cookies["UserName"].Value;
+        //    string body = "<tr style='outline: thin solid;margin-bottom:15px'><th style='margin-right:10px'>MUSTERI</th><th style='margin-right:10px'>STOKOLCULERI</th><th style='margin-right:10px'>KALINLIK</th><th style='margin-right:10px'>KALITE</th><th style='margin-right:10px'>KAPLAMA</th><th style='margin-right:10px'>ADET</th><th style='margin-right:10px'>AĞIRLIK</th></tr>";
+        //    for (int i = 0; i < mail.Count; i++)
+        //    {
+        //        body = body + "<tr style='outline: thin solid;margin-bottom:10px'>" + "<td style='border-collapse: collapse;margin-right:10px' >" + mail[i].MUSTERI + "</td>" + "<td style='border-collapse: collapse;margin-right:10px'' >" + mail[i].STOKADI + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + mail[i].KALINLIK + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + mail[i].KALITE + "</td>" + "<td style='border-collapse: collapse' style='text-align: center;margin-right:10px'' >" + mail[i].KAPLAMA + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px''>" + String.Format("{0:n0}", mail[i].ADET) + "</td>" + "<td style='border-collapse: collapse;text-align: center;margin-right:10px'' >" + String.Format("{0:n0}", mail[i].AGIRLIK) + "</td>" + "</tr>";
+        //    }
+
+
+
+        //    WebMail.SmtpServer = "192.168.2.13";
+        //    WebMail.Send(Request.Cookies["Mail"].Value, subject2, "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+        //    /* WebMail.Send("ugurkonakci@efecegalvaniz.com", subject2, "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);*/
+        //    WebMail.Send("ergunozbudakli@efecegalvaniz.com", subject2 + TempData["Hata"], "<p>NOVA üzerinde <strong>" + Request.Cookies["UserName"].Value + "</strong> kullanıcısı tarafından oluşturulan iş emirleri aşağıdaki gibidir:</p> </br>" + "<table style='border: 1px solid black;border-collapse: collapse'>" + body + "</table>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+        //    return RedirectToAction("Index");
+        //}
         public class HatModel
         {
             public string HAT_KODU { get; set; }
@@ -1279,6 +1308,14 @@ namespace NOVA.Controllers
             public string KALITE { get; set; }
             public string ADET { get; set; }
             public string AGIRLIK { get; set; }
+        }
+        public class MailModel2
+        {
+
+            public string STOK_ADI { get; set; }
+            public string MAKINE { get; set; }
+            public double TOPLAM { get; set; }
+
         }
         public List<MakKoduModel> GetMak(int id)
         {
@@ -1322,7 +1359,7 @@ namespace NOVA.Controllers
         }
         public List<MSIPAcik> GetCariler()
         {
-            var apiUrl = "http://192.168.2.13:83/api/MSIP";
+            var apiUrl = "http://192.168.2.13:83/api/MSIP/TEST";
 
             //Connect API
             Uri url = new Uri(apiUrl);

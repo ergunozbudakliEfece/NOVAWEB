@@ -96,31 +96,31 @@
                                     <div class="accordion-body p-3">
 
                                         <div class="row gy-3">
-                                            <div class="col-sm">
+                                            <div class="col-12 col-sm-4 col-lg">
                                                 <div class="form-label-group outline m-0">
                                                     <input type="number" id="ACIK2" class="form-control" step="0.01" autocomplete="off" value="" />
                                                     <span><label for="ACIK2">KALINLIK</label></span>
                                                 </div>
                                             </div>
-                                            <div class="col-sm">
+                                            <div class="col-12 col-sm-4 col-lg">
                                                 <div class="form-label-group outline m-0">
                                                     <input type="number" id="ACIK1" class="form-control" step="0.1" autocomplete="off" value="" />
                                                     <span><label for="ACIK1">GENİŞLİK</label></span>
                                                 </div>
                                             </div>
-                                            <div class="col-sm">
+                                            <div class="col-12 col-sm-4 col-lg">
                                                 <div class="form-label-group outline m-0">
                                                     <input type="text" id="ACIK3" class="form-control" autocomplete="off" value="" />
                                                     <span><label for="ACIK3">ÜRÜN NO</label></span>
                                                 </div>
                                             </div>
-                                            <div class="col-sm">
+                                            <div class="col-12 col-sm-4 col-lg">
                                                 <div class="form-label-group outline m-0">
                                                     <input type="text" id="SERİ_NO_3" class="form-control" autocomplete="off" value="" />
                                                     <span><label for="SERİ_NO_3">KALİTE</label></span>
                                                 </div>
                                             </div>
-                                            <div class="col-sm">
+                                            <div class="col-12 col-sm-4 col-lg">
                                                 <div class="form-label-group outline m-0">
                                                     <input type="text" id="SERİ_NO_4" class="form-control" autocomplete="off" value="" />
                                                     <span><label for="SERİ_NO_4">KAPLAMA</label></span>
@@ -204,8 +204,8 @@
                                             <th data-field="OLCU_BR1" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">BİRİM 1</th>
                                             <th data-field="MIKTAR2" data-formatter="MiktarFormatla" data-sortable="true" data-halign="center" data-align="center">MİKTAR 2</th>
                                             <th data-field="OLCU_BR2" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">BİRİM 2</th>
-                                            <th data-field="ACIK2" data-formatter="GenislikFormatter" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
-                                            <th data-field="ACIK1" data-formatter="KalinlikFormatter" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
+                                            <th data-field="ACIK2" data-formatter="KalinlikFormatter" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
+                                            <th data-field="ACIK1" data-formatter="GenislikFormatter" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
                                             <th data-field="ACIK3" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">ÜRÜN NO</th>
                                             <th data-field="SERI_NO_3" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">KALİTE</th>
                                             <th data-field="SERI_NO_4" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
@@ -283,6 +283,7 @@
         GuncelSiparisBakiye();
         ModalKaydetButtonState();
         FullscreenModal();
+        GuncelSeriNoGetir();
         YazdirSwitch();
         DepoGetir();
 
@@ -666,8 +667,8 @@
         document.getElementById("Miktar2").value = value.MIKTAR2;
         document.getElementById("Olcubr2").value = value.OLCU_BR2;
         document.getElementById("SERİ_NO").value = value.SERI_NO;
-        $('#ACIK1').val(parseFloat(value.ACIK1).toString())
-        $('#ACIK2').val(parseFloat(value.ACIK2).toString())
+        $('#ACIK1').val(value.ACIK1)
+        $('#ACIK2').val(value.ACIK2)
         document.getElementById("ACIK3").value = value.ACIK3;
         document.getElementById("SERİ_NO_3").value = value.SERI_NO_3;
         document.getElementById("SERİ_NO_4").value = value.SERI_NO_4;
@@ -764,6 +765,7 @@
 
         GuncelSiparisBakiye();
         ModalKaydetButtonState();
+        GuncelSeriNoGetir();
 
         if (GirisDepo != -1) {
             $("#StokAdlari").prop("disabled", false);
@@ -1260,8 +1262,8 @@
                 "OLCU_BR1": (Kalemler[i].OLCU_BR1),
                 "MIKTAR2": parseFloat(Kalemler[i].MIKTAR2).toFixed(2).toString(),
                 "OLCU_BR2": (Kalemler[i].OLCU_BR2),
-                "ACIK1": (Kalemler[i].ACIK1),
-                "ACIK2": (Kalemler[i].ACIK2),
+                "ACIK1": (Kalemler[i].ACIK2.replace('.', ',')),
+                "ACIK2": (Kalemler[i].ACIK1.replace('.', ',')),
                 "ACIK3": (Kalemler[i].ACIK3),
                 "SERI_NO_3": (Kalemler[i].SERI_NO_3),
                 "SERI_NO_4": (Kalemler[i].SERI_NO_4),
@@ -1333,8 +1335,8 @@
                 "OLCU_BR1": (Kalemler[i].OLCU_BR1),
                 "MIKTAR2": parseFloat(Kalemler[i].MIKTAR2).toFixed(2).toString(),
                 "OLCU_BR2": (Kalemler[i].OLCU_BR2),
-                "ACIK1": (Kalemler[i].ACIK1),
-                "ACIK2": (Kalemler[i].ACIK2),
+                "ACIK1": (Kalemler[i].ACIK2),
+                "ACIK2": (Kalemler[i].ACIK1),
                 "ACIK3": (Kalemler[i].ACIK3),
                 "SERI_NO_3": (Kalemler[i].SERI_NO_3),
                 "SERI_NO_4": (Kalemler[i].SERI_NO_4),
@@ -1455,11 +1457,11 @@
 </script>
 
 <script>
-    $('#ACIK1').on('change paste input', (e) => { LimitedDecimal(e, 2, true); });
-    $('#ACIK1').on('blur', (e) => { FormatDecimal(e, 2); });
+    $('#ACIK1').on('change paste input', (e) => { LimitedDecimal(e, 1, true); });
+    $('#ACIK1').on('blur', (e) => { FormatDecimal(e, 1); });
 
-    $('#ACIK2').on('change paste input', (e) => { LimitedDecimal(e, 1, true); });
-    $('#ACIK2').on('blur', (e) => { FormatDecimal(e, 1); });
+    $('#ACIK2').on('change paste input', (e) => { LimitedDecimal(e, 2, true); });
+    $('#ACIK2').on('blur', (e) => { FormatDecimal(e, 2); });
 
     $('#Miktar1').on('change paste input', (e) => { LimitedDecimal(e, 2); MiktarGirisKontrolu(); });
     $('#Miktar1').on('blur', (e) => { FormatDecimal(e, 2, true); });
@@ -1648,31 +1650,35 @@
 
         if (Kayit.length > 0)
         {
+            ShowProgress();
+
             var Model = {
                 "GRUP_ISIM": FiltreliDetay[0].GRUP_ISIM,
                 "SERI_NO": Kayit[0].SERI_NO,
                 "STOK_KODU": Kayit[0].STOK_KODU,
                 "STOK_ADI": Kayit[0].STOK_ADI,
-                "MIKTAR1": `${parseFloat(Kayit[0].MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
+                "MIKTAR1": `${parseFloat(Kayit[0].MIKTAR)}`,
                 "OLCU_BR1": `${Kayit[0].OLCU_BR1}`,
-                "MIKTAR2": `${parseFloat(Kayit[0].MIKTAR2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }`,
+                "MIKTAR2": `${parseFloat(Kayit[0].MIKTAR2)}`,
                 "OLCU_BR2": `${Kayit[0].OLCU_BR2}`,
                 "BIRIM_MIKTAR": `${(parseFloat(Kayit[0].MIKTAR) / parseFloat(Kayit[0].MIKTAR2)).toFixed(2).toString()}`,
-                "KALINLIK": Kayit[0].ACIK1.toString().replace('.', ','),
-                "GENISLIK": Kayit[0].ACIK2.toString().replace('.', ','),
+                "KALINLIK": Kayit[0].ACIK2.toString().replace('.', ','),
+                "GENISLIK": Kayit[0].ACIK1.toString().replace('.', ','),
                 "KALITE": Kayit[0].SERI_NO_3,
                 "KAPLAMA": Kayit[0].SERI_NO_4,
                 "KAYITTARIHI": Kayit[0].TARIH,
                 "MENSEI": FiltreliDetay[0].CARI_ISIM,
-                "FIRMA_SERI_NO": Kayit[0].ACIK3
+                "FIRMA_SERI_NO": Kayit[0].ACIK3,
+                "ACIKLAMA_5": Kayit[0].ACIKLAMA_5,
             };
 
             $.ajax({
                 url: "@Url.Action("SevkiyatEtiket", "Sevkiyat")",
                 type: 'POST',
                 data: { "EtiketBilgileri": Model, "Yazdir": Yazdir, "Yazici": Printer },
-                success: (data) => { YaziciModalKapat(); }
-            });
+                error: (e) => { console.log(e) },
+                success: (data) => { YaziciModalKapat(); HideProgress(); }
+            }).then(() => { HideProgress(); });
         }
     }
 

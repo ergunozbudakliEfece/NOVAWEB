@@ -1290,7 +1290,7 @@
                 if (val.value.substring(0, 2) != "TP") {
                     if (hamkod != null) {
                         if (OldStokAdi != $("#stokadi").html()) {
-                            ShowProgress();
+
                             var url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/0/"+ val.value
                             if (val.value.substring(0, 2) == "BK") {
                                 var gen = $('#genislik').val();
@@ -1312,8 +1312,6 @@
                                     opt3.text = d1[i].STOK_ADI;
                                     $sel3.appendChild(opt3);
                                 }
-                            }).done(function () {
-                                HideProgress();
                             })
                             OldStokAdi = null;
 
@@ -1794,6 +1792,7 @@
         KaydetAktivite();
 
     }
+    var DLMailTop = null;
 
     function kaydet() {
         var Tip = $('input[name="uretim-tip"]:checked').val();
@@ -1880,9 +1879,11 @@
                             var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
                             var table = document.getElementById("DLTable");
                             var tr = table.getElementsByTagName("tr");
+
                             if (localStorage.DLlist != null && localStorage.DLlist != "null") {
                                 DLList = JSON.parse(localStorage.DLlist)
                                 DLListTop = JSON.parse(localStorage.DLlistTop)
+
                                 for (let e = 0; e < DLList.length; e++) {
                                     if (!serilist.includes(DLList[e].GIRDI2)) {
                                         serilist.push(DLList[e].GIRDI2);
@@ -2023,7 +2024,72 @@
                             }
                             var tpl = $.pivotUtilities.aggregatorTemplates;
                             takiplist = [];
+                            if (localStorage.DLMailTop != null && localStorage.DLMailTop != "null") {
+                                DLMailTop = JSON.parse(localStorage.DLMailTop)
+                                var STOKADLARI = [];
+                                var REFSTOKADLARI = [];
 
+                            } else {
+                                DLMailTop = [];
+                                var STOKADLARI = [];
+                                var REFSTOKADLARI = [];
+
+
+
+                            }
+                            for (let i = 0; i < DLList.length; i++) {
+                                if (!STOKADLARI.includes(DLList[i].STOKADI)) {
+                                    STOKADLARI.push(DLList[i].STOKADI)
+                                }
+                                if (!REFSTOKADLARI.includes(DLList[i].REF_STOKOLCUSU)) {
+                                    REFSTOKADLARI.push(DLList[i].REF_STOKOLCUSU)
+                                }
+
+                            }
+
+                            for (let i = 0; i < STOKADLARI.length; i++) {
+                                var filtered = DLList.filter(x => x.STOKADI == STOKADLARI[i]);
+                                var sum = 0;
+                                for (let j = 0; j < filtered.length; j++) {
+                                    sum = sum + parseFloat(filtered[j].AGIRLIK)
+                                }
+                                var kontrol = DLMailTop.filter(x => x.STOK_ADI == STOKADLARI[i]);
+                                if (kontrol.length > 0) {
+                                    var index = DLMailTop.findIndex(x => x.STOK_ADI == STOKADLARI[i]);
+                                    DLMailTop.splice(index, 1)
+                                    DLMailTop.push({
+                                        STOK_ADI: STOKADLARI[i], MAKINE: filtered[0].ISEMRINO.substring(0, 4), TOPLAM: sum
+                                    })
+                                } else {
+
+                                    DLMailTop.push({
+                                        STOK_ADI: STOKADLARI[i], MAKINE: filtered[0].ISEMRINO.substring(0, 4), TOPLAM: sum
+                                    })
+                                }
+
+                            }
+                            for (let i = 0; i < REFSTOKADLARI.length; i++) {
+                                var filtered = DLList.filter(x => x.REF_STOKOLCUSU == REFSTOKADLARI[i]);
+                                var sum = 0;
+                                for (let j = 0; j < filtered.length; j++) {
+                                    sum = sum + parseFloat(filtered[j].AGIRLIK)
+                                }
+                                var kontrol = DLMailTop.filter(x => x.STOK_ADI == REFSTOKADLARI[i]);
+                                if (kontrol.length > 0) {
+                                    var index = DLMailTop.findIndex(x => x.STOK_ADI == REFSTOKADLARI[i]);
+                                    DLMailTop.splice(index, 1)
+                                    DLMailTop.push({
+                                        STOK_ADI: STOKADLARI[i], MAKINE: filtered[0].ISEMRINO.substring(0, 4), TOPLAM: sum
+                                    })
+                                } else {
+
+                                    DLMailTop.push({
+                                        STOK_ADI: STOKADLARI[i], MAKINE: filtered[0].ISEMRINO.substring(0, 4), TOPLAM: sum
+                                    })
+                                }
+
+                            }
+                            localStorage.DLMailTop = JSON.stringify(DLMailTop)
                             function drawPivot() {
 
                                 $(function () {
@@ -2285,6 +2351,7 @@
             case 'DL':
                 localStorage.DLlist = null;
                 localStorage.DLlistTop = null;
+                localStorage.DLMailTop = null;
                 $("#tamamidiv").hide();
                 document.getElementById("DLPivot").replaceChildren();
                 document.getElementById("DLPivotTop").replaceChildren();
@@ -3727,7 +3794,12 @@ $.ajax({
         var result;
         switch (Tip) {
             case 'DL':
-                result = Grupla(JSON.parse(localStorage.DLlistTop))
+                result = JSON.parse(localStorage.DLMailTop)
+                $.ajax({
+                    url: '@Url.Action("Mail","IsEmri")',
+                    type: 'POST',
+                    data: { mail2: result }
+                })
                 break;
             case 'TP':
                 result = Grupla(JSON.parse(localStorage.TPPivotToplamVeri));

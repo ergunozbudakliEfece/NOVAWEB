@@ -42,8 +42,8 @@
                                         <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO" data-halign="center" data-align="center">BARKOD NO</th>
                                         <th data-formatter="MiktarFormatla" data-field="MIKTAR" data-halign="center" data-align="center">MİKTAR 1</th>
                                         <th data-formatter="MiktarFormatla" data-field="MIKTAR2" data-halign="center" data-align="center">MİKTAR 2</th>
-                                        <th data-formatter="KalinlikFormatter" data-field="ACIK1" data-halign="center" data-align="center">KALINLIK</th>
-                                        <th data-formatter="GenislikFormatter" data-field="ACIK2" data-halign="center" data-align="center">GENİŞLİK</th>
+                                        <th data-formatter="KalinlikFormatter" data-field="ACIK2" data-halign="center" data-align="center">KALINLIK</th>
+                                        <th data-formatter="GenislikFormatter" data-field="ACIK1" data-halign="center" data-align="center">GENİŞLİK</th>
                                         <th data-formatter="SevkFormuCellFormatter" data-field="ACIK3" data-halign="center" data-align="center">ÜRÜN NO</th>
                                         <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_3" data-halign="center" data-align="center">KALİTE</th>
                                         <th data-formatter="SevkFormuCellFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
@@ -124,7 +124,7 @@
 
     function KalinlikFormatter(value, index, row) {
         if (value?.toString().trim().length > 0) {
-            return GenislikKalinlikFormat(parseFloat(value.toString().replace(',','.')).toFixed(2).toString());
+            return value;
         }
 
         return "-";
@@ -132,14 +132,14 @@
 
     function GenislikFormatter(value, index, row) {
         if (value?.toString().trim().length > 0) {
-            return GenislikKalinlikFormat(parseFloat(value.toString().replace(',', '.')).toFixed(1).toString());
+            return value;
         }
 
         return "-";
     }
 
     function GenislikKalinlikFormat(value) {
-        return value.replace(".", ",");
+        return value;
     }
     function BarkodSec(BarkodNo, Satir)
     {
@@ -193,7 +193,7 @@
 
     let BarkodVerileriGetir = async () => {
         const result = await Promise.all(SeciliBarkodNo.map(each =>
-            $.getJSON("http://192.168.2.13:83/api/seri/bakiye/" + each, function (data) {
+            $.getJSON("http://192.168.2.13:83/api/seri/bakiye/" + each + "/" + CikisDepo, function (data) {
                 if (data.length > 0)
                 {
                     if (!BarkodNoTablodaVarMi(each))
@@ -209,8 +209,8 @@
                             "MIKTAR2": data[0].MIKTAR2.toFixed(2),
                             "OLCU_BR2": $('#OLCU_BR2').val(),
                             "SERI_NO": each,
-                            "ACIK1": parseFloat(data[0].ACIK1.replace(",", ".")).toFixed(2).toString().replace(".", ","),
-                            "ACIK2": parseFloat(data[0].ACIK2.replace(",", ".")).toFixed(1).toString().replace(".", ","),
+                            "ACIK1": data[0].ACIK1,
+                            "ACIK2": data[0].ACIK2,
                             "ACIK3": data[0].ACIK3,
                             "SERI_NO_3": data[0].SERI_NO_3,
                             "SERI_NO_4": data[0].SERI_NO_4,
