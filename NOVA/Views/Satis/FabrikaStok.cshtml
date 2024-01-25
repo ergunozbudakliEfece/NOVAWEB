@@ -313,7 +313,7 @@
                        data-height="720">
                     <thead>
                         <tr id="tst">
-                            @*<th data-field="RULOKODU" data-sortable="true" data-align="center" data-halign="center" data-formatter="ruloFormatter">RULO KODU</th>
+                            @*<th data-field="SERI_NO" data-sortable="true" data-align="center" data-halign="center" data-formatter="ruloFormatter">RULO KODU</th>
         <th data-field="KONUM" data-sortable="true" data-align="center" data-halign="center">KONUM</th>
         <th data-field="RENKKODU" data-sortable="true" data-align="center" data-halign="center">RENKKODU</th>
         <th data-field="KALINLIK" data-sortable="true" data-align="center" data-halign="center" data-formatter="kalinlikFormatter">KALINLIK</th>
@@ -339,26 +339,23 @@
         <th data-visible="false" data-field="BANT_GIRIS_TARIH" data-sortable="true" data-halign="center">ÜRETİLECEK MALZEME ADI</th>
         <th data-visible="false" data-field="BOBINNO" data-sortable="true" data-halign="center">BOBİN NO</th>
         <th data-visible="false" data-field="ISEMRIKOD" data-sortable="true" data-halign="center">ÜRETİLECEK MAKİNE</th>*@
-                            <th data-field="RULOKODU" data-sortable="true" data-align="center" data-halign="center">RULO KODU</th>
-                            <th data-field="KONUM" data-sortable="true" data-align="center" data-halign="center">KONUM</th>
+                            <th data-field="SERI_NO" data-sortable="true" data-align="center" data-halign="center">RULO KODU</th>
                             <th data-field="RENKKODU" data-sortable="true" data-align="center" data-halign="center">RENKKODU</th>
                             <th data-field="KALINLIK" data-sortable="true" data-align="center" data-halign="center" data-formatter="kalinlikFormatter">KALINLIK</th>
                             <th data-field="GENISLIK" data-sortable="true" data-align="center" data-halign="center">GENISLIK</th>
                             <th data-field="KALITE" data-sortable="true" data-align="center" data-halign="center">KALITE</th>
                             <th data-field="KAPLAMA" data-sortable="true" data-align="center" data-halign="center">KAPLAMA</th>
                             <th data-field="MENSEI" data-sortable="true" data-align="center" data-halign="center">MENSEI</th>
-                            <th data-field="TONAJ" data-sortable="true" data-align="center" data-halign="center" data-formatter="tonFormatter" data-footer-formatter="tonFooterFormatter">TONAJ</th>
-                            <th data-field="ADET" data-sortable="true" data-align="center" data-halign="center">ADET</th>
+                            <th data-field="MIKTAR" data-sortable="true" data-align="center" data-halign="center" data-formatter="tonFormatter" data-footer-formatter="tonFooterFormatter">TONAJ</th>
+                            <th data-field="MIKTAR2" data-sortable="true" data-align="center" data-halign="center">ADET</th>
+                            
                             @if (ViewBag.OzelYetki != null)
                             {
-                                <th data-field="FIYAT" data-align="center" data-sortable="true" data-halign="center" data-formatter="fiyatFormatter">FİYAT</th>
-                                <th data-visible="false" data-field="KUR" data-sortable="true" data-halign="center">KUR</th>
+                                @*<th data-field="FIYAT" data-align="center" data-sortable="true" data-halign="center" data-formatter="fiyatFormatter">FİYAT</th>
+                                <th data-visible="false" data-field="KUR" data-sortable="true" data-halign="center">KUR</th>*@
                                 @*<th data-visible="false" data-field="GIR_KUR_HES_USD_FIYAT" data-sortable="true" data-halign="center">GIRILEN KURA GÖRE HESAPLANAN</th>*@
                             }
-                            <th data-field="BANT_GIRIS_TARIH" data-sortable="true" data-halign="center" data-align="center" data-formatter="tarihFormatter">STOĞA GİRİŞ TARİHİ</th>
-                            <th data-visible="false" data-field="ISEMRI_TARIH" data-sortable="true" data-halign="center">İŞ EMRİ TARİHİ</th>
-                            <th data-visible="false" data-field="IRSALIYENO" data-sortable="true" data-halign="center">İRSALİYE NO</th>
-                            <th data-visible="false" data-field="ISEMRINO" data-sortable="true" data-halign="center">İŞ EMRİ NO</th>
+                            
                         </tr>
                     </thead>
                 </table>
@@ -416,8 +413,8 @@
             $('#progress').hide();
 
             for (let i = 0; i < detayli.length; i++) {
-                if (!teslimfilter.includes(detayli[i].RULOKODU)) {
-                    teslimfilter.push(detayli[i].RULOKODU)
+                if (!teslimfilter.includes(detayli[i].SERI_NO)) {
+                    teslimfilter.push(detayli[i].SERI_NO)
                 }
                 if (!renkfilter.includes(detayli[i].RENKKODU)) {
                     renkfilter.push(detayli[i].RENKKODU)
@@ -451,8 +448,8 @@
             for (let i = 0; i < teslimfilter.length; i++) {
                 var option = document.createElement("option");
                 option.value = teslimfilter[i];
-
-                option.innerHTML = ("0"+(teslimfilter[i])).substring(0, 5) + "." + (teslimfilter[i]).substring(4, 6);
+                option.innerHTML = teslimfilter[i];
+                /*option.innerHTML = ("0"+(teslimfilter[i])).substring(0, 5) + "." + (teslimfilter[i]).substring(4, 6);*/
 
 
                 document.getElementById("filter").appendChild(option);
@@ -573,7 +570,7 @@
         var menseiAlgorithm = $('#mensei').val()
         var kuralAlgorithm = $('#kural').val()
         if ($('#filter').val().length > 0) {
-            var det = detayli.filter(x => filterAlgorithm.includes(x.RULOKODU));
+            var det = detayli.filter(x => filterAlgorithm.includes(x.SERI_NO));
 
             if (!$('#renk').val().length > 0) {
 
@@ -689,14 +686,14 @@
 
                 $('#filter').children('option').remove();
                 for (let i = 0; i < det.length; i++) {
-                    if (!teslimfilt.includes(det[i].RULOKODU)) {
-                        teslimfilt.push(det[i].RULOKODU)
+                    if (!teslimfilt.includes(det[i].SERI_NO)) {
+                        teslimfilt.push(det[i].SERI_NO)
                     }
                 }
                 teslimfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < teslimfilt.length; i++) {
                     var t = ("0" + (teslimfilt[i])).substring(0, 5) + "." + (teslimfilt[i]).substring(4, 6);
-                    var newOption = new Option(t, teslimfilt[i], false, false);
+                    var newOption = new Option(teslimfilt[i], teslimfilt[i], false, false);
                     $('#filter').append(newOption);
                 }
             }
@@ -799,14 +796,14 @@
 
                 $('#filter').children('option').remove();
                 for (let i = 0; i < det.length; i++) {
-                    if (!teslimfilt.includes(det[i].RULOKODU)) {
-                        teslimfilt.push(det[i].RULOKODU)
+                    if (!teslimfilt.includes(det[i].SERI_NO)) {
+                        teslimfilt.push(det[i].SERI_NO)
                     }
                 }
                 teslimfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < teslimfilt.length; i++) {
                     var t = ("0" + (teslimfilt[i])).substring(0, 5) + "." + (teslimfilt[i]).substring(4, 6);
-                    var newOption = new Option(t, teslimfilt[i], false, false);
+                    var newOption = new Option(teslimfilt[i], teslimfilt[i], false, false);
                     $('#filter').append(newOption);
                 }
             }
@@ -908,14 +905,14 @@
 
                 $('#filter').children('option').remove();
                 for (let i = 0; i < det.length; i++) {
-                    if (!teslimfilt.includes(det[i].RULOKODU)) {
-                        teslimfilt.push(det[i].RULOKODU)
+                    if (!teslimfilt.includes(det[i].SERI_NO)) {
+                        teslimfilt.push(det[i].SERI_NO)
                     }
                 }
                 teslimfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < teslimfilt.length; i++) {
                     var t = ("0" + (teslimfilt[i])).substring(0, 5) + "." + (teslimfilt[i]).substring(4, 6);
-                    var newOption = new Option(t, teslimfilt[i], false, false);
+                    var newOption = new Option(teslimfilt[i], teslimfilt[i], false, false);
                     $('#filter').append(newOption);
                 }
             }
@@ -1016,14 +1013,14 @@
 
                 $('#filter').children('option').remove();
                 for (let i = 0; i < det.length; i++) {
-                    if (!teslimfilt.includes(det[i].RULOKODU)) {
-                        teslimfilt.push(det[i].RULOKODU)
+                    if (!teslimfilt.includes(det[i].SERI_NO)) {
+                        teslimfilt.push(det[i].SERI_NO)
                     }
                 }
                 teslimfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < teslimfilt.length; i++) {
                     var t = ("0" + (teslimfilt[i])).substring(0, 5) + "." + (teslimfilt[i]).substring(4, 6);
-                    var newOption = new Option(t, teslimfilt[i], false, false);
+                    var newOption = new Option(teslimfilt[i], teslimfilt[i], false, false);
                     $('#filter').append(newOption);
                 }
             }
@@ -1125,14 +1122,14 @@
 
                 $('#filter').children('option').remove();
                 for (let i = 0; i < det.length; i++) {
-                    if (!teslimfilt.includes(det[i].RULOKODU)) {
-                        teslimfilt.push(det[i].RULOKODU)
+                    if (!teslimfilt.includes(det[i].SERI_NO)) {
+                        teslimfilt.push(det[i].SERI_NO)
                     }
                 }
                 teslimfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < teslimfilt.length; i++) {
                     var t = ("0" + (teslimfilt[i])).substring(0, 5) + "." + (teslimfilt[i]).substring(4, 6);
-                    var newOption = new Option(t, teslimfilt[i], false, false);
+                    var newOption = new Option(teslimfilt[i], teslimfilt[i], false, false);
                     $('#filter').append(newOption);
                 }
             }
@@ -1233,14 +1230,14 @@
 
                 $('#filter').children('option').remove();
                 for (let i = 0; i < det.length; i++) {
-                    if (!teslimfilt.includes(det[i].RULOKODU)) {
-                        teslimfilt.push(det[i].RULOKODU)
+                    if (!teslimfilt.includes(det[i].SERI_NO)) {
+                        teslimfilt.push(det[i].SERI_NO)
                     }
                 }
                 teslimfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < teslimfilt.length; i++) {
                     var t = ("0" + (teslimfilt[i])).substring(0, 5) + "." + (teslimfilt[i]).substring(4, 6);
-                    var newOption = new Option(t, teslimfilt[i], false, false);
+                    var newOption = new Option(teslimfilt[i], teslimfilt[i], false, false);
                     $('#filter').append(newOption);
                 }
             }
@@ -1334,7 +1331,7 @@
             $('#kural').children('option').remove();
             for (let i = 0; i < teslimfilter.length; i++) {
                 var t = ("0" + (teslimfilter[i])).substring(0, 5) + "." + (teslimfilter[i]).substring(4, 6);
-                var newOption = new Option(t, teslimfilter[i], false, false);
+                var newOption = new Option(teslimfilter[i], teslimfilter[i], false, false);
                 $('#filter').append(newOption);
             }
             for (let i = 0; i < renkfilter.length; i++) {
@@ -1357,28 +1354,27 @@
                 var newOption = new Option(menseifilter[i], menseifilter[i], false, false);
                 $('#mensei').append(newOption);
             }
-            for (let i = 0; i < kuralFilter.length; i++) {
-                var t = null;
-                if (kuralFilter[i] === "0") {
-                   t = "Hazır Stoklar";
-                } else if (kuralFilter[i] === "1") {
-                    t = "İş Emri Verilen Stoklar";
-                } else {
-                    t = "Üretim Bekleyenler";
-                }
-                var newOption = new Option(t, kuralFilter[i], false, false);
-                $('#kural').append(newOption);
-            }
+            //for (let i = 0; i < kuralFilter.length; i++) {
+            //    var t = null;
+            //    if (kuralFilter[i] === "0") {
+            //       t = "Hazır Stoklar";
+            //    } else if (kuralFilter[i] === "1") {
+            //        t = "İş Emri Verilen Stoklar";
+            //    } else {
+            //        t = "Üretim Bekleyenler";
+            //    }
+            //    var newOption = new Option(t, kuralFilter[i], false, false);
+            //    $('#kural').append(newOption);
+            //}
         }
 
         $('#table').bootstrapTable('filterBy', {
-            RULOKODU: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimfilter),
+            SERI_NO: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimfilter),
             RENKKODU: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : renkfilter),
             KALINLIK: (kalinlikAlgorithm.length > 0 ? kalinlikAlgorithm : kalinliksearch),
             KAPLAMA: (kaplamakAlgorithm.length > 0 ? kaplamakAlgorithm : kaplamafilter),
             GENISLIK: (genislikAlgorithm.length > 0 ? genislikAlgorithm : genisliksearch),
-            MENSEI: (menseiAlgorithm.length > 0 ? menseiAlgorithm : menseifilter),
-            KURAL: (kuralAlgorithm.length > 0 ? kuralAlgorithm : kuralFilter),
+            MENSEI: (menseiAlgorithm.length > 0 ? menseiAlgorithm : menseifilter)
         })
 
 

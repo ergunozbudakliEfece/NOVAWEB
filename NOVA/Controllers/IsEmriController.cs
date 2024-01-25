@@ -971,11 +971,11 @@ namespace NOVA.Controllers
             Uri url2 = new Uri(apiUrl2);
             WebClient client2 = new WebClient();
             client2.Encoding = System.Text.Encoding.UTF8;
-
+            var cariler = GetCariler();
             var json2 = client2.DownloadString(url2);
             JavaScriptSerializer ser2 = new JavaScriptSerializer();
             createdlog1 = ser2.Deserialize<List<SeriModel>>(json2);
-
+            var sipkont = 1;
             try
             {
                 var stokadlari = GetStokAdlari();
@@ -992,6 +992,11 @@ namespace NOVA.Controllers
                     if (isemridis[i].REF_ISEMRINO != null && isemridis[i].REF_ISEMRINO!="-")
                     {
                         var stokkodu = stokadlari.Where(x => x.STOK_ADI == isemridis[i].REF_STOKOLCUSU);
+                        if (isemridis[i].SIPARISNO != null && isemridis[i].SIPARISNO!="")
+                        {
+                            sipkont = cariler.FirstOrDefault(x => x.STOK_KODU == stokkodu.First().STOK_KODU && x.FISNO == isemridis[i].SIPARISNO).SIPKONT;
+                        }
+                        
 
 
                         Isemri = kernel.yeniIsEmri(sirket);
@@ -1008,7 +1013,7 @@ namespace NOVA.Controllers
                         Isemri.SeriNo2 = isemridis[i].GENISLIK.ReplaceAll(".", ",");
                         Isemri.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                         Isemri.TeslimTarihi = Convert.ToDateTime(DateTime.Now.Year + "-12-31");
-                        Isemri.SipKont = isemridis[i].SIPKONT;
+                        Isemri.SipKont = Isemri.SipKont = (sipkont == 1 ? isemridis[i].SIPKONT : sipkont);
                         Isemri.SiparisNo = isemridis[i].SIPARISNO;
 
                         double m2 = 0;
@@ -1561,7 +1566,7 @@ namespace NOVA.Controllers
         }
         public class USKModel
         {
-
+            public string FIS_NO { get; set; }
             public string SERI_NO { get; set; }
             public string ISEMRINO { get; set; }
             public double KULL_MIKTAR { get; set; }

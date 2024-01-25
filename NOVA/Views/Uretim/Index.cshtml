@@ -353,6 +353,49 @@
             display: none;
             padding: 10px 0;
         }
+
+        .status-bar {
+            height: 35px;
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            padding: 0 0.25rem;
+        }
+
+        .battery-status {
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .battery-icon {
+            width: 40px;
+            height: 20px;
+            background: linear-gradient(90deg, #a5a5a5 64%, #a5a5a5 64%);
+            border-radius: 0.16rem;
+            border: 2px solid #c0c0c0;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: x-small;
+        }
+
+            .battery-icon::after {
+                content: "";
+                position: absolute;
+                right: -5px;
+                top: 3px;
+                width: 3px;
+                height: 10px;
+                border-radius: 0 0.16rem 0.16rem 0;
+                background-color: #c0c0c0;
+            }
+
+        #battery-charging, #battery-warning {
+            display: none;
+        }
     </style>
 </head>
 <body style="overflow-x:hidden;">
@@ -362,7 +405,17 @@
     </div>
 
     <div class="container-fluid p-2">
-        
+
+        <div class="status-bar">
+            <div class="battery-status">
+                <div class="battery-icon">
+                    <i id="battery-charging" class="bi bi-lightning-charge-fill"></i>
+                    <i id="battery-warning" class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="battery-level">0%</div>
+            </div>
+        </div>
+
         <div class="row d-flex justify-content-center align-items-center gap-2">
             <div class="col-sm-auto d-flex justify-content-center">
                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
@@ -646,7 +699,7 @@
                     </div>
 
                 </div>
-                
+
 
                 <div class="row" style="min-height:33%;display:none" id="scanner">
                     <div id="element">
@@ -668,9 +721,9 @@
                         <button style="display:none" onclick="playAudio()" type="button">Play Audio</button>
 
                         @*<div class="justify-content-center" style="display:flex">
-                    <div id="qr-reader1" style="width:900px;"></div>
-                    <div id="qr-reader-results1"></div>
-                </div>*@
+                            <div id="qr-reader1" style="width:900px;"></div>
+                            <div id="qr-reader-results1"></div>
+                        </div>*@
                     </div>
                 </div>
             </div>
@@ -2334,6 +2387,7 @@
         var hat = "";
         var stok = "";
         var genislik = "";
+
         function MHKeyChange2() {
 
             var oran = (max / mik2);
@@ -2943,8 +2997,8 @@
                 var etiket = $("#etiketyazdir").is(':checked');
                 var etiketOnizleme = $("#etiket-onizleme").is(':checked');
                 var yazici = $("#yazici").val();
-                if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "BK" && hat.substring(0, 2) != "MH") {
-                    if (hat.substring(0, 2) != "PB" && hat.substring(0, 2) != "RF") {
+                if (hat.substring(0, 2) != "BK" && hat.substring(0, 2) != "MH") {
+                    if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "PB" && hat.substring(0, 2) != "RF") {
                         $.ajax({
                             url: '@Url.Action("UretimSonuKaydi", "Uretim")',
                             type: 'POST',
@@ -3129,12 +3183,17 @@
                 
                  var etiket = $("#etiketyazdir").is(':checked');
                  var etiketOnizleme = $("#etiket-onizleme").is(':checked');
-                 var k = $("#kontrol").is(':checked');
-
+            var k = $("#kontrol").is(':checked');
+            var isorhat = "";
+            if (hat == 'TP01') {
+                isorhat = isemri;
+            } else {
+                isorhat = hat;
+            }
             $.ajax({
                 url: '@Url.Action("TrpzUretim", "Uretim")',
                 type: 'POST',
-                data: { "stokkodu": stok, "ISEMRINO": hat, "SERI_NO": "", "KULL_MIKTAR":miktar1, "mik2":miktar2, "kontrol": k, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": 0, "sonMu": sonMu },
+                data: { "stokkodu": stok, "ISEMRINO": isorhat, "SERI_NO": "", "KULL_MIKTAR":miktar1, "mik2":miktar2, "kontrol": k, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": 0, "sonMu": sonMu },
                     error: function (data1) {
                         console.log(data1);
                         HideProgress();
