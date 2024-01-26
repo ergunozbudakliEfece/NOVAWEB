@@ -406,15 +406,7 @@
 
     <div class="container-fluid p-2">
 
-        <div class="status-bar">
-            <div class="battery-status">
-                <div class="battery-icon">
-                    <i id="battery-charging" class="bi bi-lightning-charge-fill"></i>
-                    <i id="battery-warning" class="bi bi-exclamation-triangle-fill"></i>
-                </div>
-                <div class="battery-level">0%</div>
-            </div>
-        </div>
+       
 
         <div class="row d-flex justify-content-center align-items-center gap-2">
             <div class="col-sm-auto d-flex justify-content-center">
@@ -686,12 +678,12 @@
                                    data-sticky-header="true">
                                 <thead>
                                     <tr>
-                                        <th data-width="10" data-halign="center" data-align="center" data-formatter="UretilmisBarkodFormatter">İŞLEM</th>
                                         <th data-field="SERI_NO" data-halign="center" data-align="center">BARKOD NO</th>
                                         <th data-field="STOK_ADI" data-halign="center" data-align="center">STOK ADI</th>
                                         <th data-field="ACIKLAMA_5" data-halign="center" data-align="center">ESKİ BOBİN NO</th>
                                         <th data-field="ACIKLAMA_4" data-halign="center" data-align="center">MENŞEİ</th>
                                         <th data-field="ACIK3" data-halign="center" data-align="center">FİRMA BOBİN NO</th>
+                                        <th data-width="10" data-halign="center" data-align="center" data-formatter="UretilmisBarkodFormatter">İŞLEM</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -2964,103 +2956,154 @@
         }
         function TrpzBarkod(BarkodNo)
         {
-            var etiketYazdir = $("#etiketyazdir").is(':checked');
-            var etiketOnizleme = $("#etiket-onizleme").is(':checked');
-
-            var yazici = $('#yazici :selected').val();
-
-            if (etiketYazdir) {
-                $.ajax({
-                    url: '@Url.Action("UretilmisEtiketleriYazdir", "Uretim")',
-                    type: 'POST',
-                    data: {
-                        "BarkodListesi": [BarkodNo],
-                        "EtiketDizayn": "Uretim",
-                        "Yazici": yazici,
-                        "DirektYazdir": etiketYazdir,
-                        "Onizle": etiketOnizleme
-                    },
-                    error: (e) => { console.log(JSON.stringify(e)); },
-                    success: (response) => {
-                        if (response.trim().length > 0 && etiketOnizleme && etiketYazdir) {
-                            UretilmisEtiketOnizle(response);
-                        }
-                    }
-                });
-            }
-        }
-
-        function ModalKaydet() {
-            if (m1 != null) {
-                ShowProgress();
-                var kontrol = $("#kontrol").is(':checked');
-                var etiket = $("#etiketyazdir").is(':checked');
+            if (printKontrol) {
+                printKontrol = false;
+                var etiketYazdir = $("#etiketyazdir").is(':checked');
                 var etiketOnizleme = $("#etiket-onizleme").is(':checked');
-                var yazici = $("#yazici").val();
-                if (hat.substring(0, 2) != "BK" && hat.substring(0, 2) != "MH") {
-                    if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "PB" && hat.substring(0, 2) != "RF") {
-                        $.ajax({
-                            url: '@Url.Action("UretimSonuKaydi", "Uretim")',
-                            type: 'POST',
-                            data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(), "kontrol": kontrol, "etiket": etiket, "onizleme": etiketOnizleme,"YAZICI":yazici },
-                            error: function (data) {
-                                console.log(data);
-                                HideProgress();
-                                $("#SiparisModal").modal('hide');
-                                Swal.fire(
-                                    'Başarısız!',
-                                     data,
-                                    'error'
-                                )
-                                 document.getElementById(btnid).onclick();
-                            },
-                            success: function (data)
-                            {
-                                HideProgress();
 
-                                $("#SiparisModal").modal('hide');
+                var yazici = $('#yazici :selected').val();
 
-                                if (data.substring(0, 4) == "Hata")
-                                {
-                                    playHata1();
-
-                                    Swal.fire('Başarısız!', data, 'error');
-                                }
-                                else
-                                {
-                                    playOnay();
-
-                                    Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
-
-                                    $.ajax({
-                                        url: '@Url.Action("UretilmisEtiketleriYazdir", "Uretim")',
-                                        type: 'POST',
-                                        data: {
-                                            "BarkodListesi": JSON.parse(data),
-                                            "EtiketDizayn": "Uretim",
-                                            "Yazici": yazici,
-                                            "DirektYazdir": etiket,
-                                            "Onizle": etiketOnizleme
-                                        },
-                                        error: (e) => { console.log(JSON.stringify(e)); },
-                                        success: (response) => {
-                                            if (response.trim().length > 0 && etiketOnizleme && etiket) {
-                                                UretilmisEtiketOnizle(response);
-                                            }
-
-                                            if (response.substring(0, 4) == "HATA") {
-                                                playHata1();
-
-                                                Swal.fire('Yazdırma başarısız, üretilmiş barkodlar alanından tekrar deneyiniz!', response, 'error');
-                                            }
-                                        }
-                                    });
-
-                                }
-
-                                document.getElementById(btnid).onclick();
+                if (etiketYazdir) {
+                    $.ajax({
+                        url: '@Url.Action("UretilmisEtiketleriYazdir", "Uretim")',
+                        type: 'POST',
+                        data: {
+                            "BarkodListesi": [BarkodNo],
+                            "EtiketDizayn": "Uretim",
+                            "Yazici": yazici,
+                            "DirektYazdir": etiketYazdir,
+                            "Onizle": etiketOnizleme
+                        },
+                        error: (e) => { console.log(JSON.stringify(e)); printKontrol = true; },
+                        success: (response) => {
+                            if (response.trim().length > 0 && etiketOnizleme && etiketYazdir) {
+                                UretilmisEtiketOnizle(response);
                             }
-                        })
+                            printKontrol = true;
+                        }
+                    });
+                }
+            
+            }
+
+        }
+        var modalKaydetKontrol = true;
+        function ModalKaydet() {
+            if (modalKaydetKontrol) {
+                modalKaydetKontrol = false;
+                if (m1 != null) {
+                    ShowProgress();
+                    var kontrol = $("#kontrol").is(':checked');
+                    var etiket = $("#etiketyazdir").is(':checked');
+                    var etiketOnizleme = $("#etiket-onizleme").is(':checked');
+                    var yazici = $("#yazici").val();
+                    if (hat.substring(0, 2) != "BK" && hat.substring(0, 2) != "MH") {
+                        if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "PB" && hat.substring(0, 2) != "RF") {
+                            $.ajax({
+                                url: '@Url.Action("UretimSonuKaydi", "Uretim")',
+                                type: 'POST',
+                                data: { "hatkodu": hat, "stokkodu": stok, "genislik": (genislik == "null" ? null : genislik.toString().trim()), "mik1": $("#miktar11").val().toString().trim(), "mik2": $("#miktar22").val().toString().trim(), "kontrol": kontrol, "etiket": etiket, "onizleme": etiketOnizleme, "YAZICI": yazici },
+                                error: function (data) {
+                                    modalKaydetKontrol = true;
+                                    console.log(data);
+                                    HideProgress();
+                                    $("#SiparisModal").modal('hide');
+                                    Swal.fire(
+                                        'Başarısız!',
+                                        data,
+                                        'error'
+                                    )
+                                    document.getElementById(btnid).onclick();
+                                },
+                                success: function (data) {
+                                    modalKaydetKontrol = true;
+                                    HideProgress();
+
+                                    $("#SiparisModal").modal('hide');
+
+                                    if (data.substring(0, 4) == "Hata") {
+                                        playHata1();
+
+                                        Swal.fire('Başarısız!', data, 'error');
+                                    }
+                                    else {
+                                        playOnay();
+
+                                        Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+
+                                        $.ajax({
+                                            url: '@Url.Action("UretilmisEtiketleriYazdir", "Uretim")',
+                                            type: 'POST',
+                                            data: {
+                                                "BarkodListesi": JSON.parse(data),
+                                                "EtiketDizayn": "Uretim",
+                                                "Yazici": yazici,
+                                                "DirektYazdir": etiket,
+                                                "Onizle": etiketOnizleme
+                                            },
+                                            error: (e) => { console.log(JSON.stringify(e)); },
+                                            success: (response) => {
+                                                if (response.trim().length > 0 && etiketOnizleme && etiket) {
+                                                    UretilmisEtiketOnizle(response);
+                                                }
+
+                                                if (response.substring(0, 4) == "HATA") {
+                                                    playHata1();
+
+                                                    Swal.fire('Yazdırma başarısız, üretilmiş barkodlar alanından tekrar deneyiniz!', response, 'error');
+                                                }
+                                            }
+                                        });
+
+                                    }
+
+                                    document.getElementById(btnid).onclick();
+                                }
+                            })
+                        } else {
+                            var mik1 = $("#miktar11").val();
+                            var ikincimik1 = $("#ikincimik1").val();
+                            var mik2 = $("#miktar22").val();
+                            var ikincimik2 = $("#ikincimik2").val();
+                            var hurdamik = $("#hurdamik").val();
+                            var top1 = parseFloat(mik1);
+                            var top2 = parseFloat(mik2);
+                            if (ikincimik1 != "" && ikincimik1 != null) {
+                                top1 = top1 + parseFloat(ikincimik1);
+                                top2 = top2 + parseFloat(ikincimik2);
+                            }
+                            if (hurdamik != "" && hurdamik != null) {
+                                top1 = top1 + parseFloat(hurdamik);
+                            }
+                            if (mik1 <= max) {
+
+
+
+                                loadPB(hat, stok, mik1.toString().trim(), mik2.toString().trim())
+
+
+                            } else {
+                                HideProgress();
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: 'center',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: (toast) => {
+                                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                    }
+                                })
+
+                                Toast.fire({
+                                    icon: 'info',
+                                    title: 'Toplam miktarı aşamazsınız.'
+                                });
+                            }
+
+
+                        }
                     } else {
                         var mik1 = $("#miktar11").val();
                         var ikincimik1 = $("#ikincimik1").val();
@@ -3073,16 +3116,16 @@
                             top1 = top1 + parseFloat(ikincimik1);
                             top2 = top2 + parseFloat(ikincimik2);
                         }
+                        if (hat == 'MH01') {
+                            hurdamik = $("#hurdamik1").val();
+                        }
                         if (hurdamik != "" && hurdamik != null) {
+
                             top1 = top1 + parseFloat(hurdamik);
                         }
-                        if (mik1 <= max) {
-
-                           
-
-                            loadPB(hat, stok, mik1.toString().trim(), mik2.toString().trim())
-                              
-
+                        var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + top1.toString().trim() + "/" + top2.toString().trim() + "/0";
+                        if (top1 <= max) {
+                            load(url);
                         } else {
                             HideProgress();
                             const Toast = Swal.mixin({
@@ -3103,59 +3146,18 @@
                             });
                         }
 
-
                     }
                 } else {
-                    var mik1 = $("#miktar11").val();
-                    var ikincimik1 = $("#ikincimik1").val();
-                    var mik2 = $("#miktar22").val();
-                    var ikincimik2 = $("#ikincimik2").val();
-                    var hurdamik = $("#hurdamik").val();
-                    var top1 = parseFloat(mik1);
-                    var top2 = parseFloat(mik2);
-                    if (ikincimik1 != "" && ikincimik1 != null) {
-                        top1 = top1 + parseFloat(ikincimik1);
-                        top2 =top2 + parseFloat(ikincimik2);
-                    }
-                    if (hat == 'MH01') {
-                        hurdamik = $("#hurdamik1").val();
-                    }
-                    if (hurdamik != "" && hurdamik != null) {
-
-                            top1 = top1 + parseFloat(hurdamik);
-                    }
-                    var url = "//192.168.2.13:83/api/ie/USK/" + hat + "/" + stok + "/" + isemri + "/" + top1.toString().trim() + "/" + top2.toString().trim() + "/0";
-                    if (top1 <= max) {
-                        load(url);
-                    } else {
-                        HideProgress();
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: 'center',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer)
-                                toast.addEventListener('mouseleave', Swal.resumeTimer)
-                            }
-                        })
-
-                        Toast.fire({
-                            icon: 'info',
-                            title: 'Toplam miktarı aşamazsınız.'
-                        });
-                    }
-
+                    playHata1()
+                    Swal.fire(
+                        'Başarısız!',
+                        'Eksik bileşen',
+                        'warning'
+                    )
                 }
-            } else {
-                playHata1()
-                Swal.fire(
-                    'Başarısız!',
-                    'Eksik bileşen',
-                    'warning'
-                )
+
             }
+
 
 
         }
@@ -3164,8 +3166,9 @@
         var Pbsayac = 0;
         var sonMu = false;
         var ek = 0;
+        var printKontrol = true;
         function loadPB(hat,stok,miktar1,miktar2) {
-           
+
             var ikincimik1 = $("#ikincimik1").val();
             var ikincimik2 = $("#ikincimik2").val();
             var hurdamik = $("#hurdamik").val();
@@ -3180,7 +3183,7 @@
             var etiketOnizleme = $("#etiket-onizleme").is(':checked');
             var k = $("#kontrol").is(':checked');
 
-                
+
                  var etiket = $("#etiketyazdir").is(':checked');
                  var etiketOnizleme = $("#etiket-onizleme").is(':checked');
             var k = $("#kontrol").is(':checked');
@@ -3194,7 +3197,8 @@
                 url: '@Url.Action("TrpzUretim", "Uretim")',
                 type: 'POST',
                 data: { "stokkodu": stok, "ISEMRINO": isorhat, "SERI_NO": "", "KULL_MIKTAR":miktar1, "mik2":miktar2, "kontrol": k, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": 0, "sonMu": sonMu },
-                    error: function (data1) {
+                error: function (data1) {
+                    modalKaydetKontrol = true;
                         console.log(data1);
                         HideProgress();
                         $("#SiparisModal").modal('hide');
@@ -3202,10 +3206,10 @@
                         Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
                     },
                     success: function (data1) {
-
+                        modalKaydetKontrol = true;
                         if (data1.substring(0, 4) != 'Hata') {
 
-                         
+
                                 HideProgress();
                                 $("#SiparisModal").modal('hide');
                                 playOnay()
@@ -3215,7 +3219,7 @@
                                     TrpzBarkod(data1);
                                 }
                                 document.getElementById(btnid).onclick();
-                            
+
 
                         } else {
                             HideProgress();
@@ -3478,7 +3482,7 @@
                     </div>
                     <div class="row w-100">
                         <div class="col text-center">
-                            <input placeholder="Dağıtılacak Miktar" class="form-control text-center" type="number" id="hesapInput">
+                            <input placeholder="Dağıtılacak Miktar" class="form-control text-center" type="number" id="hesapInput" onkeyup="hesaplaKeyUp(this.value)">
                         </div>
 
                     </div>
@@ -4266,16 +4270,50 @@
             localStorage.setItem("yazici", $('#yazici').val());
         }
     </script>
-
+    
     <!--Üretime Al Son-->
     <!--Üretilmis Barkodlar-->
     <script>
+        function hesaplaKeyUp(value) {
+            if (value > max) {
+                $("#hesapInput").val(max)
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'center',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+                if (bant) {
+                    Toast.fire({
+                        icon: 'info',
+                        title: '<div style="display:flex" class="justify-content-center">Dikkat!</div>',
+                        text: 'Makineye takılan girdi miktarı kalanı ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
+                    });
+                } else {
+                    Toast.fire({
+                        icon: 'info',
+                        title: '<div style="display:flex" class="justify-content-center">Dikkat!</div>',
+                        text: 'İş emrindeki üretilebilir miktar ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
+                    });
+                }
+
+
+            }
+        }
     var UretilmisBarkodlar = [];
     var SecilenBarkodlar = [];
     var SecilenBarkodLimiti = 50;
 
     $(document).ready(() =>
     {
+        
+       
         $('#pageName').html('<div class="dot"></div> Üretim Kayıtları')
         $('#uretilmis-barkod-dizayn').select2({ language: 'tr' });
     });
