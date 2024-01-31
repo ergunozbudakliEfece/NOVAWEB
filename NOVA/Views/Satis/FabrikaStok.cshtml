@@ -70,21 +70,13 @@
         color: black !important;
     }
 
-    .select2-selection__choice[title="İş Emri Verilen Stoklar"] {
-        background-color: #EAFFF1 !important;
-    }
-
-    .select2-selection__choice[title="Hazır Stoklar"] {
+  
+   /* #select2-kural-results li:nth-child(2) {
         background-color: white !important;
     }
-
-    .select2-selection__choice[title="Üretim Bekleyenler"] {
-        background-color: #EAF1FF !important;
-    }
-
-    #select2-kural-results li:nth-child(2) {
+    #select2-kural-results li:nth-child(1) {
         background-color: #EAFFF1 !important;
-    }
+    }*/
 
         #select2-kural-results li:nth-child(2):hover {
             color: black !important;
@@ -94,9 +86,9 @@
         color: black !important;
     }
 
-    #select2-kural-results li:nth-child(3) {
+   /* #select2-kural-results li:nth-child(3) {
         background-color: #EAF1FF !important;
-    }
+    }*/
 
     .card-view-value {
         margin-left: 15px;
@@ -174,13 +166,7 @@
 </div>
 <div class="container-fluid h-100">
 
-    <div class="card mx-auto" style="font-size:12px">
-
-
-
-
-
-
+    <div class="card mx-auto" style="font-size:14px;height:100vh">
 
         <div class="card-body">
 
@@ -291,7 +277,17 @@
                     </form>
 
 
-
+                    <div class="row justify-content-between align-items-center mt-3 mb-1">
+                        <div class="col-12 col-sm-4">
+                            <input id="stok-ara" class="form-control search-input" type="search" aria-label="Ara" placeholder="Ara" autocomplete="off">
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <select id="depo" name="depo" style="width: 100%;">
+                                <option value="45" selected>FABRİKA</option>
+                                <option value="5">EFECE 2</option>
+                            </select>
+                        </div>
+                    </div>
 
                 </div>
 
@@ -308,6 +304,7 @@
                        data-export-options='{"fileName": "FabrikaStok"}'
                        data-pagination="false"
                        data-search="true"
+                       data-search-selector="#stok-ara"
                        data-show-columns="true"
                        data-show-columns-toggle-all="true"
                        data-locale="tr-TR"
@@ -318,7 +315,7 @@
                        data-trim-on-search="false"
                        data-row-style="rowStyle"
                        data-show-footer="true"
-                       data-height="720">
+                       data-height="750">
                     <thead>
                         <tr id="tst">
                             @*<th data-field="SERI_NO" data-sortable="true" data-align="center" data-halign="center" data-formatter="ruloFormatter">RULO KODU</th>
@@ -348,6 +345,8 @@
         <th data-visible="false" data-field="BOBINNO" data-sortable="true" data-halign="center">BOBİN NO</th>
         <th data-visible="false" data-field="ISEMRIKOD" data-sortable="true" data-halign="center">ÜRETİLECEK MAKİNE</th>*@
                             <th data-field="SERI_NO" data-sortable="true" data-align="center" data-halign="center">RULO KODU</th>
+                            <th data-field="STOK_ADI" data-sortable="true" data-align="center" data-halign="center">STOK ADI</th>
+
                             <th data-field="RENKKODU" data-sortable="true" data-align="center" data-halign="center">RENKKODU</th>
                             <th data-field="KALINLIK" data-sortable="true" data-align="center" data-halign="center" data-formatter="kalinlikFormatter">KALINLIK</th>
                             <th data-field="GENISLIK" data-sortable="true" data-align="center" data-halign="center">GENISLIK</th>
@@ -360,9 +359,11 @@
                             @if (ViewBag.OzelYetki != null)
                             {
                                 <th data-field="FIYAT" data-align="center" data-sortable="true" data-halign="center" data-formatter="fiyatFormatter">FİYAT</th>
-            @*<th data-visible="false" data-field="KUR" data-sortable="true" data-halign="center">KUR</th>*@
+                                <th data-field="DOVTIP" data-align="center" data-sortable="true" data-halign="center" data-formatter="dovFormatter">DÖVİZ TİPİ</th>
+                                @*<th data-visible="false" data-field="KUR" data-sortable="true" data-halign="center">KUR</th>*@
                                 @*<th data-visible="false" data-field="GIR_KUR_HES_USD_FIYAT" data-sortable="true" data-halign="center">GIRILEN KURA GÖRE HESAPLANAN</th>*@
                             }
+                            <th data-field="URETILECEK" data-sortable="true" data-align="center" data-halign="center">URETILECEK MAMUL</th>
 
                         </tr>
                     </thead>
@@ -414,20 +415,17 @@
     var dovFilter = [];
     var list = [];
     $(document).ready(function () {
-        $('#pageName').html('<div class="dot"></div> Fabrika Stok')
-        ShowProgress()
-        $.getJSON("http://192.168.2.13:83/api/exceltest", function (data) {
+        FetchData();
+    });
+
+    function FetchData() {
+        ShowProgress();
+        $.getJSON("http://192.168.2.13:83/api/exceltest/storage/" + parseInt($('#depo').val()), function (data) {
             detayli = data;
             $('#table').bootstrapTable('destroy');
-            $('#table').bootstrapTable({
-                data: data
-            }).after(function () {
-                HideProgress()
-            });
-
+            $('#table').bootstrapTable({ data: data })
+                .after(function () { HideProgress() });
         }).done(function () {
-
-            $('#progress').hide();
 
             for (let i = 0; i < detayli.length; i++) {
                 if (!teslimfilter.includes(detayli[i].SERI_NO)) {
@@ -436,8 +434,8 @@
                 if (!renkfilter.includes(detayli[i].RENKKODU)) {
                     renkfilter.push(detayli[i].RENKKODU)
                 }
-                if (!kalinlikfilter.includes(parseFloat(detayli[i].KALINLIK.replace(',', '.')))) {
-                    kalinlikfilter.push(parseFloat(detayli[i].KALINLIK.replace(',', '.')))
+                if (!kalinlikfilter.includes(detayli[i].KALINLIK)) {
+                    kalinlikfilter.push(detayli[i].KALINLIK)
                     kalinliksearch.push(detayli[i].KALINLIK)
                 }
                 if (!genislikfilter.includes(parseFloat(detayli[i].GENISLIK.replace(',', '.')))) {
@@ -457,7 +455,7 @@
             }
             teslimfilter.sort(function (a, b) { return a - b });
             renkfilter.sort();
-            kalinlikfilter.sort(function (a, b) { return a - b });
+            kalinlikfilter.sort();
             genislikfilter.sort(function (a, b) { return a - b });
             kaplamafilter.sort();
             menseifilter.sort();
@@ -479,14 +477,14 @@
             }
             for (let i = 0; i < kalinlikfilter.length; i++) {
                 var option = document.createElement("option");
-                option.value = (kalinlikfilter[i]).toLocaleString();
-                option.innerHTML = (kalinlikfilter[i]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                option.value = (kalinlikfilter[i]);
+                option.innerHTML = (kalinlikfilter[i]);
                 document.getElementById("kalinlik").appendChild(option);
             }
             for (let i = 0; i < genislikfilter.length; i++) {
                 var option = document.createElement("option");
                 option.value = (genislikfilter[i]).toLocaleString().replaceAll('.', '');
-                option.innerHTML = (genislikfilter[i]).toLocaleString().replaceAll('.','');
+                option.innerHTML = (genislikfilter[i]).toLocaleString().replaceAll('.', '');
                 document.getElementById("genislik").appendChild(option);
             }
             for (let i = 0; i < kaplamafilter.length; i++) {
@@ -506,10 +504,13 @@
                 option.value = kuralFilter[i];
                 if (kuralFilter[i] == 0) {
                     option.innerHTML = "Hazır Stoklar";
-                    option.value= 0
+                    option.value = 0
+
                 } else if (kuralFilter[i] == 1) {
                     option.innerHTML = "İş Emri Verilen Stoklar";
+                    option.className = 'isemriverilen';
                     option.value = 1
+                    option.style = 'background-color: #EAFFF1 !important;'
                 } else {
                     option.innerHTML = "Üretim Bekleyenler";
                     option.value = 2
@@ -525,14 +526,13 @@
             $('#kaplama').select2({ placeholder: "Kaplama" });
             $('#mensei').select2({ placeholder: "Menşei" });
             $('#kural').select2({ placeholder: "Stok Durumu" });
+            $('#depo').select2({ placeholder: "Depo" });
         }).then(function () {
             document.querySelectorAll('input[type="search"]')[0].onkeyup = function () {
                 document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.toLocaleUpperCase("tr-TR");
             };
         })
-
-
-    })
+    }
 
     var type = 'fa'
 
@@ -578,10 +578,29 @@
         return new Date(value).toLocaleDateString();
     }
 
+    $('#depo').change(function (e) {
+        $('select').not('#depo').empty();
+
+        tumliste2 = null;
+        tumliste = null;
+        detayli = null;
+        teslimfilter = [];
+        renkfilter = [];
+        kalinlikfilter = [];
+        kalinliksearch = [];
+        kaplamafilter = [];
+        genislikfilter = [];
+        genisliksearch = [];
+        menseifilter = [];
+        kuralFilter = [];
+        dovFilter = [];
+        list = [];
+
+        FetchData();
+    });
 
 
-
-    $('select').change(function (e) {
+    $('select').not('#depo').change(function (e) {
         var filterAlgorithm = $('#filter').val()
         var plasiyerAlgorithm = $('#renk').val()
         var kalinlikAlgorithm = $('#kalinlik').val()
@@ -811,7 +830,7 @@
 
         }
         else if ($('#kalinlik').val().length > 0) {
-
+            
             var det = detayli.filter(x => kalinlikAlgorithm.includes(x.KALINLIK));
             if (!$('#filter').val().length > 0) {
 
@@ -1253,9 +1272,8 @@
 
         }
         else if ($('#kural').val().length > 0) {
-            var det = detayli.filter(x => kuralAlgorithm.includes(x.KURAL));
+            var det = detayli.filter(x => x.KURAL == $('#kural').val());
             
-
 
             if (!$('#filter').val().length > 0) {
 
@@ -1269,7 +1287,6 @@
                 }
                 teslimfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < teslimfilt.length; i++) {
-                    var t = ("0" + (teslimfilt[i])).substring(0, 5) + "." + (teslimfilt[i]).substring(4, 6);
                     var newOption = new Option(teslimfilt[i], teslimfilt[i], false, false);
                     $('#filter').append(newOption);
                 }
@@ -1617,6 +1634,18 @@
     function HideProgress() {
         document.body.style.overflow = 'hidden';
         $('#nova-overlay').fadeOut('slow');
+    }
+    function dovFormatter(value, index, row) {
+
+        switch (value) {
+            case 1: return 'USD'
+                break;
+            case 2: return 'EUR'
+                break;
+            case 0: return 'TRY'
+                break;
+        }
+        
     }
 </script>
 

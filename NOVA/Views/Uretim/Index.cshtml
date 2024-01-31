@@ -305,6 +305,7 @@
                 max-height: 1600px !important;
             }
         }
+
         .th-inner {
             white-space: break-spaces !important
         }
@@ -356,7 +357,7 @@
 
         .status-bar {
             height: 35px;
-            display: flex;
+            display: none;
             justify-content: end;
             align-items: center;
             padding: 0 0.25rem;
@@ -399,14 +400,22 @@
     </style>
 </head>
 <body style="overflow-x:hidden;">
-  
+
     <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
         <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
     </div>
 
     <div class="container-fluid p-2">
 
-       
+        <div class="status-bar">
+            <div class="battery-status">
+                <div class="battery-icon">
+                    <i id="battery-charging" class="bi bi-lightning-charge-fill"></i>
+                    <i id="battery-warning" class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="battery-level">0%</div>
+            </div>
+        </div>
 
         <div class="row d-flex justify-content-center align-items-center gap-2">
             <div class="col-sm-auto d-flex justify-content-center">
@@ -713,9 +722,9 @@
                         <button style="display:none" onclick="playAudio()" type="button">Play Audio</button>
 
                         @*<div class="justify-content-center" style="display:flex">
-                            <div id="qr-reader1" style="width:900px;"></div>
-                            <div id="qr-reader-results1"></div>
-                        </div>*@
+                                <div id="qr-reader1" style="width:900px;"></div>
+                                <div id="qr-reader-results1"></div>
+                            </div>*@
                     </div>
                 </div>
             </div>
@@ -2208,6 +2217,7 @@
         var mik2 = 0;
         var sabit = '';
         var seri;
+        var maxrulo = 0;
         function showmodal(value) {
             sabit=value.dataset.miktarsabit;
             hat = value.dataset.hat;
@@ -2217,8 +2227,12 @@
             seri = value.dataset.seri
             max = parseInt(value.dataset.top) - parseInt(value.dataset.kul)
             max2 = parseInt(value.dataset.mik2)
-            $.getJSON("http://192.168.2.13:83/api/ie/bakiye/" + hat, function (d) {
+            if (hat != 'PB01') {
 
+                maxrulo = parseInt(UretimListeYedek.filter(x => x.SERI_NO == seri)[0].SERI_MIKTAR);
+            }
+            $.getJSON("http://192.168.2.13:83/api/ie/bakiye/" + hat, function (d) {
+                
                 if (max > parseFloat(d[0].MAK_KULLANILABILIR)) {
                     max = d[0].MAK_KULLANILABILIR;
                     bant = true;
@@ -2983,7 +2997,7 @@
                         }
                     });
                 }
-            
+
             }
 
         }
@@ -4270,40 +4284,13 @@
             localStorage.setItem("yazici", $('#yazici').val());
         }
     </script>
-    
+
     <!--Üretime Al Son-->
     <!--Üretilmis Barkodlar-->
     <script>
         function hesaplaKeyUp(value) {
-            if (value > max) {
-                $("#hesapInput").val(max)
-
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'center',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.addEventListener('mouseenter', Swal.stopTimer)
-                        toast.addEventListener('mouseleave', Swal.resumeTimer)
-                    }
-                })
-                if (bant) {
-                    Toast.fire({
-                        icon: 'info',
-                        title: '<div style="display:flex" class="justify-content-center">Dikkat!</div>',
-                        text: 'Makineye takılan girdi miktarı kalanı ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
-                    });
-                } else {
-                    Toast.fire({
-                        icon: 'info',
-                        title: '<div style="display:flex" class="justify-content-center">Dikkat!</div>',
-                        text: 'İş emrindeki üretilebilir miktar ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
-                    });
-                }
-
-
+            if (value > maxrulo) {
+                $('#hesapInput').val(maxrulo);
             }
         }
     var UretilmisBarkodlar = [];
@@ -4312,8 +4299,8 @@
 
     $(document).ready(() =>
     {
-        
-       
+
+
         $('#pageName').html('<div class="dot"></div> Üretim Kayıtları')
         $('#uretilmis-barkod-dizayn').select2({ language: 'tr' });
     });
@@ -5057,7 +5044,7 @@
 
                 var d = data.filter(x=>x.GENISLIK == genislik.toString())
                 ModalKapat4()
-                $('#miktar11').val(d[0].TOPLAM_MIKTAR).trigger('blur');
+                $('#miktar11').val(d[0].TOPLAM_MIKTAR).trigger('keyup').trigger('blur');
             })
         }
     </script>
@@ -5117,6 +5104,59 @@
         }
     </script>
     <!-- Deneysel Scanner Son-->
+
+    <script>
+        var BatteryIsCharging = false;
+        var BatteryLevel = 0;
+
+        $(document).ready(() => {
+            BatteryStatus();
+        });
+
+        function BatteryStatus() {
+            if (typeof navigator === 'undefined' || !window.navigator.getBattery) return;
+
+            window.navigator.getBattery().then((Battery) => {
+                BatteryLevel = Battery.level * 100;
+                BatteryIsCharging = Battery.charging;
+
+                BatteryListener();
+
+                Battery.addEventListener('levelchange', () => {
+                    BatteryLevel = Battery.level * 100;
+
+                    BatteryListener();
+                });
+                Battery.addEventListener("chargingchange", () => {
+                    BatteryIsCharging = Battery.charging;
+
+                    BatteryListener();
+                });
+
+                $('.status-bar').css('display', 'flex');
+            });
+        }
+
+        function BatteryListener() {
+            var BatteryColor = BatteryLevel > 30 ? "#56d11c" : BatteryLevel > 10 ? "#f7a224" : "#ff4b4b";
+
+            $('.battery-level').html(`${BatteryLevel}%`);
+            $('.battery-icon').css('background', `linear-gradient(90deg, ${BatteryColor} ${BatteryLevel}%, #a5a5a5 ${BatteryLevel}%)`);
+
+            if (BatteryIsCharging) {
+                $('#battery-charging').show();
+                $('#battery-warning').hide();
+            }
+            else if (!BatteryIsCharging && BatteryLevel <= 25) {
+                $('#battery-charging').hide();
+                $('#battery-warning').show();
+            }
+            else {
+                $('#battery-charging').hide();
+                $('#battery-warning').hide();
+            }
+        }
+    </script>
 </body>
 
 </html>
