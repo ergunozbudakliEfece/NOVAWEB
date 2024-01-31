@@ -1,123 +1,225 @@
-﻿<!doctype html>
-<html lang="en">
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
 <head>
-    <meta charset="utf-8">
-    <title>Battery Status API - Demo</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <meta http-equiv="cleartype" content="on">
-    <meta name="HandheldFriendly" content="True">
-    <link rel="stylesheet" href="src/styles.css">
+    <meta name="viewport" content="width=device-width" />
+    <title>Test</title>
+    <link href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <style>
+        .jumbotron.vertical-center {
+            margin-bottom: 0; /* Remove the default bottom margin of .jumbotron */
+        }
+
+        .vertical-center {
+            min-height: 100%; /* Fallback for vh unit */
+            min-height: 100vh; /* You might also want to use
+                        'height' property instead.
+                        
+                        Note that for percentage values of
+                        'height' or 'min-height' properties,
+                        the 'height' of the parent element
+                        should be specified explicitly.
+  
+                        In this case the parent of '.vertical-center'
+                        is the <body> element */
+            /* Make it a flex container */
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            /* Align the bootstrap's container vertically */
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -moz-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            /* In legacy web browsers such as Firefox 9
+     we need to specify the width of the flex container */
+            width: 100%;
+            /* Also 'margin: 0 auto' doesn't have any effect on flex items in such web browsers
+     hence the bootstrap's container won't be aligned to the center anymore.
+  
+     Therefore, we should use the following declarations to get it centered again */
+            -webkit-box-pack: center;
+            -moz-box-pack: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+        }
+    </style>
 </head>
-<body>
+@*<body>
+    <div class="jumbotron vertical-center">
+        <div class="container-fluid">
+            <div id="employeeTableWrapper" class="tableWrapper table-responsive">
+                <div id="toolbar">
 
-    <header class="demo-header">
-        <h1 class="demo-title">Battery Status API</h1>
-        <p class="not-support" hidden>Your browser doesn't support the Battery Status API :(</p>
-    </header>
+                    <select id="filter" multiple="multiple" name="filterAlgorithm">
+                    </select>
+                    <select id="filter2" multiple="multiple" name="filterAlgorithm2">
+                    </select>
 
-    <article class="battery-card">
-        <h1 class="battery-title">Battery Status</h1>
+                </div>
+                <table id="table"
+                       class="table table-striped"
+                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                       data-toggle="table"
+                       data-show-export="true"
+                       data-toolbar="#toolbar"
+                       data-export-data-type="all"
+                       data-export-types="['excel']"
+                       data-pagination="true"
+                       data-search="true"
+                       data-show-columns="true"
+                       data-show-columns-toggle-all="true"
+                       data-locale="tr-TR"
+                       data-filter-control="true"
+                       data-filter-control-multiple-search="true"
+                       data-loading-template="loadingTemplate"
+                       data-mobile-responsive="true"
+                       data-detail-formatter="detailFormatter"
+                       data-detail-view="true">
+                    <thead>
+                        <tr>
+                            <th data-field="SIPARIS_NO" data-sortable="true">SİPARİŞ NO</th>
+                            <th data-field="TARIH" data-sortable="true" data-formatter="tarihFormatter">TARİH</th>
+                            <th data-field="CARI_DOVIZ_TIPI" data-sortable="true">HESAP TÜRÜ</th>
+                            <th data-field="TESLIM_YERI" data-sortable="true">TESLİM YERİ</th>
+                            <th data-field="PLASIYER_ADI" data-sortable="true">PLASİYER ADI</th>
 
-        <div class="battery-box">
-            <strong class="battery-percentage"></strong>
-            <i class="battery"></i>
+                        </tr>
+                    </thead>
+                </table>
+
+
+            </div>
         </div>
+        </div>
+        <script>
+            var tumsipler = null;
+            $(document).ready(function () {
+                var teslim = [];
+                var plasiyerler = [];
+                $.getJSON("http://192.168.2.13:83/api/stok/exec", function (data) {
 
-        <dl class="battery-info">
-            <dt>Power Source</dt>
-            <dd class="battery-status">---</dd>
+                    tumsipler = data;
+                    for (let i = 0; i < tumsipler.length; i++) {
+                        if (!teslim.includes(tumsipler[i].TESLIM_YERI)) {
+                            teslim.push(tumsipler[i].TESLIM_YERI);
+                        }
+                        if (!plasiyerler.includes(tumsipler[i].PLASIYER_ADI)) {
+                            plasiyerler.push(tumsipler[i].PLASIYER_ADI);
+                        }
+                    }
+                    
+                    for (let i = 0; i < teslim.length; i++) {
+                        var opt = document.createElement("option");
+                        opt.value = teslim[i];
+                        opt.innerHTML = teslim[i];
+                        document.getElementById("filter").appendChild(opt);
+                        
+                    }
+                    for (let i = 0; i < plasiyerler.length; i++) {
+                        var opt = document.createElement("option");
+                        opt.value = plasiyerler[i];
+                        opt.innerHTML = plasiyerler[i];
+                        document.getElementById("filter2").appendChild(opt);
 
-            <dt>Level percentage</dt>
-            <dd class="battery-level">---</dd>
+                    }
+                })
 
-            <dt>Fully charged in</dt>
-            <dd class="battery-fully">---</dd>
+                $('#table').bootstrapTable({ url: "http://192.168.2.13:83/api/detaysizsip" })
+                
+                $('#filter').select2({
 
-            <dt>Remaining time</dt>
-            <dd class="battery-remaining">---</dd>
-        </dl>
+                    width: 300,
+                    placeholder:"Teslim Yeri"
 
-    </article>
+                });
+                $('#filter2').select2({
 
-    <footer>
-        <a href="https://github.com/pazguille/demo-battery-api" id="github-ribbon"><img width="149" height="149" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
-        by <a href="http://pazguille.me/">Guille Paz</a> with <span class="heart">❤</span>
-        <iframe id="github-button" src="https://ghbtns.com/github-btn.html?user=pazguille&amp;repo=demo-battery-api&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="152" height="30"></iframe>
-    </footer>
+                    width: 300,
+                    placeholder: "Plasiyer"
 
-    <script async>
-        (function () {
-            'use strict';
-
-            var battery;
-
-            function toTime(sec) {
-                sec = parseInt(sec, 10);
-
-                var hours = Math.floor(sec / 3600),
-                    minutes = Math.floor((sec - (hours * 3600)) / 60),
-                    seconds = sec - (hours * 3600) - (minutes * 60);
-
-                if (hours < 10) { hours = '0' + hours; }
-                if (minutes < 10) { minutes = '0' + minutes; }
-                if (seconds < 10) { seconds = '0' + seconds; }
-
-                return hours + ':' + minutes;
-            }
-
-            function readBattery(b) {
-                battery = b || battery;
-
-                var percentage = parseFloat((battery.level * 100).toFixed(2)) + '%',
-                    fully,
-                    remaining;
-
-                if (battery.charging && battery.chargingTime === Infinity) {
-                    fully = 'Calculating...';
-                } else if (battery.chargingTime !== Infinity) {
-                    fully = toTime(battery.chargingTime);
-                } else {
-                    fully = '---';
-                }
-
-                if (!battery.charging && battery.dischargingTime === Infinity) {
-                    remaining = 'Calculating...';
-                } else if (battery.dischargingTime !== Infinity) {
-                    remaining = toTime(battery.dischargingTime);
-                } else {
-                    remaining = '---';
-                }
-
-                document.styleSheets[0].insertRule('.battery:before{width:' + percentage + '}', 0);
-                document.querySelector('.battery-percentage').innerHTML = percentage;
-                document.querySelector('.battery-status').innerHTML = battery.charging ? 'Adapter' : 'Battery';
-                document.querySelector('.battery-level').innerHTML = percentage;
-                document.querySelector('.battery-fully').innerHTML = fully;
-                document.querySelector('.battery-remaining').innerHTML = remaining;
-
-            }
-
-            if (navigator.battery) {
-                readBattery(navigator.battery);
-
-            } else if (navigator.getBattery) {
-                navigator.getBattery().then(readBattery);
-
-            } else {
-                document.querySelector('.not-support').removeAttribute('hidden');
-            }
-
-            window.onload = function () {
-                battery.addEventListener('chargingchange', function () {
-                    readBattery();
                 });
 
-                battery.addEventListener("levelchange", function () {
-                    readBattery();
-                });
-            };
-        }());
-    </script>
+            })
+            var type = 'fa'
+
+            function loadingTemplate(message) {
+                if (type === 'fa') {
+                    return '<i class="fa fa-spinner fa-spin fa-fw fa-2x"></i>'
+                }
+                if (type === 'pl') {
+                    return '<div class="ph-item"><div class="ph-picture"></div></div>'
+                }
+            }
+
+            function detailFormatter(index, row) {
+
+                var st = "";
+                var d = tumsipler.filter(x => x.SIPARIS_NO == row.SIPARIS_NO);
+                var sum = 0;
+                for (let i = 0; i < d.length; i++) {
+                    st = st + "<tr><td>" + d[i].STOK_ADI + "</td>" + "<td>" + parseFloat(d[i].MIKTAR).toLocaleString() + "</td>" + "<td>" + parseFloat(d[i].MIKTAR2).toLocaleString() + "</td>" + "<td>" + parseFloat(d[i].TESLIM_MIKTARI).toLocaleString() + "</td>" + "<td>" + parseFloat(d[i].BAKIYE_MIKTARI).toLocaleString() + "</td>" + "<td>" + "<div class='progress'><div class='progress-bar progress-bar-danger progress-bar-striped active' role='progressbar' aria-valuenow='" + parseInt(d[i].TESLIMAT_ORANI * 100) + "' aria-valuemin='0' aria-valuemax='100' style='width: " + parseInt(d[i].TESLIMAT_ORANI * 100) + "%'>" + Math.round(d[i].TESLIMAT_ORANI * 100) + "</div></div>" + "</td>" + "<td>" + (d[i].TESLIM_MIKTARI_SSIP ? parseFloat(d[i].TESLIM_MIKTARI_SSIP).toLocaleString() : 0) + "</td>" + "<td>" + (d[i].BAKIYE_MIKTARI_SSIP ? parseFloat(d[i].BAKIYE_MIKTARI_SSIP).toLocaleString() : 0) + "</td>" + "<td><div class='progress'><div class='progress-bar progress-bar-danger progress-bar-striped active' role='progressbar' aria-valuenow='" + parseInt(d[i].TESLIMAT_ORANI_SSIP * 100) + "' aria-valuemin='0' aria-valuemax='100' style='width: " + parseInt(d[i].TESLIMAT_ORANI_SSIP * 100) + "%'>" + Math.round(d[i].TESLIMAT_ORANI_SSIP * 100) + "</div></div></td>" + "<td>" + (d[i].URETILEN_MIKTAR1 ? parseFloat(d[i].URETILEN_MIKTAR1).toLocaleString() : 0) + "</td>" + "<td>" + (d[i].URETILECEK_MIKTAR1 ? parseFloat(d[i].URETILECEK_MIKTAR1).toLocaleString() : 0) + "</td>" + "<td><div class='progress'><div class='progress-bar progress-bar-danger progress-bar-striped active' role='progressbar' aria-valuenow='" + parseInt(d[i].URETIM_ORANI * 100) + "' aria-valuemin='0' aria-valuemax='100' style='width: " + parseInt(d[i].URETIM_ORANI * 100) + "%'>" + Math.round(d[i].URETIM_ORANI * 100) + "</div></div></td></tr>"
+                    sum = sum + d[i].BAKIYE_MIKTARI;
+                }
+
+
+
+                return "<table class='table table-borderless'><thead><tr class'text-nowrap'><th class='text-nowrap'>STOK ADI</th><th class='text-nowrap' style='padding-left: 10px'>MİKTAR 1</th><th class='text-nowrap' style='padding-left: 10px'>MİKTAR 2</th><th class='text-nowrap' style='padding-left: 10px'>MSIP TESLİM</th><th class='text-nowrap' style='padding-left: 10px'>MSIP BEKLEYEN</th><th class='text-nowrap' style='padding-left: 10px'>MSIP SÜREÇ</th><th class='text-nowrap' style='padding-left: 10px'>SSIP TESLİM</th><th class='text-nowrap' style='padding-left: 10px'>SSIP BEKLEYEN</th><th class='text-nowrap' style='padding-left: 10px'>SSIP SÜREÇ</th><th class='text-nowrap' style='padding-left: 10px'>ÜRETİLEN</th><th class='text-nowrap' style='padding-left: 10px'>ÜRETİM BEKLEYEN</th><th class='text-nowrap' style='padding-left: 10px'>ÜRETİM SÜREÇ</th></tr></thead><tbody>" + st + "<tr><td colspan='4'></td><td><b><u>Toplam</u></b><br>" + parseFloat(sum).toLocaleString() + "</td></tr></tbody></table>";
+
+
+            }
+
+            function tarihFormatter(value, row, index) {
+
+                return (new Date(value)).toLocaleDateString();
+            }
+            $('#toolbar').change(function (e) {
+                var filterAlgorithm = $('[name="filterAlgorithm"]').val()
+               
+                var filterAlgorithm2 = $('[name="filterAlgorithm2"]').val()
+                var tumplasiyer = []
+                var tumteslim = []
+                for (let i = 0; i < $('#table').bootstrapTable('getData').length; i++) {
+                    if (!tumplasiyer.includes($('#table').bootstrapTable('getData')[i].PLASIYER_ADI)) {
+                        tumplasiyer.push($('#table').bootstrapTable('getData')[i].PLASIYER_ADI)
+                    }
+                    if (!tumteslim.includes($('#table').bootstrapTable('getData')[i].TESLIM_YERI)) {
+                        tumteslim.push($('#table').bootstrapTable('getData')[i].TESLIM_YERI)
+                    }
+                }
+                if (filterAlgorithm2.length == 0) {
+                    filterAlgorithm2 = tumplasiyer;
+                }
+                if (filterAlgorithm.length == 0) {
+                    filterAlgorithm = tumteslim;
+                }
+
+                alert(filterAlgorithm);
+                    $('#table').bootstrapTable('filterBy', {
+                        TESLIM_YERI: filterAlgorithm,
+                        PLASIYER_ADI: filterAlgorithm2,
+                    })
+                
+
+            })
+        </script>
+</body>*@
+<body>
+    
 </body>
 </html>

@@ -1366,7 +1366,7 @@ namespace NOVA.Controllers
             var seri = "";
 
             string FisHata = "";
-            if (ISEMRINO.Substring(0, 4) == "PB01" || ISEMRINO.Substring(0, 4) == "RF03" || ISEMRINO.Substring(0, 4) == "RF01" || ISEMRINO.Substring(0, 4) == "TP01")
+            if (ISEMRINO.Substring(0, 4) == "PB01" || ISEMRINO.Substring(0, 4) == "PB02" || ISEMRINO.Substring(0, 4) == "RF03" || ISEMRINO.Substring(0, 4) == "RF01" || ISEMRINO.Substring(0, 4) == "TP01")
             {
                 var fisler = "";
                 var sum = 0;
@@ -1461,7 +1461,6 @@ namespace NOVA.Controllers
                             uretim.OTO_YMAM_GIRDI_CIKTI = true;
                             uretim.OTO_YMAM_STOK_KULLAN = false;
 
-
                             uretim.BAKIYE_DEPO = 0;
                             uretim.F_Yedek1 = miktar2;
                             uretim.UretSon_Miktar = miktar1;
@@ -1484,8 +1483,16 @@ namespace NOVA.Controllers
                             }
                             else
                             {
-                                uretim.OTOSERIURET();
-                                uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
+                                if (seri == null)
+                                {
+
+                                    uretim.OTOSERIURET();
+                                    uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
+                                }
+                                else
+                                {
+                                    uretim.SeriEkle(seri, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
+                                }
                             }
 
 
@@ -1529,6 +1536,7 @@ namespace NOVA.Controllers
 
                             netRS.Ac("SELECT * FROM TBLISEMRI WITH(NOLOCK) WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                             var referans = netRS.FieldByName("REFISEMRINO").AsString;
+
 
                             //netRS.Ac("SELECT * FROM TBLISEMRI WHERE ISEMRINO='" + referans + "'");
 
@@ -2232,7 +2240,7 @@ namespace NOVA.Controllers
                     var ACIK2 = netRS.FieldByName("ACIK2").AsString;
                     var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
                     var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
-                    netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "',ACIK1='" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + ISEMRINO + "'");
+                    netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "',ACIK1='" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "',MIKTAR2="+ mik2.ToDouble() + " WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + ISEMRINO + "'");
 
                     netRS.Ac("SELECT * FROM TBLISEMRI WITH(NOLOCK) WHERE ISEMRINO='" + ISEMRINO + "'");
                     var referans = netRS.FieldByName("REFISEMRINO").AsString;
@@ -2329,6 +2337,8 @@ namespace NOVA.Controllers
 
 
 
+                    WebMail.SmtpServer = "192.168.2.13";
+                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Fiş Bilgi", "<p><b>" + ISEMRINO + "</b> Fiş bilgileri:</p><p>" + uretim.UretSon_FisNo + "</p>" , "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
 
 
 

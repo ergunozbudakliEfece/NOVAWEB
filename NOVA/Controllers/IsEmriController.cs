@@ -31,6 +31,7 @@ using System.Text;
 using ServiceStack.Text;
 using System.Net.Http;
 using Newtonsoft.Json;
+using NOVA.Wrappers.Abstract;
 
 namespace NOVA.Controllers
 {
@@ -807,7 +808,7 @@ namespace NOVA.Controllers
             return jsonList;
         }
         [HttpPost]
-        public ActionResult PostTRPZ(List<IsEmriModel2> isemri)
+        public IResponse PostTRPZ(List<IsEmriModel2> isemri)
         {
             List<SeriModel> createdlog1 = null;
             var apiUrl2 = "http://192.168.2.13:83/api/seri/1";
@@ -930,7 +931,7 @@ namespace NOVA.Controllers
 
                 TempData["Hata"] = "HATA";
                 var msg = ex.Message;
-                return View("Index");
+                return new Wrappers.Concrete.ErrorResponse(msg);
             }
             finally
             {
@@ -942,7 +943,7 @@ namespace NOVA.Controllers
 
 
 
-            return RedirectToAction("Index");
+            return new Wrappers.Concrete.SuccessResponse<string>("Başarılı!");
         }
         public class IsEmriModel2
         {
@@ -962,7 +963,7 @@ namespace NOVA.Controllers
 
         }
         [HttpPost]
-        public Microsoft.AspNetCore.Mvc.StatusCodeResult Post(List<IsEmriModel> isemri)
+        public Wrappers.Abstract.IResponse Post(List<IsEmriModel> isemri)
         {
 
             var isemridis = isemri.GroupBy(x => x.ISEMRINO).Select(x => x.First()).ToList();
@@ -989,14 +990,14 @@ namespace NOVA.Controllers
                 for (int i = 0; i < isemridis.Count(); i++)
                 {
 
-                    if (isemridis[i].REF_ISEMRINO != null && isemridis[i].REF_ISEMRINO!="-")
+                    if (isemridis[i].REF_ISEMRINO != null && isemridis[i].REF_ISEMRINO != "-")
                     {
                         var stokkodu = stokadlari.Where(x => x.STOK_ADI == isemridis[i].REF_STOKOLCUSU);
-                        if (isemridis[i].SIPARISNO != null && isemridis[i].SIPARISNO!="")
+                        if (isemridis[i].SIPARISNO != null && isemridis[i].SIPARISNO != "")
                         {
                             sipkont = cariler.FirstOrDefault(x => x.STOK_KODU == stokkodu.First().STOK_KODU && x.FISNO == isemridis[i].SIPARISNO).SIPKONT;
                         }
-                        
+
 
 
                         Isemri = kernel.yeniIsEmri(sirket);
@@ -1028,10 +1029,10 @@ namespace NOVA.Controllers
                         Isemri.Miktar = m2;
                         Isemri.kayitYeni();
                         NetRS netRS = kernel.yeniNetRS(sirket);
-                       
+
                         netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI2 + "',DEPO_KODU='45',MIKTAR='1',MIKTARSABITLE='H' WHERE ISEMRINO='" + isemridis[i].REF_ISEMRINO + "'");
-                        
-                       
+
+
 
                     }
 
@@ -1047,7 +1048,7 @@ namespace NOVA.Controllers
                     Isemri1.ReceteSaklansin = true;
                     Isemri1.ProjeKodu = "1";
                     Isemri1.Oncelik = 0;
-                    if(isemridis[i].REF_ISEMRINO != "-")
+                    if (isemridis[i].REF_ISEMRINO != "-")
                     {
 
                         Isemri1.RefIsEmriNo = isemridis[i].REF_ISEMRINO;
@@ -1062,7 +1063,7 @@ namespace NOVA.Controllers
                     {
                         Isemri1.SeriNo = "0";
                     }
-                        
+
                     if (isemridis[i].ISEMRINO.Substring(0, 2) == "DL")
                     {
                         Isemri1.SeriNo2 = isemridis[i].GENISLIK.ReplaceAll(".", ",");
@@ -1081,8 +1082,8 @@ namespace NOVA.Controllers
                     Isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                     Isemri1.kayitYeni();
                     NetRS netRS2 = kernel.yeniNetRS(sirket);
-                    
-                       
+
+
                     if (isemridis[i].MIKTAR_SABITLE == "E")
                     {
                         netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "',MIKTAR='" + isemridis[i].HAMSARF + "',MIKTARSABITLE='E', DEPO_KODU='45' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
@@ -1100,7 +1101,7 @@ namespace NOVA.Controllers
             {
 
                 TempData["Hata"] = ex.Message;
-                return new Microsoft.AspNetCore.Mvc.StatusCodeResult(404);
+                return new Wrappers.Concrete.ErrorResponse(ex.Message);
 
             }
             finally
@@ -1112,11 +1113,10 @@ namespace NOVA.Controllers
 
 
 
-            return new Microsoft.AspNetCore.Mvc.StatusCodeResult(200);
+            return new Wrappers.Concrete.SuccessResponse<string>("Başarılı!");
         }
-
         [HttpPost]
-        public string PostBKPBRF(List<IsEmriModel> isemri, bool TamamiKullanilsin)
+        public IResponse PostBKPBRF(List<IsEmriModel> isemri, bool TamamiKullanilsin)
         {
 
             var isemridis = isemri.GroupBy(x => x.ISEMRINO).Select(x => x.First()).ToList();
@@ -1189,7 +1189,7 @@ namespace NOVA.Controllers
             {
 
                 TempData["Hata"] = ex.Message;
-                return ex.Message;
+                return new Wrappers.Concrete.ErrorResponse(ex.Message);
             }
             finally
             {
@@ -1198,7 +1198,7 @@ namespace NOVA.Controllers
 
 
 
-            return "başarılı";
+            return new Wrappers.Concrete.SuccessResponse<string>("Başarılı!");
         }
 
         [HttpPost]
