@@ -1,29 +1,67 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout_MES.cshtml";
 }
+<link href="~/wwwroot/libs/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
+<link href="~/wwwroot/libs/bootstrap-table/extensions/sticky-header/bootstrap-table-sticky-header.min.css" rel="stylesheet" />
+<script src="~/wwwroot/libs/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="~/wwwroot/libs/bootstrap-table/bootstrap-table-locale-all.min.js"></script>
+<script src="~/wwwroot/libs/bootstrap-table/extensions/mobile/bootstrap-table-mobile.min.js"></script>
+<script src="~/wwwroot/libs/bootstrap-table/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+<link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+<style>
+    ::placeholder {
+        color: #fff !important;
+    }
 
+    .search-input {
+        background-color: transparent !important;
+        color: white !important;
+    }
+        
+    .sticky {
+        position: fixed;
+        top: 0;
+        width: 100%;
+    }
+   
+   
+    @@keyframes live {
+        0%, 80%, 100% {
+            transform: scale(0.6);
+            -webkit-transform: scale(0.6);
+        }
+
+        40% {
+            transform: scale(1.0);
+            -webkit-transform: scale(1.0);
+        }
+    }
+</style>
+<div id="nova-overlay" style="display:none;position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:flex;justify-content:center;align-items:center;">
+    <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+</div>
 <div class="header">
     <div class="options">
-        <div class="machine-option">
-            <select class="form-select form-select-sm shadow-none" onchange="PageChange(this.value)">
-                <option selected value="All">Tüm Makineler</option>
-                <option disabled value="BK01">BK01</option>
-                <option disabled value="DL01">DL01</option>
-                <option disabled value="PB01">PB01</option>
-                <option disabled value="PB02">PB02</option>
-                <option disabled value="RF01">RF01</option>
-                <option disabled value="RF02">RF02</option>
-                <option disabled value="RF03">RF03</option>
-                <option disabled value="SM01">SM01</option>
-                <option disabled value="SM02">SM02</option>
-                <option disabled value="SM03">SM03</option>
-                <option disabled value="TP01">TP01</option>
-                <option disabled value="MH01">MH01</option>
-            </select>
-        </div>
+        @*<div class="machine-option">
+                <select class="form-select form-select-sm shadow-none" onchange="PageChange(this.value)">
+                    <option selected value="All">Tüm Makineler</option>
+                    <option disabled value="BK01">BK01</option>
+                    <option disabled value="DL01">DL01</option>
+                    <option disabled value="PB01">PB01</option>
+                    <option disabled value="PB02">PB02</option>
+                    <option disabled value="RF01">RF01</option>
+                    <option disabled value="RF02">RF02</option>
+                    <option disabled value="RF03">RF03</option>
+                    <option disabled value="SM01">SM01</option>
+                    <option disabled value="SM02">SM02</option>
+                    <option disabled value="SM03">SM03</option>
+                    <option disabled value="TP01">TP01</option>
+                    <option disabled value="MH01">MH01</option>
+                </select>
+            </div>*@
         <div class="machine-visible">
             <button class="btn" onclick="ToggleMachineFilter()">
-                <span>Filtrele</span>
+                <span>Makine</span>
                 <i class="bi bi-chevron-down"></i>
             </button>
 
@@ -33,22 +71,115 @@
         </div>
         <div class="timer-option">
             <select class="form-select form-select-sm shadow-none" onchange="ChangeIntervalTime(this.value)">
-                <option value="5000">5 Saniye</option>
-                <option value="30000" selected>30 Saniye</option>
-                <option value="60000">1 Dakika</option>
-                <option value="300000">5 Dakika</option>
+                <option value="5000">5 Sn</option>
+                <option value="30000" selected>30 Sn</option>
+                <option value="60000">1 Dk</option>
+                <option value="300000">5 Dk</option>
             </select>
         </div>
+
         <button id="RefreshButton" type="button" class="btn home-button" onclick="RefreshPage()"><i class="bi bi-arrow-clockwise"></i></button>
         <button id="SummaryButton" type="button" class="btn home-button" onclick="ToggleSummaryView()"><i class="bi bi-eye-slash-fill"></i></button>
+        <button id="TumuButton" type="button" class="btn home-button" onclick="ToggleSummaryView1()"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAABW0lEQVR4nO2Uu0pDQRCGU0mERIgYGx9A8xDx9gYSew14qWMhamG8FB4fRgW18vICipcyIljFWKrJA/yy+B3YLHvCJgpaZKrz/TNnZnd2d1Kpvv0rkzQmqfKD/ysmR5JzUNKtvq3cQ/Iy/5ocaV/AFgFPknI9FBiW9EyODdeZk/SBcxJtXlI1IHFVUonvaXK8ty3S2t4FPCqpiVbskLxIzKekPNoV2qIdeIK4BO/Dp/CApENJDUmvkiKj4TsjdhdegY/tAqbvxsbhR3gGNgldi/DNwvfwBFyzC7QQMwnc8BR4w5eFm3AGbnUqEPc/C5u2uFbHNxSfg4+TWvQQ0KIDp0V3cMHXoviQl+E9zyFH7MQ95HNid+BV+Mh3TS/hPFcv9JqaNzSCdo22kPTQptBKgQ9tW9Kc0672h4ZzE+dLvJpuzBkV676A9C8NuxvvsLPG9Vq3yYPGdd/+zL4ACpjUwaomSYAAAAAASUVORK5CYII="></button>
+        <div class="timer-option">
+            <select id="screenChangeSelect" class="form-select form-select-sm shadow-none" onchange="ChangeScreenIntervalTime(this.value)">
+                <option value="0" selected>Yok</option>
+                <option value="5000">5 Sn</option>
+                <option value="30000">30 Sn</option>
+                <option value="60000">1 Dk</option>
+                <option value="300000">5 Dk</option>
+            </select>
+
+        </div>
+
+        <input onchange="dateChange(this.value)" id="date" type="date" min="2024-01-01" style="padding-top: .15rem; padding-bottom: .15rem; padding-right: .5rem; padding-left: .5rem; background-color: var(--empty-bg-color); color: white; border: var(--bs-border-width) solid var(--empty-border-color); display: none; border-radius: var(--bs-border-radius-sm)" onkeypress="return false">
+        <button id="IslemTableButton" type="button" class="btn home-button" onclick="ShowIslemTablosu()"><i class="bi bi-calculator"></i></button>
     </div>
     <button id="HomeButton" type="button" class="btn home-button"><i class="bi bi-house-fill"></i></button>
+</div>
+
+<div class="modal fade" id="SERIModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 50%;top:20vh">
+        <div class="modal-content">
+            <div class="container-fluid mt-3">
+
+                <div class="row text-center mt-1">
+                    <div class="col">
+                        <div id="modalTbl"></div>
+                    </div>
+                </div>
+
+                <div class="modal-footer mt-1" style="display:flex;justify-content:center;align-items:center;border-top:hidden !important">
+                    <button class="btn btn-primary" id="ModalSaveButton" type="button" onclick="BelgeSil()">SİL</button>
+                    <button class="btn btn-danger" type="button" onclick="ModalKapat()">KAPAT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="SERIModal1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 75%;top:20vh">
+        <div class="modal-content">
+            <div class="container-fluid mt-3">
+
+                <div class="row text-center mt-1">
+                    <div class="col">
+                        <div id="modalTbl">
+                            <table id="UretimeGirenlerTable1"
+                                   class="table"
+                                   data-search="false"
+                                   data-show-refresh="false"
+                                   data-show-toggle="false"
+                                   data-show-fullscreen="false"
+                                   data-show-columns="false"
+                                   data-show-columns-toggle-all="false"
+                                   data-detail-view="false"
+                                   data-detail-view-by-click="false"
+                                   data-show-export="false"
+                                   data-click-to-select="true"
+                                   data-show-pagination-switch="false"
+                                   data-pagination="false"
+                                   data-show-footer="false"
+                                   data-mobile-responsive="true"
+                                   data-locale="tr-TR"
+                                   data-sticky-header="false">
+                                <thead>
+                                    <tr>
+                                        <th data-field="SERI" data-halign="center" data-width="100" data-align="center">SERI</th>
+                                        <th data-field="ISEMRINO" data-halign="center" data-align="center">İŞ EMRİ</th>
+                                        <th data-field="STOK_KODU" data-visible="false" data-halign="center" data-align="center">STOK KODU</th>
+                                        <th data-field="STOK_ADI" data-halign="center" data-align="center">STOK ADI</th>
+                                        <th data-field="IE_STOK_ADI" data-halign="center" data-align="center">ÜRETİLECEK STOK ADI</th>
+                                        <th data-field="URETILEN" data-halign="center" data-align="center">ÜRETİLEN</th>
+                                        <th data-field="MIKTAR" data-halign="center" data-align="center">MİKTAR</th>
+                                        <th data-field="SARF_MSABIT" data-halign="center" data-align="center">M.SABİT</th>
+                                        <th data-field="SARF_MIKTAR" data-halign="center" data-align="center">SARF</th>
+                                        <th data-field="EK" data-formatter="ekFormatter" data-halign="center" data-align="center">EK</th>
+                                    </tr>
+                                </thead> 
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer mt-1 mb-2" style="display:flex;justify-content:center;align-items:center;border-top:hidden !important">
+                    <button class="btn btn-primary" id="ModalSaveButton1" type="button" onclick="HurdaAktar()">AKTAR</button>
+                    <button class="btn btn-danger" type="button" onclick="ModalKapat1()">KAPAT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 <div class="content">
     @Html.Partial("Partials/MES/AllMachines/_MainPartial")
 </div>
 
 <style>
+
     .machine-visible {
         position: relative;
         height: 2rem;
@@ -90,16 +221,116 @@
             .machine-visible .machine-list::-webkit-scrollbar {
                 width: 5px;
             }
-</style>
 
+    @@keyframes breathing-color--dark {
+        from {
+            color: white;
+        }
+
+        to {
+            color: #1a8f72;
+        }
+    }
+   
+
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+</style>
+<style id="styl">
+    #TUMU tbody tr:nth-child(1) td {
+        animation: 1s infinite alternate ease-out breathing-color--dark;
+    }
+</style>
 <script>
+    var seri = "";
     var CurrentPage = "All";
     var Interval = 0;
     var Machines = [];
 
     var SummaryTooltip;
+    var SummaryTooltip1;
+    var rowNumber = 0;
+    var tumdata = null;
+    var intervaltime = 30000;
+    var myInterval;
+    var isPaused = false;
+    $.getJSON('http://192.168.2.13:83/api/uretim/anlik', function (data) {
+        if (rowNumber != data.length) {
+            tumdata = data
+            rowNumber = data.length;
 
+            $('#styl').html(null)
+            UpdateTest(tumdata);
+            $.ajax({
+                url: 'http://192.168.2.13:83/api/date',
+                success: function (data) {
+                    $('#guncellemeTarihi').html('Son Güncelleme Saati: ' + new Date(data[0].DATE).toLocaleTimeString('tr-TR'))
+                    document.getElementById('date').valueAsDate = new Date();
+                }
+            });
+
+        }
+
+
+    }).done(function () {
+        if (!isPaused) {
+            myInterval = setInterval(function () {
+
+                $.getJSON('http://192.168.2.13:83/api/uretim/anlik', function (data) {
+                    if (rowNumber != data.length) {
+                        tumdata = data
+                        var fark = data.length - rowNumber;
+                        var st = '';
+                        for (let i = 1; i < fark + 1; i++) {
+                            st += '#TUMU tbody tr:nth-child(' + i + ') td{animation: 1s infinite alternate ease-out breathing-color--dark}'
+                        }
+                        $('#styl').html(st)
+                        rowNumber = data.length;
+
+                        UpdateTest(tumdata);
+
+
+                    }
+                    $.ajax({
+                        url: 'http://192.168.2.13:83/api/date',
+                        success: function (data) {
+                            $('#guncellemeTarihi').html('Son Güncelleme Saati: ' + new Date(data[0].DATE).toLocaleTimeString('tr-TR'))
+                            document.getElementById('date').valueAsDate = new Date();
+                        }
+                    });
+
+                })
+
+
+            }, parseInt(intervaltime))
+        }
+
+    });
+
+    var screenInterval = 30000;
+    var screenIntervalPause = true;
+    var interval = setInterval(function () {
+        if (!screenIntervalPause)
+            $('#TumuButton').trigger('click');
+    }, screenInterval)
     $(document).ready(() => {
+        HideProgress()
+        localStorage.setItem("SummaryView1", null)
+        localStorage.setItem("TUMU",null)
+
         PageChange("All");
 
         CreateMachineFilter();
@@ -117,8 +348,12 @@
         SummaryTooltip = tippy('#SummaryButton', {
             content: 'Özetleri Gizle'
         });
+        SummaryTooltip1 = tippy('#TumuButton', {
+            content: 'Anlık Üretimi Göster'
+        });
 
         SetSummaryView();
+
     });
 
     $('#HomeButton').on("mousedown mouseup click focus blur", function (e) {
@@ -182,6 +417,21 @@
             $('#SummaryButton').find('i').removeClass();
             $('#SummaryButton').find('i').addClass((SummaryView ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'));
         });
+    $('#TumuButton').hover(
+        () => {
+            var SummaryView = localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true');
+
+            SummaryTooltip1[0].setContent(SummaryView ? 'Anlık Üretimi Gizle' : 'Anlık Üretimi Göster');
+
+            $('#TumuButton').find('i').removeClass();
+        }
+        , () => {
+            var SummaryView = localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true');
+
+            SummaryTooltip1[0].setContent(SummaryView ? 'Anlık Üretimi Gizle' : 'Anlık Üretimi Göster');
+
+            $('#TumuButton').find('i').removeClass();
+        });
 
     function PageChange(MachineName) {
         $(`#nova-loader`).fadeIn('fast');
@@ -205,12 +455,22 @@
     }
 
     function RefreshPage() {
-        PageChange(CurrentPage);
+        var SummaryView = localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true');
+
+        if (SummaryView) {
+            isPaused = false;
+            localStorage.setItem("TUMU", null)
+            ToggleSummaryView1()
+
+
+        } else {
+            PageChange(CurrentPage);
+        }
     }
 
     function ChangeIntervalTime(Time) {
         clearInterval(Interval);
-
+        intervaltime = Time;
         switch (CurrentPage) {
             case "All":
                 Interval = setInterval(FetchAllData, Time);
@@ -218,6 +478,21 @@
             case "DL":
                 Interval = setInterval(FetchDLData, Time);
                 break;
+        }
+    }
+
+    function ChangeScreenIntervalTime(value) {
+        if (value != 0) {
+            screenInterval = parseInt(value);
+            screenIntervalPause = false;
+            clearInterval(interval)
+            interval = setInterval(function () {
+                if (!screenIntervalPause)
+                    $('#TumuButton').trigger('click');
+            }, screenInterval)
+
+        } else {
+            screenIntervalPause = true;
         }
     }
 
@@ -324,21 +599,444 @@
         if (localStorage.getItem("MachineFilter") !== null) {
             var FilterSettings = JSON.parse(localStorage.getItem("MachineFilter"));
 
-            $('#BK01').css('display', FilterSettings.BK01 ? 'flex' : 'none');
-            $('#DL01').css('display', FilterSettings.DL01 ? 'flex' : 'none');
-            $('#PB01').css('display', FilterSettings.PB01 ? 'flex' : 'none');
-            $('#PB02').css('display', FilterSettings.PB02 ? 'flex' : 'none');
-            $('#RF01').css('display', FilterSettings.RF01 ? 'flex' : 'none');
-            $('#RF02').css('display', FilterSettings.RF02 ? 'flex' : 'none');
-            $('#RF03').css('display', FilterSettings.RF03 ? 'flex' : 'none');
-            $('#SM01').css('display', FilterSettings.SM01 ? 'flex' : 'none');
-            $('#SM02').css('display', FilterSettings.SM02 ? 'flex' : 'none');
-            $('#SM03').css('display', FilterSettings.SM03 ? 'flex' : 'none');
-            $('#TP01').css('display', FilterSettings.TP01 ? 'flex' : 'none');
-            $('#MH01').css('display', FilterSettings.MH01 ? 'flex' : 'none');
+            if (FilterSettings.BK01) { $('#BK01').fadeIn() } else { $('#BK01').css('display', 'none') };
+            if (FilterSettings.DL01) { $('#DL01').fadeIn() } else { $('#DL01').css('display', 'none') };
+            if (FilterSettings.PB01) { $('#PB01').fadeIn() } else { $('#PB01').css('display', 'none') };
+            if (FilterSettings.PB02) { $('#PB02').fadeIn() } else { $('#PB02').css('display', 'none') };
+            if (FilterSettings.RF01) { $('#RF01').fadeIn() } else { $('#RF01').css('display', 'none') };
+            if (FilterSettings.RF02) { $('#RF02').fadeIn() } else { $('#RF02').css('display', 'none') };
+            if (FilterSettings.RF03) { $('#RF03').fadeIn() } else { $('#RF03').css('display', 'none') };
+            if (FilterSettings.SM01) { $('#SM01').fadeIn() } else { $('#SM01').css('display', 'none') };
+            if (FilterSettings.SM02) { $('#SM02').fadeIn() } else { $('#SM02').css('display', 'none') };
+            if (FilterSettings.SM03) { $('#SM03').fadeIn() } else { $('#SM03').css('display', 'none') };
+            if (FilterSettings.TP01) { $('#TP01').fadeIn() } else { $('#TP01').css('display', 'none') };
+            if (FilterSettings.MH01) { $('#MH01').fadeIn() } else { $('#MH01').css('display', 'none') };
+
         }
         else {
             MachineFilterChange();
         }
     }
+    function ToggleSummaryView1() {
+        var SummaryView = (localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true'));
+
+        SummaryView = !SummaryView;
+        $('#TumuButton img').eq(0).attr('style', (SummaryView ? 'animation: live 1.4s infinite ease-in-out;' :''))
+        localStorage.setItem("TUMU", SummaryView);
+        SetSummaryView1()
+
+    }
+    function SetSummaryView1() {
+        var SummaryView = (localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true'));
+
+
+
+
+
+
+        if (SummaryView) {
+            HideAllMachine()
+            clearInterval(myInterval)
+
+            $.getJSON('http://192.168.2.13:83/api/uretim/anlik', function (data) {
+
+                    tumdata = data
+                    rowNumber = data.length;
+
+                    $('#styl').html(null)
+                    UpdateTest(tumdata);
+                    $.ajax({
+                        url: 'http://192.168.2.13:83/api/date',
+                        success: function (data) {
+                            $('#guncellemeTarihi').html('Son Güncelleme Saati: ' + new Date(data[0].DATE).toLocaleTimeString('tr-TR'))
+                            document.getElementById('date').valueAsDate = new Date();
+                        }
+                    });
+
+
+
+            }).done(function () {
+                myInterval = setInterval(function () {
+                    if (!isPaused) {
+
+                        $.getJSON('http://192.168.2.13:83/api/uretim/anlik', function (data) {
+                            if (rowNumber != data.length) {
+                                tumdata = data
+                                var fark = data.length - rowNumber;
+                                var st = '';
+                                for (let i = 1; i < fark + 1; i++) {
+                                    st += '#TUMU tbody tr:nth-child(' + i + ') td{animation: 1s infinite alternate ease-out breathing-color--dark}'
+                                }
+                                $('#styl').html(st)
+                                rowNumber = data.length;
+
+                                UpdateTest(tumdata);
+
+
+                            }
+                            $.ajax({
+                                url: 'http://192.168.2.13:83/api/date',
+                                success: function (data) {
+                                    $('#guncellemeTarihi').html('Son Güncelleme Saati: ' + new Date(data[0].DATE).toLocaleTimeString('tr-TR'))
+                                    document.getElementById('date').valueAsDate = new Date();
+                                }
+                            });
+
+                        })
+                    }
+
+
+                }, parseInt(intervaltime))
+            });
+
+
+            $('#date').show();
+            $('#TUMU').fadeIn();
+            ('#ISLEM').hide();
+
+        } else {
+            ShowAllMachine()
+            $('#TUMU').hide();
+            $('#date').hide();
+        }
+    }
+    function HideAllMachine() {
+        $('#BK01').hide();
+        $('#DL01').hide();
+        $('#PB01').hide();
+        $('#PB02').hide();
+        $('#RF01').hide();
+        $('#RF02').hide();
+        $('#RF03').hide();
+        $('#SM01').hide();
+        $('#SM02').hide();
+        $('#SM03').hide();
+        $('#TP01').hide();
+        $('#MH01').hide();
+        $('#ISLEM').hide();
+        $('.btn').eq(0).prop('disabled', true);
+        /*$('#RefreshButton').prop('disabled', true)*/
+        //$('select').eq(0).prop('disabled', true);
+    }
+    function ShowAllMachine() {
+        MachineFilterApply();
+        $('.btn').eq(0).prop('disabled', false);
+       /* $('#RefreshButton').prop('disabled', false)*/
+        //$('select').eq(0).prop('disabled', false);
+    }
+    var islem = false;
+    function ShowIslemTablosu() {
+        if (!islem) {
+            $('#screenChangeSelect').val('0').trigger('change').hide();
+            $('#date').eq(0).hide();
+            $('#BK01').hide();
+            $('#DL01').hide();
+            $('#PB01').hide();
+            $('#PB02').hide();
+            $('#RF01').hide();
+            $('#RF02').hide();
+            $('#RF03').hide();
+            $('#SM01').hide();
+            $('#SM02').hide();
+            $('#SM03').hide();
+            $('#TP01').hide();
+            $('#MH01').hide();
+            $('#TUMU').hide();
+            $('#ISLEM').fadeIn();
+            $('.btn').eq(0).prop('disabled', true);
+            islem = true;
+        } else {
+            ShowAllMachine();
+            islem = false;
+            $('#screenChangeSelect').show();
+        }
+
+
+        /* $('#RefreshButton').prop('disabled', false)*/
+        //$('select').eq(0).prop('disabled', false);
+    }
+    function ModalKapat() {
+        $('#SERIModal').modal('hide');
+    }
+    var list = [];
+    var isList = [];
+    function ModalTable(Data) {
+        list = [];
+        isList = [];
+        var html = "";
+        Data.forEach((item) => {
+            var ftrsip = item.FTIRSIP == 9 ? 'HURDA' : item.FTIRSIP == 8 ? 'İKİNCİ KALİTE' : 'ÜRETİM'
+            var isemri = item.SIPNO == null ? '-' : item.SIPNO
+            html += "<tr><td style='text-align:center'>" + item.BELGENO + "</td><td style='text-align:center'>" + ftrsip + "</td><td style='text-align:center'>" + isemri + "</td><td style='text-align:center'>" + item.MIK + "</td><td style='text-align:center'>" + item.MIK2 + "</td></tr>";
+            list.push(item.BELGENO)
+            if (!isList.includes(isemri) && isemri != '-')
+                isList.push(isemri)
+        })
+        $('#modalTbl').html('<div class="tableFixHead" style="height:auto !important"><table class="table" style="color:black !important"><thead><tr><th style="color:white">BELGENO</th><th style="color:white">TİP</th><th style="color:white">ISEMRI NO</th><th style="color:white">MIKTAR</th><th style="color:white">MIKTAR2</th></tr></thead><tbody>' + html + '</tbody></table></div>');
+        $('#SERIModal').modal('show');
+        $("body").css("cursor", "default");
+    }
+    function BelgeSil() {
+        ShowProgress()
+        $.ajax({
+            url: '@Url.Action("UretimKaydiSil", "Uretim")',
+            type: 'POST',
+            data: { "noList": list, "isEmirleri":isList },
+            error: function (data) {
+                alert(JSON.stringify(data));
+            },
+            success: function (data) {
+                HideProgress()
+                if (data.IsSuccess) {
+                    $('#SERIModal').modal('hide');
+                    $('#RefreshButton').trigger('click')
+                    Swal.fire(
+                        'Başarılı!',
+                        'Kayıt başarılı',
+                        'success'
+                    )
+                } else {
+                    $('#SERIModal').modal('hide');
+                    $('#RefreshButton').trigger('click')
+                    Swal.fire(
+                        'Başarısız!',
+                        data.Message,
+                        'error'
+                    )
+                }
+
+
+
+
+            }
+        })
+
+    }
+    function dateChange(value) {
+        clearInterval(myInterval)
+        isPaused = true;
+        var tarih=value.replaceAll('-', '')
+        $.getJSON('http://192.168.2.13:83/api/uretim/anlik/'+tarih, function (data) {
+            if (rowNumber != data.length) {
+                tumdata = data
+                var fark = data.length - rowNumber;
+                var st = '';
+                $('#styl').html(st)
+                rowNumber = data.length;
+                UpdateTest(tumdata);
+            }
+
+            $('#guncellemeTarihi').html(new Date(value).toLocaleDateString('tr-TR'))
+
+
+        })
+    }
+
+    function ShowProgress() {
+        document.body.style.overflow = 'hidden';
+        document.activeElement.blur();
+        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    }
+    function HideProgress() {
+        document.body.style.overflow = 'auto';
+        $('#nova-overlay').fadeOut('slow');
+    }
+
+    var seriList = [];
+    var isemri = '';
+    function Uretim(value) {
+        ShowProgress();
+        seriList = [];
+        $('#IslemBtn').hide()
+        $.ajax({
+            url: `http://192.168.2.13:83/api/ie/mes3/${value}`,
+            type: 'GET',
+            success: (response) => {
+                stokkodlari = response
+                $('#UretimeGirenlerTable').bootstrapTable('destroy');
+                $('#UretimeGirenlerTable').bootstrapTable({
+                    data: response, onClickCell: (field, value, row, $element) => {
+
+                        if (field != '') {
+
+
+                            if (row.SERI_BAKIYE != 0) {
+                                seri = row.SERI_NO;
+                                uretilen = parseInt(row.URETILEN);
+                                var l = seriList.filter(x => x.SERI == seri).length
+                                if (l == 0) {
+                                    ShowProgress();
+                                    $.ajax({
+                                        url: 'http://192.168.2.13:83/api/uretim/click/' + seri,
+                                        success: function (data) {
+                                            var d = data
+                                            seriList.push({ SERI: seri, ISEMRINO: d[0].ISEMRINO, SARF_MIKTAR: d[0].SARF_MIKTAR, SARF_MSABIT: d[0].SARF_MSABIT, URETILEN: uretilen, MIKTAR: parseInt(d[0].IE_MIKTAR), STOK_KODU: d[0].HAM_KODU, IE_STOK_KODU: d[0].IE_STOK_KODU, STOK_ADI: d[0].HAM_STOK_ADI, IE_STOK_ADI: d[0].IE_STOK_ADI,MIKTAREK:0 });
+                                            isemri = d[0].ISEMRINO;
+                                            sarf = d[0].SARF_MIKTAR;
+                                            sarfmsabit = d[0].SARF_MSABIT;
+                                            mik = parseInt(d[0].IE_MIKTAR);
+                                            hamstokkodu = d[0].HAM_KODU;
+                                            iestokkodu = d[0].IE_STOK_KODU;
+                                            hamstokadi = d[0].HAM_STOK_ADI;
+                                            iestokadi = d[0].IE_STOK_ADI;
+                                            var Ikon = $element.parent().find('i').eq(0);
+                                            Ikon.attr('style', 'color:#71dd37;cursor:pointer;font-size:x-large;');
+                                            Ikon.addClass("bi-check-circle-fill");
+                                            Ikon.removeClass("bi-check-circle");
+                                            HideProgress();
+                                            showIslemModalTekil()
+                                        }
+                                    });
+                                } else {
+                                    ShowProgress();
+                                    $.ajax({
+                                        url: 'http://192.168.2.13:83/api/uretim/click/' + seri,
+                                        success: function (data) {
+                                            var d = data
+                                            isemri = d[0].ISEMRINO;
+                                            var Ikon = $element.parent().find('i').eq(0);
+                                            Ikon.attr('style', 'color:#71dd37;cursor:pointer;font-size:x-large;');
+                                            Ikon.addClass("bi-check-circle-fill");
+                                            Ikon.removeClass("bi-check-circle");
+                                            HideProgress();
+                                            showIslemModalTekil()
+                                        }
+                                    });
+                                }
+                                
+                            } else {
+                                Swal.fire({
+                                    title: 'Uyarı!',
+                                    text: 'Ürünün tamamı kullanılmış',
+                                    confirmButtonText: 'Tamam',
+                                    icon: 'info'
+                                }
+                                )
+                            }
+                        }
+
+                    }
+                });
+
+                HideProgress();
+                $('#UretimeGirenlerTablo').show();
+            }
+        });
+    }
+    function oranFormatter2(value, index, row) {
+        return '<p class="meter mt-1" style="height: auto;border: 1px solid #d9dee3;border-radius: 8px;"><span style="width:' + parseFloat(value) + '%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; "><span style="text-align: end; color: white;font-size: small;font-weight:bold">' + parseFloat(value).toFixed(2) + '%</span></span></span></p>';
+    }
+    function UnitFormatter(value, row, index) {
+        return `${parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${row.OLCU_BR1}`;
+    }
+
+    function checkboxFormatter(val, row, index) {
+        return '<div onclick="checkboxChange(\'' + row.SERI_NO + '\','+row.URETILEN+',' + row.SERI_BAKIYE + ',\''+row.STOK_KODU+'\',this)"><i class="bi bi-check-circle" style="cursor:pointer;color:red;font-size:x-large;"></i></div>'
+    }
+
+    var seri = '';
+    var mik = 0;
+    var uretilen = 0;
+    var sarf = 0;
+    var sarfmsabit = 0;
+    var hamstokkodu = '';
+    var hamstokadi = '';
+    var iestokkodu = '';
+    var iestokadi = '';
+    function checkboxChange(seri,uretilen,miktar,stokkodu,input) {
+        var Ikon = input.getElementsByTagName('i')[0];
+        if (Ikon.style.color == 'red') {
+            if (miktar != 0) {
+                var l = seriList.filter(x => x.SERI == seri).length
+                if (l == 0) {
+                    ShowProgress()
+                    $.ajax({
+                        url: 'http://192.168.2.13:83/api/uretim/click/' + seri,
+                        success: function (data) {
+                            HideProgress()
+                            var d = data
+                            seriList.push({ SERI: seri, ISEMRINO: d[0].ISEMRINO, URETILEN: uretilen, STOK_KODU: hamstokkodu, SARF_MIKTAR: d[0].SARF_MIKTAR, SARF_MSABIT: d[0].SARF_MSABIT, IE_STOK_KODU: iestokkodu, STOK_ADI: hamstokadi, IE_STOK_ADI: iestokadi, MIKTAR: miktar, MIKTAREK: 0 });
+                            if (seriList.length > 0) {
+                                $('#IslemBtn').css('display', 'flex');
+                            } else {
+                                $('#IslemBtn').hide()
+                            }
+                            Ikon.style.color = '#71dd37';
+                            Ikon.classList.add("bi-check-circle-fill");
+                            Ikon.classList.remove("bi-check-circle");
+                        }
+                    });
+                    
+                }
+                
+               
+            } else {
+                Swal.fire({
+                    title: 'Uyarı!',
+                    text: 'Ürünün tamamı kullanıldığı için seçilemez',
+                    confirmButtonText: 'Tamam',
+                    icon: 'info'
+                })
+            }
+
+        } else {
+            seriList.splice(seriList.indexOf(seriList.filter(x => x.SERI == seri)[0]), 1)
+            Ikon.style.color = 'red';
+            Ikon.classList.remove("bi-check-circle-fill");
+            Ikon.classList.add("bi-check-circle");
+            if (seriList.length > 0) {
+                $('#IslemBtn').css('display', 'flex');
+            } else {
+                $('#IslemBtn').hide()
+            }
+        }
+       
+    }
+    function showIslemModalTekil() {
+        $('#IslemBtn').css('display', 'flex');
+        $('#SERIModal1').modal('show');
+        $('#UretimeGirenlerTable1').bootstrapTable('destroy').bootstrapTable({ data: [{ SERI: seri, ISEMRINO: isemri, SARF_MIKTAR: sarf, SARF_MSABIT: sarfmsabit, URETILEN: uretilen, MIKTAR: mik,STOK_ADI:hamstokadi,IE_STOK_ADI:iestokadi, STOK_KODU: hamstokkodu, MIKTAREK: 0 }] });
+    }
+    function showIslemModal() {
+        $('#IslemBtn').css('display', 'flex');
+        $('#SERIModal1').modal('show');
+        $('#UretimeGirenlerTable1').bootstrapTable('destroy').bootstrapTable({ data: seriList }).bootstrapTable('hideColumn', 'EK');
+    }
+    function ModalKapat1() {
+        $('#SERIModal1').modal('hide');
+    }
+    function HurdaAktar() {
+        ShowProgress()
+        $.ajax({
+            url: '@Url.Action("TopluHurda", "Uretim")',
+            type: 'POST',
+            data: seriList,
+            error: function (data) {
+                console.log(data);
+                alert(data)
+                HideProgress();
+                $("#SERIModal1").modal('hide');
+            },
+            success: function (data) {
+                HideProgress();
+                
+                $("#SERIModal1").modal('hide');
+                if (data.IsSuccess) {
+
+                    Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
+                } else {
+                    Swal.fire('Başarısız!', data.Message, 'error');
+                }
+            }
+        })
+    
+    }
+    function inputKeyUp(seri,element) {
+        seriList[seriList.indexOf(seriList.filter(x=>x.SERI==seri)[0])].MIKTAREK = element.value;
+
+    }
+    function ekFormatter(value, row, index) {
+        return '<input type="number" style="text-align:center" onkeyup="inputKeyUp(\''+row.SERI+'\',this)"/>'
+    }
+
 </script>

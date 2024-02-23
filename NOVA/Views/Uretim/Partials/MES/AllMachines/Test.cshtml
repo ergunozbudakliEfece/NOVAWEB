@@ -1,0 +1,144 @@
+﻿<style>
+    @@keyframes fadeInDown {
+            0% {
+               transform: translateY(-10px);
+            }
+            100% {
+               transform: translateY(0);
+            }
+         }
+    .tableFixHead {
+        overflow-y: auto !important;
+        height: 72.5vh;
+        width: 100%;
+        
+    }
+
+        .tableFixHead thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: #eee;
+        }
+
+    /* Just common table stuff. Really. */
+    #TUMU table {
+        border-collapse: separate;
+        border-spacing: 0 1em;
+        width: 100%;
+    }
+
+    #TUMU th, td {
+        padding: 8px 2px 8px 2px;
+    }
+    #TUMU td {
+        background-color: #0e1535 !important;
+        border-top: var(--bs-border-width) solid var(--empty-border-color);
+        border-bottom: var(--bs-border-width) solid var(--empty-border-color);
+    }
+
+    #TUMU th {
+        background: #0e1535;
+        text-align: center;
+    }
+    #TUMU tr{
+        cursor:pointer;
+    }
+    #TUMU tbody tr:hover {
+        opacity:0.8
+    }
+    .table-dark {
+        --bs-table-color: #fff;
+        --bs-table-bg: transparent;
+        --bs-table-border-color: transparent;
+        --bs-table-striped-bg: #2c3034;
+        --bs-table-striped-color: #fff;
+        --bs-table-active-bg: #373b3e;
+        --bs-table-active-color: #fff;
+        --bs-table-hover-bg: #323539;
+        --bs-table-hover-color: #fff;
+        color: var(--bs-table-color);
+        border-color: var(--bs-table-border-color);
+    }
+    .table-light {
+        --bs-table-color: #fff;
+        --bs-table-bg: transparent;
+        --bs-table-border-color: #323539;
+        --bs-table-striped-bg: #2c3034;
+        --bs-table-striped-color: #fff;
+        --bs-table-active-bg: #373b3e;
+        --bs-table-active-color: #fff;
+        --bs-table-hover-bg: #323539;
+        --bs-table-hover-color: #fff;
+        color: white !important;
+        border-color: var(--bs-table-border-color);
+    }
+        .table-dark tr td:first-child {
+            border-top-left-radius: .5rem !important;
+            border-bottom-left-radius: .5rem !important;
+            border-left: var(--bs-border-width) solid var(--empty-border-color);
+        }
+
+        .table-dark tr td:last-child {
+            border-top-right-radius: .5rem !important;
+            border-bottom-right-radius: .5rem !important;
+            border-right: var(--bs-border-width) solid var(--empty-border-color);
+        }
+    ::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+</style>
+<div id="TUMU" class="machine shadow" style="display:none;width:100% !important">
+    <div class="machine-title"><label id="guncellemeTarihi"></label></div>
+
+    <hr class="horizontal-line" />
+    <div class="machine-content">
+
+
+    </div>
+</div>
+
+
+<script>
+    function UpdateTest(Data)
+    {
+       
+        var html = "";
+        
+        Data.forEach((item) => {
+            var color = '';
+            var o = '';
+            if (item.FIRE_ORANI <= 1) {
+                color = '#00ff00';
+                o = item.FIRE_ORANI.toFixed(2).replace('.', ',') +" %"
+            } else if (item.FIRE_ORANI > 1 && item.FIRE_ORANI <= 5) {
+                color = '#ffbc00'
+                o = item.FIRE_ORANI.toFixed(2).replace('.', ',') +" %"
+            } else {
+                color = '#ff0000'
+                o = item.FIRE_ORANI.toFixed(2).replace('.',',')+" %"
+            }
+            if (item.FIRE_ORANI === 0) {
+                color='white'
+                o='-'
+            }
+            html += "<tr><td style='text-align:center'>" + item.HAT_KODU + "</td><td style='text-align:center'>" + item.SAAT + "</td><td style='text-align:center'>" + item.SERI_NO + "</td><td>" + item.STOK_ADI + "</td><td style='text-align:center'>" + item.DETAY + "</td><td style='text-align:right'>" + item.MIKTAR + " " + item.OLCU_BR1 + "</td><td style='text-align:right'>" + item.MIKTAR2 + " " + item.OLCU_BR2 + "</td><td style='text-align:right'>" + (item.IK_MIKTAR1 != 0 ? item.IK_MIKTAR1 + " " + item.OLCU_BR1 : "-") + "</td><td style='text-align:right'>" + (item.IK_MIKTAR2 != 0 ? item.IK_MIKTAR2 + " " + item.OLCU_BR2 : "-") + "</td><td style='text-align:right'>" + (item.HRD_MIKTAR1 != 0 ? item.HRD_MIKTAR1 + " KG" : "-") + "</td><td style='text-align:right'><span style='color:" + color + "'>" +o +"</span></td><td style='text-align:left;padding-left:2rem'><img src='/assets/img/avatars/" + item.OPERATOR_ID + ".png' class='rounded-circle me-2' style='background-color:white;' height='35' width='35' onerror=\"javascript:this.src='/assets/img/avatars/10000.png'\">" + item.OPERATOR + "</td></tr>";
+           
+        })
+        $('#TUMU .machine-content').html('<div class="tableFixHead"><table class="table table-dark"><thead><tr><th>HAT KODU</th><th>SAAT</th><th>SERİ</th><th>STOK ADI</th><th>DETAY</th><th style="text-align:right">MİKTAR</th><th style="text-align:right">MİKTAR2</th><th style="text-align:right">2.KALITE MİK</th><th style="text-align:right">2.KALITE MİK2</th><th style="text-align:right">HURDA</th><th style="text-align:center;padding-left:2rem">FİRE(%)</th><th style="text-align:left;padding-left:2rem">OPERATÖR</th></tr></thead><tbody>' + html + '</tbody></table></div>');
+        $('#TUMU tbody tr').click(function () {
+            ShowProgress();
+            $("body").css("cursor", "progress");
+            seri = $(this).find("td:eq(2)").html();
+            $('#ModalLabel').html(seri);
+            $.ajax({
+                url: 'http://192.168.2.13:83/api/uretim/belgebul/' + seri,
+                success: function (data) {
+                    ModalTable(data);
+                    HideProgress();
+                }
+            });
+        })
+    }
+    
+</script>

@@ -3,6 +3,7 @@
     <div class="qr-controls">
         <div class="d-flex justify-content-center align-items-center gap-2">
             <select class="qr-camera-select"></select>
+            <button id="SeriOkuButon" onclick="SeriOkuModDegistir()">HIZLI OKUTMA</button>
         </div>
         <i class='bx bx-x qr-scanner-exit' onclick="Close()"></i>
     </div>
@@ -64,6 +65,20 @@
         filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.562));
         cursor: pointer;
     }
+
+    #SeriOkuButon {
+        background-color: transparent;
+        border: 1px solid white;
+        color: white;
+        height: 3rem;
+        width: 65px;
+        border-radius: 0.375rem;
+    }
+
+    .SeriOkuButonActive {
+        background-color: white !important;
+        color: black !important;
+    }
 </style>
 
 <script>
@@ -121,6 +136,8 @@
                 .then(() => {
                     Scanner = null;
                     document.exitFullscreen();
+                    SeriOku = false;
+                    $('#SeriOkuButon').removeClass('SeriOkuButonActive');
                     $('.qr-scanner-loader').fadeIn().css('display', 'flex');
                 });
         }
@@ -139,6 +156,8 @@
                     .then(() => {
                         Scanner = null;
                         document.exitFullscreen();
+                        SeriOku = false;
+                        $('#SeriOkuButon').removeClass('SeriOkuButonActive');
                         $('.qr-scanner-loader').fadeIn().css('display', 'flex');
                     });
             }
@@ -168,30 +187,108 @@
 
                         SeciliStokKodu = Stok.STOK_KODU;
 
-                        $('#MIKTAR').val(data[0].MIKTAR.toFixed(2));
-                        $('#MIKTAR2').val(data[0].MIKTAR2.toFixed(2));
-                        $('#SERI_NO').val(BarkodNo);
-                        $('#ACIK1').val(data[0].ACIK2);
-                        $('#ACIK2').val(data[0].ACIK1);
-                        $('#ACIK3').val(data[0].ACIK3);
-                        $('#SERI_NO_3').val(data[0].SERI_NO_3);
-                        $('#SERI_NO_4').val(data[0].SERI_NO_4);
+                        var STOK_ADI = Stok.STOK_ADI;
+                        var MIKTAR = data[0].MIKTAR.toFixed(2);
+                        var OLCU_BR1 = Stok.OLCU_BR1;
+                        var MIKTAR2 = data[0].MIKTAR2.toFixed(2);
+                        var OLCU_BR2 = Stok.OLCU_BR2;
+                        var SERI_NO = BarkodNo;
+                        var ACIK1 = data[0].ACIK2;
+                        var ACIK2 = data[0].ACIK1;
+                        var ACIK3 = data[0].ACIK3;
+                        var SERI_NO_3 = data[0].SERI_NO_3;
+                        var SERI_NO_4 = data[0].SERI_NO_4;
+                        var ACIKLAMA_4 = data[0].ACIKLAMA_4;
+                        var ACIKLAMA_5 = data[0].ACIKLAMA_5;
 
-                        $('#MIKTAR').prop('max', data[0].MIKTAR.toFixed(2));
-                        $('#MIKTAR2').prop('max', data[0].MIKTAR2.toFixed(2));
+                        if (!SeriOku) {
+                            $('#MIKTAR').val(MIKTAR);
+                            $('#MIKTAR2').val(MIKTAR2);
+                            $('#SERI_NO').val(SERI_NO);
+                            $('#ACIK1').val(ACIK1);
+                            $('#ACIK2').val(ACIK2);
+                            $('#ACIK3').val(ACIK3);
+                            $('#SERI_NO_3').val(SERI_NO_3);
+                            $('#SERI_NO_4').val(SERI_NO_4);
 
-                        $('#STOK_ADLARI').val(Stok.STOK_ADI);
-                        $('#OLCU_BR1').val(Stok.OLCU_BR1);
-                        $('#OLCU_BR2').val(Stok.OLCU_BR2);
+                            $('#MIKTAR').prop('max', data[0].MIKTAR.toFixed(2));
+                            $('#MIKTAR2').prop('max', data[0].MIKTAR2.toFixed(2));
 
-                        Close();
+                            $('#STOK_ADLARI').val(STOK_ADI);
+                            $('#OLCU_BR1').val(OLCU_BR1);
+                            $('#OLCU_BR2').val(OLCU_BR2);
 
-                        TabloButonAyarla(1);
-                        MiktarGirisKontrolu();
+                            $("#ACIKLAMA_4").val(ACIKLAMA_4);
+                            $("#ACIKLAMA_5").val(ACIKLAMA_5);
 
+                            Close();
 
-                        $('#STOK_ADLARI').prop("disabled", false);
-                        $('#BarkodButton').prop("disabled", false);
+                            TabloButonAyarla(1);
+                            MiktarGirisKontrolu();
+
+                            $('#STOK_ADLARI').prop("disabled", false);
+                            $('#BarkodButton').prop("disabled", false);
+                        }
+                        else
+                        {
+                            Swal.fire({
+                                text: 'ÜRÜN BİLGİLERİ',
+                                html: `<div class="d-flex flex-column justify-content-center align-items-center gap-2">
+                                <table class="table table-striped table-bordered" style="text-align: center;vertical-align: middle;width: 100%; word-break: auto-phrase;">
+                                    <thead>
+                                        <th>BARKOD NO</th>
+                                        <th>MİKTAR 1</th>
+                                        <th>MİKTAR 2</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>${SERI_NO}</td>
+                                            <td>${MiktarFormatla(MIKTAR)} ${OLCU_BR1}</td>  
+                                            <td>${MiktarFormatla(MIKTAR2)} ${OLCU_BR2}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>`,
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Evet',
+                                cancelButtonText: "Hayır",
+                                target: document.getElementsByClassName("qr-controls")[0],
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    Kayitlar.push({
+                                        "ID": KayitId,
+                                        "ACTIVE": true,
+                                        "STOK_ADI": STOK_ADI,
+                                        "STOK_KODU": SeciliStokKodu,
+                                        "MIKTAR": MIKTAR,
+                                        "OLCU_BR1": OLCU_BR1,
+                                        "MIKTAR2": MIKTAR2,
+                                        "OLCU_BR2": OLCU_BR2,
+                                        "SERI_NO": SERI_NO,
+                                        "ACIK1": ACIK1,
+                                        "ACIK2": ACIK2,
+                                        "ACIK3": ACIK3,
+                                        "SERI_NO_3": SERI_NO_3,
+                                        "SERI_NO_4": SERI_NO_4,
+                                        "ACIKLAMA_4": ACIKLAMA_4,
+                                        "ACIKLAMA_5": ACIKLAMA_5,
+                                        "GIRIS_DEPO": GirisDepo,
+                                        "CIKIS_DEPO": CikisDepo
+                                    });
+
+                                    KayitId += 1;
+                                    LocalStorageTrigger();
+                                    DurumDegisikligi(0);
+
+                                    $('#STOK_ADLARI').prop("disabled", false);
+                                    $('#BarkodButton').prop("disabled", false);
+
+                                    $('#DepoTransferTable').bootstrapTable("load", Kayitlar);
+                                }
+                            });
+                        }
                     }
                     else {
                         //DEPO_UYARI: miktar uyarısı
@@ -219,5 +316,15 @@
         });
 
         MiktarGirisKontrolu();
+    }
+
+    var SeriOku = false;
+
+    function SeriOkuModDegistir() {
+        SeriOku = !SeriOku;
+
+        $('#SeriOkuButon').toggleClass('SeriOkuButonActive');
+
+        //SeriOku ? $('#qr-box-information').fadeIn('fast').css('display', 'flex') : $('#qr-box-information').fadeOut('fast');
     }
 </script>

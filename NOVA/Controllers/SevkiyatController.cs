@@ -1,5 +1,8 @@
-﻿using iTextSharp.text;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Microsoft.Ajax.Utilities;
+using NetOpenX50;
 using NOVA.Models;
 using NOVA.Utils;
 using QRCoder;
@@ -16,7 +19,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -66,7 +71,7 @@ namespace NOVA.Controllers
 
             await RoleHelper.CheckRoles(this);
 
-            ViewBag.Id= Request.Cookies["Id"].Value.ToInt();
+            ViewBag.Id = Request.Cookies["Id"].Value.ToInt();
 
             return View();
         }
@@ -183,6 +188,114 @@ namespace NOVA.Controllers
             return View();
         }
 
+        public async Task<JsonResult> DepolarArasiTransferAktar(List<SevkiyatBelge> Belgeler)
+        {
+            Kernel NetKernel = new Kernel();
+            Sirket Sirket = default(Sirket);
+            Fatura Fatura = default(Fatura);
+            FatUst FaturaUst = default(FatUst);
+            FatKalem FaturaKalem = default(FatKalem);
+
+            try
+            {
+                Sirket = NetKernel.yeniSirket(TVTTipi.vtMSSQL,
+                                            "EFECE2023",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+
+                Fatura = NetKernel.yeniFatura(Sirket, TFaturaTip.ftLokalDepo);
+
+                FaturaUst = Fatura.Ust();
+                
+                string Fatura_Numara = Fatura.YeniNumara("E");
+
+                FaturaUst.FATIRS_NO = Fatura_Numara;
+                FaturaUst.CariKod = "000000000000000";
+                FaturaUst.CARI_KOD2 = "12035200100406";
+                FaturaUst.TIPI = TFaturaTipi.ft_Bos;
+                FaturaUst.AMBHARTUR = TAmbarHarTur.htDepolar;
+                FaturaUst.Tarih = DateTime.Now;
+                FaturaUst.FiiliTarih = DateTime.Now;
+                FaturaUst.PLA_KODU = "45";
+                FaturaUst.EIrsaliye = true;
+                FaturaUst.KOD2 = "0";
+                FaturaUst.Proje_Kodu = "1";
+                FaturaUst.Aciklama = "URETIM-TRANSFER";
+                FaturaUst.EKACK3 = "DAHİLİ İRSALİYEDİR FATURA EDİLMEYECEKTİR.";
+                FaturaUst.EKACK13 = "NKT";
+                FaturaUst.KDV_DAHILMI = true;
+
+                IEnumerable<IGrouping<string, SevkiyatBelge>> STOK_KODU_GRUP = Belgeler.GroupBy(x => x.STOK_KODU);
+
+                foreach (IGrouping<string, SevkiyatBelge> BELGELER in STOK_KODU_GRUP)
+                {
+                    string STOK_KODU = BELGELER.Key;
+                    double TOPLAM_MIKTAR = BELGELER.Sum(x => x.MIKTAR1);
+                    double TOPLAM_MIKTAR2 = BELGELER.Sum(x => x.MIKTAR2);
+
+                    FaturaKalem = Fatura.kalemYeni(STOK_KODU);
+                    FaturaKalem.STra_GCMIK = TOPLAM_MIKTAR;
+                    FaturaKalem.STra_GCMIK2 = TOPLAM_MIKTAR2;
+                    FaturaKalem.STra_BF = 0;
+                    FaturaKalem.Olcubr = 1;
+                    FaturaKalem.ProjeKodu = "1";
+                    FaturaKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+
+                    foreach (SevkiyatBelge BELGE in BELGELER)
+                    {
+                        FaturaKalem.Gir_Depo_Kodu = BELGE.GIRIS_DEPO;
+                        FaturaKalem.DEPO_KODU = BELGE.CIKIS_DEPO;
+                        FaturaKalem.SeriEkle(BELGE.SERI_NO, BELGE.ACIK1, BELGE.ACIK2, "", BELGE.MIKTAR1, BELGE.MIKTAR2, BELGE.SERI_NO_3, BELGE.SERI_NO_4);
+                    }
+                }
+
+                NetRS Sorgu = NetKernel.yeniNetRS(Sirket);
+
+                var SonucVar = Sorgu.Ac($"SELECT * FROM EFECE2023..TBLEIRSABLON WITH(NOLOCK) WHERE EFECE2023.DBO.TRK(TEMPLATEID) COLLATE Turkish_CI_AS = '{Belgeler.FirstOrDefault().SOFOR.ToLower((new CultureInfo("tr-TR", false)))}'");
+
+                if (SonucVar)
+                {
+                    EIrsEkBilgi EkBilgi = Fatura.EIrsaliyeEkYeni();
+
+                    EkBilgi.PLAKA = Sorgu.FieldByName("LICENSEPLATEID").AsString;
+
+                    EkBilgi.TASIYICIVKN = Sorgu.FieldByName("CARRIERVKN").AsString;
+                    EkBilgi.TASIYICIADI = Sorgu.FieldByName("CARRIERNAME").AsString;
+                    EkBilgi.TASIYICIILCE = Sorgu.FieldByName("CARRIERSUBCITY").AsString;
+                    EkBilgi.TASIYICIIL = Sorgu.FieldByName("CARRIERCITY").AsString;
+                    EkBilgi.TASIYICIULKE = Sorgu.FieldByName("CARRIERCOUNTRY").AsString;
+                    EkBilgi.TASIYICIPOSTAKODU = Sorgu.FieldByName("CARRIERPOSTAL").AsString;
+
+                    EkBilgi.SOFOR1ADI = Sorgu.FieldByName("DPERSON1FIRSTNAME").AsString;
+                    EkBilgi.SOFOR1SOYADI = Sorgu.FieldByName("DPERSON1FAMILYNAME").AsString;
+                    EkBilgi.SOFOR1ACIKLAMA = Sorgu.FieldByName("DPERSON1TITLE").AsString;
+                    EkBilgi.SOFOR1TCKN = Sorgu.FieldByName("DPERSON1NID").AsString;
+                }
+
+                Sorgu.Kapat();
+                
+                Fatura.kayitYeni();
+
+                return Json(new Wrappers.Concrete.SuccessResponse<string>(Fatura_Numara, $"{(!SonucVar ? "Şoför bilgileri bulunamadığı için ek bilgi oluşturulamadı." : "")}"), JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception Ex)
+            {
+                return Json(new Wrappers.Concrete.ErrorResponse(Ex), JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                Sirket.LogOff();
+                Marshal.ReleaseComObject(Sirket);
+                NetKernel.FreeNetsisLibrary();
+                Marshal.ReleaseComObject(NetKernel);
+                Marshal.ReleaseComObject(FaturaKalem);
+                Marshal.ReleaseComObject(FaturaUst);
+                Marshal.ReleaseComObject(Fatura);
+            }
+        }
+
         #endregion
 
         #region BarkodPDF
@@ -280,7 +393,7 @@ namespace NOVA.Controllers
 
             table.AddCell(GetContentCell("MENŞEİ/SN", fontBoldContent));
             table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MENSEI?.Split(' ')[0])}/{BosDegerKontrolu(EtiketBilgileri.FIRMA_SERI_NO)}", fontBoldContent));
+            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MENSEI?.Split(' ')[0])} / {BosDegerKontrolu(EtiketBilgileri.FIRMA_SERI_NO)}", fontBoldContent));
 
             table.AddCell(GetContentCell("BOBİN NO", fontBoldContent));
             table.AddCell(GetContentCell(":", fontBoldContent));
@@ -373,7 +486,7 @@ namespace NOVA.Controllers
         private string BosDegerKontrolu(double? Deger)
         {
             var culture = new CultureInfo("tr-TR");
-            return (Deger == 0 || Deger == 0.0 || Deger is null) ? "-" : ((double)Deger).ToString("c", culture); 
+            return (Deger == 0 || Deger == 0.0 || Deger is null) ? "-" : ((double)Deger).ToString("c", culture);
         }
 
         private string TarihFormat(DateTime? Tarih)
@@ -507,7 +620,7 @@ namespace NOVA.Controllers
             client.Encoding = System.Text.Encoding.UTF8;
 
             string json = client.DownloadString(url);
-         
+
 
             return Json(json, JsonRequestBehavior.AllowGet);
         }
@@ -532,7 +645,7 @@ namespace NOVA.Controllers
 
             //END
 
-            return jsonList.OrderBy(t=>t.CARI_ISIM).ToList();
+            return jsonList.OrderBy(t => t.CARI_ISIM).ToList();
         }
         public ActionResult Filter(FilterModel filter)
         {
@@ -815,7 +928,7 @@ namespace NOVA.Controllers
                 Session["Filter"] = x;
             }
             var ses = ((IEnumerable<USTKALEMMODEL>)Session["Filter"]).ToList() as List<USTKALEMMODEL>;
-            Session["Filter"] = ses.OrderBy(t=>t.CARI_ISIM).ToList();
+            Session["Filter"] = ses.OrderBy(t => t.CARI_ISIM).ToList();
             ViewBag.FilterPlasiyer = y;
             ViewBag.FilterTeslim = z;
             ViewBag.FilterDoviz = m;
@@ -1555,7 +1668,7 @@ namespace NOVA.Controllers
 
             //END
 
-            return jsonList.OrderBy(t=>t.CARI_ISIM).ToList();
+            return jsonList.OrderBy(t => t.CARI_ISIM).ToList();
         }
         public List<USTKALEMMODEL> GetSiparisUstKAlemSSIP()
         {

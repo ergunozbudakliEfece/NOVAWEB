@@ -1,0 +1,894 @@
+﻿@{
+    Layout = "~/Views/Shared/_layout_satinalma.cshtml";
+}
+
+
+<link href="~/Content/table/bootstrap-table.min.css" rel="stylesheet" />
+<link href="~/Content/table/placeholder-loading.min.css" rel="stylesheet" />
+<link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.min.css" rel="stylesheet" />
+<link href="~/assets/fontawesome.css" rel="stylesheet" />
+<link href="~/Scripts/select2.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<script src="~/assets/vendor/libs/popper/popper.js"></script>
+<script src="~/Scripts/sweetAlert.js"></script>
+<link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+<style>
+
+    body {
+        padding: 0 0 0 4rem !important;
+    }
+
+    #goster {
+        display: none;
+    }
+
+    #gizle {
+        display: none;
+    }
+
+    .group-by {
+        background-color: rgba(105, 108, 255, 0.12)
+    }
+
+    #table tr[data-index]:nth-child(odd) {
+        background-color: rgba(105, 108, 255, 0.05)
+    }
+
+    #table i {
+        color: #00AAFF;
+        font-weight: 300;
+    }
+
+        #table i:hover {
+            opacity: 0.4;
+        }
+
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    .swal2-icon {
+        font-size: 35px;
+    }
+
+    .search {
+        width: 100%;
+    }
+
+
+    .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+        background: rgba(0,0,0,.4) !important;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+
+    .card-view {
+        border-bottom: 1px dashed gray;
+        margin-top: 2px;
+    }
+
+    .card-view-value {
+        margin-left: 5px;
+        white-space: normal;
+    }
+
+
+
+    .search {
+        width: 50%;
+    }
+
+
+
+    .menu1 {
+        display: none;
+    }
+
+    .th-inner {
+        white-space: unset !important;
+    }
+
+
+    @@media screen and (max-width: 600px) {
+        select {
+            width: 100% !important;
+        }
+
+        .form-control {
+            width: 100% !important;
+        }
+
+        #goster {
+            display: unset;
+        }
+
+        #filters {
+            display: none;
+        }
+
+        #try {
+            display: none;
+        }
+
+        #usd {
+            display: none;
+        }
+
+        #euro {
+            display: none;
+        }
+       
+    }
+    #table tbody tr:not(.group-by) {
+        cursor: pointer !important;
+    }
+
+        #table tbody tr:not(.group-by):hover {
+            opacity: 0.8 !important;
+        }
+</style>
+
+<div class="jumbotron vertical-center" onclick="hideAllPop()">
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+    </div>
+    <div class="container-fluid h-100">
+        <div class="card mt-2">
+            <div class="card-body">
+                <div class="row">
+                    <a id="goster" onclick="filtershow()" style="cursor:pointer">&#10148;Filtreleri Göster</a>
+                    <a id="gizle" onclick="filterhide()" style="cursor:pointer">&#9660;Filtreleri Gizle</a>
+                </div>
+                <div id="filters">
+                    <div class="row" onchange="datefilter()">
+
+                        <div class="col">
+                            <label for="baslagictarihi">Başlagıç Tarihi:</label>
+                            <input class="form-control" style="width: 15vw;height:32px" type="date" id="baslangictarihi" name="BASLANGIC_TARIH" value=" " placeholder="Başlangıç Tarihi">
+                        </div>
+                        <div class="col">
+                            <label for="bitistarihi">Bitiş Tarihi:</label>
+                            <input class="form-control" style="width: 15vw;height:32px" type="date" id="bitistarihi" name="BASLANGIC_TARIH" value=" " placeholder="Bitiş Tarihi">
+                        </div>
+                        <div class="col">
+                            <button onclick="clearfilter()" class="btn btn-secondary btn-sm mt-3"><i class="bx bxs-trash"></i></button>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                        <div class="col"></div>
+                        <div class="col"></div>
+                    </div>
+                    <div id="toolbar">
+                        <form id="form1">
+                            <div class="row mt-1">
+                                <div class="col">
+                                    <select id="teslim" multiple="multiple" name="filterAlgorithm" style="width: 15vw">
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select id="cari" multiple="multiple" name="plasiyerAlgorithm" style="width: 15vw">
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select id="stokadi" multiple="multiple" name="stokadiAlgorithm" style="width: 15vw">
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select id="dovtip" multiple="multiple" name="dovAlgorithm" style="width: 15vw">
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label  fs-tiny" for="kapaliswitch">KAPALI</label>
+
+                                        <input class="form-check-input" type="checkbox" id="kapaliswitch" unchecked="" onclick="kapali()" name="KAPALIMI">
+                                    </div>
+                                </div>
+                                <div class="col">
+
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label class="mt-2" style="font-size:12px" id="try"><b>∑ TRY:</b><span id="tl"></span></label>
+                                    <label class="mt-2" style="font-size:12px;display:none" id="tumtry"><b>∑ TRY:</b><span id="tumtl"></span></label>
+                                </div>
+                                <div class="col">
+                                    <label class="mt-2" style="font-size:12px" id="usd"><b>∑ USD:</b><span id="dolar"></span></label>
+                                </div>
+                                <div class="col">
+                                    <label class="mt-2" style="font-size:12px" id="euro"><b>∑ EUR:</b><span id="eur"></span></label>
+                                </div>
+                                <div class="col">
+
+                                </div>
+                                <div class="col">
+
+                                </div>
+                                <div class="col">
+
+                                </div>
+                            </div>
+                        </form>
+
+
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="card mt-1" style="font-size:14px;letter-spacing:1px">
+
+
+            <div class="card-body" id="card1">
+
+                <table id="table"
+                       class="table"
+                       data-show-fullscreen="true"
+                       data-buttons-order="['filterTable','columns']"
+                       data-toggle="table"
+                       data-show-export="false"
+                       data-export-data-type="all"
+                       data-export-types="['excel']"
+                       data-pagination="true"
+                       data-page-size="100"
+                       data-search="true"
+                       data-show-columns="true"
+                       data-show-columns-toggle-all="true"
+                       data-locale="tr-TR"
+                       data-filter-control="true"
+                       data-filter-control-multiple-search="true"
+                       data-loading-template="loadingTemplate"
+                       data-height="650"
+                       data-mobile-responsive="true"
+                       data-show-footer="true"
+                       data-detail-view="false"
+                       data-check-on-init="true"
+                       data-trim-on-search="false"
+                       data-group-by="true"
+                       data-group-by-field="CARI_ISIM">
+                    <thead>
+                        <tr>
+                            <th data-field="SIPARIS_NO" data-halign="center" data-align="center" data-sortable="true" data-formatter="sipFormatter" data-footer-formatter="topfooterFormatter">Sipariş No</th>
+                            <th data-field="SIP_DURUMU" data-halign="center" data-align="center" data-sortable="true">Durum</th>
+                            <th data-field="EXPORTTYPE" data-halign="center" data-align="center" data-sortable="true" data-formatter="exportFormatter">Incoterms</th>
+                            <th data-field="TARIH" data-halign="center" data-align="center" data-sortable="true" data-formatter="tarihFormatter">Tarih</th>
+                            <th data-field="TESLIM_TARIHI" data-halign="center" data-align="center" data-sortable="true" data-formatter="tarihFormatter">Termin</th>
+                            <th data-field="ACIKLAMA" data-halign="center" data-align="center" data-sortable="true" data-formatter="teslimFormatter">Açıklama</th>
+                            <th data-field="STOK_ADI" data-halign="center" data-align="center" data-sortable="true" data-formatter="stokadiFormatter">Stok Adı</th>
+                            <th data-field="MIKTAR" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="mik1footerFormatter">Miktar1</th>
+                            <th data-field="MIKTAR2" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="mik2footerFormatter">Miktar2</th>
+                            <th data-field="GERCEK_KALINLIK" data-halign="center" data-align="center" data-sortable="true">Kalınlık</th>
+                            <th data-field="GENISLIK" data-halign="center" data-align="center" data-sortable="true">Genişlik</th>
+                            <th data-field="KALITE" data-halign="center" data-align="center" data-sortable="true">Kalite</th>
+                            <th data-field="KAPLAMA_KALINLIK" data-halign="center" data-align="center" data-sortable="true">Kaplama</th>
+                            <th data-field="DOV_FIAT" data-halign="center" data-align="center" data-sortable="true" data-formatter="brutFormatter">Brüt Fiyat</th>
+                            <th data-field="SATIS_ISKONTOSU" data-halign="center" data-align="center" data-sortable="true" data-formatter="iskontoFormatter">İskonto</th>
+                            <th data-field="DOV_NET_FIYAT" data-halign="center" data-align="center" data-sortable="true" data-formatter="netFormatter">Net Fiyat</th>
+                            <th data-field="TESLIM_MIKTARI" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="ssipfooterFormatter">SSIP Teslim</th>
+                            <th data-field="BAKIYE_MIKTARI" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter" data-footer-formatter="ssip1footerFormatter">SSIP Bekleyen</th>
+                            <th data-field="TESLIM_YERI" data-halign="center" data-align="center" data-sortable="true" data-formatter="teslimFormatter">Teslim Yeri</th>
+                            <th data-field="TESLIMAT_ORANI" data-halign="center" data-align="center" data-sortable="true" data-formatter="surecFormatter" data-width="100" data-width-unit="px">SSIP Süreç</th>
+                            <th data-field="NET_TUTAR_KALEM" data-halign="center" data-align="center" data-sortable="true" data-formatter="nettutarFormatter" data-footer-formatter="footerFormatter">Net Tutar</th>
+                        </tr>
+                    </thead>
+                </table>
+
+
+
+
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+    var teslimyerleri = [];
+    var cariisimler = [];
+    var carikodlari = [];
+    var stokadlari = [];
+    var dovtipler = [];
+    var allData;
+    ShowProgress();
+
+    $(document).ready(function () {
+        loadTablo('A')
+    })
+
+    function loadTablo(val) {
+        teslimyerleri = [];
+        cariisimler = [];
+        carikodlari = [];
+        stokadlari = [];
+        dovtipler = [];
+        document.getElementById("teslim").replaceChildren();
+        document.getElementById("cari").replaceChildren();
+        document.getElementById("dovtip").replaceChildren();
+        document.getElementById("stokadi").replaceChildren();
+        $.getJSON("http://192.168.2.13:83/api/detayliSSIP/kapali", function (data) {
+            allData = data;
+            switch (val) {
+                case 'A':
+                    data = data.filter(x => x.SIP_DURUMU == 'ACIK');
+                    break;
+                case 'K':
+                    data = data.filter(x => x.SIP_DURUMU == 'KAPALI');
+                    break;
+            }
+            $("#table").bootstrapTable("destroy").bootstrapTable({
+                data: data,
+                onClickRow: function (row, element, field) {
+                    var ACIK1 = data.filter(x => x.SIPARIS_NO == row.SIPARIS_NO)[0].ACIK1;
+                    Swal.fire({
+                        title: row.SIPARIS_NO,
+                        html: '<b>DETAY:</b> ' + ACIK1,
+                        confirmButtonText: 'KAPAT'
+                    })
+                }
+            });
+           
+            $("#table1").bootstrapTable("destroy").bootstrapTable({
+                data: data
+
+            });
+
+            for (let i = 0; i < data.length; i++) {
+                if (!teslimyerleri.includes(data[i].TESLIM_YERI)) {
+                    teslimyerleri.push(data[i].TESLIM_YERI);
+                }
+                if (!carikodlari.includes(data[i].CARI_KODU)) {
+
+                    cariisimler.push(data[i].CARI_ISIM);
+                    carikodlari.push(data[i].CARI_KODU);
+                }
+                if (!dovtipler.includes(data[i].DOV_TIP) && data[i].DOV_TIP != null) {
+                    dovtipler.push(data[i].DOV_TIP);
+                }
+                if (!stokadlari.includes(data[i].STOK_ADI) && data[i].STOK_ADI != null) {
+                    stokadlari.push(data[i].STOK_ADI);
+                }
+            }
+            teslimyerleri.sort();
+            dovtipler.sort();
+            stokadlari.sort();
+            for (let i = 0; i < teslimyerleri.length; i++) {
+                var option = document.createElement("option");
+                option.value = teslimyerleri[i];
+                option.innerHTML = teslimyerleri[i];
+                document.getElementById("teslim").appendChild(option);
+            }
+            for (let i = 0; i < carikodlari.length; i++) {
+                var option = document.createElement("option");
+                option.value = carikodlari[i];
+                option.innerHTML = cariisimler[i];
+                document.getElementById("cari").appendChild(option);
+            }
+            for (let i = 0; i < dovtipler.length; i++) {
+                var option = document.createElement("option");
+                option.value = dovtipler[i];
+                option.innerHTML = dovtipler[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+            for (let i = 0; i < stokadlari.length; i++) {
+                var option = document.createElement("option");
+                option.value = stokadlari[i];
+                option.innerHTML = stokadlari[i];
+                document.getElementById("stokadi").appendChild(option);
+            }
+        }).done(function () {
+            sortOptions()
+            $("#teslim").select2({ placeholder: "Teslim Yeri" });
+            $("#cari").select2({ placeholder: "Cari İsim" });
+            $("#dovtip").select2({ placeholder: "Döviz Tipi" });
+            $("#stokadi").select2({ placeholder: "Stok Adı" });
+            HideProgress()
+        })
+    }
+    function sortOptions() {
+        var allOptions = $("#cari option");
+        allOptions.sort(function (op1, op2) {
+            var text1 = $(op1).text().toLowerCase();
+            var text2 = $(op2).text().toLowerCase();
+            return (text1 < text2) ? -1 : 1;
+        });
+        allOptions.appendTo("#cari");
+    }
+
+
+        $("#divPartial").show();
+
+
+
+    var type = 'fa'
+    function ShowProgress() {
+        document.body.style.overflow = 'hidden';
+        document.activeElement.blur();
+        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    }
+    function HideProgress() {
+        document.body.style.overflow = 'auto';
+        $('#nova-overlay').fadeOut('slow');
+    }
+    function loadingTemplate(message) {
+        if (type === 'fa') {
+            return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
+        }
+        if (type === 'pl') {
+            return '<div class="ph-item"><div class="ph-picture"></div></div>'
+        }
+    }
+    function sipFormatter(value, index, row) {
+
+        return "<span class='text-nowrap'>" + (value.substring(0, 1)) + (value.substring(3, 5)) + "-" + (value.substring(value.length - 5)) + "</span>";
+    }
+    function tarihFormatter(value, index, row) {
+
+        return (new Date(value)).toLocaleDateString();
+    }
+    function teslimFormatter(value, index, row) {
+
+        return "<span class='text-nowrap'>" + value + "</span>";
+    }
+    function stokadiFormatter(value, index, row) {
+
+        return value.replaceAll('Ý', 'İ');
+    }
+    function miktarFormatter(value, index, row) {
+
+        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    
+    function exportFormatter(value, index, row) {
+        switch (value) {
+            case 0: return 'Yurt İçi'; break
+            case 1: return 'FOB'; break
+            case 2: return 'CIF'; break
+            case 3: return 'CF'; break
+            case 4: return 'FOT'; break
+            case 5: return 'İHRAÇ KAYDI'; break
+            case 6: return 'DAF'; break
+            case 7: return 'EXW'; break
+            case 8: return 'İHR KUR FARKI'; break
+            case 9: return 'CIP'; break
+            case 10: return 'CPT'; break
+            case 11: return 'DAT'; break
+            case 12: return 'DAP'; break
+            case 13: return 'DDP'; break
+            case 14: return 'DES'; break
+            case 15: return 'DEQ'; break
+            case 16: return 'DDU'; break
+            case 17: return 'FCA'; break
+            case 18: return 'FAS'; break
+            case 19: return 'CFR'; break
+        }
+    }
+    function iskontoFormatter(value, index, row) {
+
+        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
+    }
+    function brutFormatter(value, index, row) {
+        if (index.DOV_NET_FIYAT == 0) {
+
+            return parseFloat(index.NET_FIYAT).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        } else {
+
+            return parseFloat(index.DOV_NET_FIYAT).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+        }
+
+    }
+    function netFormatter(value, index, row) {
+        if (index.DOV_FIAT == 0) {
+
+            return parseFloat(index.BRUT_FIYAT).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        } else {
+
+            return parseFloat(index.DOV_FIAT).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+        }
+
+    }
+    function nettutarFormatter(value, index, row) {
+        if (index.DOV_TUTAR != 0) {
+            return "<span class='dovfiyat text-nowrap'>" + parseFloat(index.DOV_TUTAR).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + (index.DOV_TIP == null ? "TRY" : index.DOV_TIP);
+        } else {
+            return "<span class='text-nowrap'>" + parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + (index.DOV_TIP == null ? "TRY" : index.DOV_TIP) + "</span>";
+        }
+
+
+
+
+    }
+    function nettutarFormatter2(value, index, row) {
+
+        return "<span class='text-nowrap'>" + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TRY</span>";
+
+    }
+    function surecFormatter(value, index, row) {
+
+        return '<div class="meter" id="meter-msip" style="height:22.94px;width:100px"><span style="width:' + (parseFloat(value * 100).toFixed(0)) + '%"><span class="progress" id="progress-msip"><span class="text-nowrap" style="text-align:end;color:black">' + (parseFloat(value * 100).toFixed(0)) + '%</span></span></span></div>';
+
+    }
+    function datefilter() {
+        var baslangic = $('#baslangictarihi').val()
+        var bitis = $('#bitistarihi').val()
+
+        $.getJSON('http://192.168.2.13:83/api/detayliSSIP/kapali', function (data) {
+
+            if ((baslangic != null && baslangic != "") && (bitis != null && bitis != "")) {
+                var d = data.filter(x => new Date(x.TARIH.split("T")[0]) <= new Date(bitis) && new Date(x.TARIH.split("T")[0]) >= new Date(baslangic));
+            } else if ((baslangic != null && baslangic != "") || (bitis != null && bitis != "")) {
+
+                if (baslangic != null && baslangic != "") {
+
+
+                    var d = data.filter(x => new Date(x.TARIH.split("T")[0]) >= new Date(baslangic));
+
+
+                }
+                if (bitis != null && bitis != "") {
+                    var d = data.filter(x => new Date(x.TARIH.split("T")[0]) <= new Date(bitis));
+                }
+            }
+            else {
+                var d = data;
+            }
+            $('#table').bootstrapTable("destroy");
+            $('#table1').bootstrapTable("destroy");
+            $('#table').bootstrapTable({
+                data: d
+            })
+            $('#table1').bootstrapTable({
+                data: d
+            })
+        })
+
+    }
+
+    $('select').change(function (e) {
+
+        filtre()
+
+
+    })
+    
+    function filtre() {
+        var filterAlgorithm = $('#teslim').val()
+        var plasiyerAlgorithm = $('#cari').val()
+        var dovAlgorithm = $('#dovtip').val()
+        var stokAlgorithm = $('#stokadi').val()
+        teslimyerleri = []
+        cariisimler = []
+        carikodlari = []
+        dovtipler = []
+        stokadlari = []
+        var data = allData;
+        dovAlgorithm.sort();
+        if (dovAlgorithm.includes("TRY")) {
+            if (dovAlgorithm.includes("EURO")) {
+                dovAlgorithm.splice(1, 1, null);
+            } else {
+                dovAlgorithm.splice(0, 1, null);
+            }
+
+
+        }
+       
+        if (filterAlgorithm.length > 0) {
+            data = data.filter(x => filterAlgorithm.includes(x.TESLIM_YERI))
+        }
+        if (plasiyerAlgorithm.length > 0) {
+            data = data.filter(x => plasiyerAlgorithm.includes(x.CARI_KODU))
+        }
+        if (dovAlgorithm.length > 0) {
+            data = data.filter(x => dovAlgorithm.includes(x.DOV_TIP))
+        }
+        if (stokAlgorithm.length > 0) {
+            data = data.filter(x => stokAlgorithm.includes(x.STOK_ADI))
+        }
+        if (filterAlgorithm.length == 0 && plasiyerAlgorithm.length == 0 && dovAlgorithm.length == 0 && stokAlgorithm.length == 0) {
+            data = allData
+        }
+
+        for (let i = 0; i < data.length; i++) {
+            if (!teslimyerleri.includes(data[i].TESLIM_YERI)) {
+                teslimyerleri.push(data[i].TESLIM_YERI);
+            }
+            if (!carikodlari.includes(data[i].CARI_KODU)) {
+
+                cariisimler.push(data[i].CARI_ISIM);
+                carikodlari.push(data[i].CARI_KODU);
+            }
+            if (!dovtipler.includes(data[i].DOV_TIP) && data[i].DOV_TIP != null) {
+                dovtipler.push(data[i].DOV_TIP);
+            }
+            if (!stokadlari.includes(data[i].STOK_ADI) && data[i].STOK_ADI != null) {
+                stokadlari.push(data[i].STOK_ADI);
+            }
+        }
+        teslimyerleri.sort();
+        dovtipler.sort();
+        stokadlari.sort();
+        var option;
+        if (!filterAlgorithm.length > 0) {
+
+            document.getElementById("teslim").replaceChildren();
+            for (let i = 0; i < teslimyerleri.length; i++) {
+                option = document.createElement("option");
+                option.value = teslimyerleri[i];
+                option.innerHTML = teslimyerleri[i];
+                document.getElementById("teslim").appendChild(option);
+            }
+        }
+        if (!plasiyerAlgorithm.length > 0) {
+
+            document.getElementById("cari").replaceChildren();
+            for (let i = 0; i < carikodlari.length; i++) {
+                option = document.createElement("option");
+                option.value = carikodlari[i];
+                option.innerHTML = cariisimler[i];
+                document.getElementById("cari").appendChild(option);
+            }
+        }
+        if (!dovAlgorithm.length > 0) {
+
+            document.getElementById("dovtip").replaceChildren();
+            for (let i = 0; i < dovtipler.length; i++) {
+
+                option = document.createElement("option");
+                option.value = dovtipler[i];
+                option.innerHTML = dovtipler[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+        }
+        if (!stokAlgorithm.length > 0) {
+            document.getElementById("stokadi").replaceChildren();
+            for (let i = 0; i < stokadlari.length; i++) {
+                option = document.createElement("option");
+                option.value = stokadlari[i];
+                option.innerHTML = stokadlari[i];
+
+                document.getElementById("stokadi").appendChild(option);
+            }
+        }
+
+        if (filterAlgorithm.length == 0 && plasiyerAlgorithm.length == 0 && dovAlgorithm.length == 0 && stokAlgorithm.length == 0) {
+
+            teslimyerleri = []
+            cariisimler = []
+            carikodlari = []
+            dovtipler = []
+            stokadlari = []
+            for (let i = 0; i < data.length; i++) {
+                if (!teslimyerleri.includes(data[i].TESLIM_YERI)) {
+                    teslimyerleri.push(data[i].TESLIM_YERI);
+                }
+                if (!carikodlari.includes(data[i].CARI_KODU)) {
+
+                    cariisimler.push(data[i].CARI_ISIM);
+                    carikodlari.push(data[i].CARI_KODU);
+                }
+                if (!dovtipler.includes(data[i].DOV_TIP) && data[i].DOV_TIP != null) {
+                    dovtipler.push(data[i].DOV_TIP);
+                }
+                if (!stokadlari.includes(data[i].STOK_ADI) && data[i].STOK_ADI != null) {
+                    stokadlari.push(data[i].STOK_ADI);
+                }
+            }
+            teslimyerleri.sort();
+            dovtipler.sort();
+            stokadlari.sort();
+
+            document.getElementById("dovtip").replaceChildren();
+            document.getElementById("teslim").replaceChildren();
+            document.getElementById("cari").replaceChildren();
+
+            document.getElementById("stokadi").replaceChildren();
+            for (let i = 0; i < teslimyerleri.length; i++) {
+                option = document.createElement("option");
+                option.value = teslimyerleri[i];
+                option.innerHTML = teslimyerleri[i];
+                document.getElementById("teslim").appendChild(option);
+            }
+
+
+            for (let i = 0; i < carikodlari.length; i++) {
+                option = document.createElement("option");
+                option.value = carikodlari[i];
+                option.innerHTML = cariisimler[i];
+                document.getElementById("cari").appendChild(option);
+            }
+
+
+            for (let i = 0; i < dovtipler.length; i++) {
+                option = document.createElement("option");
+                option.value = dovtipler[i];
+                option.innerHTML = dovtipler[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+
+
+            for (let i = 0; i < stokadlari.length; i++) {
+                option = document.createElement("option");
+                option.value = stokadlari[i];
+                option.innerHTML = stokadlari[i];
+                document.getElementById("stokadi").appendChild(option);
+            }
+
+        }
+
+
+
+
+        $('#table').bootstrapTable('filterBy', {
+            TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimyerleri),
+            CARI_KODU: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : carikodlari),
+            DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovtipler),
+            STOK_ADI: (stokAlgorithm.length > 0 ? stokAlgorithm : stokadlari),
+        }).after(function () {
+            sortOptions()
+            $("#teslim").select2({ placeholder: "Teslim Yeri" });
+            $("#cari").select2({ placeholder: "Cari İsim" });
+            $("#dovtip").select2({ placeholder: "Döviz Tipi" });
+            $("#stokadi").select2({ placeholder: "Stok Adı" });
+        })
+    }
+    function clearfilter() {
+        $("#teslim").val('').trigger('change');
+        $("#cari").val('').trigger('change');
+        $("#dovtip").val('').trigger('change');
+        $("#stokadi").val('').trigger('change');
+        $("#baslangictarihi").val('').trigger('change');
+        $("#bitistarihi").val('').trigger('change');
+    }
+
+    function change() {
+
+        if (event.currentTarget.checked == true) {
+            $("#card1").hide();
+            $("#card2").show();
+            $("#try").hide();
+            $("#usd").hide();
+            $("#euro").hide();
+            $("#tumtry").show();
+            $("#table1").bootstrapTable("refresh");
+        } else {
+            $("#card1").show();
+            $("#card2").hide();
+            $("#try").show();
+            $("#usd").show();
+            $("#euro").show();
+            $("#tumtry").hide();
+        }
+    }
+    function flex() {
+
+        if (event.currentTarget.checked == true) {
+
+
+        } else {
+
+
+        }
+    }
+    function footerFormatter(items) {
+        var totalPriceUSD = 0;
+        var totalPriceTRY = 0;
+        var totalPriceEUR = 0;
+        var tumtotalPriceTRY = 0;
+        items.forEach(function (item) {
+
+            if (item.DOV_TIP == "USD") {
+                totalPriceUSD = totalPriceUSD + parseFloat(item.DOV_TUTAR);
+            } else if (item.DOV_TIP == null) {
+                totalPriceTRY = totalPriceTRY + parseFloat(item.NET_TUTAR_KALEM);
+            } else if (item.DOV_TIP == "EURO") {
+                totalPriceEUR = totalPriceEUR + parseFloat(item.DOV_TUTAR);
+            }
+            tumtotalPriceTRY = tumtotalPriceTRY + parseFloat(item.NET_TUTAR_KALEM);
+        });
+
+        $('#dolar').text(" " + totalPriceUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $");
+        $('#tl').text(" " + totalPriceTRY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺");
+        $('#tumtl').text(" " + tumtotalPriceTRY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺");
+        $('#eur').text(" " + totalPriceEUR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €");
+    };
+    function topfooterFormatter(items) {
+
+        return "Toplam";
+
+    };
+    function mik1footerFormatter(items) {
+        var total = 0;
+        items.forEach(function (item) {
+
+            total = total + parseFloat(item.MIKTAR);
+
+
+        });
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    };
+    function mik2footerFormatter(items) {
+        var total = 0;
+        items.forEach(function (item) {
+
+            total = total + parseFloat(item.MIKTAR2);
+
+
+        });
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    };
+    function ssipfooterFormatter(items) {
+        var total = 0;
+        items.forEach(function (item) {
+
+            total = total + parseFloat(item.TESLIM_MIKTARI);
+
+
+        });
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    };
+    function ssip1footerFormatter(items) {
+        var total = 0;
+        items.forEach(function (item) {
+
+            total = total + parseFloat(item.BAKIYE_MIKTARI);
+
+
+        });
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    };
+    function loadingTemplate(message) {
+        if (type === 'fa') {
+            return '<div class="heart"><img id="progress" src="/images/novasaydam.png" style="max-width:15vw" /></div>'
+        }
+        if (type === 'pl') {
+            return '<div class="ph-item"><div class="ph-picture"></div></div>'
+        }
+    }
+    function filtershow() {
+        $("#goster").hide();
+        $("#gizle").show();
+        $("#filters").show();
+    }
+    function filterhide() {
+        $("#goster").show();
+        $("#gizle").hide();
+        $("#filters").hide();
+    }
+    function kapali() {
+        var control = $('#kapaliswitch').is(':checked');
+        if (control) {
+
+            loadTablo('K');
+        } else {
+
+            loadTablo('A');
+        }
+    }
+</script>
+
+
+
+

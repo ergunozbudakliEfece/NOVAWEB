@@ -178,11 +178,13 @@ namespace NOVA.Controllers
             var tekliflerim = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 40).USER_AUTH;
             bool? yetkiMalKabulForm = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 41).USER_AUTH;
             bool? yetkiSevkMalKabul = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 42).USER_AUTH;
-            bool? mes = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 42).USER_AUTH;
+            bool? mes = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 45).USER_AUTH;
             bool? hurdaveikincikalite = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 23).USER_AUTH;
+            bool? disticaret = yetki.FirstOrDefault(t => t.USER_ID == Request.Cookies["Id"].Value && t.MODULE_INCKEY == 49).USER_AUTH;
             ViewBag.DisplaySevkMalKabul = yetkiSevkMalKabul is true ? "unset" : "none";
             ViewBag.DisplayMalKabulForm = yetkiMalKabulForm is true ? "unset" : "none";
             ViewBag.DisplayHurdaVeIkinciKalite = hurdaveikincikalite is true ? "block" : "none";
+            ViewBag.DisplayDisTicaret = disticaret is true ? "block" : "none";
             if (tekliflerim != true)
             {
                 ViewBag.DisplayTekliflerim = "none";

@@ -11,7 +11,7 @@
 
             <div class="modal-body  py-2">
                 <div class="container-fluid">
-                    <input id="copyinput" type="text" value="" hidden/>
+                    <input id="copyinput" type="text" value="" hidden />
                     <div class="centercontent" id="SevkMalSeriNoTableProgress" style="display:unset">
                         <div class="heart"><img id="SevkMalSeriNoTableProgress" src="~/images/novasaydam.png" style="max-width:15vw" /></div>
                     </div>
@@ -80,7 +80,7 @@
 <script>
     var SeriNoModalList = [];
 
-    function SeriNoModal(SiparisNo, BelgeNo, StokKodu) {
+    function SeriNoModal(SiparisNo, BelgeNo, StokKodu, GirisDepo, CikisDepo) {
         SeriNoModalList = [];
 
         document.getElementById("STOK_KODU_BILGI").innerHTML = StokKodu;
@@ -88,7 +88,19 @@
         $("#SevkMalSeriNoTable").bootstrapTable("destroy");
         $("#SevkMalSeriNoTable").bootstrapTable({ data: SeriNoModalList });
 
-        SeriNoModalList = Belgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo && x.STOK_KODU == StokKodu);
+        var DocumentTypeVal = $('input[name="DocumentTypeRadio"]:checked').val();
+
+        var DocType = parseInt(DocumentTypeVal);
+
+        if (DocType == 7) {
+            SeriNoModalList = Belgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo && x.STOK_KODU == StokKodu && x.GIRIS_DEPO == GirisDepo);
+        }
+        else if (DocType == 6) {
+            SeriNoModalList = Belgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo && x.STOK_KODU == StokKodu && x.CIKIS_DEPO == CikisDepo);
+        }
+        else if (DocType == 9) {
+            SeriNoModalList = Belgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo && x.STOK_KODU == StokKodu && x.CIKIS_DEPO == CikisDepo && x.GIRIS_DEPO == GirisDepo);
+        }
 
         $("#SevkMalSeriNoTable").bootstrapTable("destroy");
         $("#SevkMalSeriNoTable").bootstrapTable({ data: SeriNoModalList });
@@ -119,8 +131,7 @@
         }
     }
 
-    async function StokKoduKopyala()
-    {
+    async function StokKoduKopyala() {
         try {
             await copyToClipboard($("#STOK_KODU_BILGI").html());
         } catch (error) {
@@ -156,13 +167,11 @@
         }
     }
 
-    function KalinlikFormatter(value, index, row)
-    {
-        if (value?.toString().trim().length > 0)
-        {
+    function KalinlikFormatter(value, index, row) {
+        if (value?.toString().trim().length > 0) {
             return GenislikKalinlikFormat(value);
         }
-        
+
         return "-";
     }
 
@@ -174,8 +183,7 @@
         return "-";
     }
 
-    function GenislikKalinlikFormat(value)
-    {
+    function GenislikKalinlikFormat(value) {
         return value;
     }
 

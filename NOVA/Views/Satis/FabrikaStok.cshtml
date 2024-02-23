@@ -199,6 +199,10 @@
                                 </select>
                             </div>
                             <div class="col-sm">
+                                <select id="kalite" multiple="multiple" name="kaliteAlgorithm" style="width: 9vw">
+                                </select>
+                            </div>
+                            <div class="col-sm">
                                 <select id="genislik" multiple="multiple" name="plasiyerAlgorithm" style="width: 9vw">
                                 </select>
                             </div>
@@ -408,6 +412,7 @@
     var kalinlikfilter = [];
     var kalinliksearch = [];
     var kaplamafilter = [];
+    var kaliteFilter = [];
     var genislikfilter = [];
     var genisliksearch = [];
     var menseifilter = [];
@@ -451,6 +456,9 @@
                 if (!kuralFilter.includes(detayli[i].KURAL)) {
                     kuralFilter.push(detayli[i].KURAL)
                 }
+                if (!kaliteFilter.includes(detayli[i].KALITE)) {
+                    kaliteFilter.push(detayli[i].KALITE)
+                }
 
             }
             teslimfilter.sort(function (a, b) { return a - b });
@@ -459,6 +467,7 @@
             genislikfilter.sort(function (a, b) { return a - b });
             kaplamafilter.sort();
             menseifilter.sort();
+            kaliteFilter.sort();
 
             for (let i = 0; i < teslimfilter.length; i++) {
                 var option = document.createElement("option");
@@ -499,6 +508,12 @@
                 option.innerHTML = menseifilter[i];
                 document.getElementById("mensei").appendChild(option);
             }
+            for (let i = 0; i < kaliteFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = kaliteFilter[i];
+                option.innerHTML = kaliteFilter[i];
+                document.getElementById("kalite").appendChild(option);
+            }
             for (let i = 0; i < kuralFilter.length; i++) {
                 var option = document.createElement("option");
                 option.value = kuralFilter[i];
@@ -527,6 +542,7 @@
             $('#mensei').select2({ placeholder: "Menşei" });
             $('#kural').select2({ placeholder: "Stok Durumu" });
             $('#depo').select2({ placeholder: "Depo" });
+            $('#kalite').select2({ placeholder: "Kalite" });
         }).then(function () {
             document.querySelectorAll('input[type="search"]')[0].onkeyup = function () {
                 document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.toLocaleUpperCase("tr-TR");
@@ -599,7 +615,7 @@
         FetchData();
     });
 
-
+    var det = detayli;
     $('select').not('#depo').change(function (e) {
         var filterAlgorithm = $('#filter').val()
         var plasiyerAlgorithm = $('#renk').val()
@@ -608,8 +624,10 @@
         var genislikAlgorithm = $('#genislik').val()
         var menseiAlgorithm = $('#mensei').val()
         var kuralAlgorithm = $('#kural').val()
+        var kaliteAlgorithm = $('#kalite').val()
+        det = detayli;
         if ($('#filter').val().length > 0) {
-            var det = detayli.filter(x => filterAlgorithm.includes(x.SERI_NO));
+            det = det.filter(x => filterAlgorithm.includes(x.SERI_NO));
             if (!$('#renk').val().length > 0) {
 
                 var renkfilt = [];
@@ -715,10 +733,25 @@
                     document.getElementById("kural").appendChild(option);
                 }
             }
+            if (!$('#kalite').val().length > 0) {
 
+                var kalitefilt = [];
+
+                $('#kalite').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kalitefilt.includes(det[i].KALITE)) {
+                        kalitefilt.push(det[i].KALITE)
+                    }
+                }
+                kalitefilt.sort();
+                for (let i = 0; i < kalitefilt.length; i++) {
+                    var newOption = new Option(kalitefilt[i], kalitefilt[i], false, false);
+                    $('#kalite').append(newOption);
+                }
+            }
         }
-        else if ($('#renk').val().length > 0) {
-            var det = detayli.filter(x => plasiyerAlgorithm.includes(x.RENKKODU));
+        if ($('#renk').val().length > 0) {
+            det = det.filter(x => plasiyerAlgorithm.includes(x.RENKKODU));
            
             if (!$('#filter').val().length > 0) {
 
@@ -750,7 +783,7 @@
 
                 kalfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < kalfilt.length; i++) {
-                    var newOption = new Option(kalfilt[i].toLocaleString(), (kalfilt[i].toLocaleString()).replaceAll(".", ""), false, false);
+                    var newOption = new Option(kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), false, false);
                     $('#kalinlik').append(newOption);
                 }
             }
@@ -827,11 +860,26 @@
                     document.getElementById("kural").appendChild(option);
                 }
             }
+            if (!$('#kalite').val().length > 0) {
 
+                var kalitefilt = [];
+
+                $('#kalite').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kalitefilt.includes(det[i].KALITE)) {
+                        kalitefilt.push(det[i].KALITE)
+                    }
+                }
+                kalitefilt.sort();
+                for (let i = 0; i < kalitefilt.length; i++) {
+                    var newOption = new Option(kalitefilt[i], kalitefilt[i], false, false);
+                    $('#kalite').append(newOption);
+                }
+            }
         }
-        else if ($('#kalinlik').val().length > 0) {
+        if ($('#kalinlik').val().length > 0) {
             
-            var det = detayli.filter(x => kalinlikAlgorithm.includes(x.KALINLIK));
+            det = det.filter(x => kalinlikAlgorithm.includes(x.KALINLIK));
             if (!$('#filter').val().length > 0) {
 
                 var teslimfilt = [];
@@ -938,11 +986,26 @@
                     document.getElementById("kural").appendChild(option);
                 }
             }
+            if (!$('#kalite').val().length > 0) {
 
+                var kalitefilt = [];
+
+                $('#kalite').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kalitefilt.includes(det[i].KALITE)) {
+                        kalitefilt.push(det[i].KALITE)
+                    }
+                }
+                kalitefilt.sort();
+                for (let i = 0; i < kalitefilt.length; i++) {
+                    var newOption = new Option(kalitefilt[i], kalitefilt[i], false, false);
+                    $('#kalite').append(newOption);
+                }
+            }
 
         }
-        else if ($('#kaplama').val().length > 0) {
-            var det = detayli.filter(x => kaplamakAlgorithm.includes(x.KAPLAMA));
+        if ($('#kaplama').val().length > 0) {
+            det = det.filter(x => kaplamakAlgorithm.includes(x.KAPLAMA));
             if (!$('#filter').val().length > 0) {
 
                 var teslimfilt = [];
@@ -987,7 +1050,147 @@
                 }
                 kalfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < kalfilt.length; i++) {
-                    var newOption = new Option(kalfilt[i].toLocaleString(), (kalfilt[i].toLocaleString()).replaceAll(".", ""), false, false);
+                    var newOption = new Option(kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), false, false);
+                    $('#kalinlik').append(newOption);
+                }
+            }
+            if (!$('#genislik').val().length > 0) {
+
+                var genfilt = [];
+                $('#genislik').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!genfilt.includes(parseFloat((det[i].GENISLIK).replace(',', '.')))) {
+                        genfilt.push(parseFloat((det[i].GENISLIK).replace(',', '.')))
+                    }
+                }
+                genfilt.sort(function (a, b) { return a - b });
+                for (let i = 0; i < genfilt.length; i++) {
+                    var newOption = new Option(genfilt[i].toLocaleString(), (genfilt[i].toLocaleString()).replaceAll(".", ""), false, false);
+                    $('#genislik').append(newOption);
+                }
+            }
+            if (!$('#mensei').val().length > 0) {
+
+                var menfilt = [];
+
+                $('#mensei').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!menfilt.includes(det[i].MENSEI)) {
+                        menfilt.push(det[i].MENSEI)
+                    }
+                }
+                menfilt.sort();
+                for (let i = 0; i < menfilt.length; i++) {
+                    var newOption = new Option(menfilt[i], menfilt[i], false, false);
+                    $('#mensei').append(newOption);
+                }
+            }
+            if (!$('#kural').val().length > 0) {
+                var kurfilt = [];
+
+                $('#kural').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kurfilt.includes(det[i].KURAL)) {
+                        kurfilt.push(det[i].KURAL)
+                    }
+                }
+                for (let i = 0; i < kurfilt.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = kurfilt[i];
+                    if (kurfilt[i] == 0) {
+                        option.innerHTML = "Hazır Stoklar";
+                        option.value = 0;
+                    } else if (kurfilt[i] == 1) {
+                        option.innerHTML = "İş Emri Verilen Stoklar";
+                        option.value = 1;
+                    } else {
+                        option.innerHTML = "Üretim Bekleyenler";
+                        option.value = 2;
+                    }
+
+                    document.getElementById("kural").appendChild(option);
+                }
+            }
+            if (!$('#kalite').val().length > 0) {
+
+                var kalitefilt = [];
+
+                $('#kalite').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kalitefilt.includes(det[i].KALITE)) {
+                        kalitefilt.push(det[i].KALITE)
+                    }
+                }
+                kalitefilt.sort();
+                for (let i = 0; i < kalitefilt.length; i++) {
+                    var newOption = new Option(kalitefilt[i], kalitefilt[i], false, false);
+                    $('#kalite').append(newOption);
+                }
+            }
+        }
+        if ($('#kalite').val().length > 0) {
+            det = det.filter(x => kaliteAlgorithm.includes(x.KALITE));
+            if (!$('#filter').val().length > 0) {
+
+                var teslimfilt = [];
+
+                $('#filter').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!teslimfilt.includes(det[i].SERI_NO)) {
+                        teslimfilt.push(det[i].SERI_NO)
+                    }
+                }
+                teslimfilt.sort(function (a, b) { return a - b });
+                for (let i = 0; i < teslimfilt.length; i++) {
+                    var t = ("0" + (teslimfilt[i])).substring(0, 5) + "." + (teslimfilt[i]).substring(4, 6);
+                    var newOption = new Option(teslimfilt[i], teslimfilt[i], false, false);
+                    $('#filter').append(newOption);
+                }
+            }
+            if (!$('#renk').val().length > 0) {
+
+                var renkfilt = [];
+
+                $('#renk').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!renkfilt.includes(det[i].RENKKODU)) {
+                        renkfilt.push(det[i].RENKKODU)
+                    }
+                }
+                renkfilt.sort();
+                for (let i = 0; i < renkfilt.length; i++) {
+                    var newOption = new Option(renkfilt[i], renkfilt[i], false, false);
+                    $('#renk').append(newOption);
+                }
+            }
+            if (!$('#kaplama').val().length > 0) {
+
+                var kapfilt = [];
+
+                $('#kaplama').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kapfilt.includes(det[i].KAPLAMA)) {
+                        kapfilt.push(det[i].KAPLAMA)
+                    }
+                }
+                kapfilt.sort();
+                for (let i = 0; i < kapfilt.length; i++) {
+                    var newOption = new Option(kapfilt[i], kapfilt[i], false, false);
+                    $('#kaplama').append(newOption);
+                }
+            }
+            if (!$('#kalinlik').val().length > 0) {
+
+                var kalfilt = [];
+                $('#kalinlik').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kalfilt.includes(parseFloat(det[i].KALINLIK.replace(',', '.')))) {
+                        kalfilt.push(parseFloat(det[i].KALINLIK.replace(',', '.')))
+                    }
+                }
+                kalfilt.sort(function (a, b) { return a - b });
+                for (let i = 0; i < kalfilt.length; i++) {
+                    var newOption = new Option(kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), false, false);
                     $('#kalinlik').append(newOption);
                 }
             }
@@ -1050,8 +1253,8 @@
             }
 
         }
-        else if ($('#genislik').val().length > 0) {
-            var det = detayli.filter(x => genislikAlgorithm.includes(x.GENISLIK));
+        if ($('#genislik').val().length > 0) {
+            det = det.filter(x => genislikAlgorithm.includes(x.GENISLIK));
             if (!$('#filter').val().length > 0) {
 
                 var teslimfilt = [];
@@ -1097,7 +1300,7 @@
                 }
                 kalfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < kalfilt.length; i++) {
-                    var newOption = new Option(kalfilt[i].toLocaleString(), (kalfilt[i].toLocaleString()).replaceAll(".", ""), false, false);
+                    var newOption = new Option(kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), false, false);
                     $('#kalinlik').append(newOption);
                 }
             }
@@ -1159,10 +1362,25 @@
                     document.getElementById("kural").appendChild(option);
                 }
             }
+            if (!$('#kalite').val().length > 0) {
 
+                var kalitefilt = [];
+
+                $('#kalite').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kalitefilt.includes(det[i].KALITE)) {
+                        kalitefilt.push(det[i].KALITE)
+                    }
+                }
+                kalitefilt.sort();
+                for (let i = 0; i < kalitefilt.length; i++) {
+                    var newOption = new Option(kalitefilt[i], kalitefilt[i], false, false);
+                    $('#kalite').append(newOption);
+                }
+            }
         }
-        else if ($('#mensei').val().length > 0) {
-            var det = detayli.filter(x => menseiAlgorithm.includes(x.MENSEI));
+        if ($('#mensei').val().length > 0) {
+            det = det.filter(x => menseiAlgorithm.includes(x.MENSEI));
             if (!$('#filter').val().length > 0) {
 
                 var teslimfilt = [];
@@ -1208,7 +1426,7 @@
                 }
                 kalfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < kalfilt.length; i++) {
-                    var newOption = new Option(kalfilt[i].toLocaleString(), (kalfilt[i].toLocaleString()).replaceAll(".", ""), false, false);
+                    var newOption = new Option(kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), false, false);
                     $('#kalinlik').append(newOption);
                 }
             }
@@ -1269,10 +1487,25 @@
                     document.getElementById("kural").appendChild(option);
                 }
             }
+            if (!$('#kalite').val().length > 0) {
 
+                var kalitefilt = [];
+
+                $('#kalite').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kalitefilt.includes(det[i].KALITE)) {
+                        kalitefilt.push(det[i].KALITE)
+                    }
+                }
+                kalitefilt.sort();
+                for (let i = 0; i < kalitefilt.length; i++) {
+                    var newOption = new Option(kalitefilt[i], kalitefilt[i], false, false);
+                    $('#kalite').append(newOption);
+                }
+            }
         }
-        else if ($('#kural').val().length > 0) {
-            var det = detayli.filter(x => x.KURAL == $('#kural').val());
+        if ($('#kural').val().length > 0) {
+            det = det.filter(x => x.KURAL == $('#kural').val());
             
 
             if (!$('#filter').val().length > 0) {
@@ -1319,7 +1552,7 @@
                 }
                 kalfilt.sort(function (a, b) { return a - b });
                 for (let i = 0; i < kalfilt.length; i++) {
-                    var newOption = new Option(kalfilt[i].toLocaleString(), (kalfilt[i].toLocaleString()).replaceAll(".", ""), false, false);
+                    var newOption = new Option(kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), kalfilt[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), false, false);
                     $('#kalinlik').append(newOption);
                 }
             }
@@ -1370,8 +1603,24 @@
                     $('#mensei').append(newOption);
                 }
             }
+            if (!$('#kalite').val().length > 0) {
+
+                var kalitefilt = [];
+
+                $('#kalite').children('option').remove();
+                for (let i = 0; i < det.length; i++) {
+                    if (!kalitefilt.includes(det[i].KALITE)) {
+                        kalitefilt.push(det[i].KALITE)
+                    }
+                }
+                kalitefilt.sort();
+                for (let i = 0; i < kalitefilt.length; i++) {
+                    var newOption = new Option(kalitefilt[i], kalitefilt[i], false, false);
+                    $('#kalite').append(newOption);
+                }
+            }
         }
-        else {
+        if (!$('#filter').val().length > 0 && !$('#renk').val().length > 0 && !$('#kalinlik').val().length > 0 && !$('#kaplama').val().length > 0 && !$('#kalite').val().length > 0 && !$('#genislik').val().length > 0 && !$('#mensei').val().length > 0 && !$('#kural').val().length > 0) {
             $('#filter').children('option').remove();
             $('#renk').children('option').remove();
             $('#kalinlik').children('option').remove();
@@ -1379,48 +1628,69 @@
             $('#genislik').children('option').remove();
             $('#mensei').children('option').remove();
             $('#kural').children('option').remove();
-           
-            for (let i = 0; i < teslimfilter.length; i++) {
-                var t = ("0" + (teslimfilter[i])).substring(0, 5) + "." + (teslimfilter[i]).substring(4, 6);
-                var newOption = new Option(teslimfilter[i], teslimfilter[i], false, false);
-                $('#filter').append(newOption);
-            }
-            for (let i = 0; i < renkfilter.length; i++) {
-                var newOption = new Option(renkfilter[i], renkfilter[i], false, false);
-                $('#renk').append(newOption);
-            }
-            for (let i = 0; i < kalinlikfilter.length; i++) {
-                var newOption = new Option(kalinlikfilter[i].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), kalinlikfilter[i].toLocaleString(), false, false);
-                $('#kalinlik').append(newOption);
-            }
-            for (let i = 0; i < kaplamafilter.length; i++) {
-                var newOption = new Option(kaplamafilter[i], kaplamafilter[i], false, false);
-                $('#kaplama').append(newOption);
-            }
-            for (let i = 0; i < genislikfilter.length; i++) {
-                var newOption = new Option(genislikfilter[i].toLocaleString().replaceAll('.', ''), genislikfilter[i].toLocaleString().replaceAll('.', ''), false, false);
-                $('#genislik').append(newOption);
-            }
-            for (let i = 0; i < menseifilter.length; i++) {
-                var newOption = new Option(menseifilter[i], menseifilter[i], false, false);
-                $('#mensei').append(newOption);
-            }
-            for (let i = 0; i < kuralFilter.length; i++) {
-                var option = document.createElement("option");
-                option.value = kuralFilter[i];
-                if (kuralFilter[i] == 0) {
-                    option.innerHTML = "Hazır Stoklar";
-                    option.value = 0;
-                } else if (kuralFilter[i] == 1) {
-                    option.innerHTML = "İş Emri Verilen Stoklar";
-                    option.value = 1;
+            $('#kalite').children('option').remove();
+            det = detayli;
+            $.each(teslimfilter, function (index, value) {
+                $('#filter').append($('<option/>', {
+                    value: value,
+                    text: value
+                }));
+            });
+            $.each(renkfilter, function (index, value) {
+                $('#renk').append($('<option/>', {
+                    value: value,
+                    text: value
+                }));
+            });
+            $.each(kalinlikfilter, function (index, value) {
+                $('#kalinlik').append($('<option/>', {
+                    value: value.toLocaleString(),
+                    text: value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                }));
+            });
+            $.each(kaplamafilter, function (index, value) {
+                $('#kaplama').append($('<option/>', {
+                    value: value,
+                    text: value
+                }));
+            });
+            $.each(genislikfilter, function (index, value) {
+                $('#genislik').append($('<option/>', {
+                    value: value.toLocaleString().replaceAll('.', ''),
+                    text: value.toLocaleString().replaceAll('.', '')
+                }));
+            });
+            $.each(menseifilter, function (index, value) {
+                $('#mensei').append($('<option/>', {
+                    value: value,
+                    text: value
+                }));
+            });
+            $.each(kaliteFilter, function (index, value) {
+                $('#kalite').append($('<option/>', {
+                    value: value,
+                    text: value
+                }));
+            });
+            $.each(kuralFilter, function (index, value) {
+                if (value == 0) {
+                    $('#kural').append($('<option/>', {
+                        value: value,
+                        text: "Hazır Stoklar"
+                    }));
+                } else if (value == 1) {
+                    $('#kural').append($('<option/>', {
+                        value: value,
+                        text: "İş Emri Verilen Stoklar"
+                    }));
                 } else {
-                    option.innerHTML = "Üretim Bekleyenler";
-                    option.value = 2;
+                    $('#kural').append($('<option/>', {
+                        value: value,
+                        text: "Üretim Bekleyenler"
+                    }));
                 }
-
-                document.getElementById("kural").appendChild(option);
-            }
+            });
+           
            
         }
      
@@ -1444,7 +1714,8 @@
         var  GENISLIK= (genislikAlgorithm.length > 0 ? genislikAlgorithm : genisliksearch)
         var MENSEI = (menseiAlgorithm.length > 0 ? menseiAlgorithm : menseifilter)
         var KURAL = (kuralAlgorithm.length > 0 ? kuralAlgorithm : kuralFilter)
-        var veri = detayli.filter(x => SERI_NO.includes(x.SERI_NO) && RENKKODU.includes(x.RENKKODU) && KALINLIK.includes(x.KALINLIK) && KAPLAMA.includes(x.KAPLAMA) && GENISLIK.includes(x.GENISLIK) && MENSEI.includes(x.MENSEI) && KURAL.toString().includes(x.KURAL));
+        var KALITE = (kaliteAlgorithm.length > 0 ? kaliteAlgorithm : kaliteFilter)
+        var veri = detayli.filter(x => SERI_NO.includes(x.SERI_NO) && RENKKODU.includes(x.RENKKODU) && KALINLIK.includes(x.KALINLIK) && KAPLAMA.includes(x.KAPLAMA) && GENISLIK.includes(x.GENISLIK) && MENSEI.includes(x.MENSEI) && KALITE.includes(x.KALITE) && KURAL.toString().includes(x.KURAL));
        
         $('#table').bootstrapTable("destroy").bootstrapTable({ data:veri });
     })

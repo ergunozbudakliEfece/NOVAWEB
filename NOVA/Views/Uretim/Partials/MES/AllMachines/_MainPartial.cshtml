@@ -65,6 +65,7 @@
             text-align: center;
             word-break: break-word;
         }
+  
 </style>
 
 <div id="All" class="page all-machines" style="display: none;">
@@ -80,6 +81,8 @@
     @Html.Partial("Partials/MES/AllMachines/SM03")
     @Html.Partial("Partials/MES/AllMachines/TP01")
     @Html.Partial("Partials/MES/AllMachines/MH01")
+    @Html.Partial("Partials/MES/AllMachines/Test")
+    @Html.Partial("Partials/MES/Islem/IslemTablosu")
 </div>
 
 <script>
@@ -108,6 +111,12 @@
             UpdateSM03(Response.data.filter(x => x.HATKODU == "SM03")[0]);
             UpdateTP01(Response.data.filter(x => x.HATKODU == "TP01")[0]);
             UpdateMH01(Response.data.filter(x => x.HATKODU == "MH01")[0]);
+            $.ajax({
+                url: 'http://192.168.2.13:83/api/date',
+                success: function (data) {
+                    $('#guncellemeTarihi').html('Son Güncelleme Saati: ' + new Date(data[0].DATE).toLocaleTimeString('tr-TR'))
+                }
+            });
         }
         catch (e) {
             ShowError("Bir hata oluştu.");

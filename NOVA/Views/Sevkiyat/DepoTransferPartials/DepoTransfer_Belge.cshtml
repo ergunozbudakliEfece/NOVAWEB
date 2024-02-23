@@ -64,6 +64,8 @@
                                 <thead>
                                     <tr>
                                         <th data-field="BELGE_NO" data-sortable="true" data-halign="center" data-align="center">BELGE NO</th>
+                                        <th data-field="PLAKA" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">PLAKA</th>
+                                        <th data-field="SOFOR" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">SOFOR</th>
                                         <th data-formatter="BelgeDurumuFormatter" data-sortable="true" data-field="ACTIVE" data-halign="center" data-align="center">BELGE DURUMU</th>
                                         <th data-formatter="BelgeListIslemFormatter" data-halign="center" data-align="center">İŞLEM</th>
                                     </tr>
@@ -80,6 +82,7 @@
 <script>
     var DuzenlenmemisBelgeler = [];
     var DuzenlenmisBelgeler = [];
+    var BELGE_NO;
 
     function BelgeListesi() {
         DuzenlenmemisBelgeler = [];
@@ -121,6 +124,8 @@
                             DuzenlenmisBelgeler.push({
                                 "CARI_ISIM": BelgoNoFiltreli[i].CARI_ISIM,
                                 "SIPARIS_NO": BelgoNoFiltreli[i].SIPARIS_NO,
+                                "PLAKA": BelgoNoFiltreli[i].PLAKA,
+                                "SOFOR": BelgoNoFiltreli[i].SOFOR,
                                 "BELGE_NO": BelgoNoFiltreli[i].BELGE_NO,
                                 "ACTIVE": true,
                             });
@@ -133,6 +138,8 @@
                         DuzenlenmisBelgeler.push({
                             "CARI_ISIM": BelgoNoFiltreli[i].CARI_ISIM,
                             "SIPARIS_NO": BelgoNoFiltreli[i].SIPARIS_NO,
+                            "PLAKA": BelgoNoFiltreli[i].PLAKA,
+                            "SOFOR": BelgoNoFiltreli[i].SOFOR,
                             "BELGE_NO": BelgoNoFiltreli[i].BELGE_NO,
                             "ACTIVE": false,
                         });
@@ -142,10 +149,10 @@
                 DuzenlenmisBelgeler.sort((a, b) => {
                     const nameA = a.BELGE_NO.toUpperCase();
                     const nameB = b.BELGE_NO.toUpperCase();
-                    if (nameA < nameB) {
+                    if (nameA > nameB) {
                         return -1;
                     }
-                    if (nameA > nameB) {
+                    if (nameA < nameB) {
                         return 1;
                     }
                     return 0;
@@ -261,6 +268,8 @@
             BelgeGoster(DuzenlenmemisBelgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo));
         }
     }
+    var EskiBelgeler = [];
+
     function BelgeGoster(data) {
         KayitTipi = 1;
         SayfaTipi = 9;
@@ -275,7 +284,11 @@
         $("#SevkFormBelge").modal("hide");
 
         $("#SİPARİS_NO").html(data[0].SIPARIS_NO);
+
         $("#BELGE_NO").html(data[0].BELGE_NO);
+        BELGE_NO = data[0].BELGE_NO;
+        BelgeNoFormat();
+
 
         for (var i = 0; i < data.length; i++) {
             Kayitlar.push({
@@ -300,11 +313,15 @@
                 "ESKI_MIKTAR": data[i].MIKTAR1,
                 "ESKI_MIKTAR2": data[i].MIKTAR2,
                 "GIRIS_DEPO": data[i].GIRIS_DEPO,
-                "CIKIS_DEPO": data[i].CIKIS_DEPO
+                "CIKIS_DEPO": data[i].CIKIS_DEPO,
+                "PLAKA": data[i].PLAKA,
+                "SOFOR": data[i].SOFOR
             });
 
             KayitId += 1;
         }
+
+        EskiBelgeler = data;
 
         var GirisDep = Depolar.filter(x => x.DEPO_KODU == Kayitlar[0].GIRIS_DEPO)[0];
         var CikisDep = Depolar.filter(x => x.DEPO_KODU == Kayitlar[0].CIKIS_DEPO)[0];
@@ -314,6 +331,9 @@
 
         $('#GIRIS_DEPO').val(GirisDep.DEPO_ISMI);
         $('#CIKIS_DEPO').val(CikisDep.DEPO_ISMI);
+
+        $('#PLAKA').val(Kayitlar[0].PLAKA);
+        $('#SOFOR').val(Kayitlar[0].SOFOR);
 
         Kayitlar.sort((a, b) => {
             const nameA = a.STOK_ADI.toUpperCase();
@@ -331,6 +351,8 @@
         $('#YeniBelgeOlusturButton').removeClass('i-disabled');
         $('#belgesilbtn').show();
 
+        StokAdlariGetir();
+
         if (Kayitlar.filter(x => x.ACTIVE === true).length > 0) {
             $("#BELGE_DURUMU").prop('checked', true);
         }
@@ -338,6 +360,10 @@
         $('#DepoTransferTable').bootstrapTable('load', Kayitlar);
 
         DurumDegisikligi(0);
+
+        BelgeyiKaydetButonKontrol();
+
+        TonajGuncelle();
     }
     function DurumSecim() {
         var DocumentStateVal = $('input[name="DocumentStateRadio"]:checked').val();
@@ -374,6 +400,23 @@
                 },
             })
         });
+    }
+
+    function BelgeNoFormat() {
+        var BELGE_NO = $('#BELGE_NO').html();
+        var BELGE_HARF = BELGE_NO[0];
+        var SIFIR_SAYI = 0;
+
+        for (var i = 1; i < BELGE_NO.length - 4; i++) {
+            if (BELGE_NO[i] == '0') {
+                SIFIR_SAYI++;
+            }
+            else {
+                break;
+            }
+        }
+
+        $('#BELGE_NO').html(BELGE_HARF + '-' + BELGE_NO.substring(SIFIR_SAYI));
     }
 
     function BelgeNoDegisti() {
@@ -426,7 +469,9 @@
         $('#BELGE_DURUMU').prop("checked", true);
 
         BelgeNoGetir().then((data) => {
+            BELGE_NO = data;
             $('#BELGE_NO').html(data);
+            BelgeNoFormat();
         });
 
         KayitTipi = 0;
@@ -448,7 +493,11 @@
         $('#GIRIS_DEPO').val("");
         $('#CIKIS_DEPO').val("");
 
+        $('#PLAKA').val("");
+        $('#SOFOR').val("");
+
         AlanlariTemizle();
         DurumDegisikligi(0);
+        TonajGuncelle();
     }
 </script>
