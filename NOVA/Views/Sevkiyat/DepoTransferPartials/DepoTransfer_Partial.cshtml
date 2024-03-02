@@ -594,7 +594,7 @@
             customClass: 'AreYouSureAlert'
         }).then((result) => {
             if (result.isConfirmed) {
-                Kayitlar = Kayitlar.filter(x => x.ID != Id);
+                Kayitlar = Kayitlar.filter(x => x.SERI_NO != BarkodNo);
 
                 var Kayit = DuzenlenmemisBelgeler.filter(x => x.BELGE_NO == BELGE_NO && x.SERI_NO == BarkodNo);
 
@@ -1937,7 +1937,14 @@
 
             $('#TONAJ_ORAN_TEXT').html(`${parseInt(ORAN)}%`);
 
-            $('#TONAJ_PROGRESS').tooltip('enable').attr('data-bs-original-title', `${parseFloat(YUK).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} KG / ${parseFloat(Tonaj).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} KG`);
+            var FARK = parseFloat(Tonaj) - parseFloat(YUK);
+
+            var TOOLTIP = `<div>
+                                <span>${parseFloat(YUK).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} KG / ${parseFloat(Tonaj).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} KG</span>
+                                <span id="TONAJ_FARK">(${FARK.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} KG)</span>
+                           </div>`;
+
+            $('#TONAJ_PROGRESS').tooltip('enable').attr('data-bs-original-title', TOOLTIP);
         }
         else {
             var ORAN = isNaN((YUK / Tonaj) * 100) ? 0 : ((YUK / Tonaj) * 100);
@@ -1949,6 +1956,14 @@
             $('#TONAJ_PROGRESS').tooltip('enable').attr('data-bs-original-title', `-`);
         }
     }
+
+    var TONAJ_TOOLTIP = document.getElementById('TONAJ_PROGRESS');
+
+    TONAJ_TOOLTIP.addEventListener('shown.bs.tooltip', () => {
+        var FARK = parseFloat($('#TONAJ_FARK').html().replace(/[|&;$%"<>()+,KGkg]/g, "").trim());
+
+        $('#TONAJ_FARK').css('color', FARK < 0 ? 'red' : 'white');
+    });
 
     function PlakaOtomatikTamamlama(arr) {
         var currentFocus;

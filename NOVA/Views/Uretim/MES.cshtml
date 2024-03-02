@@ -8,7 +8,49 @@
 <script src="~/wwwroot/libs/bootstrap-table/extensions/mobile/bootstrap-table-mobile.min.js"></script>
 <script src="~/wwwroot/libs/bootstrap-table/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
 <link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+<link href="~/assets/boxicons/css/boxicons.css" rel="stylesheet" />
+<script src="~/Scripts/boxicons.js"></script>
+<link href="~/Scripts/select2.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
 <style>
+    .select2-selection__rendered{
+        text-align:center
+    }
+    .select2-results__option {
+        color: black;
+        text-align:center;
+    }
+    .header {
+        height: 55px;
+        background-color: var(--empty-header-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 1rem;
+    }
+    .header1 {
+        height: 55px;
+        background-color: var(--empty-header-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 0rem;
+    }
+    .home-button {
+        width: 3rem;
+        border-color: var(--empty-border-color);
+        color: var(--empty-text-color);
+        background-color: var(--empty-bg-color);
+        height: 3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .form-select:disabled {
+        background-color: var(--empty-bg-color);
+    }
+
     ::placeholder {
         color: #fff !important;
     }
@@ -17,14 +59,17 @@
         background-color: transparent !important;
         color: white !important;
     }
-        
+
     .sticky {
         position: fixed;
         top: 0;
         width: 100%;
     }
-   
-   
+
+    .AreYouSureAlert {
+        width: 30%;
+    }
+
     @@keyframes live {
         0%, 80%, 100% {
             transform: scale(0.6);
@@ -36,7 +81,13 @@
             -webkit-transform: scale(1.0);
         }
     }
+
+   
+    .modal-sm {
+        --bs-modal-width: 365px !important;
+    }
 </style>
+
 <div id="nova-overlay" style="display:none;position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:flex;justify-content:center;align-items:center;">
     <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
 </div>
@@ -59,8 +110,8 @@
                     <option disabled value="MH01">MH01</option>
                 </select>
             </div>*@
-        <div class="machine-visible">
-            <button class="btn" onclick="ToggleMachineFilter()">
+        <div class="machine-visible" style="height:3rem;">
+            <button style="height:3rem;" class="btn" onclick="ToggleMachineFilter()">
                 <span>Makine</span>
                 <i class="bi bi-chevron-down"></i>
             </button>
@@ -70,7 +121,7 @@
             </div>
         </div>
         <div class="timer-option">
-            <select class="form-select form-select-sm shadow-none" onchange="ChangeIntervalTime(this.value)">
+            <select class="form-select form-select-sm shadow-none" style="height:3rem;" onchange="ChangeIntervalTime(this.value)">
                 <option value="5000">5 Sn</option>
                 <option value="30000" selected>30 Sn</option>
                 <option value="60000">1 Dk</option>
@@ -80,9 +131,11 @@
 
         <button id="RefreshButton" type="button" class="btn home-button" onclick="RefreshPage()"><i class="bi bi-arrow-clockwise"></i></button>
         <button id="SummaryButton" type="button" class="btn home-button" onclick="ToggleSummaryView()"><i class="bi bi-eye-slash-fill"></i></button>
+        <button id="FirstViewButton" type="button" class="btn home-button" onclick="HomeView()"><i class="bx bx-columns"></i></button>
         <button id="TumuButton" type="button" class="btn home-button" onclick="ToggleSummaryView1()"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAABW0lEQVR4nO2Uu0pDQRCGU0mERIgYGx9A8xDx9gYSew14qWMhamG8FB4fRgW18vICipcyIljFWKrJA/yy+B3YLHvCJgpaZKrz/TNnZnd2d1Kpvv0rkzQmqfKD/ysmR5JzUNKtvq3cQ/Iy/5ocaV/AFgFPknI9FBiW9EyODdeZk/SBcxJtXlI1IHFVUonvaXK8ty3S2t4FPCqpiVbskLxIzKekPNoV2qIdeIK4BO/Dp/CApENJDUmvkiKj4TsjdhdegY/tAqbvxsbhR3gGNgldi/DNwvfwBFyzC7QQMwnc8BR4w5eFm3AGbnUqEPc/C5u2uFbHNxSfg4+TWvQQ0KIDp0V3cMHXoviQl+E9zyFH7MQ95HNid+BV+Mh3TS/hPFcv9JqaNzSCdo22kPTQptBKgQ9tW9Kc0672h4ZzE+dLvJpuzBkV676A9C8NuxvvsLPG9Vq3yYPGdd/+zL4ACpjUwaomSYAAAAAASUVORK5CYII="></button>
+        <button id="IslemTableButton" type="button" class="btn home-button" onclick="ShowIslemTablosu()"><i class="bx bx-sushi bx-rotate-90"></i></button>
         <div class="timer-option">
-            <select id="screenChangeSelect" class="form-select form-select-sm shadow-none" onchange="ChangeScreenIntervalTime(this.value)">
+            <select id="screenChangeSelect" class="form-select form-select-sm shadow-none" style="height:3rem;" onchange="ChangeScreenIntervalTime(this.value)">
                 <option value="0" selected>Yok</option>
                 <option value="5000">5 Sn</option>
                 <option value="30000">30 Sn</option>
@@ -92,8 +145,8 @@
 
         </div>
 
-        <input onchange="dateChange(this.value)" id="date" type="date" min="2024-01-01" style="padding-top: .15rem; padding-bottom: .15rem; padding-right: .5rem; padding-left: .5rem; background-color: var(--empty-bg-color); color: white; border: var(--bs-border-width) solid var(--empty-border-color); display: none; border-radius: var(--bs-border-radius-sm)" onkeypress="return false">
-        <button id="IslemTableButton" type="button" class="btn home-button" onclick="ShowIslemTablosu()"><i class="bi bi-calculator"></i></button>
+        <input disabled onchange="dateChange(this.value)" id="date" type="date" min="2024-01-01" style="padding-top: .15rem; padding-bottom: .15rem; padding-right: .5rem; padding-left: .5rem; background-color: var(--empty-bg-color); color: white; border: var(--bs-border-width) solid var(--empty-border-color);height:3rem; border-radius: var(--bs-border-radius-sm)" onkeypress="return false">
+
     </div>
     <button id="HomeButton" type="button" class="btn home-button"><i class="bi bi-house-fill"></i></button>
 </div>
@@ -122,9 +175,15 @@
 <div class="modal fade" id="SERIModal1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
 
     <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 75%;top:20vh">
+
         <div class="modal-content">
             <div class="container-fluid mt-3">
-
+                <div class="header1" style="background-color:transparent !important">
+                    <div class="options">
+                        <button id="AmbarButton" type="button" class="btn home-button" onclick="ambarClick()"><i class="bi bi-box-seam"></i></button>
+                        <button id="StokKoduButton" type="button" class="btn home-button" onclick="stokClick()"><i class="bi bi-folder-symlink"></i></button>
+                    </div>
+                </div>
                 <div class="row text-center mt-1">
                     <div class="col">
                         <div id="modalTbl">
@@ -155,24 +214,93 @@
                                         <th data-field="IE_STOK_ADI" data-halign="center" data-align="center">ÜRETİLECEK STOK ADI</th>
                                         <th data-field="URETILEN" data-halign="center" data-align="center">ÜRETİLEN</th>
                                         <th data-field="MIKTAR" data-halign="center" data-align="center">MİKTAR</th>
+                                        <th data-field="MIKTAR2" data-halign="center" data-align="center">MİKTAR2</th>
                                         <th data-field="SARF_MSABIT" data-halign="center" data-align="center">M.SABİT</th>
                                         <th data-field="SARF_MIKTAR" data-halign="center" data-align="center">SARF</th>
-                                        <th data-field="EK" data-formatter="ekFormatter" data-halign="center" data-align="center">EK</th>
                                     </tr>
-                                </thead> 
+                                </thead>
                             </table>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-footer mt-1 mb-2" style="display:flex;justify-content:center;align-items:center;border-top:hidden !important">
-                    <button class="btn btn-primary" id="ModalSaveButton1" type="button" onclick="HurdaAktar()">AKTAR</button>
                     <button class="btn btn-danger" type="button" onclick="ModalKapat1()">KAPAT</button>
                 </div>
             </div>
         </div>
     </div>
 
+</div>
+<div class="modal fade" id="AmbarModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="AmbarModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-scrollable">
+        <div class="modal-content" style="max-height:70vh;">
+
+
+
+
+            <div class="modal-body">
+                <div class="text-center w-100">
+                    <h3 style="color:black;">
+                        AMBAR GİRİŞ
+                    </h3>
+                </div>
+                <div class="row mt-2">
+                    <div class="col" style="align-items:center">
+                        <input placeholder="Ambar Giriş Yapılacak Miktar" class="form-control text-center" type="number" id="ambarInput">
+                    </div>
+
+                </div>
+                <div class="row mt-2">
+                    <div class="col" style="justify-content:center;align-items:center;display:flex">
+                        <div onclick="isKontrolChange()"><i id="isKontrol" class="bi bi-check-circle-fill" style="cursor: pointer; color: rgb(113, 221, 55); font-size: large;"></i><label class="form-check-label ms-2 mb-1" style="color:black" for="isKontrol">İş Emri Değişsin</label></div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+            <div class="modal-footer" style="display:flex;justify-content:center;align-items:center;">
+                <button class="btn btn-primary" id="ModalSaveButton2" type="button" onclick="Onay()">GİRİŞ</button>
+                <button class="btn btn-danger" type="button" onclick="AmbarModalKapat()">KAPAT</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="StokModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="StokModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-scrollable">
+        <div class="modal-content" style="max-height:70vh;">
+
+
+
+
+            <div class="modal-body">
+                <div class="text-center w-100">
+                    <h3 style="color:black;">
+                        Stok Değiştir
+                    </h3>
+                </div>
+                <div class="row mt-2">
+                    <div class="col" style="align-items:center">
+                        <select id="stoklar" class="form-select w-100" name="state">
+                        </select>
+                    </div>
+
+                </div>
+
+
+
+
+            </div>
+
+            <div class="modal-footer" style="display:flex;justify-content:center;align-items:center;">
+                <button class="btn btn-primary" id="ModalSaveButton2" type="button" onclick="OnayStok()">GİRİŞ</button>
+                <button class="btn btn-danger" type="button" onclick="StokModalKapat()">KAPAT</button>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="content">
     @Html.Partial("Partials/MES/AllMachines/_MainPartial")
@@ -231,7 +359,7 @@
             color: #1a8f72;
         }
     }
-   
+
 
     .heart {
         animation: heartbeat 1s infinite alternate;
@@ -327,6 +455,7 @@
             $('#TumuButton').trigger('click');
     }, screenInterval)
     $(document).ready(() => {
+        
         HideProgress()
         localStorage.setItem("SummaryView1", null)
         localStorage.setItem("TUMU",null)
@@ -349,9 +478,20 @@
             content: 'Özetleri Gizle'
         });
         SummaryTooltip1 = tippy('#TumuButton', {
-            content: 'Anlık Üretimi Göster'
+            content: 'Anlık Üretim'
         });
-
+        tippy('#FirstViewButton', {
+            content: 'Makine Bazlı Anlık Üretim'
+        });
+        tippy('#IslemTableButton', {
+            content:'Üretilmiş Barkodlar'
+        })
+         tippy('#StokKoduButton', {
+     content: 'Stok Kodu Değişikliği',
+ });
+  tippy('#AmbarButton', {
+     content: 'Ambar Giriş',
+ });
         SetSummaryView();
 
     });
@@ -417,21 +557,8 @@
             $('#SummaryButton').find('i').removeClass();
             $('#SummaryButton').find('i').addClass((SummaryView ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'));
         });
-    $('#TumuButton').hover(
-        () => {
-            var SummaryView = localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true');
 
-            SummaryTooltip1[0].setContent(SummaryView ? 'Anlık Üretimi Gizle' : 'Anlık Üretimi Göster');
 
-            $('#TumuButton').find('i').removeClass();
-        }
-        , () => {
-            var SummaryView = localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true');
-
-            SummaryTooltip1[0].setContent(SummaryView ? 'Anlık Üretimi Gizle' : 'Anlık Üretimi Göster');
-
-            $('#TumuButton').find('i').removeClass();
-        });
 
     function PageChange(MachineName) {
         $(`#nova-loader`).fadeIn('fast');
@@ -455,17 +582,22 @@
     }
 
     function RefreshPage() {
-        var SummaryView = localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true');
-
-        if (SummaryView) {
-            isPaused = false;
-            localStorage.setItem("TUMU", null)
-            ToggleSummaryView1()
-
-
+        if (islem) {
+            Uretim(hat);
         } else {
-            PageChange(CurrentPage);
+            var SummaryView = localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true');
+
+            if (SummaryView) {
+                isPaused = false;
+                localStorage.setItem("TUMU", null)
+                ToggleSummaryView1()
+
+
+            } else {
+                PageChange(CurrentPage);
+            }
         }
+
     }
 
     function ChangeIntervalTime(Time) {
@@ -618,23 +750,18 @@
         }
     }
     function ToggleSummaryView1() {
+        islem = false;
         var SummaryView = (localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true'));
 
         SummaryView = !SummaryView;
-        $('#TumuButton img').eq(0).attr('style', (SummaryView ? 'animation: live 1.4s infinite ease-in-out;' :''))
+        $('#TumuButton img').eq(0).attr('style', 'animation: live 1.4s infinite ease-in-out;')
         localStorage.setItem("TUMU", SummaryView);
         SetSummaryView1()
 
     }
     function SetSummaryView1() {
         var SummaryView = (localStorage.getItem("TUMU") === null ? false : (localStorage.getItem("TUMU") === 'true'));
-
-
-
-
-
-
-        if (SummaryView) {
+        $('#IslemTableButton').html('<i class="bx bx-sushi bx-rotate-90"></i>')
             HideAllMachine()
             clearInterval(myInterval)
 
@@ -690,15 +817,13 @@
             });
 
 
-            $('#date').show();
-            $('#TUMU').fadeIn();
-            ('#ISLEM').hide();
+        $('#date').show();
+        $('#date').prop('disabled', false);
+        $('#screenChangeSelect').prop('disabled', false);
+        $('#TUMU').fadeIn();
+        $('#ISLEM').hide();
 
-        } else {
-            ShowAllMachine()
-            $('#TUMU').hide();
-            $('#date').hide();
-        }
+
     }
     function HideAllMachine() {
         $('#BK01').hide();
@@ -726,9 +851,9 @@
     }
     var islem = false;
     function ShowIslemTablosu() {
-        if (!islem) {
-            $('#screenChangeSelect').val('0').trigger('change').hide();
-            $('#date').eq(0).hide();
+        document.getElementById('date').valueAsDate = new Date();
+            $('#screenChangeSelect').val('0').trigger('change').prop('disabled', true);
+            $('#date').prop('disabled', true);
             $('#BK01').hide();
             $('#DL01').hide();
             $('#PB01').hide();
@@ -744,19 +869,16 @@
             $('#TUMU').hide();
             $('#ISLEM').fadeIn();
             $('.btn').eq(0).prop('disabled', true);
-            islem = true;
-        } else {
-            ShowAllMachine();
-            islem = false;
-            $('#screenChangeSelect').show();
-        }
+            $('#TumuButton img').eq(0).attr('style', '')
+            localStorage.setItem("TUMU", null);
+            $('#IslemTableButton').html('<i class="bx bxs-sushi bx-rotate-90"></i>')
 
-
-        /* $('#RefreshButton').prop('disabled', false)*/
-        //$('select').eq(0).prop('disabled', false);
     }
     function ModalKapat() {
         $('#SERIModal').modal('hide');
+    }
+    function StokModalKapat() {
+        $('#StokModal').modal('hide');
     }
     var list = [];
     var isList = [];
@@ -844,7 +966,11 @@
 
     var seriList = [];
     var isemri = '';
+    var hat = "";
+    var brmik = 0;
+    var miktar2 = 0;
     function Uretim(value) {
+        hat = value;
         ShowProgress();
         seriList = [];
         $('#IslemBtn').hide()
@@ -870,15 +996,26 @@
                                         url: 'http://192.168.2.13:83/api/uretim/click/' + seri,
                                         success: function (data) {
                                             var d = data
-                                            seriList.push({ SERI: seri, ISEMRINO: d[0].ISEMRINO, SARF_MIKTAR: d[0].SARF_MIKTAR, SARF_MSABIT: d[0].SARF_MSABIT, URETILEN: uretilen, MIKTAR: parseInt(d[0].IE_MIKTAR), STOK_KODU: d[0].HAM_KODU, IE_STOK_KODU: d[0].IE_STOK_KODU, STOK_ADI: d[0].HAM_STOK_ADI, IE_STOK_ADI: d[0].IE_STOK_ADI,MIKTAREK:0 });
+                                            seriList.push({ SERI: seri, ISEMRINO: d[0].ISEMRINO, SARF_MIKTAR: d[0].SARF_MIKTAR, SARF_MSABIT: d[0].SARF_MSABIT, URETILEN: uretilen, MIKTAR: parseInt(d[0].IE_MIKTAR), MIKTAR2: parseInt(d[0].IE_MIKTAR2), STOK_KODU: d[0].HAM_KODU, IE_STOK_KODU: d[0].IE_STOK_KODU, STOK_ADI: d[0].HAM_STOK_ADI, IE_STOK_ADI: d[0].IE_STOK_ADI, MIKTAREK: 0, ISKONTROL: true, ACIK1: d[0].ACIK1, ACIK2: d[0].ACIK2, ACIK3: d[0].ACIK3, SERI_NO_3: d[0].SERI_NO_3, SERI_NO_4: d[0].SERI_NO_4, ACIKLAMA_4: d[0].ACIKLAMA_4, ACIKLAMA_5: d[0].ACIKLAMA_5, IE_STOK_BRMIK: d[0].IE_STOK_BRMIK.toString(), BOY: d[0].BOY, ATILACAK_IENO: d[0].ATILACAK_IENO });
                                             isemri = d[0].ISEMRINO;
                                             sarf = d[0].SARF_MIKTAR;
                                             sarfmsabit = d[0].SARF_MSABIT;
                                             mik = parseInt(d[0].IE_MIKTAR);
+                                            miktar2 = parseInt(d[0].IE_MIKTAR2),
                                             hamstokkodu = d[0].HAM_KODU;
                                             iestokkodu = d[0].IE_STOK_KODU;
                                             hamstokadi = d[0].HAM_STOK_ADI;
                                             iestokadi = d[0].IE_STOK_ADI;
+                                            acik1 = d[0].ACIK1
+                                            acik2 = d[0].ACIK2
+                                            acik3 = d[0].ACIK3
+                                            serino3 = d[0].SERI_NO_3
+                                            serino4 = d[0].SERI_NO_4
+                                            aciklama4 = d[0].ACIKLAMA_4
+                                            aciklama5 = d[0].ACIKLAMA_5
+                                            brmik = d[0].IE_STOK_BRMIK.toString()
+                                            atilacak = d[0].ATILACAK_IENO
+                                            boy = d[0].BOY
                                             var Ikon = $element.parent().find('i').eq(0);
                                             Ikon.attr('style', 'color:#71dd37;cursor:pointer;font-size:x-large;');
                                             Ikon.addClass("bi-check-circle-fill");
@@ -903,7 +1040,7 @@
                                         }
                                     });
                                 }
-                                
+
                             } else {
                                 Swal.fire({
                                     title: 'Uyarı!',
@@ -924,7 +1061,7 @@
         });
     }
     function oranFormatter2(value, index, row) {
-        return '<p class="meter mt-1" style="height: auto;border: 1px solid #d9dee3;border-radius: 8px;"><span style="width:' + parseFloat(value) + '%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; "><span style="text-align: end; color: white;font-size: small;font-weight:bold">' + parseFloat(value).toFixed(2) + '%</span></span></span></p>';
+        return '<p class="meter mt-1" style="height: auto;border: 1px solid var(--empty-border-color);border-radius: 8px;"><span style="width:' + parseFloat(value) + '%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; "><span style="text-align: end; color: white;font-size: small;font-weight:bold">' + parseFloat(value).toFixed(2) + '%</span></span></span></p>';
     }
     function UnitFormatter(value, row, index) {
         return `${parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${row.OLCU_BR1}`;
@@ -943,6 +1080,7 @@
     var hamstokadi = '';
     var iestokkodu = '';
     var iestokadi = '';
+    var boy = 0;
     function checkboxChange(seri,uretilen,miktar,stokkodu,input) {
         var Ikon = input.getElementsByTagName('i')[0];
         if (Ikon.style.color == 'red') {
@@ -955,7 +1093,7 @@
                         success: function (data) {
                             HideProgress()
                             var d = data
-                            seriList.push({ SERI: seri, ISEMRINO: d[0].ISEMRINO, URETILEN: uretilen, STOK_KODU: hamstokkodu, SARF_MIKTAR: d[0].SARF_MIKTAR, SARF_MSABIT: d[0].SARF_MSABIT, IE_STOK_KODU: iestokkodu, STOK_ADI: hamstokadi, IE_STOK_ADI: iestokadi, MIKTAR: miktar, MIKTAREK: 0 });
+                            seriList.push({ SERI: seri, ISEMRINO: d[0].ISEMRINO, URETILEN: uretilen, STOK_KODU: hamstokkodu, SARF_MIKTAR: d[0].SARF_MIKTAR, SARF_MSABIT: d[0].SARF_MSABIT, IE_STOK_KODU: iestokkodu, STOK_ADI: d[0].HAM_STOK_ADI, IE_STOK_ADI: d[0].IE_STOK_ADI, MIKTAR: miktar, MIKTAR2: d[0].IE_MIKTAR2, MIKTAREK: 0, ISKONTROL: true, ACIK1: d[0].ACIK1, ACIK2: d[0].ACIK2, ACIK3: d[0].ACIK3, SERI_NO_3: d[0].SERI_NO_3, SERI_NO_4: d[0].SERI_NO_4, ACIKLAMA_4: d[0].ACIKLAMA_4, ACIKLAMA_5: d[0].ACIKLAMA_5, IE_STOK_BRMIK: d[0].IE_STOK_BRMIK.toString(), BOY: d[0].BOY, ATILACAK_IENO: d[0].ATILACAK_IENO });
                             if (seriList.length > 0) {
                                 $('#IslemBtn').css('display', 'flex');
                             } else {
@@ -966,10 +1104,10 @@
                             Ikon.classList.remove("bi-check-circle");
                         }
                     });
-                    
+
                 }
-                
-               
+
+
             } else {
                 Swal.fire({
                     title: 'Uyarı!',
@@ -990,17 +1128,59 @@
                 $('#IslemBtn').hide()
             }
         }
-       
+
     }
+    var atilacak = "";
+    var tekilListe = [];
+    var acik1, acik2, acik3, serino3, serino4, aciklama4, aciklama5;
     function showIslemModalTekil() {
         $('#IslemBtn').css('display', 'flex');
         $('#SERIModal1').modal('show');
-        $('#UretimeGirenlerTable1').bootstrapTable('destroy').bootstrapTable({ data: [{ SERI: seri, ISEMRINO: isemri, SARF_MIKTAR: sarf, SARF_MSABIT: sarfmsabit, URETILEN: uretilen, MIKTAR: mik,STOK_ADI:hamstokadi,IE_STOK_ADI:iestokadi, STOK_KODU: hamstokkodu, MIKTAREK: 0 }] });
+        $('#StokKoduButton').hide();
+        $('#AmbarButton').show();
+        tekilListe = [{ SERI: seri, ISEMRINO: isemri, SARF_MIKTAR: sarf, SARF_MSABIT: sarfmsabit, URETILEN: uretilen, MIKTAR: mik, MIKTAR2: miktar2, STOK_ADI: hamstokadi, IE_STOK_ADI: iestokadi, STOK_KODU: hamstokkodu, MIKTAREK: 0, ISKONTROL: true, ACIK1: acik1, ACIK2: acik2, ACIK3: acik3, SERI_NO_3: serino3, SERI_NO_4: serino4, ACIKLAMA_4: aciklama4, ACIKLAMA_5: aciklama5, IE_STOK_BRMIK: brmik, BOY: boy, ATILACAK_IENO: atilacak }]
+        $('#UretimeGirenlerTable1').bootstrapTable('destroy').bootstrapTable({ data: tekilListe });
     }
+    var stokData=[]
     function showIslemModal() {
+        if(seriList.length>1){
+            $.ajax({
+                url: 'http://192.168.2.13:83/api/seri/receteden/0/0/' + hat,
+                success: function (data) {
+                    var stoks = [];
+                    for (let i = 0; i < data.length; i++) {
+                        if (!stoks.includes(data[i].MAMUL_KODU)) {
+                            var opt = document.createElement('option');
+                            opt.value = data[i].MAMUL_KODU;
+                            opt.text = data[i].STOK_ADI;
+                            opt.setAttribute('data-boy', data[i].BOY.toString())
+                            document.getElementById('stoklar').appendChild(opt);
+                            stoks.push(data[i].MAMUL_KODU)
+                        }
+
+                    }
+                }
+            }).done(function () {
+
+                $('#stoklar').select2({
+                    placeholder: "Değişecek Stok Seçin",
+                    dropdownParent: $('#StokModal'),
+                    dropdownAutoWidth: true,
+                    width: '100%',
+                    sortResults: data => data.sort((a, b) => a.text.localeCompare(b.text)),
+                });
+
+            });
+        $('#StokKoduButton').show();
+        $('#AmbarButton').hide();
+        }else{
+            seri=seriList[0].SERI
+            $('#AmbarButton').show();
+        $('#StokKoduButton').hide();
+        }
         $('#IslemBtn').css('display', 'flex');
         $('#SERIModal1').modal('show');
-        $('#UretimeGirenlerTable1').bootstrapTable('destroy').bootstrapTable({ data: seriList }).bootstrapTable('hideColumn', 'EK');
+        $('#UretimeGirenlerTable1').bootstrapTable('destroy').bootstrapTable({ data: seriList });
     }
     function ModalKapat1() {
         $('#SERIModal1').modal('hide');
@@ -1019,7 +1199,7 @@
             },
             success: function (data) {
                 HideProgress();
-                
+
                 $("#SERIModal1").modal('hide');
                 if (data.IsSuccess) {
 
@@ -1029,14 +1209,181 @@
                 }
             }
         })
-    
+
     }
     function inputKeyUp(seri,element) {
-        seriList[seriList.indexOf(seriList.filter(x=>x.SERI==seri)[0])].MIKTAREK = element.value;
+        tekilListe[tekilListe.indexOf(tekilListe.filter(x=>x.SERI==seri)[0])].MIKTAREK = element.value;
 
     }
-    function ekFormatter(value, row, index) {
-        return '<input type="number" style="text-align:center" onkeyup="inputKeyUp(\''+row.SERI+'\',this)"/>'
+
+    function ambarClick(){
+        var h=$('#AmbarButton').html();
+        if(h=='<i class="bi bi-box-seam-fill"></i>'){
+             $('#AmbarButton').html('<i class="bi bi-box-seam"></i>')
+        }else{
+             $('#AmbarButton').html('<i class="bi bi-box-seam-fill"></i>')
+            $('#AmbarModal').modal('show');
+            $('#ambarInput').val(null);
+            $('#ambarInput').attr('onkeyup','inputKeyUp(\''+seri+'\',this)')
+        }
+
+    }
+    function stokClick(){
+        var h = $('#StokKoduButton').html();
+        $('#StokModal').modal('show');
+    if(h=='<i class="bi bi-folder-symlink"></i>'){
+         $('#StokKoduButton').html('<i class="bi bi-folder-symlink-fill"></i>')
+    }else{
+         $('#StokKoduButton').html('<i class="bi bi-folder-symlink"></i>')
     }
 
+    }
+function AmbarModalKapat(){
+   $('#AmbarModal').modal('hide')
+   $('#AmbarButton').html('<i class="bi bi-box-seam"></i>')
+}
+function isKontrolChange(){
+    var className=$('#isKontrol').attr('class');
+    if(className=='bi bi-check-circle'){
+        tekilListe[0].ISKONTROL=true;
+        $('#isKontrol').attr('class','bi bi-check-circle-fill');
+        $('#isKontrol').attr('style','cursor: pointer; color: rgb(113, 221, 55); font-size: large;');
+    }else{
+        $('#isKontrol').attr('class','bi bi-check-circle');
+        $('#isKontrol').attr('style','cursor: pointer; color: red; font-size: large;');
+         tekilListe[0].ISKONTROL=false;
+    }
+}
+
+    function Onay() {
+
+        Swal.fire({
+            html: `<b>${seri}</b> No'lu ürüne ${tekilListe[0].MIKTAREK} Kg ambar girişi yapmak istediğinizden emin misiniz?`,
+            icon: 'warning',
+            showCancelButton: true,
+            allowEnterKey: false,
+            cancelButtonText: 'HAYIR',
+            cancelButtonColor: '#d33',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'EVET',
+            allowOutsideClick: false,
+            customClass: 'AreYouSureAlert'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                ShowProgress()
+                $.ajax({
+                    url: '@Url.Action("AmbarG", "Uretim")',
+                    type: 'POST',
+                    data: { list: tekilListe },
+                    error: function (data) {
+                        alert(JSON.stringify(data));
+                        HideProgress()
+                    },
+                    success: function (data) {
+                        HideProgress()
+                        if (data.IsSuccess) {
+                            $('#AmbarModal').modal('hide');
+                            $('#SERIModal1').modal('hide')
+                            Swal.fire(
+                                'Başarılı!',
+                                data.Message,
+                                'success'
+                            )
+                            Uretim(hat);
+                        } else {
+                            Swal.fire(
+                                'Başarısız!',
+                                data.Message,
+                                'error'
+                            )
+                        }
+
+
+
+
+                    }
+                })
+
+
+            }
+        })
+
+    }
+    function HomeView() {
+        document.getElementById('date').valueAsDate = new Date();
+        $('#IslemTableButton').html('<i class="bx bx-sushi bx-rotate-90"></i>')
+        $('#TUMU').hide();
+        $('#ISLEM').hide();
+        MachineFilterApply();
+        $('#screenChangeSelect').show().prop('disabled',false);
+        $('#date').prop('disabled', true);
+        $('#TumuButton img').eq(0).attr('style', '')
+        localStorage.setItem("TUMU", null);
+        islem = false;
+    }
+    function OnayStok() {
+        var isemirleri = "";
+        for (let i = 0; i < seriList.length; i++) {
+            if (i != seriList.length - 1)
+                isemirleri += seriList[i].ISEMRINO+",";
+            else {
+                isemirleri += seriList[i].ISEMRINO;
+            }
+        }
+        
+        var stokkodu = $('#stoklar').val();
+        var stokadi = $("#stoklar option:selected").text()
+        var stokboy = $('#stoklar option:selected').data('boy');
+        Swal.fire({
+            html: `<b>${isemirleri}</b> numaralı iş emirlerinin Stoğunu ${stokadi} ile güncellemek istediğinizden emin misiniz?`,
+            icon: 'warning',
+            showCancelButton: true,
+            allowEnterKey: false,
+            cancelButtonText: 'HAYIR',
+            cancelButtonColor: '#d33',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'EVET',
+            allowOutsideClick: false,
+            customClass: 'AreYouSureAlert'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                ShowProgress()
+                $.ajax({
+                    url: '@Url.Action("StokDegistir", "Uretim")',
+                    type: 'POST',
+                    data: { list: seriList, StokKodu: stokkodu, boy: stokboy },
+                    error: function (data) {
+                        alert(JSON.stringify(data));
+                        HideProgress()
+                    },
+                    success: function (data) {
+                        HideProgress()
+                        if (data.IsSuccess) {
+                            $('#StokModal').modal('hide');
+                            $('#SERIModal1').modal('hide')
+                            Swal.fire(
+                                'Başarılı!',
+                                data.Message,
+                                'success'
+                            )
+                            Uretim(hat);
+                        } else {
+                            Swal.fire(
+                                'Başarısız!',
+                                data.Message,
+                                'error'
+                            )
+                        }
+
+
+
+
+                    }
+                })
+
+
+            }
+        })
+    
+    }
 </script>

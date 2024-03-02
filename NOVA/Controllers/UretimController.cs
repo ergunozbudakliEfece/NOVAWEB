@@ -906,27 +906,32 @@ namespace NOVA.Controllers
 
             return "BAŞARILI";
         }
-        public JsonResult TopluIslem(List<seriModel> list)
+        public JsonResult AmbarG(List<seriModel> list)
         {
-            
-
+            FatUst fatUst = default(FatUst);
+            FatKalem fatKalem = default(FatKalem);
+            var fisno = "";
+            var brmik = Convert.ToDouble(list[0].IE_STOK_BRMIK.ReplaceAll(".",","));
             try
             {
                 Kernel kernel1 = new Kernel();
                 NetRS netRS1 = default(NetRS);
+                Fatura fatura = default(Fatura);
                 Sirket sirket1 = kernel1.yeniSirket(TVTTipi.vtMSSQL,
                                                "EFECE2023",
                                                "TEMELSET",
                                                "",
                                                Request.Cookies["UserName"].Value,
                                                LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
-                netRS1 = kernel1.yeniNetRS(sirket1);
-                for (int i = 0; i < list.Count; i++)
-                {
-                    fatura = kernel.yeniFatura(sirket1, TFaturaTip.ftAmbarG);
+                    netRS1 = kernel1.yeniNetRS(sirket1);
+                netRS1.Ac("SELECT *  FROM TBLISEMRI WITH(NOLOCK) WHERE ISEMRINO='" + list[0].ISEMRINO + "'");
+                var miktar = list[0].MIKTAREK.ToInt() + netRS1.FieldByName("MIKTAR").AsFloat;
+                var aciklama = Math.Round(miktar / brmik);
+                fatura = kernel.yeniFatura(sirket1, TFaturaTip.ftAmbarG);
                     fatUst = fatura.Ust();
                     fatUst.FATIRS_NO = fatura.YeniNumara("A");
-                    fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                    fisno = fatUst.FATIRS_NO;
+                    fatUst.AMBHARTUR = TAmbarHarTur.htDevir;
                     fatUst.CikisYeri = TCikisYeri.cySerbest;
                     fatUst.CariKod = "12035200100406";
                     fatUst.Tarih = DateTime.Now;
@@ -935,26 +940,35 @@ namespace NOVA.Controllers
                     fatUst.Proje_Kodu = "1";
                     fatUst.Aciklama = "ÜRETİM DÜZELTME";
                     fatUst.KOD2 = "0";
-                    fatKalem = fatura.kalemYeni(list[i].STOK_KODU);
-                    fatKalem.DEPO_KODU = 60;
+                    
+                    fatKalem = fatura.kalemYeni(list[0].STOK_KODU);
+                    fatKalem.DEPO_KODU = 45;
                     fatKalem.Olcubr = 1;
                     fatKalem.ProjeKodu = "1";
                     fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
-                    fatKalem.STra_GCMIK = list[i].MIKTAREK;
+                    fatKalem.STra_GCMIK = list[0].MIKTAREK.ToDouble();
+                var seri3 = list[0].SERI_NO_3 != null ? list[0].SERI_NO_3 : "";
+                var seri4 = list[0].SERI_NO_4 != null ? list[0].SERI_NO_4 : "";
+                var acik3 = list[0].ACIK3 != null ? list[0].ACIK3 : "";
+                var aciklama4 = list[0].ACIKLAMA4 != null ? list[0].ACIKLAMA4 : "";
+                var acik2 = list[0].ACIK2 != null ? list[0].ACIK2 : "";
+                var acik1 = list[0].ACIK1 != null ? list[0].ACIK1 : "";
+                fatKalem.SeriEkle(list[0].SERI, acik1,acik2,acik3, list[0].MIKTAREK.ToDouble(),0,seri3,seri4,acik3,aciklama4);
                     fatKalem.STra_NF = 0;
                     fatKalem.STra_BF = 0;
                     fatKalem.STra_ACIK = "ÜRETİM DÜZELTME";
+
                     fatura.kayitYeni();
-                    if (list.Count == 1)
-                    {
-                        netRS1.Ac("SELECT *  FROM TBLISEMRI WITH(NOLOCK) WHERE ISEMRINO='" + list[i].ISEMRINO + "'");
-                        var miktar = list[i].MIKTAREK + netRS1.FieldByName("MIKTAR").AsFloat - list[i].URETILEN;
-                        netRS1.Ac("UPDATE TBLISEMRI SET MIKTAR=" + miktar + " WHERE ISEMRINO='" + list[i].ISEMRINO + "'");
-                    }
-                    Marshal.ReleaseComObject(fatura);
-                    Marshal.ReleaseComObject(fatUst);
-                    Marshal.ReleaseComObject(fatKalem);
+
+                if (list[0].ISKONTROL)
+                {
+
+                    
+                    netRS1.Ac("UPDATE TBLISEMRI SET MIKTAR=" + miktar + ",ACIKLAMA='"+aciklama+"' WHERE ISEMRINO='" + list[0].ISEMRINO + "'");
                 }
+                    
+                    
+                
                 
 
 
@@ -966,17 +980,119 @@ namespace NOVA.Controllers
             }
            
 
-            return Json(new Wrappers.Concrete.SuccessResponse<string>("Başarılı!"));
+            return Json(new Wrappers.Concrete.SuccessResponse<string>("Başarılı!",fisno+" no'lu fiş oluşturulmuştur."));
+        }
+        public JsonResult StokDegistir(List<seriModel> list,string StokKodu,string boy)
+        {
+
+            Kernel kernel1 = new Kernel();
+            
+            IsEmri isemri = default(IsEmri);
+            
+            try
+            {
+                Sirket sirket1 = kernel1.yeniSirket(TVTTipi.vtMSSQL,
+                                            "EFECE2023",
+                                            "TEMELSET",
+                                            "",
+                                            Request.Cookies["UserName"].Value,
+                                            LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                NetRS netRS1 = kernel.yeniNetRS(sirket1);
+                isemri = kernel1.yeniIsEmri(sirket1);
+               
+                for(var i=0;i< list.Count; i++)
+                {
+                    if (list[i].URETILEN != 0)
+                    {
+                        
+                        isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + list[i].ISEMRINO + "\'");
+                        var m2 = Math.Round((double)((double)list[i].MIKTAR2 / ((double)(list[i].URETILEN + list[i].MIKTAR) / list[i].URETILEN)), 0);
+                        var kalan1 = list[i].MIKTAR;
+                        var kalan2 = (double)list[i].MIKTAR2 - m2;
+                         if (boy.ToDouble() != list[i].BOY)
+                        {
+                            kalan2 = list[i].BOY / boy.ToDouble() * kalan2;
+                        }
+                        var sipkont = isemri.SipKont;
+                        var siparisno = isemri.SiparisNo;
+                        var seri2 = isemri.SeriNo2;
+                        var seri = isemri.SeriNo;
+                        isemri.Miktar = (double)list[i].URETILEN;
+                        isemri.Aciklama = m2.ToString();
+                        isemri.ReceteSaklansin = true;
+                        isemri.kayitDuzelt();
+                        netRS1.Ac("UPDATE TBLISEMRIREC SET SERINO=\'" + list[i].SERI + "\',DEPO_KODU='45' WHERE ISEMRINO=\'" + list[i].ISEMRINO + "\'");
+
+                        IsEmri isemri1 = kernel1.yeniIsEmri(sirket1);
+                        isemri1.IsEmriNo = list[i].ATILACAK_IENO;
+                        isemri1.StokKodu = StokKodu;
+                        isemri1.Kapali = false;
+                        isemri1.ReceteSaklansin = true;
+                        isemri1.ProjeKodu = "1";
+                        isemri1.Oncelik = 0;
+                       
+                        isemri1.Aciklama = Math.Round(kalan2).ToString();
+                        isemri1.DepoKodu = 45;
+                        isemri1.CikisDepoKodu = 45;
+                        isemri1.SeriNo = seri;
+                        isemri1.SeriNo2 = seri2 ;
+                        isemri1.Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                        isemri1.TeslimTarihi = Convert.ToDateTime(DateTime.Now.Year + "-12-31");
+                        isemri1.SipKont =sipkont;
+                        isemri1.SiparisNo = siparisno;
+
+                        isemri1.Miktar = (double)(kalan1-list[i].URETILEN);
+                        isemri1.kayitYeni();
+                        netRS1.Ac("UPDATE TBLISEMRIREC SET SERINO=\'" + list[i].SERI + "\',DEPO_KODU='45' WHERE ISEMRINO=\'" + list[i].ATILACAK_IENO + "\'");
+
+                    }
+                    else
+                    {
+                        isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + list[i].ISEMRINO + "\'");
+                        isemri.StokKodu = StokKodu;
+                        if (boy.ToDouble() != list[i].BOY)
+                        {
+                            isemri.Aciklama = Math.Round(list[i].BOY / boy.ToDouble() * (double)list[i].MIKTAR2).ToString();
+                        }
+                        
+                        isemri.kayitDuzelt();
+                        netRS1.Ac("UPDATE TBLISEMRIREC SET SERINO=\'" + list[i].SERI + "\',DEPO_KODU='45' WHERE ISEMRINO=\'" + list[i].ISEMRINO + "\'");
+                    }
+                    
+                }
+            }
+            catch (Exception e)
+            {
+
+                return Json(new Wrappers.Concrete.ErrorResponse(e.Message));
+            }
+
+            return Json(new Wrappers.Concrete.SuccessResponse<string>("Başarılı!", "Başarılı!"));
         }
         public class seriModel
         {
             public string ISEMRINO { get; set; }
+            public string ATILACAK_IENO { get; set; }
             public string STOK_KODU { get; set; }
             public string SERI { get; set; }
-            public string ACIKLAMA { get; set; }
-            public int URETILEN { get; set; }
-            public int MIKTAR { get; set; }
-            public int MIKTAREK { get; set; }
+            public string SARF_MSABIT { get; set; }
+            public string STOK_ADI { get; set; }
+            public string IE_STOK_ADI { get; set; }
+            public string IE_STOK_BRMIK { get; set; }
+            public int? URETILEN { get; set; }
+            public int? MIKTAR { get; set; }
+            public int? MIKTAR2 { get; set; }
+            public string MIKTAREK { get; set; }
+            public int? SARF_MIKTAR { get; set; }
+            public bool ISKONTROL { get; set; }
+            public double BOY { get; set; }
+            public string ACIK1 { get; set; }
+            public string ACIK2 { get; set; }
+            public string ACIK3 { get; set; }
+            public string SERI_NO_3 { get; set; }
+            public string SERI_NO_4 { get; set; }
+            public string ACIKLAMA4 { get; set; }
+            public string ACIKLAMA5 { get; set; }
         }
         public string AmbarGirCik(string seri, string miktar, string stokkodu, string YAZICI)
         {
