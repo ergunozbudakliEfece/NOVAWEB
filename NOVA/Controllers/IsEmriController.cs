@@ -163,11 +163,9 @@ namespace NOVA.Controllers
                 ViewBag.Id = Request.Cookies["Id"].Value;
             }
 
-
-            ViewBag.SIRANO = GetMax();
             ViewBag.Stok_Adlari = GetStokAdlari();
+            ViewBag.SIRANO = GetMax();
             ViewBag.Cariler = GetCariler();
-            ViewBag.Sip = GetSip();
             ViewBag.Seriler = GetSeri();
 
             return View();

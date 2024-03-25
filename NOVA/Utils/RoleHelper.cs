@@ -76,6 +76,7 @@ namespace NOVA.Utils
                     bool? uretimkaynakplanlama = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 48).USER_AUTH;
                     bool? disticaret = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 49).USER_AUTH;
                     bool? ihracat = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 50).USER_AUTH;
+                    bool? izlenebilirlik = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 51).USER_AUTH;
                     #endregion
 
                     #region SetViewBag
@@ -125,6 +126,7 @@ namespace NOVA.Utils
                     Controller.ViewBag.DisplayUretimKaynakPlanlama = uretimkaynakplanlama is true ? "block" : "none";
                     Controller.ViewBag.DisplayDisTicaret = disticaret is true ? "block" : "none";
                     Controller.ViewBag.DisplayIhracat=ihracat is true ? "block" : "none";
+                    Controller.ViewBag.DisplayIzlenebilirlik=izlenebilirlik is true ? "block" : "none";
                     #endregion
                 }
             }

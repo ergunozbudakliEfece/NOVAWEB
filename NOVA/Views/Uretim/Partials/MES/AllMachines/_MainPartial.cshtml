@@ -1,6 +1,6 @@
 ﻿<style>
     .all-machines {
-        height: calc(100svh - 45px - 4.50rem);
+        height: calc(100svh - 56px - 4.50rem);
         max-width: -moz-available;
         max-width: -webkit-fill-available;
         display: flex;
@@ -24,6 +24,12 @@
             border: var(--bs-border-width) solid var(--empty-border-color);
         }
 
+        .all-machines .custom-machine {
+            /*width: 230px;
+            min-width: 185px;
+            font-size: 10pt;*/
+        }
+
     .machine-content {
         padding-right: 0.25rem;
         width: 100%;
@@ -32,7 +38,7 @@
     }
 
     .machine-title {
-        font-size: larger;
+        font-size: medium;
         font-weight: 500;
     }
 
@@ -60,7 +66,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 0.5rem;
             line-height: 1rem;
             text-align: center;
             word-break: break-word;
@@ -114,7 +119,7 @@
             $.ajax({
                 url: 'http://192.168.2.13:83/api/date',
                 success: function (data) {
-                    $('#guncellemeTarihi').html('Son Güncelleme Saati: ' + new Date(data[0].DATE).toLocaleTimeString('tr-TR'))
+                    $('#guncellemeTarihi').html(new Date(data[0].DATE).toLocaleTimeString('tr-TR') + " <i class='bx bx-refresh' style='animation: 1s infinite alternate ease-out rotate'></i>")
                 }
             });
         }
@@ -212,19 +217,19 @@
     function GunlukOzetBox(Data) {
         var Ozet =
             `
-            <div class="d-flex justify-content-center align-items-start gap-2" style="font-size:small;">
+            <div class="d-flex justify-content-between align-items-start gap-2 px-4 w-100" style="font-size:small;">
                 <div class="d-flex flex-column justify-content-center align-items-center gap-1">
-                    <span><b>ÜR. MİKTAR</b></span>
-                    <span>${NumFormat(Data.GUNLUK_TOPLAM_MIKTAR, 'KG')}</span>
+                    <span><b>MİKTAR</b></span>
+                    <span>${NumFormat(Data.GUNLUK_TOPLAM_MIKTAR, 'KG', 0)}</span>
                 </div>
                 <div class="d-flex flex-column justify-content-center align-items-center gap-1">
-                    <span><b>HURDA</b></span>
-                    <span>${NumFormat(Data.GUN_TOPLAM_HURDA, 'KG')}</span>
+                    <span><b>HRD</b></span>
+                    <span>${NumFormat(Data.GUN_TOPLAM_HURDA, 'KG', 0)}</span>
                     ${CalcRate(Data.GUN_TOPLAM_HURDA, Data.GUNLUK_TOPLAM_MIKTAR)}
                 </div>
                 <div class="d-flex flex-column justify-content-center align-items-center gap-1">
-                    <span><b>2. KALİTE</b></span>
-                    <span>${NumFormat(Data.GUN_TOPLAM_KALITE2, 'KG')}</span>
+                    <span><b>2. KLT</b></span>
+                    <span>${NumFormat(Data.GUN_TOPLAM_KALITE2, 'KG', 0)}</span>
                     ${CalcRate(Data.GUN_TOPLAM_KALITE2, Data.GUNLUK_TOPLAM_MIKTAR)}
                 </div>`;
 
@@ -235,8 +240,8 @@
         return Value === null ? '-' : Value;
     }
 
-    function NumFormat(Value, Unit = '') {
-        return (Value !== null && Value !== 0) ? `${parseFloat(Value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${Unit}` : '-';
+    function NumFormat(Value, Unit = '', Decimal = 2) {
+        return (Value !== null && Value !== 0) ? `${parseFloat(Value).toLocaleString(undefined, { minimumFractionDigits: Decimal, maximumFractionDigits: Decimal })} ${Unit}` : '-';
     }
 
     function CalcRate(Numerator, Denominator)

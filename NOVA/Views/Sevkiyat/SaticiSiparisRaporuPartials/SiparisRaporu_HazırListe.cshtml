@@ -1,0 +1,340 @@
+﻿<div class="modal fade" id="siparis-raporu-hazir-liste" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">HAZIR LİSTE</h1>
+                <button id="file-input-button" class="btn btn-primary" style="font-size: x-large; height: 40px; width: 40px; display: flex; justify-content: center; align-items: center;"  data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>İçe Aktar</span>" >
+                    <i class='bx bxs-file-import'></i>
+                </button>
+                <input id="file-input" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" name="name" style="display: none;" />
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid d-flex justify-content-center align-items-center">
+                    <div id="hazir-liste-progress-wrapper">
+                        <div class="heart"><img src="~/images/novasaydam.png" style="max-width:250px;" /></div>
+                    </div>
+                    <div id="table-wrapper" style="display: none; overflow-x: auto; max-width: 100%;">
+                        <table id="hazir-liste-table"
+                               data-search="true"
+                               data-show-refresh="false"
+                               data-show-toggle="false"
+                               data-show-fullscreen="false"
+                               data-show-columns="false"
+                               data-show-columns-toggle-all="false"
+                               data-detail-view="false"
+                               data-show-export="false"
+                               data-click-to-select="false"
+                               data-minimum-count-columns="2"
+                               data-show-pagination-switch="false"
+                               data-page-size="4"
+                               data-page-list="[5,20,50,100]"
+                               data-pagination="true"
+                               data-show-footer="false"
+                               data-mobile-responsive="true"
+                               data-locale="tr-TR"
+                               style="text-wrap: nowrap;">
+                            <thead>
+                                <tr>
+                                    <th data-halign="center" data-align="center" data-formatter="HazırListeIslemFormatter">İŞLEM</th>
+                                    <th data-field="STOK_ADI" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">STOK ADI</th>
+                                    <th data-field="MIKTAR1" data-formatter="MiktarFormatla" data-sortable="true" data-halign="center" data-align="center">MİKTAR 1</th>
+                                    <th data-field="OLCU_BR1" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">BİRİM 1</th>
+                                    <th data-field="MIKTAR2" data-formatter="MiktarFormatla" data-sortable="true" data-halign="center" data-align="center">MİKTAR 2</th>
+                                    <th data-field="OLCU_BR2" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">BİRİM 2</th>
+                                    <th data-field="ACIK2" data-formatter="KalinlikFormatter" data-sortable="true" data-halign="center" data-align="center">KALINLIK</th>
+                                    <th data-field="ACIK1" data-formatter="GenislikFormatter" data-sortable="true" data-halign="center" data-align="center">GENİŞLİK</th>
+                                    <th data-field="ACIK3" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">ÜRÜN NO</th>
+                                    <th data-field="SERI_NO_3" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">KALİTE</th>
+                                    <th data-field="SERI_NO_4" data-formatter="TempTableEmptyFormatter" data-sortable="true" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center align-items-center gap-2">
+                <button id="hazir-liste-aktar" type="button" class="btn btn-primary" onclick="HazırListeAktar()" disabled>TABLOYA AKTAR</button>
+                <button type="button" class="btn btn-secondary" onclick="HazırListeModalKapat()">KAPAT</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var HazırListe = [];
+    var HazırListe_Secilen = [];
+
+    function HazırListeModal()
+    {
+        HazırListe = [];
+
+        HazırListeAktarButtonState();
+
+        $('#siparis-raporu-hazir-liste').modal('show');
+
+        $.ajax({
+            url: `http://192.168.2.13:83/api/shipping/hzrsl/${SiparisNo}`,
+            type: 'GET',
+            error: (e) => {
+                $('#siparis-raporu-hazir-liste').modal('hide');
+            },
+            success: (response) => {
+                HazırListe = response.filter(x => !Kalemler.map(y => y.INCKEY).includes(x.INCKEY));
+            }
+        })
+        .then(() => {
+            $('#hazir-liste-table').bootstrapTable('destroy');
+            $('#hazir-liste-table').bootstrapTable({ data: HazırListe });
+
+            $('#hazir-liste-progress-wrapper').css('display', "none");
+            $('#table-wrapper').css('display', "block");
+        });
+    }
+
+    function HazırListeModalKapat()
+    {
+        $('#siparis-raporu-hazir-liste').modal('hide');
+
+        $('#table-wrapper').css('display', "none");
+        $('#hazir-liste-progress-wrapper').css('display', "block");
+    }
+
+    function HazırListeIslemFormatter(value, index, row) {
+        if (HazırListe_Secilen.indexOf(index.INCKEY) > -1) {
+            return `<div onclick="HazırListe_Barkod('${index.INCKEY}')"><i class="bi bi-check-circle-fill"  style="color:#71dd37;font-size:x-large;"></i></div>`;
+        }
+        else {
+            return `<div onclick="HazırListe_Barkod('${index.INCKEY}')"><i class="bi bi-check-circle"  style="color:red;font-size:x-large;"></i></div>`;
+        }
+    }
+
+    function HazırListe_Barkod(INCKEY) {
+        if (HazırListe_Secilen.indexOf(INCKEY) > -1) {
+            HazırListe_Secilen = HazırListe_Secilen.filter(item => item !== parseInt(INCKEY));
+        }
+        else {
+            HazırListe_Secilen.push(parseInt(INCKEY));
+        }
+
+        $('#hazir-liste-table').bootstrapTable('toggleView');
+        $('#hazir-liste-table').bootstrapTable('toggleView');
+
+        HazırListeAktarButtonState();
+    }
+
+    function HazırListeAktarButtonState() {
+        if (HazırListe_Secilen.length > 0) {
+            $('#hazir-liste-aktar').prop('disabled', false);
+        }
+        else {
+            $('#hazir-liste-aktar').prop('disabled', true);
+        }
+    }
+
+    function HazırListeAktar()
+    {
+        if (HazırListe_Secilen.length > 0)
+        {
+            var FilteredData = HazırListe.filter(x => HazırListe_Secilen.includes(x.INCKEY));
+
+            var Requests = [];
+
+            for (let i = 0; i < FilteredData.length; i++)
+            {
+                Requests.push($.ajax({
+                    url: `http://192.168.2.13:83/api/seri/exec/2`,
+                    type: 'GET',
+                    success: (data) => {
+                        SeriNo = data[0].SERI_NO;
+                    }
+                }));
+            }
+
+            Promise.all(Requests).then((responses) => {
+                var SERILER = responses.map(x => x[0].SERI_NO);
+
+                for (let i = 0; i < FilteredData.length; i++) {
+                    var Data = FilteredData[i];
+                    var INCKEY = Data.INCKEY;
+                    var StokAdi = Data.STOK_ADI;
+                    var StokKodu = Data.STOK_KODU;
+                    var Miktar1 = Data.MIKTAR1;
+                    var OlcuBr1 = Data.OLCU_BR1;
+                    var Miktar2 = Data.MIKTAR2;
+                    var OlcuBr2 = Data.OLCU_BR2;
+                    var SeriNo = SERILER[i];
+                    var Acik1 = Data.ACIK1;
+                    var Acik2 = Data.ACIK2;
+                    var Acik3 = Data.ACIK3;
+                    var SeriNo3 = Data.SERI_NO_3;
+                    var SeriNo4 = Data.SERI_NO_4;
+                    var Aciklama4 = null;
+                    var Aciklama5 = null;
+                    var Tarih = new Date().toLocaleString();
+
+                    Kalemler.push({
+                        "INCKEY": INCKEY,
+                        "ID": KalemId,
+                        "ACTIVE": true,
+                        "STOK_ADI": StokAdi,
+                        "STOK_KODU": StokKodu,
+                        "MIKTAR": Miktar1,
+                        "OLCU_BR1": OlcuBr1,
+                        "MIKTAR2": Miktar2,
+                        "OLCU_BR2": OlcuBr2,
+                        "SERI_NO": SeriNo,
+                        "ACIK1": Acik1,
+                        "ACIK2": Acik2,
+                        "ACIK3": Acik3,
+                        "SERI_NO_3": SeriNo3,
+                        "SERI_NO_4": SeriNo4,
+                        "ACIKLAMA_4": Aciklama4,
+                        "ACIKLAMA_5": Aciklama5,
+                        "TARIH": Tarih,
+                        "GIRIS_DEPO": GirisDepo,
+                        "CIKIS_DEPO": null
+                    });
+
+                    KalemId = KalemId + 1;
+                    GuncellenenKalem == -1;
+                }
+
+                $('#TempTable').bootstrapTable("destroy");
+                $('#TempTable').bootstrapTable({ data: Kalemler });
+
+                GuncelSeriNoGetir();
+
+                ModalKaydetButtonState();
+                HazırListeModalKapat();
+            });
+        }
+    }
+
+    var b;
+
+    $('#file-input-button').on('click', function () {
+        if (GirisDepo == -1) {
+            Swal.fire({
+                icon: "warning",
+                title: "Depo seçimi yapılmadı.",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+        else {
+            $('#file-input').trigger('click');
+
+            document.getElementById('file-input').addEventListener("change", HandleFiles, false);
+
+            async function HandleFiles()
+            {
+                const fileList = this.files[0];
+
+                let fileReader = new FileReader();
+
+                fileReader.readAsBinaryString(fileList);
+
+                fileReader.onload = (event) => {
+                    $('#file-input').val('');
+
+                    let fileData = event.target.result;
+
+                    let workbook = XLSX.read(fileData, { type: "binary" });
+
+                    const result = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { raw: false, });
+
+                    Swal.fire({
+                        title: `${result.length} kayıt içeri aktarılacak, emin misiniz?`,
+                        showDenyButton: false,
+                        showCancelButton: true,
+                        confirmButtonText: "EVET",
+                        cancelButtonText: "HAYIR"
+                    }).then((answer) =>
+                    {
+                        if (answer.isConfirmed)
+                        {
+                            ShowProgress();
+
+                            HazirListeKaydet(result);
+                        }
+                    });
+                };
+
+            }
+        }
+    });
+
+    function HazirListeKaydet(result)
+    {
+        var HZR_BELGE_NO = null;
+
+        $.ajax({
+            url: `http://192.168.2.13:83/api/shipping/hzrbn/${PageType}`,
+            type: 'GET',
+            success: (response) => {
+                if (response.length > 0) {
+                    HZR_BELGE_NO = response[0].SIRADAKI_BELGE_NO;
+                }
+            }
+        })
+        .then(() =>
+        {
+            if (HZR_BELGE_NO != null) {
+                for (const row of result) {
+                    row["TYPE"] = 7;
+                    row["BELGE_NO"] = HZR_BELGE_NO;
+                    //row["SIPARIS_NO"] = SiparisNo;
+                    row["INS_USER_ID"] = @Request.Cookies["UserId"].Value;
+                    row["UPD_USER_ID"] = @Request.Cookies["UserId"].Value;
+                    row["EXP_1"] = null;
+                    row["EXP_2"] = null;
+                    row["EXP_3"] = null;
+                    row["GIRIS_DEPO"] = GirisDepo;
+                    row["CIKIS_DEPO"] = 0;
+                    row["PLAKA"] = null;
+                    row["SOFOR"] = null;
+                }
+
+                $.ajax({
+                    url: 'http://192.168.2.13:83/api/shipping/hzrsl',
+                    type: 'POST',
+                    data: JSON.stringify(result),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    error: () => { },
+                    success: () =>
+                    {
+                        $.ajax({
+                            url: `http://192.168.2.13:83/api/shipping/hzrsl/${SiparisNo}`,
+                            type: 'GET',
+                            error: (e) => {
+                                $('#siparis-raporu-hazir-liste').modal('hide');
+                            },
+                            success: (response) => {
+                                HazırListe = response.filter(x => !Kalemler.map(y => y.INCKEY).includes(x.INCKEY));
+                            }
+                        })
+                        .then(() => {
+                            $('#hazir-liste-table').bootstrapTable('destroy');
+                            $('#hazir-liste-table').bootstrapTable({ data: HazırListe });
+
+                            Swal.fire({
+                                title: "BAŞARILI!",
+                                text: "Kayıtlar başarıyla içeri aktarıldı!",
+                                icon: "success"
+                            });
+
+                            HideProgress();
+                        });
+                    }
+                });
+            }
+            else {
+                HazirListeKaydet(result);
+            }
+        });
+    }
+</script>
