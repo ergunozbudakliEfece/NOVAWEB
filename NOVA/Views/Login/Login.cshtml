@@ -97,13 +97,75 @@
             transform: translate(-50%, -50%);
             z-index: 5;
         }
+
+        .form-check-input:checked, .form-check-input[type=checkbox]:indeterminate {
+            background-color: #3d5383;
+            border-color: #3d5383;
+            box-shadow: 0 2px 4px 0 rgba(105, 108, 255, 0.4);
+        }
+
+        .login-form {
+            width: 330px;
+            border-radius: 1.375rem;
+            padding: 1.5rem;
+            background-color: #9fafcaa6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            box-sizing: border-box;
+            box-shadow: 0 0 15px #0000004f;
+            border: 1px solid #3d53834a;
+        }
+        .action-area {
+            display: flex;
+            justify-content: end;
+            align-items: baseline;
+            color: #3d5383 !important;
+            margin: 0.5rem 0;
+            width: 100%;
+        }
+        .login-image {
+            max-height: 60px;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+        #menu-background-video {
+            width: 100vw;
+            height: 100vh;
+            transform: scale(1.25);
+            filter: blur(3px);
+            opacity: 0.75;
+            object-fit: cover;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+        .login-button {
+            background-image: linear-gradient(to right, #4b6cb7 0%, #182848 100%);
+            background-size: 200% auto;
+            color: white;
+            transition: all 0.3s ease-in-out;
+            width: 50%;
+            border: none !important;
+        }
+
+            .login-button:hover {
+                background-position: right center;
+                color: white;
+                text-decoration: none;
+            }
     </style>
 
 </head>
 
 <body>
 
-    <video id="myVideo" autoplay muted loop>
+    <video id="menu-background-video" autoplay muted loop>
         <source src="/Content/Images/2.mp4" type="video/mp4">
     </video>
     <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
@@ -159,98 +221,91 @@
 
         <div class="authentication-wrapper authentication-basic container-p-y">
 
-            <div class="d-flex justify-content-center mb-2"><img style="max-width:28%" src="\Content\Images\efece_logo.png" alt="Alternate Text" /></div>
-            <div class="authentication-inner ">
+            <div class="d-flex justify-content-center mb-3"><img class="login-image" src="\Content\Images\efece_logo.png" alt="Alternate Text" /></div>
+            <div >
 
                 <!-- Register -->
-                <div class="card mt-4" style="background-color: #9fafca;opacity:0.9 ">
+                <div class="login-form">
 
-                    <div class="card-body">
+                    <form id="formAuthentication" class="mb-1" action="@Url.Action("Login", "Login")" method="POST">
+                        @*<div class="d-flex justify-content-between">
+            <label class="form-label" for="password" style="color: #0e387a">Kullanıcı Adı:</label>
 
-                        <form id="formAuthentication" class="mb-1" action="@Url.Action("Login", "Login")" method="POST">
-                            <div class="d-flex justify-content-between">
-                                <label class="form-label" for="password" style="color: #0e387a">Kullanıcı Adı:</label>
+        </div>*@
+                        <div class="my-3 input-group">
+                            <span class="input-group-text" id="basic-addon11"><i class='bx bxs-user' style="color: #0e387a"></i></span>
+                            <input type="text"
+                                   id="username"
+                                   class="form-control"
+                                   name="USER_NAME"
+                                   value="@ViewBag.username"
+                                   placeholder="Kullanıcı Adı"
+                                   autofocus
+                                   style="color: #0e387a" />
+                        </div>
+                        <div class="mb-0 form-password-toggle">
+                            @*<div class="d-flex justify-content-between">
+                <label class="form-label" for="password" style="color: #0e387a">Şifre:</label>
 
-                            </div>
-                            <div class="mb-3 input-group">
-                                <span class="input-group-text" id="basic-addon11"><i class='bx bxs-user' style="color: #0e387a"></i></span>
-                                <input type="text"
-                                       id="username"
-                                       class="form-control"
-                                       name="USER_NAME"
-                                       value="@ViewBag.username"
-                                       placeholder="Kullanıcı adınızı giriniz.."
-                                       autofocus
-                                       style="color: #0e387a" />
-                            </div>
-                            <div class="mb-0 form-password-toggle">
-                                <div class="d-flex justify-content-between">
-                                    <label class="form-label" for="password" style="color: #0e387a">Şifre:</label>
-
-                                </div>
-                                <div class="input-group input-group">
-                                    <span class="input-group-text" id="basic-addon11"><i class='bx bxs-key' style="color: #0e387a"></i></span>
-                                    @if (ViewBag.password != null)
-                                    {
-                                        <input type="password"
-                                               id="password"
-                                               class="form-control"
-                                               name="USER_PASSWORD"
-                                               value="@NOVA.Controllers.LoginController.Decrypt(ViewBag.password)"
-                                               placeholder="Şifrenizi giriniz.."
-                                               aria-describedby="password"
-                                               style="color: #0e387a" />
-                                    }
-                                    else
-                                    {
-                                        <input type="password"
-                                               id="password"
-                                               class="form-control"
-                                               name="USER_PASSWORD"
-                                               value=""
-                                               placeholder="Şifrenizi giriniz.."
-                                               aria-describedby="password"
-                                               style="color: #0e387a" />
-                                    }
-
-                                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide" style="color: #0e387a"></i></span>
-                                </div>
-                                <input style="display:none" type="text" name="defurl" id="defurl" />
-                            </div>
-
-
-                            <div class="row" style="margin-right:1%">
-                                <div class="col">
-                                    <button class="btn btn-grad w-100 mt-5" id="giris" type="submit" onclick="wait()">Giriş</button>
-                                </div>
-                            </div>
-                            <script>
-                                function wait() {
-                                    document.body.style.cursor = 'wait';
-                                    ShowProgress()
+            </div>*@
+                            <div class="input-group input-group">
+                                <span class="input-group-text" id="basic-addon11"><i class='bx bxs-key' style="color: #0e387a"></i></span>
+                                @if (ViewBag.password != null)
+                                {
+                                    <input type="password"
+                                           id="password"
+                                           class="form-control"
+                                           name="USER_PASSWORD"
+                                           value="@NOVA.Controllers.LoginController.Decrypt(ViewBag.password)"
+                                           placeholder="Şifre"
+                                           aria-describedby="password"
+                                           style="color: #0e387a" />
                                 }
-                            </script>
+                                else
+                                {
+                                    <input type="password"
+                                           id="password"
+                                           class="form-control"
+                                           name="USER_PASSWORD"
+                                           value=""
+                                           placeholder="Şifre"
+                                           aria-describedby="password"
+                                           style="color: #0e387a" />
+                                }
 
-                        </form>
+                                <span class="input-group-text cursor-pointer"><i class="bx bx-hide" style="color: #0e387a"></i></span>
+                            </div>
+                            <input style="display:none" type="text" name="defurl" id="defurl" />
+                        </div>
 
 
-                    </div>
-                    <div style="border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem;margin-top:-15px">
+                        <div class="action-area">
+                            <p class="text-center mt-2" style="color: #0e387a">
+                                <span class="align-middle" data-bs-toggle="modal" data-bs-target="#mail" style="cursor:pointer">Şifremi Unuttum</span>
+                            </p>
+                        </div>
+
+                        <div class="w-100 d-flex justify-content-center align-items-center mb-2">
+                            <button class="btn login-button" id="giris" type="submit" onclick="wait()">Giriş</button>
+                        </div>
+
+                        <script>
+                            function wait() {
+                                document.body.style.cursor = 'wait';
+                                ShowProgress()
+                            }
+                        </script>
+
+                    </form>
+
+                    <div style="border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem; margin-top: -15px; width: 100%;">
                         <div class="mt-2" style="margin-left: 35%">
                             <div class="form-check">
 
                                 <input class="form-check-input" type="checkbox" id="RememberMe" name="RememberMe" checked />
-                                <label class="form-label" for="remember-me" style="color: #0e387a"> Beni Hatırla </label>
+                                <label class="form-label" for="remember-me" style="color: #0e387a; text-transform: unset;"> Beni Hatırla </label>
                             </div>
                         </div>
-                        <p class="text-center mt-2" style="color: #0e387a">
-
-                            <span class="align-middle" data-bs-toggle="modal" data-bs-target="#mail" style="cursor:pointer">Şifremi Unuttum</span>
-
-
-
-
-                        </p>
                     </div>
 
                 </div>
@@ -267,7 +322,6 @@
                     </div>
                 </div>*@
         </div>
-
 
 
     </div>
@@ -409,7 +463,6 @@
         <script>
             Swal.fire({
                 icon: 'error',
-                title: 'Oops...',
                 text: 'Kullanıcı adı veya şifre hatalı!',
             })
         </script>
@@ -419,7 +472,6 @@
         <script>
             Swal.fire({
                 icon: 'error',
-                title: 'Oops...',
                 text: 'Kullanıcının giriş yetkisi bulunmamaktadır!',
             })
         </script>

@@ -1,0 +1,715 @@
+﻿
+@{
+
+    Layout = "~/Views/Shared/_Layout _yonetim_stok.cshtml";
+}
+
+
+<link href="~/Content/bootstrap-table-master/dist/bootstrap-table.min.css" rel="stylesheet" />
+<link href="~/bootstrap-icons-1.11.2/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="~/Scripts/select2.css" rel="stylesheet" />
+<link href="~/assets/fontawesome.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<script src="~/assets/vendor/libs/popper/popper.js"></script>
+<link href="~/assets/vendor/css/cssprogress.min.css" rel="stylesheet" />
+
+<link href="~/assets/boxicons/css/boxicons.min.css" rel="stylesheet" />
+<style>
+    body {
+        padding: 0 0 0 4rem !important;
+    }
+    .fixed-table-body{
+        overflow-x:hidden !important
+    }
+    .card-view {
+        border-bottom: 1px dashed gray;
+        margin-top: 2px;
+    }
+
+    .card-view-value {
+        margin-left: 5px;
+        white-space: normal;
+    }
+
+    .card-view-title {
+        min-width: 40% !important;
+    }
+
+    .select2-container {
+        width: 100%;
+    }
+
+    .search {
+        width: 100%;
+    }
+
+    #filter {
+        width: 98%;
+    }
+
+    .menu1 {
+        display: none;
+    }
+
+    tr > th:nth-child(2), tr > td:nth-child(2) {
+        position: sticky;
+        left: 0;
+        background: white;
+    }
+
+    .no, .detail-view {
+        --bs-table-bg: white;
+        --bs-table-accent-bg: white;
+        --bs-table-striped-color: white;
+        --bs-table-striped-bg: white;
+        --bs-table-active-color: white;
+        --bs-table-active-bg: white;
+        --bs-table-hover-color: white;
+        --bs-table-hover-bg: white;
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #697a8d;
+        vertical-align: middle;
+        border-color: #d9dee3;
+    }
+
+
+    @@media screen and (max-width: 600px) {
+        .menu1 {
+            display: inline-flex;
+        }
+
+        .menu2 {
+            display: none;
+        }
+        /* .btn-group {
+            display: none;
+        }*/
+    }
+</style>
+<style>
+    .heart {
+        animation: heartbeat 1s infinite alternate;
+    }
+
+    @@keyframes heartbeat {
+        from {
+            opacity: 0.3;
+            transform: scale(0.32);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(0.40);
+        }
+    }
+
+    .centercontent {
+        position: absolute;
+        max-width: 100%;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+
+
+    .icon-info-sign:hover {
+        opacity: .8;
+        cursor: pointer;
+    }
+
+    .detail-view td {
+        padding: 3px;
+    }
+</style>
+<link href="~/assets/vendor/css/Chart.css" rel="stylesheet" />
+<div class="container-fluid pt-3">
+    <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
+        <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
+    </div>
+    <div class="card mx-auto" style="font-size:12px;overflow-x:hidden">
+
+        <div class="card-body">
+
+           
+                <div id="toolbar">
+
+                    <div class="row">
+                        <div class="col">
+                            <select id="filter" multiple="multiple" name="filterAlgorithm" style="width: 15vw">
+                            </select>
+                        </div>
+                        <div class="col">
+                            <select id="plasiyer" multiple="multiple" name="plasiyerAlgorithm" style="width: 15vw">
+                            </select>
+                        </div>
+                        <div class="col">
+                            <select id="dovtip" multiple="multiple" name="dovAlgorithm" style="width: 15vw">
+                            </select>
+                        </div>
+                        <div class="col">
+                            <div class="form-check form-switch">
+                                <label class="form-check-label  fs-tiny" for="kapaliswitch">KAPALI</label>
+
+                                <input class="form-check-input" type="checkbox" id="kapaliswitch" unchecked="" onclick="kapali()" name="KAPALIMI">
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="row filtreToplamTRY "><div class="col"><strong><span>∑ TRY:  </span></strong> <span class="text-end float-end" id="tl"></span></div></div>
+                        <div class="row filtreToplamUSD "><div class="col"><strong><span>∑ USD:  </span></strong> <span class="text-end float-end" id="dolar"></span></div></div>
+                        <div class="row filtreToplamEUR "><div class="col"><strong><span>∑ EUR:  </span></strong> <span class="text-end float-end" id="eur"></span></div></div>
+
+                    </div>
+                </div>
+                <div class="row mt-1" onchange="datefilter()">
+
+                    <div class="col">
+                        <label for="baslagictarihi">Başlagıç Tarihi:</label>
+                        <input class="form-control" style="width: 15vw;height:32px" type="date" id="baslangictarihi" name="BASLANGIC_TARIH" value=" " placeholder="Başlangıç Tarihi">
+                    </div>
+                    <div class="col">
+                        <label for="bitistarihi">Bitiş Tarihi:</label>
+                        <input class="form-control" style="width: 15vw;height:32px" type="date" id="bitistarihi" name="BASLANGIC_TARIH" value=" " placeholder="Bitiş Tarihi">
+                    </div>
+                    <div class="col">
+                        <button onclick="clearfilter()" class="btn btn-secondary btn-sm mt-3"><i class="bx bxs-trash"></i></button>
+
+                    </div>
+                    <div class="col">
+
+                    </div>
+                    <div class="col">
+
+                    </div>
+                    <div class="col">
+
+                    </div>
+
+                </div>
+                <table id="table"
+                       class="table table-striped"
+                       data-show-fullscreen="true"
+                       data-buttons-order="['paginationSwitch', 'columns', 'filterTable']"
+                       data-toggle="table"
+                       data-toolbar="#toolbar"
+                       data-show-export="false"
+                       data-export-data-type="all"
+                       data-export-types="['excel', 'pdf']"
+                       data-pagination="true"
+                       data-search="true"
+                       data-show-columns="true"
+                       data-show-columns-toggle-all="true"
+                       data-locale="tr-TR"
+                       data-filter-control="true"
+                       data-filter-control-multiple-search="true"
+                       data-mobile-responsive="false"
+                       data-show-footer="true"
+                       data-height="680"
+                       data-loading-template="loadingTemplate"
+                       data-detail-view="true"
+                       data-detail-view-by-click="true"
+                       data-trim-on-search="false">
+                    <thead>
+                        <tr id="tst">
+                            <th data-field="SIPARIS_NO" data-sortable="true" data-halign="center" data-formatter="sipnoFormatter">Sipariş No</th>
+                            <th data-field="TARIH" data-sortable="true" data-halign="center" data-formatter="tarihFormatter">Tarih</th>
+                            <th data-field="CARI_ISIM" data-sortable="true" data-halign="center" data-align="center">Cari İsim</th>
+                            <th data-field="DOV_TIP" data-sortable="true" data-halign="center" data-align="center">Hesap Türü</th>
+                            <th data-field="TESLIM_YERI" data-sortable="true" data-halign="center" data-align="center">Teslim Yeri</th>
+                            <th data-field="PLASIYER_ADI" data-sortable="true" data-halign="center" data-align="center">Plasiyer Adı</th>
+                            <th data-field="ODEMEGUNU" data-sortable="true" data-halign="center" data-align="center" data-formatter="odemegunuFormatter">Vade</th>
+                            <th data-field="OZEL_KOD1" data-sortable="true" data-halign="center" data-align="center">Ödeme Şekli</th>
+                            <th data-field="ACIKLAMA" data-visible="false" data-sortable="true" data-halign="center">Açıklama</th>
+                            <th data-field="GENELTOPLAM" data-sortable="true" data-halign="center" data-align="right" data-formatter="toplamFormatter" data-footer-formatter="footerFormatter">Genel Toplam</th>
+                        </tr>
+                    </thead>
+                </table>
+
+
+          
+
+        </div>
+
+    </div>
+</div>
+<script>
+
+
+    $("#divPartial").show();
+
+
+
+
+    var tumliste2 = null;
+    var tumliste = null;
+    var detayli = null;
+    var teslimfilter = [];
+    var plasiyerFilter = [];
+    var dovFilter = [];
+    function datefilter() {
+        var baslangic = $('#baslangictarihi').val()
+        var bitis = $('#bitistarihi').val()
+
+        $.getJSON('http://192.168.2.13:83/api/detaysizsip/E/6', function (data) {
+
+            if ((baslangic != null && baslangic != "") && (bitis != null && bitis != "")) {
+                var d = data.filter(x => new Date(x.TARIH.split("T")[0]) <= new Date(bitis) && new Date(x.TARIH.split("T")[0]) >= new Date(baslangic));
+            } else if ((baslangic != null && baslangic != "") || (bitis != null && bitis != "")) {
+
+                if (baslangic != null && baslangic != "") {
+
+
+                    var d = data.filter(x => new Date(x.TARIH.split("T")[0]) >= new Date(baslangic));
+
+                }
+                if (bitis != null && bitis != "") {
+                    var d = data.filter(x => new Date(x.TARIH.split("T")[0]) <= new Date(bitis));
+                }
+            }
+            else {
+                var d = data;
+            }
+            $('#table').bootstrapTable("destroy");
+            $('#table').bootstrapTable({ data: d }).done(function () {
+                HideProgress();
+            })
+        })
+
+    }
+    $(document).ready(function () {
+
+        ShowProgress()
+        $('#pageName').html('<div class="dot"></div> Detaylı Siparis')
+        $.getJSON("http://192.168.2.13:83/api/detaysizsip/E/6", function (data) {
+            detaysiz = data;
+            for (let i = 0; i < detaysiz.length; i++) {
+                if (!teslimfilter.includes(detaysiz[i].TESLIM_YERI)) {
+                    teslimfilter.push(detaysiz[i].TESLIM_YERI)
+                }
+                if (!plasiyerFilter.includes(detaysiz[i].PLASIYER_ADI)) {
+                    plasiyerFilter.push(detaysiz[i].PLASIYER_ADI)
+                }
+                if (!dovFilter.includes(detaysiz[i].DOV_TIP)) {
+                    dovFilter.push(detaysiz[i].DOV_TIP)
+                }
+            }
+            for (let i = 0; i < teslimfilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = teslimfilter[i];
+                option.innerHTML = teslimfilter[i];
+                document.getElementById("filter").appendChild(option);
+            }
+            for (let i = 0; i < plasiyerFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = plasiyerFilter[i];
+                option.innerHTML = plasiyerFilter[i];
+                document.getElementById("plasiyer").appendChild(option);
+            }
+            for (let i = 0; i < dovFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = dovFilter[i];
+                option.innerHTML = dovFilter[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+        }).done(function () {
+            $('#table').bootstrapTable("destroy").bootstrapTable({
+                data: detaysiz
+            }).after(function () {
+                HideProgress();
+                document.querySelectorAll('input[type="search"]')[0].onkeyup = function (event) {
+                    document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.toLocaleUpperCase('TR');
+                };
+            })
+
+            $('#filter').select2({ placeholder: "Teslim Yeri" });
+            $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
+            $('#dovtip').select2({ placeholder: "Döviz Tipi" });
+        })
+
+
+
+    })
+    var type = 'fa'
+
+
+    function sipnoFormatter(value, index, row) {
+        return value.substring(0, 1) + value.substring(3, 5) + "-" + value.substring(value.length - 5, value.length);
+    }
+    function odemegunuFormatter(value, iindex, row) {
+        if (value == 0) {
+            return "PEŞİN";
+        } else {
+            return "<span class='text-nowrap'>" + value + " GÜN</span>";
+        }
+    }
+    function tarihFormatter(value, index, row) {
+        return new Date(value).toLocaleDateString();
+    }
+
+    $('#table').on('expand-row.bs.table', function (e, index, row, $detail) {
+        $detail.html('<div class="container-fluid" style="display:flex;justify-content:center;align:center"><div class="heart"><img id="prog" src="/images/novasaydam.png" width="250" /></div></div>')
+        $.getJSON('http://192.168.2.13:83/api/detaylisip/E/' + row.SIPARIS_NO, function (data) {
+            var detail = data;
+            var t = "";
+            var r = 0;
+            var teslimoran = 0;
+
+            var teslimoranssip = 0;
+
+            var teslimoranuretim = 0;
+            var msipbekleyen = 0;
+            var msipteslim = 0;
+            for (let i = 0; i < detail.length; i++) {
+                r++;
+                var brut_fiyat = 0
+                var net_fiyat = 0
+                var net_tutar = 0
+                var bruttop = 0;
+                var toplamkdv = 0;
+                var toptevkifat = 0;
+                var geneltop = 0;
+
+                if (detail[i].DOV_TIP != "TRY") {
+                    brut_fiyat = (detail[i].BRUT_FIYAT / detail[i].KUR).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+                    net_fiyat = detail[i].DOV_NET_FIYAT.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+                    net_tutar = detail[i].DOV_TUTAR;
+                    bruttop = detail[i].DOV_BRUTTUTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    toplamkdv = detail[i].DOV_TOPLAM_KDV.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    toptevkifat = detail[i].DOV_TEVKIFAT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    geneltop = detail[i].DOV_GENELTOPLAM.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                else {
+                    brut_fiyat = detail[i].BRUT_FIYAT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    net_fiyat = detail[i].NET_FIYAT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    net_tutar = detail[i].NET_TUTAR_KALEM;
+                    bruttop = detail[i].BRUTTUTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    toplamkdv = detail[i].TOPLAM_KDV.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    toptevkifat = detail[i].TEVKIFAT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    geneltop = detail[i].GENELTOPLAM.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                var ssiporangorsel = 0;
+
+                var uretimorangorsel = 0;
+                if (detail[i].TESLIMAT_ORANI_SSIP) {
+                    ssiporangorsel = Math.round(parseFloat(detail[i].TESLIMAT_ORANI_SSIP) * 100).toString();
+                } else {
+                    ssiporangorsel = 0;
+
+                }
+                if (detail[i].URETIM_ORANI) {
+                    uretimorangorsel = Math.round(parseFloat(detail[i].URETIM_ORANI) * 100).toString();
+                } else {
+                    uretimorangorsel = 0;
+
+                }
+                var color = (detail[i].SIP_DURUMU == "ACIK" ? 'green' : 'red');
+                t = t + "<tr style='color:" + color + "'><th>" + r + "</th><td class'text-center'>" + detail[i].STOK_ADI + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR1 + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR2 + "</td><td class='text-center'>" + brut_fiyat + "</td><td class='text-center'>" + detail[i].SATIS_ISKONTOSU.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%" + "</td><td class='text-center'>" + net_fiyat + "</td><td class='text-center'>" + net_tutar.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].TESLIM_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].BAKIYE_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-nowrap text-center' style='background-color:#f2faf5'>" + "<p class='meter' id='meter-msip' style='height:18.36px;'><span style='width:" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].TESLIM_MIKTARI_SSIP == "null" ? detail[i].TESLIM_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].BAKIYE_MIKTARI_SSIP == "null" ? detail[i].BAKIYE_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + "<p class='meter' id='meter-ssip' style='height:18.36px;'><span style='width:" + ssiporangorsel + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + ssiporangorsel + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILEN_MIKTAR1 == "null" ? detail[i].URETILEN_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILECEK_MIKTAR1 == "null" ? detail[i].URETILECEK_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + "<p class='meter' id='meter' style='height:18.36px;'><span style='width:" + uretimorangorsel + "%'><span class='progress' id='progress-uretim'><span style='margin-bottom:10px;text-align:end;color:white'>" + uretimorangorsel + "%" + "</td></tr>"
+                msipbekleyen = msipbekleyen + detail[i].BAKIYE_MIKTARI;
+                msipteslim = msipteslim + detail[i].TESLIM_MIKTARI;
+                teslimoran = teslimoran + parseFloat
+                    (parseFloat(detail[i].TESLIMAT_ORANI) * 100);
+                if (detail[i].TESLIMAT_ORANI_SSIP != 0 && detail[i].TESLIMAT_ORANI_SSIP != "null" && detail[i].TESLIMAT_ORANI_SSIP != null) {
+
+                    teslimoranssip = teslimoranssip + parseFloat
+                        (parseFloat(detail[i].TESLIMAT_ORANI_SSIP) * 100);
+
+                }
+                if (detail[i].URETIM_ORANI != 0 && detail[i].URETIM_ORANI != "null" && detail[i].URETIM_ORANI != null) {
+
+                    teslimoranuretim = teslimoranuretim + parseFloat
+                        (parseFloat(detail[i].URETIM_ORANI) * 100);
+
+                }
+
+            }
+
+            var moran = Math.round(teslimoran) / r;
+
+            var moranssip = Math.round(teslimoranssip) / r;
+
+            var moranuretim = Math.round(teslimoranuretim) / r;
+
+
+            var m = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment-msip' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moran + " " + (100 - moran) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent-msip' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moran) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>";
+            var n = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment-ssip' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moranssip + " " + (100 - moranssip) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent-ssip' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moranssip) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>"
+            var o = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moranuretim + " " + (100 - moranuretim) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moranuretim) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>"
+
+
+            $detail.html("<table class='table table-borderless'><thead><tr class'text-nowrap'><th class='text-nowrap'>Sıra No</th><th class='text-nowrap text-center' style='padding-left: 10px'>Stok Adı</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 1</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 2</th><th class='text-nowrap' style='padding-left: 10px'>Brüt Fiyat</th><th class='text-nowrap' style='padding-left: 10px'>İskonto</th><th class='text-nowrap' style='padding-left: 10px'>Net Fiyat</th><th class='text-nowrap' style='padding-left: 10px'>Net Tutar</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretilen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Bekleyen</th><th class='text-nowrap text-center' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Süreç</th></tr></thead><tbody>" + t + "<tr><td class='p-0' rowspan='2'>" + m + "</td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Brüt Toplam:</b></td><td  class='text-center'>" + bruttop + "</td></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5'></td></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td class='text-nowrap'><div style='margin-top:15px'><b>İsk. Toplam:</b></div></td><td class='text-center'><div style='margin-top:15px'>" + detail[0].SAT_ISKT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</div></td><td style='background-color:#f2faf5' class='text-center'><b>" + msipteslim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</b></td><td style='background-color:#f2faf5' class='text-center'><b>" + msipbekleyen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</b></td><td style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><tr><td class='p-0'>" + n + "</td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Toplam KDV:</b></td><td  class='text-center'>" + toplamkdv + "</td><td style='background-color:#f2faf5' class='text-center'></td><td style='background-color:#f2faf5' class='text-center'></td><td style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td class='p-0'>" + o + "</td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Tevkifat:</b></td><td  class='text-center'>" + toptevkifat + "</td><td colspan='3' style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><td></td><td></td><td colspan='4'></td><td class='text-nowrap'><b>Genel Toplam:</b></td><td  class='text-center'><b>" + geneltop + "</b></td><td colspan='3' style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr></tbody></table>");
+        })
+
+    })
+    function toplamFormatter(value, index, row) {
+        return (index.DOV_TIP == "TRY" ? (value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })) : (index.DOV_GENELTOPLAM.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))) + " " + index.DOV_TIP;
+    }
+
+    function footerFormatter(items) {
+        var totalPriceUSD = 0;
+        var totalPriceTRY = 0;
+        var totalPriceEUR = 0;
+        items.forEach(function (item) {
+
+            if (item.DOV_TIP == "USD") {
+                totalPriceUSD = totalPriceUSD + parseFloat(item.DOV_GENELTOPLAM);
+            } else if (item.DOV_TIP == "TRY") {
+                totalPriceTRY = totalPriceTRY + parseFloat(item.GENELTOPLAM);
+            } else if (item.DOV_TIP == "EUR") {
+                totalPriceEUR = totalPriceEUR + parseFloat(item.DOV_GENELTOPLAM);
+            }
+
+        });
+
+        $('#dolar').text(totalPriceUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $");
+        $('#tl').text(totalPriceTRY.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺");
+        $('#eur').text(totalPriceEUR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €");
+    };
+    $('select').change(function (e) {
+        filtre()
+
+
+
+    })
+    function filtre() {
+        var filterAlgorithm = $('#filter').val()
+        var plasiyerAlgorithm = $('#plasiyer').val()
+        var dovAlgorithm = $('#dovtip').val()
+        teslimfilter = []
+        plasiyerFilter = []
+        dovFilter = []
+        var data = detaysiz
+        if (filterAlgorithm.length > 0) {
+            data = data.filter(x => filterAlgorithm.includes(x.TESLIM_YERI))
+        }
+        if (plasiyerAlgorithm.length > 0) {
+            data = data.filter(x => plasiyerAlgorithm.includes(x.PLASIYER_ADI))
+        }
+        if (dovAlgorithm.length > 0) {
+            data = data.filter(x => dovAlgorithm.includes(x.DOV_TIP))
+        }
+        for (let i = 0; i < data.length; i++) {
+            if (!teslimfilter.includes(data[i].TESLIM_YERI)) {
+                teslimfilter.push(data[i].TESLIM_YERI)
+            }
+            if (!plasiyerFilter.includes(data[i].PLASIYER_ADI)) {
+                plasiyerFilter.push(data[i].PLASIYER_ADI)
+            }
+            if (!dovFilter.includes(data[i].DOV_TIP)) {
+                dovFilter.push(data[i].DOV_TIP)
+            }
+        }
+
+
+        if (!filterAlgorithm.length > 0) {
+            document.getElementById("filter").replaceChildren()
+            for (let i = 0; i < teslimfilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = teslimfilter[i];
+                option.innerHTML = teslimfilter[i];
+                document.getElementById("filter").appendChild(option);
+            }
+        }
+        if (!plasiyerAlgorithm.length > 0) {
+
+            document.getElementById("plasiyer").replaceChildren()
+            for (let i = 0; i < plasiyerFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = plasiyerFilter[i];
+                option.innerHTML = plasiyerFilter[i];
+                document.getElementById("plasiyer").appendChild(option);
+            }
+        }
+        if (!dovAlgorithm.length > 0) {
+            document.getElementById("dovtip").replaceChildren()
+            for (let i = 0; i < dovFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = dovFilter[i];
+                option.innerHTML = dovFilter[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+        }
+        if (filterAlgorithm.length == 0 && plasiyerAlgorithm.length && dovAlgorithm.length) {
+            for (let i = 0; i < teslimfilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = teslimfilter[i];
+                option.innerHTML = teslimfilter[i];
+                document.getElementById("filter").appendChild(option);
+            }
+            for (let i = 0; i < plasiyerFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = plasiyerFilter[i];
+                option.innerHTML = plasiyerFilter[i];
+                document.getElementById("plasiyer").appendChild(option);
+            }
+            for (let i = 0; i < dovFilter.length; i++) {
+                var option = document.createElement("option");
+                option.value = dovFilter[i];
+                option.innerHTML = dovFilter[i];
+                document.getElementById("dovtip").appendChild(option);
+            }
+        }
+        $('#table').bootstrapTable('filterBy', {
+            TESLIM_YERI: (filterAlgorithm.length > 0 ? filterAlgorithm : teslimfilter),
+            PLASIYER_ADI: (plasiyerAlgorithm.length > 0 ? plasiyerAlgorithm : plasiyerFilter),
+            DOV_TIP: (dovAlgorithm.length > 0 ? dovAlgorithm : dovFilter),
+
+        })
+    }
+    function clearfilter() {
+        $("#filter").val('').trigger('change');
+        $("#plasiyer").val('').trigger('change');
+        $("#dovtip").val('').trigger('change');
+
+        $("#baslangictarihi").val('').trigger('change');
+        $("#bitistarihi").val('').trigger('change');
+    }
+    function switchchange() {
+        $("#filter").val('')
+        $("#plasiyer").val('')
+        $("#dovtip").val('')
+        $("#baslangictarihi").val('')
+        $("#bitistarihi").val('')
+        if ((event.currentTarget.checked)) {
+
+            $('#table').bootstrapTable('destroy');
+
+
+            $('#table').bootstrapTable({ data: detaysiz.filter(x => x.URETILECEKMI == "E") }).after(function () {
+                filtre()
+            });
+        } else {
+            $('#table').bootstrapTable('destroy');
+
+            $('#table').bootstrapTable({ data: detaysiz }).after(function () {
+                filtre()
+            });
+        }
+    }
+    function loadingTemplate(message) {
+
+        return '<div class="text-center">YÜKLENİYOR..</div>'
+
+    }
+</script>
+<script>
+    function ShowProgress() {
+        document.body.style.overflow = 'hidden';
+        document.activeElement.blur();
+        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    }
+    function HideProgress() {
+        document.body.style.overflow = 'auto';
+        $('#nova-overlay').fadeOut('slow');
+    }
+    function kapali() {
+        ShowProgress()
+        var control = $('#kapaliswitch').is(':checked');
+        if (control) {
+            $.getJSON("http://192.168.2.13:83/api/detaysizsip/E/1", function (data) {
+                detaysiz = data;
+                for (let i = 0; i < detaysiz.length; i++) {
+                    if (!teslimfilter.includes(detaysiz[i].TESLIM_YERI)) {
+                        teslimfilter.push(detaysiz[i].TESLIM_YERI)
+                    }
+                    if (!plasiyerFilter.includes(detaysiz[i].PLASIYER_ADI)) {
+                        plasiyerFilter.push(detaysiz[i].PLASIYER_ADI)
+                    }
+                    if (!dovFilter.includes(detaysiz[i].DOV_TIP)) {
+                        dovFilter.push(detaysiz[i].DOV_TIP)
+                    }
+                }
+                for (let i = 0; i < teslimfilter.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = teslimfilter[i];
+                    option.innerHTML = teslimfilter[i];
+                    document.getElementById("filter").appendChild(option);
+                }
+                for (let i = 0; i < plasiyerFilter.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = plasiyerFilter[i];
+                    option.innerHTML = plasiyerFilter[i];
+                    document.getElementById("plasiyer").appendChild(option);
+                }
+                for (let i = 0; i < dovFilter.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = dovFilter[i];
+                    option.innerHTML = dovFilter[i];
+                    document.getElementById("dovtip").appendChild(option);
+                }
+            }).done(function () {
+                $('#table').bootstrapTable("destroy").bootstrapTable({
+                    data: detaysiz
+                }).after(function () {
+                    HideProgress();
+                    document.querySelectorAll('input[type="search"]')[0].onkeyup = function (event) {
+                        document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.toLocaleUpperCase('TR');
+                    };
+                })
+
+                $('#filter').select2({ placeholder: "Teslim Yeri" });
+                $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
+                $('#dovtip').select2({ placeholder: "Döviz Tipi" });
+            })
+        } else {
+            ShowProgress()
+            $.getJSON("http://192.168.2.13:83/api/detaysizsip/E/6", function (data) {
+                detaysiz = data;
+                for (let i = 0; i < detaysiz.length; i++) {
+                    if (!teslimfilter.includes(detaysiz[i].TESLIM_YERI)) {
+                        teslimfilter.push(detaysiz[i].TESLIM_YERI)
+                    }
+                    if (!plasiyerFilter.includes(detaysiz[i].PLASIYER_ADI)) {
+                        plasiyerFilter.push(detaysiz[i].PLASIYER_ADI)
+                    }
+                    if (!dovFilter.includes(detaysiz[i].DOV_TIP)) {
+                        dovFilter.push(detaysiz[i].DOV_TIP)
+                    }
+                }
+                for (let i = 0; i < teslimfilter.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = teslimfilter[i];
+                    option.innerHTML = teslimfilter[i];
+                    document.getElementById("filter").appendChild(option);
+                }
+                for (let i = 0; i < plasiyerFilter.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = plasiyerFilter[i];
+                    option.innerHTML = plasiyerFilter[i];
+                    document.getElementById("plasiyer").appendChild(option);
+                }
+                for (let i = 0; i < dovFilter.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = dovFilter[i];
+                    option.innerHTML = dovFilter[i];
+                    document.getElementById("dovtip").appendChild(option);
+                }
+            }).done(function () {
+                $('#table').bootstrapTable("destroy").bootstrapTable({
+                    data: detaysiz
+                }).after(function () {
+                    HideProgress();
+                    document.querySelectorAll('input[type="search"]')[0].onkeyup = function (event) {
+                        document.querySelectorAll('input[type="search"]')[0].value = event.currentTarget.value.toLocaleUpperCase('TR');
+                    };
+                })
+
+                $('#filter').select2({ placeholder: "Teslim Yeri" });
+                $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
+                $('#dovtip').select2({ placeholder: "Döviz Tipi" });
+            })
+        }
+    }
+</script>
+
+
+
+
+

@@ -12,10 +12,10 @@
     <link rel="stylesheet" type="text/css" href="../dist/pivot.css">
     <script type="text/javascript" src="../dist/pivot.js"></script>
     <script src="~/lib/pivot/multifact-pivottable.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    <link href="~/Scripts/select2.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
+    <link href="~/wwwroot/libs/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <script src="https://unpkg.com/tippy.js@6"></script>
     <style>
         body {
             padding: 0 0 0 3rem !important;
@@ -120,6 +120,10 @@
             border-color: #4417FA;
             box-shadow: 0 2px 4px 0 rgba(105, 108, 255, 0.4);
         }
+
+        .swal2-container {
+            z-index: 10000;
+        }
     </style>
 </head>
 <body style="overflow:hidden">
@@ -150,7 +154,7 @@
 
         <div class="row">
             <div class="col">
-                <div class="card mt-2" id="HammaddeCard">
+                <div class="card mt-2" id="HammaddeCard" style="display:none">
 
 
 
@@ -201,8 +205,8 @@
                                         <td class="text-center p-0" id="urunkodu">
                                             <form onsubmit="return false">
                                                 <input class="border-0 text-center" style="flex-grow:2;" id="seri" oninput="rechange()" autocomplete="off">
-                                                <button type="button" id="rehberbutton" onclick="rehberAc()" class="btn btn-primary showmodal"><i class="bi bi-list-ul"></i></button>
-                                                <i id="rehbermobil" style="cursor:pointer;display:none" onclick="rehberAc()" class="bi bi-list-ul"></i>
+                                                <button type="button" id="rehberbutton" onclick="rehberAc(this)" class="btn btn-primary showmodal"><i class="bi bi-list-ul"></i></button>
+                                                <i id="rehbermobil" style="cursor:pointer;display:none" onclick="rehberAc(this)" class="bi bi-list-ul"></i>
                                             </form>
 
                                         </td>
@@ -285,6 +289,106 @@
 
                     </div>
                 </div>
+                <div class="card mt-2" id="DLHammaddeCard">
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <label id="toplamLabel" class="ms-3" style="font-size:16px">Toplam Seçilen Hammadde Ağırlığı: -&#160;&#160;&#160;Toplam Seçilen Hammadde Metrajı: -</label>
+                        <i id="refresh" style="cursor:pointer" class='bx bx-refresh bx-md' onclick="DLHammaddeTemizle()"></i>
+                    </div>
+                    
+
+                    <div class="card-body me-3">
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-bordered" style="border-color:black;">
+
+                                <tbody>
+                                    <tr style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%)">
+                                        <th class="text-center" style="font-size:12px"></th>
+                                        <th class="text-center" style="font-size:12px">FABRİKA</th>
+                                        <th class="text-center" style="font-size: 12px">ORAN</th>
+                                        <th class="text-center" style="font-size: 12px"><button type="button" id="rehberbutton" onclick="rehberAc(this)" class="btn-sm btn-primary showmodal"><i class="bi bi-list-ul"></i></button> ÜRÜN KODU </th>
+                                        <th class="text-center" style="font-size: 12px">STOK ADI</th>
+                                        <th class="text-center" style="font-size: 12px">KONUM</th>
+                                        <th class="text-center" style="font-size: 12px">MARKA</th>
+                                        <th class="text-center" style="font-size: 12px">ADET</th>
+                                        <th class="text-center" style="font-size: 12px">KALINLIK</th>
+                                        <th class="text-center" style="font-size: 12px">GENİŞLİK | ±</th>
+                                        <th class="text-center" style="font-size: 12px">KAPLAMA</th>
+                                        <th class="text-center" style="font-size: 12px">KALİTE</th>
+                                        <th class="text-wrap" style="font-size: 11px">KULL. METRAJ/TAM METRAJ</th>
+                                        <th class="text-wrap" style="font-size: 11px">KULL. AĞIRLIK/TAM AĞIRLIK</th>
+                                        <th class="text-center" style="font-size: 12px" colspan="2">FİRE</th>
+
+
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center p-0">
+                                            <button type="button" onclick="SingleDelete(this)" class="btn-sm btn-primary"><i class='bx bx-trash'></i></button>
+                                        </td>
+                                        <td id="fabrika" class="text-center">
+
+                                            <span>MANİSA</span>
+                                        </td>
+                                        <td class="text-center p-0" id="or">
+                                            <input class="border-0 text-center oran" style="width:80px" type="number" value="1.0000" oninput="DLOranChange(this)" onblur="DLOranBlur(this)">
+
+                                        </td>
+
+                                        <td class="text-center p-0" id="urunkodu">
+                                            <form onsubmit="return false">
+                                                <input class="border-0 text-center" style="flex-grow:2;" oninput="rechangeDL(this)" autocomplete="off">
+                                            </form>
+
+                                        </td>
+                                        <td class="text-center p-0">
+                                            <textarea class="border-0 w-100 text-center text-wrap" readonly=""></textarea>
+                                        </td>
+                                        <td class="text-center p-0">
+                                            <input class="border-0  w-100 text-center" readonly="">
+                                        </td>
+                                        <td class="text-center p-0">
+                                            <label class="border-0 text-center text-wrap"></label>
+
+                                        </td>
+                                        <td class="text-center p-0">
+                                            <input class="border-0 w-100 text-center" readonly="">
+                                        </td>
+                                        <td class="text-center p-0">
+                                            <input class="border-0 w-100 text-center" readonly="">
+                                        </td>
+                                        <td class="text-center p-0">
+                                            <input class="border-0 w-px-50 text-center" readonly="">
+                                            <input class="border-1 w-px-30 text-center" style="border-radius:5px" value="0" oninput="GenArtiChange()">
+                                        </td>
+                                        <td class="text-center p-0">
+                                            <input class="border-0 w-100 text-center" readonly="">
+                                        </td>
+                                        <td class="text-center p-0">
+                                            <input class="border-0 w-100 text-center" readonly="">
+                                        </td>
+                                        <td class="text-center  p-0">
+                                            <input class="border-0 w-100 text-center" readonly="">
+                                        </td>
+
+                                        <td class="text-center p-0">
+                                            <input class="border-0 w-100 text-center" readonly="">
+                                        </td>
+                                        <td class="text-center p-0" style="min-width:7rem">
+                                            <input class="border-0 w-100 text-center" readonly="">
+                                        </td>
+                                        <td class="text-center p-0" style="min-width:5rem">
+                                            <input class="border-0 w-100 text-center" readonly="">
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+
+
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -301,7 +405,7 @@
                                 <tbody>
                                     <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
                                         <th class=""></th>
-                                        <th class="text-center" style="font-size: 11px;">ORAN</th>
+                                        <th class="d-none"></th>
                                         <th class="text-center" style="font-size: 11px;">MAKİNE</th>
                                         <th class="text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
                                         <th class="text-center" style="font-size: 11px;">GENİŞLİK</th>
@@ -312,86 +416,62 @@
                                         <th class="text-center" style="font-size: 11px">ADET</th>
                                         <th style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></th>
                                         <th class="text-center" style="font-size: 11px">AĞIRLIK</th>
-                                        <th class="text-center" style="font-size: 11px">MÜŞTERİ</th>
                                     </tr>
                                     <tr>
-                                        <td class="text-center p-1">1</td>
-                                        <td class="p-1 text-center">
-                                            <div>
-                                                <input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00" onblur="oran(this)">
-                                                <div class="text-center">
-                                                    <img onclick="addRow1(this)" style="width:18px;cursor:pointer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC">
-                                                </div>
+                                        <td class=""></td>
+                                        <td class="text-center ps-0 pe-0 d-none" style="font-size: 11px;"><input class="border-0 text-center" style="max-width: 80px"  type="number" value="1.0000" oninput="DLOranChange(this)"></td>
+                                        <td class="text-center ps-0 pe-0" style="font-size: 11px;">
 
-                                            </div>
-
-
-
-                                        </td>
-                                        <td class="border-0 text-center p-1 w-auto">
-
-                                            <select class="js-select" style="width:100px" onchange="MachineChange(this, 'DLTable')">
-
-                                                <option selected disabled>SEÇİNİZ</option>
-
-
+                                            <select class="js-select" style="width:150px" >
                                                 <option value="DL01">DL01</option>
-
-
-                                            </select>
-
-
-
-
-
-
-                                            <input class="border-0 text-center" id="1input" readonly style="display:none" />
-
-
-
-                                        </td>
-
-                                        <td class="p-0 text-center">
-                                            <select class="js-select" style="width:350px" disabled onchange="StokChange(this)">
-                                                <option selected disabled>SEÇİNİZ</option>
-                                                @foreach (var item in ViewBag.Stok_Adlari)
-                                                {
-                                                    <option value="@item.STOK_ADI">@item.STOK_ADI</option>
-                                                }
                                             </select>
 
 
                                         </td>
-                                        <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" oninput="DlInputChange(this)" /></td>
-                                        <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" oninput="DlInputChange(this)" /></td>
-                                        <td style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></td>
-                                        <td class="text-center p-1">
-                                            <i onclick="ReferansSecimiTemizle(this, 'DL')" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color: #203289; font-size: larger; display: none; cursor: pointer; float: left"></i>
-                                            <select class="js-select selectmakina2" style="width:100px;float:left" onchange="RefMachineChange(this)">
-                                                <option selected disabled>SEÇİNİZ</option>
+                                        <td class="text-center ps-0 pe-0" style="font-size: 11px;">
+                                            <select class="js-select DLStok1" style="width:150px" onchange="stok1Change(this)">
+                                                <option selected disabled value="SECINIZ">SEÇİNİZ</option>
                                             </select>
                                         </td>
-                                        <td class="text-center p-0">
-                                            <select class="js-select" style="width:350px" disabled onchange="RefStokChange(this)">
-                                                <option selected disabled>SEÇİNİZ</option>
-                                                @foreach (var item in ViewBag.Stok_Adlari)
-                                                {
-                                                    <option value="@item.STOK_ADI">@item.STOK_ADI</option>
-                                                }
+                                        <td class="text-center ps-0 pe-0" style="font-size: 11px;">
+                                            <input type="number" class="border-0 text-center" style="width:120px" oninput="DLInputChange()">
+                                        </td>
+                                        <td class="text-center ps-0 pe-0" style="font-size: 11px;">
+                                            <input type="number" class="border-0 text-center" style="width:120px" oninput="DLInputChange()">
+                                        </td>
+                                        <td style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px">
+                                            
+                                        </td>
+                                        <td class="text-center ps-0 pe-0" style="font-size: 11px">
+                                            <div style="display:flex;justify-content:center;align-items:center">
+                                                <i onclick="ReferansSecimiTemizleDL(this)" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Seçimi Temizle</span>" class="bi bi-x-lg me-2" style="color: rgb(32, 50, 137); font-size: larger; display: none; cursor: pointer; float: left;"></i>
+                                                <select class="js-select DLRefMachine" style="width:150px" onchange="DLRefMachineChange(this)">
+                                                    <option selected disabled value="SECINIZ">SEÇİNİZ</option>
+                                                    <option value="PB01">PB01</option>
+                                                    <option value="PB02">PB02</option>
+                                                    <option value="RF01">RF01</option>
+                                                    <option value="RF02">RF02</option>
+                                                    <option value="RF03">RF03</option>
+                                                    <option value="BK01">BK01</option>
+                                                    <option value="SM01">SM01</option>
+                                                    <option value="SM02">SM02</option>
+                                                </select>
+                                            </div>
+                                            
+                                        </td>
+                                        <td class="text-center  ps-0 pe-0" style="font-size: 11px">
+                                            <select class="js-select DLStok2" style="width:150px" onchange="DLRefStokChange(this)">
+                                                <option selected disabled value="SECINIZ">SEÇİNİZ</option>
                                             </select>
                                         </td>
-                                        <td class="text-center p-1">
+                                        <td class="text-center ps-0 pe-0" style="font-size: 11px">
+                                            <input type="number" class="border-0 text-center" style="width:120px" readonly>
                                         </td>
                                         <td style="background-color:white;border-bottom:hidden;border-top:hidden;width:1px"></td>
-                                        <td class="text-center p-1">
-                                            <input class="border-0 text-center" style="width:80px;display:none" readonly />
-                                            <input class="border-0 text-center" style="width:80px" readonly="">
+                                        <td class="text-center  ps-0 pe-0" style="font-size: 11px">
+                                            <input type="number" class="border-0 text-center" style="width:120px" readonly>
                                         </td>
-                                        <td class="text-center p-1">
-                                            <select class="js-select" style="width:150px">
-                                                <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
-                                            </select>
-                                        </td>
+                                        
 
                                     </tr>
 
@@ -401,173 +481,165 @@
                             @Html.Partial("IsEmriPartials/IsEmri_TP")
 
 
-                            <table class="table table-bordered border-dark" id="BKTable" style="display:none">
+                                <table class="table table-bordered border-dark" id="BKTable" style="display:none">
 
 
 
-                                <tbody>
-                                    <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
-                                        <th class=""></th>
-                                        <th class="text-center" style="font-size: 11px;">ORAN</th>
-                                        <th class="text-center" style="font-size: 11px;">MAKİNE</th>
-                                        <th class="text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
-                                        <th class="text-center" style="font-size: 11px">ADET</th>
-                                        <th class="text-center" style="font-size: 11px">AĞIRLIK</th>
-                                        <th class="text-center" style="font-size: 11px">MÜŞTERİ</th>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-center p-1">1</td>
-                                        <td class="p-1 text-center">
-                                            <div>
-                                                <input class="border-0 text-center" style="font-size:small;width:100px" type="number" value="1.00" max="1.00" min="0.00" onblur="oranBK(this)">
-                                                <div class="text-center">
-                                                    <img onclick="addRow1(this)" style="width:18px;cursor:pointer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC">
+                                    <tbody>
+                                        <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
+                                            <th class=""></th>
+                                            <th class="text-center" style="font-size: 11px;">ORAN</th>
+                                            <th class="text-center" style="font-size: 11px;">MAKİNE</th>
+                                            <th class="text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
+                                            <th class="text-center" style="font-size: 11px">ADET</th>
+                                            <th class="text-center" style="font-size: 11px">AĞIRLIK</th>
+                                            <th class="text-center" style="font-size: 11px">MÜŞTERİ</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center p-1">1</td>
+                                            <td class="p-1 text-center">
+                                                <div>
+                                                    <input class="border-0 text-center" style="font-size:small;width:100px" type="number" value="1.00" max="1.00" min="0.00" onblur="oranBK(this)">
+                                                    <div class="text-center">
+                                                        <img onclick="addRow1(this)" style="width:18px;cursor:pointer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC">
+                                                    </div>
                                                 </div>
-                                            </div>
 
 
 
-                                        </td>
-                                        <td class="border-0 text-center p-1 w-auto">
-                                            <select class="js-select" style="width:100px" onchange="MachineChange(this, 'BKTable')">
-                                                <option selected disabled>SEÇİNİZ</option>
-                                                <option value="BK01">BK01</option>
-                                            </select>
-                                        </td>
+                                            </td>
+                                            <td class="border-0 text-center p-1 w-auto">
+                                                <select class="js-select" style="width:100px" onchange="MachineChange(this, 'BKTable')">
+                                                    <option selected disabled>SEÇİNİZ</option>
+                                                    <option value="BK01">BK01</option>
+                                                </select>
+                                            </td>
 
-                                        <td class="p-0 text-center">
-                                            <select class="js-select" style="width:350px" disabled onchange="StokChangeBK(this)">
-                                                <option selected disabled>SEÇİNİZ</option>
-                                                @foreach (var item in ViewBag.Stok_Adlari)
-                                                {
-                                                    <option value="@item.STOK_ADI">@item.STOK_ADI</option>
-                                                }
-                                            </select>
-                                        </td>
+                                            <td class="p-0 text-center">
+                                                <select class="js-select" style="width:350px" disabled onchange="StokChangeBK(this)">
+                                                    <option selected disabled>SEÇİNİZ</option>
 
-                                        <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" readonly /></td>
+                                                </select>
+                                            </td>
 
-                                        <td class="text-center p-1">
-                                            <input class="border-0 text-center" style="width:80px;display:none" readonly />
-                                            <input class="border-0 text-center" style="width:80px" readonly="">
-                                        </td>
+                                            <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" readonly /></td>
 
-                                        <td class="text-center p-1">
-                                            <select class="js-select" style="width:150px">
-                                                <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width:80px;display:none" readonly />
+                                                <input class="border-0 text-center" style="width:80px" readonly="">
+                                            </td>
 
-                            <table class="table table-bordered border-dark" id="PBTable" style="display:none">
-                                <tbody>
-                                    <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
-                                        <th class=""></th>
-                                        <th class="text-center" style="font-size: 11px;">ORAN</th>
-                                        <th class="text-center" style="font-size: 11px;">MAKİNE</th>
-                                        <th class="text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
-                                        <th class="text-center" style="font-size: 11px">ADET</th>
-                                        <th class="text-center" style="font-size: 11px">AĞIRLIK</th>
-                                        <th class="text-center" style="font-size: 11px">MÜŞTERİ</th>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-center p-1">1</td>
-                                        <td class="p-1 text-center">
-                                            <div>
-                                                <input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00" onblur="oranPB(this)">
-                                            </div>
-                                        </td>
-                                        <td class="border-0 text-center p-1 w-auto">
-                                            <select class="js-select" style="width:100px" onchange="MachineChange(this, 'PBTable')">
-                                                <option selected disabled>SEÇİNİZ</option>
-                                                <option value="PB01">PB01</option>
-                                                <option value="PB02">PB02</option>
-                                            </select>
-                                        </td>
+                                            <td class="text-center p-1">
+                                                <select class="js-select" style="width:150px">
+                                                    <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
-                                        <td class="p-0 text-center">
-                                            <select class="js-select" style="width:350px" disabled onchange="StokChangePB(this)">
-                                                <option selected disabled>SEÇİNİZ</option>
-                                                @foreach (var item in ViewBag.Stok_Adlari)
-                                                {
-                                                    <option value="@item.STOK_ADI">@item.STOK_ADI</option>
-                                                }
-                                            </select>
-                                        </td>
+                                <table class="table table-bordered border-dark" id="PBTable" style="display:none">
+                                    <tbody>
+                                        <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
+                                            <th class=""></th>
+                                            <th class="text-center" style="font-size: 11px;">ORAN</th>
+                                            <th class="text-center" style="font-size: 11px;">MAKİNE</th>
+                                            <th class="text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
+                                            <th class="text-center" style="font-size: 11px">ADET</th>
+                                            <th class="text-center" style="font-size: 11px">AĞIRLIK</th>
+                                            <th class="text-center" style="font-size: 11px">MÜŞTERİ</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center p-1">1</td>
+                                            <td class="p-1 text-center">
+                                                <div>
+                                                    <input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00" onblur="oranPB(this)">
+                                                </div>
+                                            </td>
+                                            <td class="border-0 text-center p-1 w-auto">
+                                                <select class="js-select" style="width:100px" onchange="MachineChange(this, 'PBTable')">
+                                                    <option selected disabled>SEÇİNİZ</option>
+                                                    <option value="PB01">PB01</option>
+                                                    <option value="PB02">PB02</option>
+                                                </select>
+                                            </td>
 
-                                        <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" readonly /></td>
+                                            <td class="p-0 text-center">
+                                                <select class="js-select" style="width:350px" disabled onchange="StokChangePB(this)">
+                                                    <option selected disabled>SEÇİNİZ</option>
 
-                                        <td class="text-center p-1">
-                                            <input class="border-0 text-center" style="width:80px;display:none" readonly />
-                                            <input class="border-0 text-center" style="width:80px" readonly="">
-                                        </td>
+                                                </select>
+                                            </td>
 
-                                        <td class="text-center p-1">
-                                            <select class="js-select" style="width:150px">
-                                                <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
-                                            </select>
-                                        </td>
+                                            <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" readonly /></td>
 
-                                    </tr>
-                                </tbody>
-                            </table>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width:80px;display:none" readonly />
+                                                <input class="border-0 text-center" style="width:80px" readonly="">
+                                            </td>
+
+                                            <td class="text-center p-1">
+                                                <select class="js-select" style="width:150px">
+                                                    <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
+                                                </select>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
 
 
-                            <table class="table table-bordered border-dark" id="RFTable" style="display:none">
-                                <tbody>
-                                    <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
-                                        <th class=""></th>
-                                        <th class="text-center" style="font-size: 11px;">ORAN</th>
-                                        <th class="text-center" style="font-size: 11px;">MAKİNE</th>
-                                        <th class="text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
-                                        <th class="text-center" style="font-size: 11px">ADET</th>
-                                        <th class="text-center" style="font-size: 11px">AĞIRLIK</th>
-                                        <th class="text-center" style="font-size: 11px">MÜŞTERİ</th>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-center p-1">1</td>
-                                        <td class="p-1 text-center">
-                                            <div>
-                                                <input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00" onblur="oranRF(this)">
-                                            </div>
-                                        </td>
-                                        <td class="border-0 text-center p-1 w-auto">
-                                            <select class="js-select" style="width:100px" onchange="MachineChange(this, 'RFTable')">
-                                                <option selected disabled>SEÇİNİZ</option>
-                                                <option value="RF01">RF01</option>
-                                                <option value="RF02">RF02</option>
-                                                <option value="RF03">RF03</option>
-                                            </select>
-                                        </td>
+                                <table class="table table-bordered border-dark" id="RFTable" style="display:none">
+                                    <tbody>
+                                        <tr id="th" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
+                                            <th class=""></th>
+                                            <th class="text-center" style="font-size: 11px;">ORAN</th>
+                                            <th class="text-center" style="font-size: 11px;">MAKİNE</th>
+                                            <th class="text-center" style="font-size: 11px;">STOK ÖLÇÜLERİ</th>
+                                            <th class="text-center" style="font-size: 11px">ADET</th>
+                                            <th class="text-center" style="font-size: 11px">AĞIRLIK</th>
+                                            <th class="text-center" style="font-size: 11px">MÜŞTERİ</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center p-1">1</td>
+                                            <td class="p-1 text-center">
+                                                <div>
+                                                    <input class="border-0 text-center" style="font-size:small" type="number" value="1.00" max="1.00" min="0.00" onblur="oranRF(this)">
+                                                </div>
+                                            </td>
+                                            <td class="border-0 text-center p-1 w-auto">
+                                                <select class="js-select" style="width:100px" onchange="MachineChange(this, 'RFTable')">
+                                                    <option selected disabled>SEÇİNİZ</option>
+                                                    <option value="RF01">RF01</option>
+                                                    <option value="RF02">RF02</option>
+                                                    <option value="RF03">RF03</option>
+                                                </select>
+                                            </td>
 
-                                        <td class="p-0 text-center">
-                                            <select class="js-select" style="width:350px" disabled onchange="StokChangeRF(this)">
-                                                <option selected disabled>SEÇİNİZ</option>
-                                                @foreach (var item in ViewBag.Stok_Adlari)
-                                                {
-                                                    <option value="@item.STOK_ADI">@item.STOK_ADI</option>
-                                                }
-                                            </select>
-                                        </td>
+                                            <td class="p-0 text-center">
+                                                <select class="js-select" style="width:350px" disabled onchange="StokChangeRF(this)">
+                                                    <option selected disabled>SEÇİNİZ</option>
 
-                                        <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" readonly /></td>
+                                                </select>
+                                            </td>
 
-                                        <td class="text-center p-1">
-                                            <input class="border-0 text-center" style="width:80px;display:none" readonly />
-                                            <input class="border-0 text-center" style="width:80px" readonly="">
-                                        </td>
+                                            <td class="text-center p-1"><input class="border-0 text-center" style="width:80px" readonly /></td>
 
-                                        <td class="text-center p-1">
-                                            <select class="js-select" style="width:150px">
-                                                <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
-                                            </select>
-                                        </td>
+                                            <td class="text-center p-1">
+                                                <input class="border-0 text-center" style="width:80px;display:none" readonly />
+                                                <input class="border-0 text-center" style="width:80px" readonly="">
+                                            </td>
 
-                                    </tr>
-                                </tbody>
-                            </table>
+                                            <td class="text-center p-1">
+                                                <select class="js-select" style="width:150px">
+                                                    <option value="EFECE GALVANİZ" disabled selected>EFECE GALVANİZ</option>
+                                                </select>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+
                         </div>
                         <div class="row mt-3">
                             <div class="col">
@@ -576,46 +648,23 @@
                                         <tbody>
 
                                             <tr style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);">
-                                                <th class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
-
-                                                </th>
-                                                <td class="text-center p-1" style="font-size: 11px;font-weight:bold;width:20px">
+                                               
+                                                <td class="text-center p-1" style="font-size: 11px;font-weight:bold;">
                                                     FİRE YÜZDESİ
                                                 </td>
-                                                <td class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
-                                                    FİRE GENİŞLİĞİ (mm)
-                                                </td>
-                                                <td class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
+                                                
+                                                <td class="text-center p-1" style="font-size: 11px; font-weight: bold;">
                                                     FİRE AĞIRLIĞI (kg)
-                                                </td>
-
-                                            </tr>
-                                            <tr style="background-color: #edf0f5 ">
-                                                <th class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
-                                                    FİRE
-                                                </th>
-                                                <td class="text-center p-1">
-                                                    <input class="border-0 text-center" style="width:80px;background-color:transparent" id="fireyuzde" keyup="updateinput(this.value)" readonly="">
-                                                </td>
-                                                <td class="text-center p-1">
-                                                    <input class="border-0 text-center" style="width: 80px; background-color: transparent" id="fireagir" readonly="">
-                                                </td>
-                                                <td class="text-center p-1">
-                                                    <input class="border-0 text-center" style="width: 80px; background-color: transparent" id="fireagirligi" readonly="">
                                                 </td>
 
                                             </tr>
                                             <tr style="background-color: #e8ebeb ">
 
-                                                <th class="text-center p-1" style="font-size: 11px; font-weight: bold; width: 20px">
-                                                    GENEL FİRE
-                                                </th>
+                                                
                                                 <td class="text-center p-1">
                                                     <input class="border-0 text-center" style="width:80px;background-color:transparent" id="fireyuzde1" readonly="">
                                                 </td>
-                                                <td class="text-center p-1">
-                                                    <input class="border-0 text-center" style="width: 80px; background-color: transparent" id="fireagir1" readonly="">
-                                                </td>
+                                               
                                                 <td class="text-center p-1">
                                                     <input class="border-0 text-center" style="width: 80px; background-color: transparent" id="fireagirligi1" readonly="">
                                                 </td>
@@ -627,24 +676,29 @@
                                 </div>
                             </div>
 
-                            <div class="col-6">
+                            <div class="col-10">
                                 <div class="row me-1">
                                     <div class="col">
                                         <button class="float-end" onclick="addRow()" id="addRw" style="cursor: pointer; background-color: transparent; background-repeat: no-repeat; border: none;"><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC"></button>
                                         <button class="float-end" onclick="removeRow()" id="removeRw" style="cursor: pointer; background-color: transparent; background-repeat: no-repeat; border: none;"><img style="width:20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAVJJREFUSEu9leFRwzAMhb9OAkwAnQBGgAlgA+gkwATABMAGMAGwQZkE7uOsnuMmscOl1Z1/xFb09GTpecGObbHj+LQAXAGnwEla5vSZ1gvwOpbkGMA5cAscVliugRUg2JYNAdwB18n7G/D7LWXttmzOgBvgIPnpI1DH+gDy4P7g95gJIlPtPoFu/EsAy/KcTpdZxrVekNFHcrrIy1UCWE8pt2ReggYTYxzFYQ5gtzwA1rx2sUOMIsENixzgEbj8Z/YBGCyeABPuzIG9fQxMqX3JJO7CWMbpAPwk75xV7NUuue+fv73BgxRxVoA5S/QVsrLXS44h6/RxrfjF+Wib6jvHoHXmaO9SIYtc7BwcBWw2sYtAOYhl8/u9kGsfIRMIWdlS0nIOyiy9dAOH3g+xsOYCTXpw8mACuZQBpUSzz50bg/YG7lPTiR3Z5t7y6LdFGvD6BU/pUBk06brSAAAAAElFTkSuQmCC"></button>
+                                        
+                                       
+                                        
                                     </div>
                                 </div>
-                                <div class="row mt-3 me-1">
+                                <div class="row">
                                     <div class="col">
-                                        <button disabled class="btn btn-info float-start" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="kaydet()" id="kaydet">KAYDET</button>
-                                        <button class="btn btn-info float-start ms-1" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="tablosil()" id="tablosilButton">SİL</button>
                                         <div class="form-check form-switch mt-3" id="tamamidiv" style="display:none;float:right">
                                             <input id="tamami" checked="checked" onchange="chcked()" class="form-check-input" type="checkbox">
                                             <label class="form-check-label" for="tamami">Tamamı Kullanılsın</label>
                                         </div>
+                                        <div style="display:flex;justify-content:center;align-items:center">
+                                            <button disabled class="btn btn-info" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="kaydet()" id="kaydet">KAYDET</button>
+                                            <button class="btn btn-info  ms-1" style="background-image: linear-gradient(to right, #E0EAFC 0%, #CFDEF3 51%, #E0EAFC 100%);color:black;font-size:11px" onclick="tablosil()" id="tablosilButton">SİL</button>
+                                        </div>
                                     </div>
-
                                 </div>
+                                
 
 
 
@@ -702,32 +756,212 @@
         </div>
     </div>
     @Html.Partial("IsEmriPartials/RehberPartial")
+   
 <script>
+        $(document).ready(function () {
+            HideProgress()
+            $("#btnradio12").prop("checked", true).trigger("click");
 
-        if ($(window).width() < 600) {
-            $("#divPartial2").show();
+            $('#pageName').html('<div class="dot"></div> İş Emri')
+            
+            $(".js-select").select2(
+                {
+                    "language": {
+                        "noResults": function () {
+                            return "Sonuç bulunamadı.";
+                        }
+                    },
+                    escapeMarkup: function (markup) {
+                        return markup;
+                    }
+                });
+            var tpl = $.pivotUtilities.aggregatorTemplates;
+            function drawPivot() {
+
+                $(function () {
+                    $("#DLPivot").pivot(
+                        takiplist,
+                        {
+                            rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET", "MIKTAR_SABITLE", "AGIRLIK", "FIRE", "HAMSARF"],
+                            cols: [],
+                            aggregator: tpl.sum()(["ADET"]),
+                            sorters: {
+
+                                GIRDI1: function (a, b) { return a - b; } //sort backwards
+                            }
+
+
+                        }, false, "tr")
+                })
+            }
+            function getPivot() {
+
+                document.body.style.cursor = 'default';
+                takiplist = JSON.parse(localStorage.DLlist);
+                var girdi1 = [];
+                for (let i = 0; i < takiplist.length; i++) {
+
+                    if (!girdi1.includes(takiplist[i].GIRDI1)) {
+
+                        girdi1.push({ GIRDI1: takiplist[i].GIRDI1 });
+
+                    }
+
+                }
+                var newtakip = [];
+                var hamtop = 0;
+                var firtop = 0;
+                for (let i = 0; i < girdi1.length; i++) {
+                    var sum = 0;
+                    var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
+
+
+                    for (let e = 0; e < fil.length; e++) {
+
+                        sum = sum + parseFloat(fil[e].GENISLIK);
+
+
+                    }
+                    var ek = 0;
+                    for (let e = 0; e < fil.length; e++) {
+                        if (fil[e].MIKTAR_SABITLE == "E") {
+                            fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * parseFloat(fil[e].ORAN);
+                            var oldek = ek;
+                            ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
+                            if (Math.round(ek) != Math.round(oldek)) {
+                                fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
+                            } else {
+                                fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
+                            }
+                            fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
+                            fil[e].AGIRLIK = parseFloat(parseFloat(fil[e].AGIRLIK));
+
+                            if (fil.length == 1) {
+                                fil[0].FIRE = fil[0].HAMSARF - (parseFloat(fil[0].AGIRLIK));
+                            }
+                        } else {
+                            for (let e = 0; e < fil.length; e++) {
+                                fil[e].HAMSARF = "1";
+                                fil[e].FIRE = "-";
+                                fil[e].AGIRLIK = parseFloat(parseFloat(fil[e].AGIRLIK));
+                            }
+                        }
+                    }
+
+                    if (newtakip.length == 0) {
+                        newtakip = fil;
+                    } else {
+                        newtakip = newtakip.concat(fil);
+                    }
+
+                }
+                takiplist = newtakip;
+                var fn = takiplist.filter(x => x.ISEMRINO === takiplist[0].ISEMRINO).length;
+                for (let i = 0; i < takiplist.length; i++) {
+                    tp = tp + parseFloat(takiplist[i].FIRE);
+                }
+
+                for (let i = 0; i < takiplist.length; i++) {
+                    hamtop = hamtop + takiplist[i].HAMSARF;
+                    firtop = firtop + takiplist[i].FIRE;
+                }
+                //fireag.value = (firtop / fn).toLocaleString();
+                //fireyuz.value = ((firtop / fn) / (hamtop / fn) * 100).toFixed(2) + " %";
+                localStorage.list4 = JSON.stringify(takiplist);
+                drawPivot();
+
+
+
+
+            }
+            takiplist2 = [];
+            function drawPivot2() {
+
+
+                $("#DLPivotTop").pivot(
+                    takiplist2,
+                    {
+                        rows: ["MUSTERI", "STOKADI", "ADET", "AGIRLIK"]
+                    }, false, "tr")
+            }
+            function getPivot2() {
+
+                var result = Grupla(JSON.parse(localStorage.DLlistTop))
+
+                for (let i = 0; i < result.length; i++) {
+
+
+                    takiplist2.push({ STOKADI: result[i].STOKADI, MUSTERI: result[i].MUSTERI, AGIRLIK: result[i].AGIRLIK, ADET: result[i].ADET })
+
+
+                }
+                drawPivot2();
+
+                document.body.style.cursor = 'default';
+                var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
+                var sum = 0;
+                var sum2 = 0;
+                for (let i = 1; i < rr.length - 1; i++) {
+                    sum = sum + parseFloat(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
+                    sum2 = sum2 + parseFloat(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
+                }
+                document.getElementById("fireagirligi1").value = sum;
+
+                document.getElementById("fireyuzde1").value = parseFloat(sum / sum2 * 100).toFixed(2) + " %";
+
+            }
+            if (localStorage.DLlist != "null" && localStorage.DLlist != null) {
+
+                getPivot2();
+                getPivot();
+            }
+
+        })
+        function ShowProgress() {
+            document.body.style.overflow = 'hidden';
+            document.activeElement.blur();
+            $('#nova-overlay').fadeIn('fast').css('display', 'flex');
         }
-        else {
-            $("#divPartial").show();
-
+        function HideProgress() {
+            document.body.style.overflow = 'auto';
+            $('#nova-overlay').fadeOut('slow');
         }
-        function rehberAc() {
 
-            $("#rehberSec").modal("show");
-            ShowProgress()
-            $('#urunler').bootstrapTable("destroy").bootstrapTable().after(function () {
+
+
+     $("#divPartial").show();
+
+    function rehberAc(element) {
+        sonDLHamRowNum= $(element).parent().parent().parent().index()
+
+        ShowProgress()
+        axios.get('http://192.168.2.13:83/api/seri/serirehber').then(function (response) {
+            $('#urunler').bootstrapTable("destroy").bootstrapTable({
+                data:response.data
+            }).after(function () {
+                $("#rehberSec").modal("show");
                 HideProgress()
             })
+        })
+
 
         }
     function rehberAktar(seri) {
-        $("#seri").val(seri).trigger("input");
+        var Tip = $('input[name="uretim-tip"]:checked').val();
+        var input = $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(sonDLHamRowNum).find('input').eq(1);
+        if (Tip == 'DL') {
+            input.val(seri).trigger("input");
+        } else {
+            $("#seri").val(seri).trigger("input");
+        }
+
         $("#rehberSec").modal("hide");
     }
         function ModalKapat() {
             $("#rehberSec").modal("hide");
         }
-        const seri = document.getElementById('seri');
+    const seri = document.getElementById('seri');
+    const seriDL = document.getElementById('seriDL');
         const genislik = document.getElementById('genislik');
         const genislikarti = document.getElementById('genislikalti');
         const kalinlik = document.getElementById('kalinlik');
@@ -738,7 +972,7 @@
         const stokAdi = document.getElementById('stokadi');
         const kalite = document.getElementById('kalite');
         const hamoran = document.getElementById('hamoran');
-
+    var sonDLHamRowNum = 0;
          function rechange() {
             $.getJSON("http://192.168.2.13:83/api/seri/serirehber", function (data) {
                 jsonObj = data;
@@ -1064,6 +1298,137 @@
 
 
     }
+    var MiktarList = [];
+    function rechangeDL(v) {
+
+
+        axios.get('http://192.168.2.13:83/api/seri/serirehber').then(function (response) {
+            var b = response.data.filter(x => x.SERI_NO == v.value)
+            var currentRow = $(v).closest("tr");
+            if (b.length > 0) {
+
+                currentRow.find('input').eq(4).val(b[0].ACIK2)
+                currentRow.find('input').eq(5).val(b[0].ACIK1)
+                currentRow.find('input').eq(10).val((b[0].MIKTAR * currentRow.find('input').eq(0).val()).toLocaleString('tr-TR') + " / " + (b[0].MIKTAR).toLocaleString('tr-TR'))
+                currentRow.find('label').eq(0).text(b[0].MENSEI)
+                currentRow.find('input').eq(3).val(b[0].MIKTAR2)
+                currentRow.find('input').eq(7).val(b[0].SERI_NO_4)
+                currentRow.find('input').eq(8).val(b[0].SERI_NO_3)
+                currentRow.find('textarea').eq(0).val(b[0].STOK_ADI)
+                var genislikalti = currentRow.find('input').eq(6).val() || 0;
+                
+                currentRow.find('input').eq(9).val(parseFloat((parseFloat(b[0].MIKTAR * currentRow.find('input').eq(0).val())) / ((parseFloat(b[0].ACIK1) + parseFloat(genislikalti)) * parseFloat((b[0].ACIK2).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseFloat((b[0].MIKTAR)) / ((parseFloat(b[0].ACIK1) + parseFloat(genislikalti)) * parseFloat((b[0].ACIK2).replace(",", ".")) * (0.00786))).toFixed(2))
+
+                //var alltr = document.getElementsByTagName("table")[1].getElementsByTagName("tr");
+               
+                
+
+            }
+            else {
+                currentRow.find('input').eq(4).val("")
+                currentRow.find('input').eq(5).val("")
+                currentRow.find('input').eq(10).val("")
+                currentRow.find('label').eq(0).text("")
+                currentRow.find('input').eq(3).val("")
+                currentRow.find('input').eq(7).val("")
+                currentRow.find('input').eq(8).val("")
+                currentRow.find('textarea').eq(0).val("")
+
+                currentRow.find('input').eq(9).val("")
+
+            }
+            Toplam();
+
+        })
+    }
+    var sondlstok = "";
+    var ToplamKulAgirlik = 0;
+    var ToplamKulMetraj = 0;
+    var ToplamTumAgirlik = 0;
+    var ToplamTumMetraj = 0;
+    function Toplam() {
+        var $table = $('#DLHammaddeCard').find('table').eq(0);
+        var allTr = $table.find('tr');
+        
+        ToplamKulAgirlik = 0;
+        ToplamTumAgirlik = 0;
+        ToplamKulMetraj = 0;
+        ToplamTumMetraj = 0;
+       
+            for (let i = 1; i < allTr.length; i++) {
+                if (allTr.find('input').eq(10).val() != "") {
+                    ToplamKulAgirlik += parseFloat(allTr.eq(i).find('input').eq(10).val().split('/')[0].replace('.', ''))
+                    ToplamTumAgirlik += parseFloat(allTr.eq(i).find('input').eq(10).val().split('/')[1].replace('.', ''))
+                    ToplamKulMetraj += parseFloat(allTr.eq(i).find('input').eq(9).val().split('/')[0])
+                    ToplamTumMetraj += parseFloat(allTr.eq(i).find('input').eq(9).val().split('/')[1])
+                }
+                else {
+
+                    ToplamKulAgirlik = 0;
+                    ToplamTumAgirlik = 0;
+                    ToplamKulMetraj = 0;
+                    ToplamTumMetraj = 0;
+                }
+            }
+        
+       
+        if (ToplamTumAgirlik != 0) {
+            $('#toplamLabel').html('Toplam Seçilen Hammadde Ağırlığı: <b>' + ToplamKulAgirlik.toLocaleString('tr-TR') + ' / ' + ToplamTumAgirlik.toLocaleString('tr-TR') + '</b>&#160;&#160;&#160;Toplam Seçilen Hammadde Metrajı: <b>' + Math.round(ToplamKulMetraj).toLocaleString('tr-TR') + ' / ' + Math.round(ToplamTumMetraj).toLocaleString('tr-TR') + '</b>')
+            $('#toplamLabelRehber').html('Toplam Seçilen Hammadde Ağırlığı: <b>' + ToplamKulAgirlik.toLocaleString('tr-TR') + ' / ' + ToplamTumAgirlik.toLocaleString('tr-TR') + '</b>&#160;&#160;&#160;Toplam Seçilen Hammadde Metrajı: <b>' + Math.round(ToplamKulMetraj).toLocaleString('tr-TR') + ' / ' + Math.round(ToplamTumMetraj).toLocaleString('tr-TR') + '</b>')
+        }
+        else {
+            $('#toplamLabel').html('Toplam Seçilen Hammadde Ağırlığı: -&#160;&#160;&#160;Toplam Seçilen Hammadde Metrajı: -')
+            $('#toplamLabelRehber').html('Toplam Seçilen Hammadde Ağırlığı: -&#160;&#160;&#160;Toplam Seçilen Hammadde Metrajı: -')
+           
+            var allStok1 = $('.DLStok1');
+            for (let i = 0; i < allStok1.length; i++) {
+                allStok1.eq(i).html(null)
+                var option = $('<option/>');
+                option.attr({ 'value': 'SECINIZ', 'disabled': '', 'selected': '' }).text('SEÇİNİZ');
+                allStok1.eq(i).append(option);
+                
+            }
+          
+            var allStok2 = $('.DLStok2');
+            for (let i = 0; i < allStok2.length; i++) {
+                allStok2.eq(i).html(null)
+                var option = $('<option/>');
+                option.attr({ 'value': 'SECINIZ', 'disabled': '', 'selected': '' }).text('SEÇİNİZ');
+                allStok2.eq(i).append(option);
+
+            }
+
+            $('.DLRefMachine').val('SECINIZ').trigger('change')
+
+        }
+        if (sondlstok != "") {
+            axios.get('http://192.168.2.13:83/api/seri/receteden/' + sondlstok + '/0/DL01').then(function (response) {
+                var allStok1 = $('.DLStok1');
+                
+                
+                    
+                for (let j = 0; j < allStok1.length; j++) {
+                    if (allStok1.eq(j).val() == 'SECINIZ' || allStok1.eq(j).val() == null) {
+                        allStok1.eq(j).html(null)
+                        var option = $('<option/>');
+                        option.attr({ 'value': 'SECINIZ', 'disabled': '', 'selected': '' }).text('SEÇİNİZ');
+                        allStok1.eq(j).append(option);
+                        $.each(response.data, function (i, item) {
+
+                            option = $('<option/>');
+                            option.attr({ 'value': item.MAMUL_KODU }).text(item.STOK_ADI);
+                            allStok1.eq(j).append(option);
+
+
+                        });
+                    }
+                   
+                }
+                
+            })
+        }
+        DLInputChange();
+    }
     var DLlist = null;
     var DLListTop = null;
     var serilist = [];
@@ -1075,170 +1440,16 @@
     var takiplist = [];
     var takiplist2 = null;
     var DLList = null;
-    var OldStokAdi = null;
-    var Stoklar = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
+    var OldKalinlik = null;
+    var Stoklar = null;
+
+
     $(document).on('select2:open', () => {
         document.querySelector('.select2-search__field').focus();
     });
 
-        $(document).ready(function () {
-
-        $('#pageName').html('<div class="dot"></div> İş Emri')
-
-        $(".js-select").select2(
-            {
-                "language": {
-                    "noResults": function () {
-                        return "Sonuç bulunamadı.";
-                    }
-                },
-                escapeMarkup: function (markup) {
-                    return markup;
-                }
-            });
-        var tpl = $.pivotUtilities.aggregatorTemplates;
-        function drawPivot() {
-
-            $(function () {
-                $("#DLPivot").pivot(
-                    takiplist,
-                    {
-                        rows: ["GIRDI1", "GIRDI2", "ISEMRINO", "STOKADI", "KALINLIK", "KALITE", "KAPLAMA", "GENISLIK", "ADET", "REF_ISEMRINO", "REF_STOKOLCUSU", "REF_ADET", "MIKTAR_SABITLE", "AGIRLIK", "FIRE", "HAMSARF"],
-                        cols: [],
-                        aggregator: tpl.sum()(["ADET"]),
-                        sorters: {
-
-                            GIRDI1: function (a, b) { return a - b; } //sort backwards
-                        }
 
 
-                    }, false, "tr")
-            })
-        }
-        function getPivot() {
-
-                    document.body.style.cursor = 'default';
-                    takiplist = JSON.parse(localStorage.DLlist);
-                    var girdi1 = [];
-                    for (let i = 0; i < takiplist.length; i++) {
-
-                        if (!girdi1.includes(takiplist[i].GIRDI1)) {
-
-                            girdi1.push({ GIRDI1: takiplist[i].GIRDI1 });
-
-                        }
-
-                    }
-                    var newtakip = [];
-                    var hamtop = 0;
-                    var firtop = 0;
-                    for (let i = 0; i < girdi1.length; i++) {
-                        var sum = 0;
-                        var fil = takiplist.filter(x => x.GIRDI1 == girdi1[i].GIRDI1);
-
-
-                            for (let e = 0; e < fil.length; e++) {
-
-                                    sum = sum + parseFloat(fil[e].GENISLIK);
-
-
-                            }
-                        var ek = 0;
-                        for (let e = 0; e < fil.length; e++) {
-                            if (fil[e].MIKTAR_SABITLE == "E") {
-                                fil[e].HAMSARF = parseFloat(parseFloat(fil[e].GENISLIK) / sum) * (parseFloat(fil[e].TAMAGIRLIK)) * parseFloat(fil[e].ORAN);
-                                var oldek = ek;
-                                ek = ek + fil[e].HAMSARF - parseInt(fil[e].HAMSARF);
-                                if (Math.round(ek) != Math.round(oldek)) {
-                                    fil[e].HAMSARF = parseInt(fil[e].HAMSARF) + 1;
-                                } else {
-                                    fil[e].HAMSARF = parseInt(fil[e].HAMSARF)
-                                }
-                                fil[e].FIRE = fil[e].HAMSARF - (parseFloat(fil[e].AGIRLIK));
-                                fil[e].AGIRLIK = parseFloat(parseFloat(fil[e].AGIRLIK));
-
-                                if (fil.length == 1) {
-                                    fil[0].FIRE = fil[0].HAMSARF - (parseFloat(fil[0].AGIRLIK));
-                                }
-                            } else {
-                                for (let e = 0; e < fil.length; e++) {
-                                    fil[e].HAMSARF = "1";
-                                    fil[e].FIRE = "-";
-                                    fil[e].AGIRLIK = parseFloat(parseFloat(fil[e].AGIRLIK));
-                                }
-                            }
-                        }
-
-                        if (newtakip.length == 0) {
-                            newtakip = fil;
-                        } else {
-                            newtakip = newtakip.concat(fil);
-                        }
-
-                    }
-                    takiplist = newtakip;
-                    var fn = takiplist.filter(x => x.ISEMRINO === takiplist[0].ISEMRINO).length;
-                    for (let i = 0; i < takiplist.length; i++) {
-                        tp = tp + parseFloat(takiplist[i].FIRE);
-                    }
-
-                    for (let i = 0; i < takiplist.length; i++) {
-                        hamtop = hamtop + takiplist[i].HAMSARF;
-                        firtop = firtop + takiplist[i].FIRE;
-                    }
-                    //fireag.value = (firtop / fn).toLocaleString();
-                    //fireyuz.value = ((firtop / fn) / (hamtop / fn) * 100).toFixed(2) + " %";
-                    localStorage.list4 = JSON.stringify(takiplist);
-                    drawPivot();
-
-
-
-
-        }
-        takiplist2 = [];
-        function drawPivot2() {
-
-
-            $("#DLPivotTop").pivot(
-                takiplist2,
-                {
-                    rows: ["MUSTERI", "STOKADI", "ADET", "AGIRLIK"]
-                }, false, "tr")
-        }
-        function getPivot2() {
-
-            var result = Grupla(JSON.parse(localStorage.DLlistTop))
-
-            for (let i = 0; i < result.length; i++) {
-
-
-                takiplist2.push({ STOKADI: result[i].STOKADI, MUSTERI: result[i].MUSTERI, AGIRLIK: result[i].AGIRLIK, ADET: result[i].ADET })
-
-
-                    }
-                    drawPivot2();
-
-                    document.body.style.cursor = 'default';
-                    var rr = document.getElementsByClassName("pvtTable")[0].getElementsByTagName("tr");
-                    var sum = 0;
-                    var sum2 = 0;
-                    for (let i = 1; i < rr.length - 1; i++) {
-                        sum = sum + parseFloat(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 2].innerHTML);
-                        sum2 = sum2 + parseFloat(rr[i].getElementsByTagName("th")[rr[i].getElementsByTagName("th").length - 1].innerHTML);
-                    }
-                    document.getElementById("fireagirligi1").value = sum;
-
-                    document.getElementById("fireyuzde1").value = parseFloat(sum / sum2 * 100).toFixed(2) + " %";
-
-        }
-        if (localStorage.DLlist != "null" && localStorage.DLlist != null) {
-
-            getPivot2();
-            getPivot();
-        }
-            $("#btnradio12").prop("checked", true).trigger("click");
-            HideProgress()
-        })
     var hamkod = null;
     function MachineChange(val, tableId) {
         if (val.value != "SEÇİNİZ") {
@@ -1247,7 +1458,7 @@
                 var d = data.filter(x => x.HAT_KODU == val.value);
 
 
-                if (OldStokAdi != $("#stokadi").val()) {
+                if (OldKalinlik!= $("#kalinlik").val()) {
                     $(".js-select").select2('destroy');
                     if (document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[2].value == "SEÇİNİZ") {
 
@@ -1282,14 +1493,17 @@
                             return markup;
                         }
                         });
-                    DlInputChange(document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("input")[2]);
+                    if (val.value != 'TP01') {
+                        DlInputChange(document.getElementById(tableId).getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("input")[2]);
+                    }
+
                 }
 
                 KaydetAktivite();
             }).done(function () {
                 if (val.value.substring(0, 2) != "TP") {
                     if (hamkod != null) {
-                        if (OldStokAdi != $("#stokadi").html()) {
+                        if (OldKalinlik != $("#kalinlik").val()) {
 
                             var url = "http://192.168.2.13:83/api/seri/receteden/" + hamkod + "/0/"+ val.value
                             if (val.value.substring(0, 2) == "BK") {
@@ -1313,7 +1527,7 @@
                                     $sel3.appendChild(opt3);
                                 }
                             })
-                            OldStokAdi = null;
+                            OldKalinlik = null;
 
                         }
                     }
@@ -1346,14 +1560,14 @@
         }
     function RefMachineChange(val) {
         if (val.value != "SEÇİNİZ") {
-
+            
             document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3].removeAttribute("disabled");
             document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName('i')[0].style.display = "block";
             var s = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[1].value;
 
 
 
-            if (OldStokAdi != $("#stokadi").val() && s != "SEÇİNİZ") {
+            if (OldKalinlik != $("#kalinlik").val() && s != "SEÇİNİZ") {
                 var stokkodu = Stoklar.filter(x => x.STOK_ADI == s)[0].STOK_KODU;
                 var url = "http://192.168.2.13:83/api/seri/receteden/" + stokkodu + "/0/" + val.value
                 $.getJSON(url, function (d1) {
@@ -1378,7 +1592,7 @@
                 })
             }
         } else {
-
+           
                 var $sel3 = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex].getElementsByTagName("select")[3];
                 $sel3.replaceChildren();
                 var opt2 = document.createElement("option");
@@ -1392,40 +1606,26 @@
 
         KaydetAktivite();
         }
-    function DlInputChange(val) {
-        var tr = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex];
-        tr.getElementsByTagName("td")[11].getElementsByTagName("input")[0].value = Math.round(parseFloat((parseFloat(tr.getElementsByTagName("td")[4].getElementsByTagName("input")[0].value.replace(',','.')) * parseFloat(tr.getElementsByTagName("td")[5].getElementsByTagName("input")[0].value)) / ((parseFloat(document.getElementById("genislik").value)) + (parseFloat(document.getElementById("genislikalti").value))) * (parseFloat(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1])) * parseFloat(tr.getElementsByTagName("td")[1].getElementsByTagName("input")[0].value.toString().replace(",", "."))));
-            tr.getElementsByTagName("td")[11].getElementsByTagName("input")[1].value = parseFloat(tr.getElementsByTagName("td")[11].getElementsByTagName("input")[0].value)
-            var top1 = 0;
-            var rows = document.getElementById("DLTable").getElementsByTagName("tr");
-            for (let i = 1; i < rows.length; i++) {
-                if (rows[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value != "") {
-                    top1 = top1 + parseFloat(parseFloat(rows[i].getElementsByTagName("td")[4].getElementsByTagName("input")[0].value.replace(',', '.')) * parseFloat(rows[i].getElementsByTagName("td")[5].getElementsByTagName("input")[0].value) * parseFloat(rows[i].getElementsByTagName("input")[0].value));
-                }
-        }
-        var d = parseFloat(((parseFloat(document.getElementById("genislik").value)) + (parseFloat(document.getElementById("genislikalti").value))) - top1);
-        document.getElementById("fireagir").value = d.toFixed(2);
-            document.getElementById("fireyuzde").value = parseFloat((parseFloat(document.getElementById("fireagir").value) / ((parseFloat(document.getElementById("genislik").value)) + (parseFloat(document.getElementById("genislikalti").value)))) * 100).toFixed(2) + " %";
-
-            document.getElementById("fireagirligi").value = ((parseFloat(document.getElementById("fireagir").value) / ((parseFloat(document.getElementById("genislik").value)) + (parseFloat(document.getElementById("genislikalti").value)))) * (parseFloat(document.getElementById("agirlik").value.split('/')[0].split('.')[0] + document.getElementById("agirlik").value.split('/')[0].split('.')[1]))).toFixed(2);
-            KaydetAktivite();
-            tr.getElementsByTagName("select")[3].onchange()
-
-        }
+   
     function RefStokChange(val) {
-            var tr = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex];
-            var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-            var adet = tr.getElementsByTagName("input")[3].value;
-            var oo = jsonObj.find(x => x.STOK_ADI == val.value);
-            var m = document.getElementById("metraj").value;
-            var upt = m.split('/')[0];
-        var o = parseFloat(tr.getElementsByTagName("input")[0].value);
-        if (oo != undefined) {
-            tr.getElementsByTagName("td")[9].innerHTML = Math.round((parseFloat(upt) / (oo.BOY / 1000)) * o) * adet;
-        }
+        var tr = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex];
+        axios.get('http://192.168.2.13:83/api/stokkartlari')
+            .then(function (response) {
+                var jsonObj = response.data;
+                var adet = tr.getElementsByTagName("input")[3].value;
+                var oo = jsonObj.find(x => x.STOK_ADI == val.value);
+                var m = document.getElementById("metraj").value;
+                var upt = m.split('/')[0];
+                var o = parseFloat(tr.getElementsByTagName("input")[0].value);
+                if (oo != undefined) {
+                    tr.getElementsByTagName("td")[9].innerHTML = Math.round((parseFloat(upt) / (oo.BOY / 1000)) * o) * adet;
+                }
 
-        KaydetAktivite();
-        DLCariGetir(val.parentNode.parentNode.rowIndex);
+                KaydetAktivite();
+                DLCariGetir(val.parentNode.parentNode.rowIndex);
+
+            })
+
     }
      function StokChange(val) {
 
@@ -1447,28 +1647,30 @@
         KaydetAktivite();
     }
     function ParcalioranUst(val) {
-        var tr = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.parentNode.rowIndex];
+        var trust = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.parentNode.rowIndex];
+        var tralt = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.parentNode.rowIndex+1];
         if (val.value > 1) {
             val.value = "1.00"
         } else if (val.value <= 0) {
             val.value = "0.01"
         }
-        document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.parentNode.parentNode.rowIndex + 1].getElementsByTagName("input")[0].value = (1 - parseFloat(val.value)).toFixed(2)
-        DlInputChange(tr.getElementsByTagName("td")[4].getElementsByTagName("input")[0]);
-        DlInputChange(document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.parentNode.parentNode.rowIndex + 1].getElementsByTagName("td")[4].getElementsByTagName("input")[0]);
+        tralt.getElementsByTagName("input")[0].value = (1 - parseFloat(val.value)).toFixed(2)
+        DlInputChange(trust.getElementsByTagName("td")[4].getElementsByTagName("input")[0]);
+        DlInputChange(tralt.getElementsByTagName("td")[4].getElementsByTagName("input")[0]);
         $(".js-select").trigger("change");
         KaydetAktivite();
     }
     function ParcalioranAlt(val) {
-        var tr = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex];
+        var tralt = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex];
+        var trust = document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex-1];
         if (val.value > 1) {
             val.value = "1.00"
         } else if (val.value <= 0) {
             val.value = "0.01"
         }
-        document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex - 1].getElementsByTagName("input")[0].value = (1 - parseFloat(val.value)).toFixed(2)
-        DlInputChange(tr.getElementsByTagName("td")[4].getElementsByTagName("input")[0]);
-        DlInputChange(document.getElementById("DLTable").getElementsByTagName("tr")[val.parentNode.parentNode.rowIndex -1].getElementsByTagName("td")[4].getElementsByTagName("input")[0]);
+        trust.getElementsByTagName("input")[0].value = (1 - parseFloat(val.value)).toFixed(2)
+        DlInputChange(trust.getElementsByTagName("td")[4].getElementsByTagName("input")[0]);
+        DlInputChange(tralt.getElementsByTagName("td")[4].getElementsByTagName("input")[0]);
         $(".js-select").trigger("change");
         KaydetAktivite();
     }
@@ -1490,52 +1692,20 @@
         var totaltd = totaltr[1].getElementsByTagName("td").length;
         switch (TableId) {
             case 'DLTable':
-                for (let i = 0; i < totaltd; i++) {
-                    var td = document.createElement("td");
-                    if (i == 6 || i == 10) {
+                var copy = $('#DLTable').find('tbody').eq(0).find('tr').eq(1).clone();
+                var ust = $('#DLTable').find('tbody').eq(0).find('tr').eq(1).find('select').eq(1).val();
+                if (ust != null) {
 
-                        td.style = table.getElementsByTagName("tr")[1].getElementsByTagName("td")[i].getAttribute("style");
-                    }
-                    td.className = table.getElementsByTagName("tr")[1].getElementsByTagName("td")[i].className;
-                    td.innerHTML = table.getElementsByTagName("tr")[1].getElementsByTagName("td")[i].innerHTML;
-                    if (i == 7) {
-                        td.style = "";
-                    }
-                    tr.appendChild(td);
-                    if (i == 9) {
-                        td.replaceChildren();
-                    }
-                    if (i == 0) {
-                        td.innerHTML = parseFloat(totaltr[totaltr.length - 1].getElementsByTagName("td")[0].innerHTML) + 1;
-                    }
-                    if (i == 1) {
-                        td.innerHTML = '<input class="border-0 text-center" style="font-size:small;max-width:50px" type="number" value="1.00" max="1.00" min="0.00" onblur="oran(this)" /><div><img onclick="addRow1(this)" style="width:18px;cursor:pointer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAmlJREFUWEftmOFxFDEMhd9VQKiApAJIBUkHQAVABZAKQiogVABUAHRAKiCpINABVEDmu7FuhM5ey3s3zE4G/dm5W9l6lp7l511pYbZaGB7dG0BPJL2QxPOgPEn2taRf5fmpPIeKMJqht5JeFxCZQIC7lHSRccYnC+iZpHeSDrMTB78fks4kfemNzwAiK+dhop9l8m+SCEapMEoI6FNJLOJRGMdck9nqAfpYuGLzAoRJ+T9jL4u/B8bYV63BU4BiZr5KIgC8GDFID4inbhBZYv4tawEi3Z+dNzsGMLtYzPbzGqdagOCFpZnMALBl8OWkvLySBK9aBqktU8Q4io41QL5UcAaiTpXJ+zdLUQJTPoA8KL+3/GuACG4DIF+PwCOAwEHpPxRAxHrosxQBkY3vxYHsZPrOKCCm95Q49h09AqKr0omx95LeJFg8B1AzTgQEIY2g1V1QATgHkN/FbAQ2xtoiIDru4/Lur1SWQQbW42Iym5AF1XZZ3H2eGsQkVhXQHxcpgq0dIYmKrl1qu68aKwZdHKBeyTa1dqnJNMZYSl+yG6entji0OFIvbtv7VFbPmj1t+3RjJN6/PDp+RzncO1xZCT1in4frrQOROlzjWYNkoGu3LNMYbayXH9WzMivQJmVnsjvuJNCIETszq0OOzJGwyA0v8oYlrC06rgpOARRJmzG0D9cnhJnZpBzu3TpqmTKOkTEaKVzw1yCkr12Dop7qKcqhiyJNM96zMlnCB9Boq71cFH1QysXEJnF7gOgzLKR65akNzpSsNo6ODj/sY4NpKA5K+9gA/6yUPeCb93MBpQOMOv4H1MvYHYPjoiWLe0qnAAAAAElFTkSuQmCC"></div>'
-                    }
-                    if (i == 3 || i == 8) {
-                        var HtmlElement = StringToHtml(td.innerHTML);
-
-                        HtmlElement.getElementsByTagName('select')[0].disabled = true;
-
-                        td.innerHTML = HtmlElement.innerHTML;
-                    }
-                    if ($('#tamami').is(':checked')) {
-                        if (i == 7) {
-                            var HtmlElement = StringToHtml(td.innerHTML);
-
-                            HtmlElement.getElementsByTagName('select')[0].disabled = false;
-
-                            td.innerHTML = HtmlElement.innerHTML;
-                        }
-                    } else {
-                        if (i == 7) {
-                            var HtmlElement = StringToHtml(td.innerHTML);
-
-                            HtmlElement.getElementsByTagName('select')[0].disabled = true;
-
-                            td.innerHTML = HtmlElement.innerHTML;
-                        }
-                    }
+                    copy.find('select').eq(1).val(ust).trigger('change')
                 }
+                copy.find('input').eq(1).val(null);
+                copy.find('input').eq(2).val(null);
+                copy.find('input').eq(3).val(null);
+                copy.find('input').eq(4).val(null);
+                copy.find('i').eq(0).css('display','none');
+                $('#DLTable').find('tbody').eq(0).append(copy)
+                if (sondlstok!="")
+                Toplam()
                 break;
             case 'TPTable':
                 for (let i = 0; i < totaltd; i++) {
@@ -1568,7 +1738,10 @@
                 break;
 
         }
-        table.getElementsByTagName("tbody")[0].appendChild(tr);
+        if (TableId == 'TPTable') {
+
+            table.getElementsByTagName("tbody")[0].appendChild(tr);
+        }
         $('.js-select').select2(
             {
                 "language": {
@@ -1776,19 +1949,28 @@
                 TableId = 'TPTable'
                 break;
         }
-        var table = document.getElementById(TableId)
-        var totaltr = table.getElementsByTagName("tr");
-        if (totaltr.length > 3) {
-            if (totaltr[totaltr.length - 1].getElementsByTagName("td")[0].innerHTML == totaltr[totaltr.length - 2].getElementsByTagName("td")[0].innerHTML) {
-                totaltr[totaltr.length - 1].remove();
-                totaltr[totaltr.length - 1].remove();
-            } else {
-                totaltr[totaltr.length - 1].remove();
+        if (TableId == 'DLTable') {
+            var allTr = $('#DLTable').find('tr')
+            if (allTr.length > 2) {
+                $('#DLTable').find('tr:last').remove();
             }
-
+            Toplam()
         } else {
-            tablosil();
+            var table = document.getElementById(TableId)
+            var totaltr = table.getElementsByTagName("tr");
+            if (totaltr.length > 3) {
+                if (totaltr[totaltr.length - 1].getElementsByTagName("td")[0].innerHTML == totaltr[totaltr.length - 2].getElementsByTagName("td")[0].innerHTML) {
+                    totaltr[totaltr.length - 1].remove();
+                    totaltr[totaltr.length - 1].remove();
+                } else {
+                    totaltr[totaltr.length - 1].remove();
+                }
+
+            } else {
+                tablosil();
+            }
         }
+        
         KaydetAktivite();
 
     }
@@ -1869,13 +2051,15 @@
                 break;
             case "DL":
                 var TamamiAktarilsin = $("#tamami").is(":checked");
-                var f = parseFloat($("#fireagirligi").val());
+                var f = parseFloat($("#fireagirligi").val().split(' ')[0]);
                 var stok = $("#seri").val();
-                if (stok.length > 0) {
+                
+                @*if (stok.length > 0) {
                     if (f > 0) {
                         $.getJSON("http://192.168.2.13:83/api/seri/exec/1", function (data) {
                             sonSeri = data;
                         }).done(function () {
+
                             var jsonObj = @Html.Raw(Json.Encode(ViewBag.SIRANO));
                             var table = document.getElementById("DLTable");
                             var tr = table.getElementsByTagName("tr");
@@ -2000,7 +2184,7 @@
 
                                 DLListTop.push({ MAKINE: makine, MAKINEREF: makineref, MUSTERI: musteri, STOKADI: (refstokolcusu == "-" ? stokadi : refstokolcusu), KALINLIK: kalinlik, KAPLAMA: kaplama, KALITE: kalite, ADET: adet, AGIRLIK: parseFloat(refagirlik.replace(',', '.')), REF_ADET: (refadet == 0 || refadet == '-' ? adet : (refadet * adet)) });
                                 var fark = DLList.length;
-                                OldStokAdi = $("#stokadi").val();
+                                OldKalinlik = $("#kalinlik").val();
                                 siralist = [];
                                 var listZ = [];
 
@@ -2332,7 +2516,7 @@
                         icon: 'error',
                         title: 'Hammadde seçmediniz!'
                     })
-                }
+                }*@
                 $('#tamami').show();
                 $('#tamamidiv').show();
 
@@ -2344,7 +2528,7 @@
 
     }
     function sil() {
-        OldStokAdi = null;
+        OldKalinlik = null;
         var Tip = $('input[name="uretim-tip"]:checked').val();
         var TableId = "";
         switch (Tip) {
@@ -2391,14 +2575,15 @@
     }
     function c(val) {
         if (val.value == "DL") {
-            $("#HammaddeCard").show();
+            $("#HammaddeCard").hide();
+            $("#DLHammaddeCard").show();
             $("#addRw").show();
             $("#removeRw").show();
             $("#DLTable").show();
             $("#DLPivot").show();
             $("#DLPivotTop").show();
             $("#fireTable").show();
-            document.getElementById("DLTable").getElementsByTagName("select")[0].value = "DL01";
+
 
             $("#TPTable").hide();
             $("#TPPivot").hide();
@@ -2417,24 +2602,14 @@
             $("#RFPivotTop").hide();
             $("#tamamidiv").show();
             $("#tamami").prop("checked", true);
-            if ($("#seri").val() != null && $("#seri").val()!="") {
 
-                MachineChange(document.getElementById("DLTable").getElementsByTagName("tr")[1].getElementsByTagName("select")[0], "DLTable");
-            } else {
-                document.getElementById("DLTable").getElementsByTagName("tr")[1].getElementsByTagName("select")[1].replaceChildren();
-                var opt = document.createElement("option");
-                opt.value = "SEÇİNİZ";
-                opt.text = "SEÇİNİZ";
-                opt.setAttribute("selected", "");
-                opt.setAttribute("disabled", "");
-                document.getElementById("DLTable").getElementsByTagName("tr")[1].getElementsByTagName("select")[1].appendChild(opt);
-            }
 
         }
         else if (val.value == "TP")
         {
             hamkod = null;
             $("#HammaddeCard").hide();
+            $("#DLHammaddeCard").hide();
             $("#addRw").show();
             $("#removeRw").show();
             $("#DLTable").hide();
@@ -2463,6 +2638,7 @@
         }
         else if (val.value == "BK") {
             $("#HammaddeCard").show();
+            $("#DLHammaddeCard").hide();
             $("#addRw").hide();
             $("#removeRw").hide();
             $("#DLTable").hide();
@@ -2496,6 +2672,7 @@
         else if (val.value == "PB")
         {
             $("#HammaddeCard").show();
+            $("#DLHammaddeCard").hide();
             $("#addRw").hide();
             $("#removeRw").hide();
             $("#DLTable").hide();
@@ -2529,6 +2706,7 @@
         }
         else if (val.value == "RF") {
             $("#HammaddeCard").show();
+            $("#DLHammaddeCard").hide();
             $("#addRw").hide();
             $("#removeRw").hide();
             $("#DLTable").hide();
@@ -2563,6 +2741,7 @@
         else
         {
             $("#HammaddeCard").hide();
+            $("#DLHammaddeCard").hide();
             $("#addRw").hide();
             $("#removeRw").hide();
             $("#DLTable").hide();
@@ -3104,7 +3283,7 @@
                 KaydetAktiviteGenel("TP");
                 break;
             case "DL":
-                KaydetAktiviteGenel("DL");
+                /*KaydetAktiviteGenel("DL");*/
                 break;
             case "BK":
                 KaydetAktiviteGenel("BK");
@@ -3142,50 +3321,52 @@
 
         var Makine, Stok, Miktar, Adet, RefMakine, RefStok,Seri;
         var AlanlarDolu = true;
+        if (TableId != 'DLTable') {
+            for (var i = 1; i < Satirlar.length; i++) {
+                Makine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[0].value == "SEÇİNİZ" ? false : true;
+                Stok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[1].value == "SEÇİNİZ" ? false : true;
+                var IlkKosul = true;
+                var IkinciKosul = false;
+                switch (Tip) {
+                    case 'TP':
+                        Miktar = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[3].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
+                        Adet = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[4].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
+                        IlkKosul = Makine && Stok && Miktar && Adet;
+                        RefMakine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[2].value == "SEÇİNİZ" ? false : true;
+                        RefStok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[3].value == "SEÇİNİZ" ? false : true;
+                        IkinciKosul = (RefMakine && !RefStok) || (!RefMakine && RefStok);
+                        break;
+                    case 'DL':
+                        Miktar = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[4].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
+                        Adet = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[5].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
+                        Seri = document.getElementById("seri").value.trim().length < 1 ? false : true;
+                        IlkKosul = Makine && Stok && Miktar && Adet && Seri;
+                        RefMakine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[2].value == "SEÇİNİZ" ? false : true;
+                        RefStok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[3].value == "SEÇİNİZ" ? false : true;
+                        IkinciKosul = (RefMakine && !RefStok) || (!RefMakine && RefStok);
+                        break;
+                    case 'BK':
+                    case 'PB':
+                    case 'RF':
+                        Seri = document.getElementById("seri").value.trim().length < 1 ? false : true;
+                        IlkKosul = Makine && Stok && Seri && (parseFloat($("#agirlik").val().split("/")[0].replaceAll(".", "")) != 0);
+                        break;
+                }
 
-        for (var i = 1; i < Satirlar.length; i++) {
-            Makine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[0].value == "SEÇİNİZ" ? false : true;
-            Stok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[1].value == "SEÇİNİZ" ? false : true;
-            var IlkKosul = true;
-            var IkinciKosul = false;
-            switch (Tip) {
-                case 'TP':
-                    Miktar = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[3].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
-                    Adet = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[4].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
-                    IlkKosul = Makine && Stok && Miktar && Adet;
-                    RefMakine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[2].value == "SEÇİNİZ" ? false : true;
-                    RefStok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[3].value == "SEÇİNİZ" ? false : true;
-                    IkinciKosul = (RefMakine && !RefStok) || (!RefMakine && RefStok);
-                    break;
-                case 'DL':
-                    Miktar = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[4].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
-                    Adet = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('td')[5].getElementsByTagName('input')[0].value.trim().length < 1 ? false : true;
-                    Seri = document.getElementById("seri").value.trim().length < 1 ? false : true;
-                    IlkKosul = Makine && Stok && Miktar && Adet && Seri;
-                    RefMakine = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[2].value == "SEÇİNİZ" ? false : true;
-                    RefStok = document.getElementById(TableId).getElementsByTagName('tr')[i].getElementsByTagName('select')[3].value == "SEÇİNİZ" ? false : true;
-                    IkinciKosul = (RefMakine && !RefStok) || (!RefMakine && RefStok);
-                    break;
-                case 'BK':
-                case 'PB':
-                case 'RF':
-                    Seri = document.getElementById("seri").value.trim().length < 1 ? false : true;
-                    IlkKosul = Makine && Stok && Seri && (parseFloat($("#agirlik").val().split("/")[0].replaceAll(".", "")) != 0);
-                    break;
-            }
-
-            if (!IlkKosul) {
-                AlanlarDolu = false;
-                break;
-            }
-            else {
-                if (IkinciKosul) {
+                if (!IlkKosul) {
                     AlanlarDolu = false;
                     break;
                 }
+                else {
+                    if (IkinciKosul) {
+                        AlanlarDolu = false;
+                        break;
+                    }
+                }
             }
+            $('#kaydet').prop('disabled', !AlanlarDolu);
         }
-        $('#kaydet').prop('disabled', !AlanlarDolu);
+
     }
 
     function Grupla(Liste) {
@@ -3248,115 +3429,122 @@
     {
         var Satirlar = Array.from(document.getElementById('BKTable').getElementsByTagName('tr')).slice(1);
         var SeriNoListe = @Html.Raw(Json.Encode(ViewBag.Seriler));
-        var StokAdlari = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-        var IsEmirleri = null;
-            $.ajax({
-                url: `http://192.168.2.13:83/api/isemri/max`,
-                type: 'GET',
-                success: (data) => {
-                    IsEmirleri = data;
-                }
-            }).then(function () {
-                var OlusturulanIsEmirleri = [];
+        axios.get('http://192.168.2.13:83/api/stokkartlari')
+            .then(function (response) {
+                var StokAdlari = response.data;
+                var IsEmirleri = null;
 
-                var BKPivotVeri = [];
-                var BKPivotToplamVeri = [];
+     $.ajax({
+         url: `http://192.168.2.13:83/api/isemri/max`,
+         type: 'GET',
+         success: (data) => {
+             IsEmirleri = data;
+         }
+     }).then(function () {
+         var OlusturulanIsEmirleri = [];
 
-                if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null") {
-                    BKPivotVeri = JSON.parse(localStorage.BKPivotVeri);
-                    BKPivotToplamVeri = JSON.parse(localStorage.BKPivotToplamVeri);
+         var BKPivotVeri = [];
+         var BKPivotToplamVeri = [];
 
-                    BKPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
-                }
+         if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null") {
+             BKPivotVeri = JSON.parse(localStorage.BKPivotVeri);
+             BKPivotToplamVeri = JSON.parse(localStorage.BKPivotToplamVeri);
 
-                var GuncelSeriData;
+             BKPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
+         }
 
-                $.ajax({
-                    url: `http://192.168.2.13:83/api/seri/exec/1`,
-                    type: 'GET',
-                    success: (data) => {
-                        GuncelSeriData = data[0];
-                    }
-                }).then(() => {
-                    Satirlar.forEach((item) => {
-                        var Makine = item.getElementsByTagName('select')[0].value;
-                        var Stok = item.getElementsByTagName('select')[1].value;
-                        //var Genislik = parseFloat(item.getElementsByTagName('input')[1].value);
-                        //var Adet = parseFloat(item.getElementsByTagName('input')[2].value);
-                        var Adet2 = parseFloat(item.getElementsByTagName('input')[1].value);
-                        var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
-                        var Girdi1 = $("#seri").val();
-                        var Kalinlik = $("#kalinlik").val();
-                        var Kalite = $("#kalite").val();
-                        var Kaplama = $("#kaplama").val();
-                        var Hamoran = $("#hamoran").val();
+         var GuncelSeriData;
 
-                        var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
+         $.ajax({
+             url: `http://192.168.2.13:83/api/seri/exec/1`,
+             type: 'GET',
+             success: (data) => {
+                 GuncelSeriData = data[0];
+             }
+         }).then(() => {
+             Satirlar.forEach((item) => {
+                 var Makine = item.getElementsByTagName('select')[0].value;
+                 var Stok = item.getElementsByTagName('select')[1].value;
+                 //var Genislik = parseFloat(item.getElementsByTagName('input')[1].value);
+                 //var Adet = parseFloat(item.getElementsByTagName('input')[2].value);
+                 var Adet2 = parseFloat(item.getElementsByTagName('input')[1].value);
+                 var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
+                 var Girdi1 = $("#seri").val();
+                 var Kalinlik = $("#kalinlik").val();
+                 var Kalite = $("#kalite").val();
+                 var Kaplama = $("#kaplama").val();
+                 var Hamoran = $("#hamoran").val();
 
-                        var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
-                        var Musteri = item.getElementsByTagName("select")[2].value;
+                 var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
 
-                        var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+                 var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
+                 var Musteri = item.getElementsByTagName("select")[2].value;
 
-                        if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                            SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                        }
+                 var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
-                        OlusturulanIsEmirleri.push(SonIsEmri);
+                 if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                     SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                 }
 
-                        var Veri = {
-                            HAMORAN: Hamoran,
-                            ISEMRINO: SonIsEmri,
-                            STOKADI: StokAdi,
-                            KALINLIK: Kalinlik,
-                            KALITE: Kalite,
-                            KAPLAMA: Kaplama,
-                            GIRDI1: Girdi1,
-                            GIRDI2: GuncelSeriData.SERI_NO,
-                            ADET2: Adet2,
-                            AGIRLIK: Math.round(Agirlik)
-                        };
+                 OlusturulanIsEmirleri.push(SonIsEmri);
 
-                        var ToplamVeri = {
-                            STOKADI: StokAdi,
-                            ADET: Adet2,
-                            MUSTERI: Musteri,
-                            AGIRLIK: Math.round(Agirlik)
-                        };
-                        OldStokAdi = $("#stokadi").val();
-                        BKPivotVeri.push(Veri);
-                        BKPivotToplamVeri.push(ToplamVeri);
+                 var Veri = {
+                     HAMORAN: Hamoran,
+                     ISEMRINO: SonIsEmri,
+                     STOKADI: StokAdi,
+                     KALINLIK: Kalinlik,
+                     KALITE: Kalite,
+                     KAPLAMA: Kaplama,
+                     GIRDI1: Girdi1,
+                     GIRDI2: GuncelSeriData.SERI_NO,
+                     ADET2: Adet2,
+                     AGIRLIK: Math.round(Agirlik)
+                 };
 
-                    })
+                 var ToplamVeri = {
+                     STOKADI: StokAdi,
+                     ADET: Adet2,
+                     MUSTERI: Musteri,
+                     AGIRLIK: Math.round(Agirlik)
+                 };
+                 OldKalinlik = $("#kalinlik").val();
+                 BKPivotVeri.push(Veri);
+                 BKPivotToplamVeri.push(ToplamVeri);
 
-                    BKTableCreatePivot(BKPivotVeri);
+             })
 
-                    var fark = BKPivotVeri.length;
+             BKTableCreatePivot(BKPivotVeri);
 
-                    if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null") {
-                        fark = fark - JSON.parse(localStorage.BKPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
-                    }
+             var fark = BKPivotVeri.length;
 
-                    $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
+             if (localStorage.BKPivotVeri != null && localStorage.BKPivotVeri != "null") {
+                 fark = fark - JSON.parse(localStorage.BKPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
+             }
 
-                    localStorage.setItem('BKPivotVeri', JSON.stringify(BKPivotVeri));
-                    localStorage.setItem('BKPivotToplamVeri', JSON.stringify(BKPivotToplamVeri));
+             $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
 
-                    BKTableCreatePivot2Data();
-                    $("#seri").val(null);
-                    $("#stokadi").html("");
-                    $("#adet").val(null);
-                    $("#kalinlik").val(null);
-                    $("#genislik").val(null);
-                    $("#kaplama").val(null);
-                    $("#kalite").val(null);
-                    $("#metraj").val(null);
-                    $("#agirlik").val(null);
-                    $("#tamami").prop('disabled',false);
-                    $("#tamamidiv").show();
-                    KaydetAktivite()
-                });
+             localStorage.setItem('BKPivotVeri', JSON.stringify(BKPivotVeri));
+             localStorage.setItem('BKPivotToplamVeri', JSON.stringify(BKPivotToplamVeri));
+
+             BKTableCreatePivot2Data();
+             $("#seri").val(null);
+             $("#stokadi").html("");
+             $("#adet").val(null);
+             $("#kalinlik").val(null);
+             $("#genislik").val(null);
+             $("#kaplama").val(null);
+             $("#kalite").val(null);
+             $("#metraj").val(null);
+             $("#agirlik").val(null);
+             $("#tamami").prop('disabled',false);
+             $("#tamamidiv").show();
+             KaydetAktivite()
+         });
+     })
+            }).catch(function (error) {
+
             })
+
 
 
     }
@@ -3382,27 +3570,32 @@
             }, false, "tr");
     }
     function StokChangeBK(val) {
-        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-        var selectedValue = jsonObj.find(x => x.STOK_ADI == val.value);
-        var upt = $("#metraj").val().split('/')[0];
-        var agirlik = $("#agirlik").val().split('/')[0].replaceAll(".","");
-        var table = $("#BKTable");
-        var rowIndex = $(val).parent().parent().index()
+        axios.get('http://192.168.2.13:83/api/stokkartlari')
+            .then(function (response) {
+                var jsonObj = response.data;
+                var selectedValue = jsonObj.find(x => x.STOK_ADI == val.value);
+                var upt = $("#metraj").val().split('/')[0];
+                var agirlik = $("#agirlik").val().split('/')[0].replaceAll(".", "");
+                var table = $("#BKTable");
+                var rowIndex = $(val).parent().parent().index()
 
-        var currentRow = table.find("tr").eq(rowIndex);
-        var makine = table.find("tr").eq(1).find("select").eq(0).val()
-        var o = parseFloat(currentRow.find("input").eq(0).val());
-        function verileriGetir() {
-            currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / ((selectedValue.BOY != null ? selectedValue.BOY:0) / 1000)) * o));
-            currentRow.find("input").eq(3).val(parseFloat(agirlik) * o);
-            BKCariGetir(rowIndex);
-        }
-        function verileriSifirla() {
-            currentRow.find("input").eq(1).val(null);
-            currentRow.find("input").eq(3).val(null);
-        }
-        !!makine ? verileriGetir() : verileriSifirla()
-        KaydetAktivite();
+                var currentRow = table.find("tr").eq(rowIndex);
+                var makine = table.find("tr").eq(1).find("select").eq(0).val()
+                var o = parseFloat(currentRow.find("input").eq(0).val());
+                function verileriGetir() {
+                    currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / ((selectedValue.BOY != null ? selectedValue.BOY : 0) / 1000)) * o));
+                    currentRow.find("input").eq(3).val(parseFloat(agirlik) * o);
+                    BKCariGetir(rowIndex);
+                }
+                function verileriSifirla() {
+                    currentRow.find("input").eq(1).val(null);
+                    currentRow.find("input").eq(3).val(null);
+                }
+                !!makine ? verileriGetir() : verileriSifirla()
+                KaydetAktivite();
+
+            })
+
     }
     function oranBK(val) {
         var table = $("#BKTable");
@@ -3439,116 +3632,120 @@
     {
         var Satirlar = Array.from(document.getElementById('PBTable').getElementsByTagName('tr')).slice(1);
         var SeriNoListe = @Html.Raw(Json.Encode(ViewBag.Seriler));
-        var StokAdlari = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-         var IsEmirleri = null;
-        $.ajax({
-            url: `http://192.168.2.13:83/api/isemri/max`,
-            type: 'GET',
-            success: (data) => {
-                IsEmirleri = data;
-            }
-        }).then(function () {
+        axios.get('http://192.168.2.13:83/api/stokkartlari')
+            .then(function (response) {
+                var StokAdlari = response.data;
+                var IsEmirleri = null;
+                $.ajax({
+                    url: `http://192.168.2.13:83/api/isemri/max`,
+                    type: 'GET',
+                    success: (data) => {
+                        IsEmirleri = data;
+                    }
+                }).then(function () {
 
 
-var OlusturulanIsEmirleri = [];
+                    var OlusturulanIsEmirleri = [];
 
-var PBPivotVeri = [];
-var PBPivotToplamVeri = [];
+                    var PBPivotVeri = [];
+                    var PBPivotToplamVeri = [];
 
-    if (localStorage.PBPivotVeri != null && localStorage.PBPivotVeri != "null") {
-        PBPivotVeri = JSON.parse(localStorage.PBPivotVeri);
-        PBPivotToplamVeri = JSON.parse(localStorage.PBPivotToplamVeri);
+                    if (localStorage.PBPivotVeri != null && localStorage.PBPivotVeri != "null") {
+                        PBPivotVeri = JSON.parse(localStorage.PBPivotVeri);
+                        PBPivotToplamVeri = JSON.parse(localStorage.PBPivotToplamVeri);
 
-        PBPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
-     }
+                        PBPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
+                    }
 
-var GuncelSeriData;
+                    var GuncelSeriData;
 
-$.ajax({
-    url: `http://192.168.2.13:83/api/seri/exec/1`,
-    type: 'GET',
-    success: (data) => {
-        GuncelSeriData = data[0];
-    }
-}).then(() => {
-    Satirlar.forEach((item) => {
-        var Makine = item.getElementsByTagName('select')[0].value;
-        var Stok = item.getElementsByTagName('select')[1].value;
-        //var Genislik = parseFloat(item.getElementsByTagName('input')[1].value);
-        //var Adet = parseFloat(item.getElementsByTagName('input')[1].value);
-        var Adet2 = parseFloat(item.getElementsByTagName('input')[1].value);
-        var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
-        var Girdi1 = $("#seri").val();
-        var Kalinlik = $("#kalinlik").val();
-        var Kalite = $("#kalite").val();
-        var Kaplama = $("#kaplama").val();
-        var Hamoran = $("#hamoran").val();
+                    $.ajax({
+                        url: `http://192.168.2.13:83/api/seri/exec/1`,
+                        type: 'GET',
+                        success: (data) => {
+                            GuncelSeriData = data[0];
+                        }
+                    }).then(() => {
+                        Satirlar.forEach((item) => {
+                            var Makine = item.getElementsByTagName('select')[0].value;
+                            var Stok = item.getElementsByTagName('select')[1].value;
+                            //var Genislik = parseFloat(item.getElementsByTagName('input')[1].value);
+                            //var Adet = parseFloat(item.getElementsByTagName('input')[1].value);
+                            var Adet2 = parseFloat(item.getElementsByTagName('input')[1].value);
+                            var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
+                            var Girdi1 = $("#seri").val();
+                            var Kalinlik = $("#kalinlik").val();
+                            var Kalite = $("#kalite").val();
+                            var Kaplama = $("#kaplama").val();
+                            var Hamoran = $("#hamoran").val();
 
-        var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
+                            var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
 
-        var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
-        var Musteri = item.getElementsByTagName("select")[2].value;
+                            var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
+                            var Musteri = item.getElementsByTagName("select")[2].value;
 
-        var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+                            var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
 
-        if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-            SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-        }
+                            if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                                SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                            }
 
-        OlusturulanIsEmirleri.push(SonIsEmri);
+                            OlusturulanIsEmirleri.push(SonIsEmri);
 
-        var Veri = {
-            HAMORAN: Hamoran,
-            ISEMRINO: SonIsEmri,
-            STOKADI: StokAdi,
-            KALINLIK: Kalinlik,
-            KALITE: Kalite,
-            KAPLAMA: Kaplama,
-            GIRDI1: Girdi1,
-            GIRDI2: GuncelSeriData.SERI_NO,
-            ADET2: Adet2,
-            AGIRLIK: Math.round(Agirlik)
-        };
+                            var Veri = {
+                                HAMORAN: Hamoran,
+                                ISEMRINO: SonIsEmri,
+                                STOKADI: StokAdi,
+                                KALINLIK: Kalinlik,
+                                KALITE: Kalite,
+                                KAPLAMA: Kaplama,
+                                GIRDI1: Girdi1,
+                                GIRDI2: GuncelSeriData.SERI_NO,
+                                ADET2: Adet2,
+                                AGIRLIK: Math.round(Agirlik)
+                            };
 
-        var ToplamVeri = {
-            STOKADI: StokAdi,
-            ADET: Adet2,
-            MUSTERI: Musteri,
-            AGIRLIK: Math.round(Agirlik)
-        };
-            OldStokAdi = $("#stokadi").val();
-            PBPivotVeri.push(Veri);
-            PBPivotToplamVeri.push(ToplamVeri);
+                            var ToplamVeri = {
+                                STOKADI: StokAdi,
+                                ADET: Adet2,
+                                MUSTERI: Musteri,
+                                AGIRLIK: Math.round(Agirlik)
+                            };
+                            OldKalinlik = $("#kalinlik").val();
+                            PBPivotVeri.push(Veri);
+                            PBPivotToplamVeri.push(ToplamVeri);
 
-    })
+                        })
 
-    PBTableCreatePivot(PBPivotVeri);
-    var fark = PBPivotVeri.length;
+                        PBTableCreatePivot(PBPivotVeri);
+                        var fark = PBPivotVeri.length;
 
-    if (localStorage.PBPivotVeri != null && localStorage.PBPivotVeri != "null")
-    {
-        fark = fark - JSON.parse(localStorage.PBPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
-    }
+                        if (localStorage.PBPivotVeri != null && localStorage.PBPivotVeri != "null") {
+                            fark = fark - JSON.parse(localStorage.PBPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
+                        }
 
-    $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
+                        $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
 
-    localStorage.setItem('PBPivotVeri', JSON.stringify(PBPivotVeri));
-    localStorage.setItem('PBPivotToplamVeri', JSON.stringify(PBPivotToplamVeri));
+                        localStorage.setItem('PBPivotVeri', JSON.stringify(PBPivotVeri));
+                        localStorage.setItem('PBPivotToplamVeri', JSON.stringify(PBPivotToplamVeri));
 
-    PBTableCreatePivot2Data();
-    $("#seri").val(null);
-    $("#stokadi").html("");
-    $("#adet").val(null);
-    $("#kalinlik").val(null);
-    $("#genislik").val(null);
-    $("#kaplama").val(null);
-    $("#kalite").val(null);
-    $("#metraj").val(null);
-    $("#agirlik").val(null);
-    KaydetAktivite()
-});
+                        PBTableCreatePivot2Data();
+                        $("#seri").val(null);
+                        $("#stokadi").html("");
+                        $("#adet").val(null);
+                        $("#kalinlik").val(null);
+                        $("#genislik").val(null);
+                        $("#kaplama").val(null);
+                        $("#kalite").val(null);
+                        $("#metraj").val(null);
+                        $("#agirlik").val(null);
+                        KaydetAktivite()
+                    });
 
-        })
+                })
+
+            })
+
 
     }
     function PBTableCreatePivot2Data() {
@@ -3573,26 +3770,31 @@ $.ajax({
             }, false, "tr");
     }
     function StokChangePB(val) {
-        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-        var selectedValue = jsonObj.find(x => x.STOK_ADI == val.value);
-        var upt = $("#metraj").val().split('/')[0];
-        var agirlik = $("#agirlik").val().split('/')[0].replaceAll(".","");
-        var table = $("#PBTable");
-        var rowIndex = $(val).parent().parent().index()
-        var currentRow = table.find("tr").eq(rowIndex);
-        var makine = currentRow.find("select").eq(0).val()
-        var o = parseFloat(currentRow.find("input").eq(0).val());
-        function verileriGetir() {
-            currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / (selectedValue.BOY / 1000)) * o));
-            currentRow.find("input").eq(3).val(parseFloat(agirlik) * o);
-            PBCariGetir(rowIndex);
-        }
-        function verileriSifirla() {
-            currentRow.find("input").eq(1).val(null);
-            currentRow.find("input").eq(3).val(null);
-        }
-        !!makine ? verileriGetir() : verileriSifirla()
-        KaydetAktivite();
+        axios.get('http://192.168.2.13:83/api/stokkartlari')
+            .then(function (response) {
+                var jsonObj = response.data;
+                var selectedValue = jsonObj.find(x => x.STOK_ADI == val.value);
+                var upt = $("#metraj").val().split('/')[0];
+                var agirlik = $("#agirlik").val().split('/')[0].replaceAll(".", "");
+                var table = $("#PBTable");
+                var rowIndex = $(val).parent().parent().index()
+                var currentRow = table.find("tr").eq(rowIndex);
+                var makine = currentRow.find("select").eq(0).val()
+                var o = parseFloat(currentRow.find("input").eq(0).val());
+                function verileriGetir() {
+                    currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / (selectedValue.BOY / 1000)) * o));
+                    currentRow.find("input").eq(3).val(parseFloat(agirlik) * o);
+                    PBCariGetir(rowIndex);
+                }
+                function verileriSifirla() {
+                    currentRow.find("input").eq(1).val(null);
+                    currentRow.find("input").eq(3).val(null);
+                }
+                !!makine ? verileriGetir() : verileriSifirla()
+                KaydetAktivite();
+
+            })
+
     }
     function oranPB(val) {
         var table = $("#PBTable");
@@ -3629,115 +3831,120 @@ $.ajax({
     {
         var Satirlar = Array.from(document.getElementById('RFTable').getElementsByTagName('tr')).slice(1);
         var SeriNoListe = @Html.Raw(Json.Encode(ViewBag.Seriler));
-        var StokAdlari = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-        var IsEmirleri = null;
-        $.ajax({
-            url: `http://192.168.2.13:83/api/isemri/max`,
-            type: 'GET',
-            success: (data) => {
-                IsEmirleri = data;
-            }
-        }).then(function () {
-            var OlusturulanIsEmirleri = [];
+        axios.get('http://192.168.2.13:83/api/stokkartlari')
+            .then(function (response) {
+                var StokAdlari = response.data;
+                var IsEmirleri = null;
+                $.ajax({
+                    url: `http://192.168.2.13:83/api/isemri/max`,
+                    type: 'GET',
+                    success: (data) => {
+                        IsEmirleri = data;
+                    }
+                }).then(function () {
+                    var OlusturulanIsEmirleri = [];
 
-            var RFPivotVeri = [];
-            var RFPivotToplamVeri = [];
+                    var RFPivotVeri = [];
+                    var RFPivotToplamVeri = [];
 
-            if (localStorage.RFPivotVeri != null && localStorage.RFPivotVeri != "null") {
-                RFPivotVeri = JSON.parse(localStorage.RFPivotVeri);
-                RFPivotToplamVeri = JSON.parse(localStorage.RFPivotToplamVeri);
+                    if (localStorage.RFPivotVeri != null && localStorage.RFPivotVeri != "null") {
+                        RFPivotVeri = JSON.parse(localStorage.RFPivotVeri);
+                        RFPivotToplamVeri = JSON.parse(localStorage.RFPivotToplamVeri);
 
-                RFPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
-            }
-
-            var GuncelSeriData;
-
-            $.ajax({
-                url: `http://192.168.2.13:83/api/seri/exec/1`,
-                type: 'GET',
-                success: (data) => {
-                    GuncelSeriData = data[0];
-                }
-            }).then(() => {
-                Satirlar.forEach((item) => {
-                    var Makine = item.getElementsByTagName('select')[0].value;
-                    var Stok = item.getElementsByTagName('select')[1].value;
-                    //var Genislik = parseFloat(item.getElementsByTagName('input')[1].value);
-                    //var Adet = parseFloat(item.getElementsByTagName('input')[1].value);
-                    var Adet2 = parseFloat(item.getElementsByTagName('input')[1].value);
-                    var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
-                    var Girdi1 = $("#seri").val();
-                    var Kalinlik = $("#kalinlik").val();
-                    var Kalite = $("#kalite").val();
-                    var Kaplama = $("#kaplama").val();
-                    var Hamoran = $("#hamoran").val();
-
-                    var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
-
-                    var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
-                    var Musteri = item.getElementsByTagName("select")[2].value;
-
-                    var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
-
-                    if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                        SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                        RFPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
                     }
 
-                    OlusturulanIsEmirleri.push(SonIsEmri);
+                    var GuncelSeriData;
 
-                    var Veri = {
-                        HAMORAN: Hamoran,
-                        ISEMRINO: SonIsEmri,
-                        STOKADI: StokAdi,
-                        KALINLIK: Kalinlik,
-                        KALITE: Kalite,
-                        KAPLAMA: Kaplama,
-                        GIRDI1: Girdi1,
-                        GIRDI2: GuncelSeriData.SERI_NO,
-                        ADET2: Adet2,
-                        AGIRLIK: Math.round(Agirlik)
-                    };
+                    $.ajax({
+                        url: `http://192.168.2.13:83/api/seri/exec/1`,
+                        type: 'GET',
+                        success: (data) => {
+                            GuncelSeriData = data[0];
+                        }
+                    }).then(() => {
+                        Satirlar.forEach((item) => {
+                            var Makine = item.getElementsByTagName('select')[0].value;
+                            var Stok = item.getElementsByTagName('select')[1].value;
+                            //var Genislik = parseFloat(item.getElementsByTagName('input')[1].value);
+                            //var Adet = parseFloat(item.getElementsByTagName('input')[1].value);
+                            var Adet2 = parseFloat(item.getElementsByTagName('input')[1].value);
+                            var Agirlik = parseFloat(item.getElementsByTagName('input')[3].value);
+                            var Girdi1 = $("#seri").val();
+                            var Kalinlik = $("#kalinlik").val();
+                            var Kalite = $("#kalite").val();
+                            var Kaplama = $("#kaplama").val();
+                            var Hamoran = $("#hamoran").val();
 
-                    var ToplamVeri = {
-                        STOKADI: StokAdi,
-                        ADET: Adet2,
-                        MUSTERI: Musteri,
-                        AGIRLIK: Math.round(Agirlik)
-                    };
-                    OldStokAdi = $("#stokadi").val();
-                    RFPivotVeri.push(Veri);
-                    RFPivotToplamVeri.push(ToplamVeri);
+                            var StokAdi = StokAdlari.filter(x => x.STOK_ADI == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_ADI == Stok)[0].STOK_ADI : "-";
+
+                            var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
+                            var Musteri = item.getElementsByTagName("select")[2].value;
+
+                            var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (1).toString().padStart(3, '0');
+
+                            if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                                SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseFloat(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                            }
+
+                            OlusturulanIsEmirleri.push(SonIsEmri);
+
+                            var Veri = {
+                                HAMORAN: Hamoran,
+                                ISEMRINO: SonIsEmri,
+                                STOKADI: StokAdi,
+                                KALINLIK: Kalinlik,
+                                KALITE: Kalite,
+                                KAPLAMA: Kaplama,
+                                GIRDI1: Girdi1,
+                                GIRDI2: GuncelSeriData.SERI_NO,
+                                ADET2: Adet2,
+                                AGIRLIK: Math.round(Agirlik)
+                            };
+
+                            var ToplamVeri = {
+                                STOKADI: StokAdi,
+                                ADET: Adet2,
+                                MUSTERI: Musteri,
+                                AGIRLIK: Math.round(Agirlik)
+                            };
+                            OldKalinlik = $("#kalinlik").val();
+                            RFPivotVeri.push(Veri);
+                            RFPivotToplamVeri.push(ToplamVeri);
+
+                        })
+
+                        RFTableCreatePivot(RFPivotVeri);
+                        var fark = RFPivotVeri.length;
+
+                        if (localStorage.RFPivotVeri != null && localStorage.RFPivotVeri != "null") {
+                            fark = fark - JSON.parse(localStorage.RFPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
+                        }
+
+                        $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
+
+                        localStorage.setItem('RFPivotVeri', JSON.stringify(RFPivotVeri));
+                        localStorage.setItem('RFPivotToplamVeri', JSON.stringify(RFPivotToplamVeri));
+
+                        RFTableCreatePivot2Data();
+
+                        $("#seri").val(null);
+                        $("#stokadi").html("");
+                        $("#adet").val(null);
+                        $("#kalinlik").val(null);
+                        $("#genislik").val(null);
+                        $("#kaplama").val(null);
+                        $("#kalite").val(null);
+                        $("#metraj").val(null);
+                        $("#agirlik").val(null);
+                        $("#tamamidiv").hide();
+                        KaydetAktivite();
+                    });
 
                 })
 
-                RFTableCreatePivot(RFPivotVeri);
-                var fark = RFPivotVeri.length;
+            })
 
-                if (localStorage.RFPivotVeri != null && localStorage.RFPivotVeri != "null") {
-                    fark = fark - JSON.parse(localStorage.RFPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
-                }
-
-                $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
-
-                localStorage.setItem('RFPivotVeri', JSON.stringify(RFPivotVeri));
-                localStorage.setItem('RFPivotToplamVeri', JSON.stringify(RFPivotToplamVeri));
-
-                RFTableCreatePivot2Data();
-
-                $("#seri").val(null);
-                $("#stokadi").html("");
-                $("#adet").val(null);
-                $("#kalinlik").val(null);
-                $("#genislik").val(null);
-                $("#kaplama").val(null);
-                $("#kalite").val(null);
-                $("#metraj").val(null);
-                $("#agirlik").val(null);
-                $("#tamamidiv").hide();
-                KaydetAktivite();
-            });
-
-        })
 
 
     }
@@ -3762,26 +3969,31 @@ $.ajax({
             }, false, "tr");
     }
     function StokChangeRF(val) {
-        var jsonObj = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-        var selectedValue = jsonObj.find(x => x.STOK_ADI == val.value);
-        var upt = $("#metraj").val().split('/')[0];
-        var agirlik = $("#agirlik").val().split('/')[0].replaceAll(".","");
-        var table = $("#RFTable");
-        var rowIndex = $(val).parent().parent().index()
-        var currentRow = table.find("tr").eq(rowIndex);
-        var makine = currentRow.find("select").eq(0).val()
-        var o = parseFloat(currentRow.find("input").eq(0).val());
-        function verileriGetir() {
-            currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / (selectedValue.BOY / 1000)) * o));
-            currentRow.find("input").eq(3).val(parseFloat(agirlik) * o);
-            RFCariGetir(rowIndex);
-        }
-        function verileriSifirla() {
-            currentRow.find("input").eq(1).val(null);
-            currentRow.find("input").eq(3).val(null);
-        }
-        !!makine ? verileriGetir() : verileriSifirla()
-        KaydetAktivite();
+        axios.get('http://192.168.2.13:83/api/stokkartlari')
+            .then(function (response) {
+                var jsonObj = response.data;
+                var selectedValue = jsonObj.find(x => x.STOK_ADI == val.value);
+                var upt = $("#metraj").val().split('/')[0];
+                var agirlik = $("#agirlik").val().split('/')[0].replaceAll(".", "");
+                var table = $("#RFTable");
+                var rowIndex = $(val).parent().parent().index()
+                var currentRow = table.find("tr").eq(rowIndex);
+                var makine = currentRow.find("select").eq(0).val()
+                var o = parseFloat(currentRow.find("input").eq(0).val());
+                function verileriGetir() {
+                    currentRow.find("input").eq(1).val(Math.round((parseFloat(upt) / (selectedValue.BOY / 1000)) * o));
+                    currentRow.find("input").eq(3).val(parseFloat(agirlik) * o);
+                    RFCariGetir(rowIndex);
+                }
+                function verileriSifirla() {
+                    currentRow.find("input").eq(1).val(null);
+                    currentRow.find("input").eq(3).val(null);
+                }
+                !!makine ? verileriGetir() : verileriSifirla()
+                KaydetAktivite();
+
+            })
+
     }
     function oranRF(val) {
         var table = $("#RFTable");
@@ -3832,16 +4044,465 @@ $.ajax({
             $('.selectmakina2').prop('disabled', true);
         }
     }
-    function ShowProgress() {
-        document.body.style.overflow = 'hidden';
-        document.activeElement.blur();
-        $('#nova-overlay').fadeIn('fast').css('display', 'flex');
+    var SeriMiktarListe = [];
+    function addHammaddeRow(value,miktar,acik1,acik2) {
+        var Tr = $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(1).clone();
+
+        var trSayi = $('#DLHammaddeCard').find('table').eq(0).find('tr')
+        var inp = $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(1).find('input').eq(1).val()
+        var l = SeriMiktarListe.filter(x => x.SERI_NO == value);
+        if (l.length == 0) {
+            SeriMiktarListe.push({SERI_NO:value,MIKTAR:miktar,ACIK1:acik1,ACIK2:acik2})
+        }
+        if (trSayi.length == 2 && inp=="") {
+
+            $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(1).find('input').eq(1).val(value).trigger('input')
+
+        } else {
+            Tr.find('input').eq(0).val("1.0000")
+            Tr.find('input').eq(1).val(value);
+            Tr.find('input').eq(6).val(0);
+            $('#DLHammaddeCard').find('table').eq(0).find('tbody').eq(0).append(Tr)
+            $('#DLHammaddeCard').find('table').eq(0).find('tbody').eq(0).find('tr:last').find('input').eq(1).trigger('input')
+        }
+
+
     }
-    function HideProgress() {
-        document.body.style.overflow = 'auto';
-        $('#nova-overlay').fadeOut('slow');
+    function removeHammaddeRow(v) {
+        var Tr = $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(1).html();
+        var trSayi = $('#DLHammaddeCard').find('table').eq(0).find('tr')
+        if (trSayi.length > 2) {
+
+            $("input").each(function () {
+                var $this = $(this);
+                if ($this.val() == v) {
+                    $this.closest('tr').remove();
+                }
+            });
+        } else {
+            $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(1).find('input').eq(0).val("1.0000")
+            $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(1).find('input').eq(6).val(0)
+            $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(1).find('input').eq(1).val("").trigger('input')
+            sondlstok = '';
+        }
+        SeriMiktarListe = SeriMiktarListe.filter(x => x.SERI_NO != v);
+    }
+    function DLOranChange(v) {
+        var inp = v.value;
+        if (inp > 1) {
+            v.value ="1.0000"
+        }
+        if (inp < 0) {
+            v.value="0.0000"
+        }
+
+
+
+    }
+    function DLOranBlur(v) {
+        var tamametraj = $(v).closest('tr').find('input').eq(9).val()
+        var kullmetraj = parseFloat(tamametraj.split('/')[1]) * v.value;
+        $(v).closest('tr').find('input').eq(9).val(kullmetraj.toFixed(2) + " / " + tamametraj.split('/')[1].trim())
+        var tamagirlik = $(v).closest('tr').find('input').eq(10).val()
+        var kullagirlik = parseFloat(tamagirlik.split('/')[1].replace('.', '')) * v.value;
+        $(v).closest('tr').find('input').eq(10).val(kullagirlik.toLocaleString('tr-TR') + " / " + tamagirlik.split('/')[1].trim())
+        v.value = parseFloat(v.value).toFixed(4).toString()
+        Toplam();
+
+    }
+    var ToplamLabelNumber = 0;
+    function checkboxChange(v, input, stok, genislik,miktar,acik2) {
+        var kontrol = true;
+        var Ikon = input.getElementsByTagName('i')[0];
+        $('#urunler').find("i[class='bi bi-check-circle-fill']").each(function () {
+            var $this = $(this);
+            var s = $this.closest('tr').find('td').eq(3).html();
+            var g = $this.closest('tr').find('td').eq(6).html();
+
+
+            if (s == stok && g == genislik) {
+                kontrol = true;
+
+            } else {
+                kontrol = false;
+            }
+        });
+        if (kontrol) {
+
+            if (Ikon.style.color == 'red') {
+                addHammaddeRow(v,miktar,genislik,acik2)
+                Ikon.style.color = '#71dd37';
+                Ikon.classList.add("bi-check-circle-fill");
+                Ikon.classList.remove("bi-check-circle");
+                sondlstok = stok;
+            } else {
+                removeHammaddeRow(v)
+                Ikon.style.color = 'red';
+                Ikon.classList.remove("bi-check-circle-fill");
+                Ikon.classList.add("bi-check-circle");
+            }
+        } else {
+
+
+            Swal.fire(
+                'Farklı tipte ürün seçemezsiniz!',
+                '',
+                'info'
+            )
+
+        }
+        Toplam();
+
+    }
+    function DLHammaddeTemizle() {
+        var Tr = $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(1).clone();
+        Tr.find('input').eq(0).val("1.0000")
+        Tr.find('input').eq(1).val("");
+        Tr.find('input').eq(6).val(0);
+        var allTr = $('#DLHammaddeCard').find('table').eq(0).find('tbody').eq(0).find('tr')
+        for (let i = 1; i < allTr.length; i++) {
+            allTr.eq(i).remove();
+        }
+        $('#DLHammaddeCard').find('table').eq(0).find('tbody').eq(0).append(Tr)
+        $('#DLHammaddeCard').find('table').eq(0).find('tbody').eq(0).find('input').eq(1).trigger('input')
+        $('#DLHammaddeCard').find('table').eq(0).find('tbody').eq(0).find('input').eq(11).val(null)
+        sondlstok = '';
+        
+    }
+    function SingleDelete(element) {
+        
+        Onay($(element).closest("tr").index())
+    }
+
+    function Onay(index) {
+
+     var s = $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(index).find('input').eq(1).val()
+        if (s != "") {
+            Swal.fire({
+                html: `<b>${s} seri numaralı hammaddeyi çıkartmak istediğinizden emin misiniz?`,
+                icon: 'warning',
+                showCancelButton: true,
+                allowEnterKey: false,
+                cancelButtonText: 'HAYIR',
+                cancelButtonColor: '#d33',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'EVET',
+                allowOutsideClick: false,
+                customClass: 'AreYouSureAlert'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var AllRows = $('#DLHammaddeCard').find('table').eq(0).find('tr').length;
+                    if (AllRows != 2)
+                        $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(index).remove()
+                    else {
+                        $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(index).find('input').eq(1).val('').trigger('input');
+                        $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(index).find('input').eq(6).val(0).trigger('input');
+                        $('#DLHammaddeCard').find('table').eq(0).find('tr').eq(index).find('input').eq(0).val("1.0000");
+                        sondlstok = '';
+                    }
+                    SeriMiktarListe = SeriMiktarListe.filter(x=>x.SERI_NO!=s)
+                    Toplam()
+                }
+            })
+        }
+        
+
+    }
+
+    function rehberRadio(value) {
+        if (value == 0) {
+            ShowProgress()
+            axios.get('http://192.168.2.13:83/api/seri/serirehber').then(function (response) {
+                $('#urunler').bootstrapTable("destroy").bootstrapTable({
+                    data: response.data
+                }).after(function () {
+                    $("#rehberSec").modal("show");
+                    HideProgress()
+                })
+            })
+        } else {
+            var s = [];
+            
+            $('#DLHammaddeCard').find('table').eq(0).find('tbody').eq(0).find('tr').each(function () {
+                var $this = $(this);
+                if ($this.find('input').eq(1).val() != "")
+                    s.push($this.find('input').eq(1).val())
+
+            });
+            ShowProgress()
+            axios.get('http://192.168.2.13:83/api/seri/serirehber').then(function (response) {
+                $('#urunler').bootstrapTable("destroy").bootstrapTable({
+                    data: response.data.filter(x => s.includes(x.SERI_NO))
+                }).after(function () {
+                    $("#rehberSec").modal("show");
+                    HideProgress()
+                })
+            })
+        }
+    }
+    tippy('#refresh', {
+        content: 'Temizle',
+        animation: 'fade',
+    })
+    $('#refresh').hover(
+        () => {
+            $('#refresh').addClass("bx-spin")
+        }, () => {
+            $('#refresh').removeClass("bx-spin")
+        })
+
+    function DLInputChange() {
+        var alltr = $('#DLTable').find('tr');
+        var sum = 0;
+        var topfireAgirligi = 0.00;
+        for (let i = 1; i < alltr.length; i++) {
+            if (alltr.eq(i).find('input').eq(1).val() != "" && alltr.eq(i).find('input').eq(2).val() != "") {
+
+                sum += (alltr.eq(i).find('input').eq(1).val() * alltr.eq(i).find('input').eq(2).val())
+
+            } else {
+                sum = 0;
+                
+            }
+        } 
+        var DLHammaddeTabloTr = $('#DLHammaddeCard').find('table').eq(0).find('tr');
+        ToplamKulMetraj = 0;
+        ToplamTumMetraj = 0;
+        for (let i = 1; i < DLHammaddeTabloTr.length; i++) {
+            var b = SeriMiktarListe.filter(x => x.SERI_NO == DLHammaddeTabloTr.eq(i).find('input').eq(1).val());
+            var ekgen = DLHammaddeTabloTr.eq(i).find('input').eq(6).val();
+            if (ekgen == '')
+                ekgen = '0';
+            DLHammaddeTabloTr.eq(i).find('input').eq(9).val(parseFloat((parseFloat(b[0].MIKTAR * DLHammaddeTabloTr.eq(i).find('input').eq(0).val())) / ((parseFloat(b[0].ACIK1) + parseFloat(ekgen)) * parseFloat((b[0].ACIK2).replace(",", ".")) * (0.00786))).toFixed(2) + " / " + parseFloat(parseFloat((b[0].MIKTAR)) / ((parseFloat(b[0].ACIK1) + parseFloat(ekgen)) * parseFloat((b[0].ACIK2).replace(",", ".")) * (0.00786))).toFixed(2))
+            
+            
+                ToplamKulMetraj += parseFloat(DLHammaddeTabloTr.eq(i).find('input').eq(9).val().split('/')[0])
+                ToplamTumMetraj += parseFloat(DLHammaddeTabloTr.eq(i).find('input').eq(9).val().split('/')[1])
+               
+            
+                
+        }
+        $('#toplamLabel').html('Toplam Seçilen Hammadde Ağırlığı: <b>' + ToplamKulAgirlik.toLocaleString('tr-TR') + ' / ' + ToplamTumAgirlik.toLocaleString('tr-TR') + '</b>&#160;&#160;&#160;Toplam Seçilen Hammadde Metrajı: <b>' + Math.round(ToplamKulMetraj).toLocaleString('tr-TR') + ' / ' + Math.round(ToplamTumMetraj).toLocaleString('tr-TR') + '</b>')
+        $('#toplamLabelRehber').html('Toplam Seçilen Hammadde Ağırlığı: <b>' + ToplamKulAgirlik.toLocaleString('tr-TR') + ' / ' + ToplamTumAgirlik.toLocaleString('tr-TR') + '</b>&#160;&#160;&#160;Toplam Seçilen Hammadde Metrajı: <b>' + Math.round(ToplamKulMetraj).toLocaleString('tr-TR') + ' / ' + Math.round(ToplamTumMetraj).toLocaleString('tr-TR') + '</b>')
+        if (sum != 0) {
+            var sel1 = $('.DLStok1')
+            var sel2 = $('.DLRefMachine')
+            var sel3 = $('.DLStok2')
+            for (let i = 0; i < sel1.length; i++) {
+                if (sel1.eq(i).val() == null || sel1.eq(i).val() == undefined || sel1.eq(i).val() == 'SECINIZ')
+                    $('#kaydet').prop('disabled', true);
+                else {
+                    if (sel2.eq(i).val() == null || sel2.eq(i).val() == undefined || sel2.eq(i).val() == 'SECINIZ') {
+                        if (sel3.eq(i).val() == null || sel3.eq(i).val() == undefined || sel3.eq(i).val() == 'SECINIZ')
+                            $('#kaydet').prop('disabled', false);
+                        else
+                            $('#kaydet').prop('disabled', true);
+                    }
+                    else {
+
+                        $('#kaydet').prop('disabled', false);
+
+                    }
+                }
+            }
+            
+            for (let i = 1; i < DLHammaddeTabloTr.length; i++) {
+                var ekgen = DLHammaddeTabloTr.eq(i).find('input').eq(6).val();
+                if (ekgen == '')
+                    ekgen = '0';
+                var gen = parseInt(DLHammaddeTabloTr.eq(i).find('input').eq(5).val()) + parseInt(ekgen)
+                DLHammaddeTabloTr.eq(i).find('input').eq(11).val((gen - sum) + ' MM (' + ((gen - sum) * 100 / gen).toFixed(2) + '%)')
+                DLHammaddeTabloTr.eq(i).find('input').eq(12).val((((gen - sum) / gen) * parseInt(DLHammaddeTabloTr.eq(i).find('input').eq(10).val().split('/')[0].replace('.', ''))).toFixed(2) + ' KG')
+                topfireAgirligi += ((gen - sum) / gen) * parseInt(DLHammaddeTabloTr.eq(i).find('input').eq(10).val().split('/')[0].replace('.', ''))
+               
+                
+            }
+            $('#fireagirligi1').val(topfireAgirligi.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) + " KG")
+            $('#fireyuzde1').val((topfireAgirligi * 100 / ToplamKulAgirlik).toLocaleString('tr-TR', { maximumFractionDigits: 2 }) + " %")
+            for (let i = 1; i < alltr.length; i++) {
+                if (alltr.eq(i).find('input').eq(1).val() != "" && alltr.eq(i).find('input').eq(2).val() != "") {
+                    var gensingle = 0
+                    var kullag = 0;
+                    var sumsum = 0;
+                    for (let a = 1; a < DLHammaddeTabloTr.length; a++) {
+                        var ekgensingle = DLHammaddeTabloTr.eq(a).find('input').eq(6).val();
+                        if (ekgensingle == "") {
+                            ekgensingle = "0";
+                        }
+                        gensingle = parseInt(DLHammaddeTabloTr.eq(a).find('input').eq(5).val()) + parseInt(ekgensingle)
+                        kullag = parseInt(DLHammaddeTabloTr.eq(a).find('input').eq(10).val().split('/')[0].replace('.', ''))
+                        sumsum += ((alltr.eq(i).find('input').eq(1).val() * alltr.eq(i).find('input').eq(2).val() / gensingle) * kullag)
+                    }
+                    alltr.eq(i).find('input').eq(4).val(Math.round(sumsum))
+                    alltr.eq(i).find('select').eq(3).trigger('change');
+
+                } else {
+                    alltr.eq(i).find('input').eq(4).val(null)
+                }
+            }
+        } else {
+            $('#kaydet').prop('disabled', true);
+            for (let a = 1; a < DLHammaddeTabloTr.length; a++) {
+                DLHammaddeTabloTr.eq(a).find('input').eq(11).val(null)
+                DLHammaddeTabloTr.eq(a).find('input').eq(12).val(null)
+            }
+            for (let i = 1; i < alltr.length; i++) {
+                if (alltr.eq(i).find('input').eq(1).val() != "" && alltr.eq(i).find('input').eq(2).val() != "") {
+                    
+
+                } else {
+                    alltr.eq(i).find('input').eq(4).val(null)
+                    alltr.eq(i).find('input').eq(3).val(null)
+                }
+            }
+        }
+        
+    }
+    function DLRefMachineChange(element) {
+        var machine = $(element).val()
+        var currentRow = $(element).closest('tr');
+        var select = currentRow.find('select').eq(3);
+        var son = currentRow.find('select').eq(1).val();
+        var mik = currentRow.find('input').eq(1).val();
+        var adt = currentRow.find('input').eq(2).val();
+        if (machine != 'SECINIZ' && machine != null && machine !=undefined) {
+            $(element).closest('td').find('i').eq(0).css('display','block');
+            axios.get('http://192.168.2.13:83/api/seri/receteden/' + son + '/0/' + machine).then(function (response) {
+
+                select.html(null);
+                var option = $('<option/>');
+                option.attr({ 'value': 'SECINIZ', 'disabled': '', 'selected': '' }).text('SEÇİNİZ');
+                select.append(option);
+
+                if (response.data.length > 0) {
+                    $.each(response.data, function (i, item) {
+
+
+                        option = $('<option/>');
+                        option.attr({ 'value': item.BOY }).text(item.STOK_ADI);
+                        select.append(option);
+                    });
+                } else {
+                    currentRow.find('input').eq(3).val(null)
+                }
+
+               
+
+            })
+        }
+        else {
+            $(element).closest('td').find('i').eq(0).css('display', 'none');
+            
+        }
+        var sel1 = $('.DLStok1')
+        var sel2 = $('.DLRefMachine')
+        var sel3 = $('.DLStok2')
+        for (let i = 0; i < sel1.length; i++) {
+            if (sel1.eq(i).val() == null || sel1.eq(i).val() == undefined || sel1.eq(i).val() == 'SECINIZ')
+                $('#kaydet').prop('disabled', true);
+            else
+                if ((sel2.eq(i).val() == null || sel2.eq(i).val() == undefined || sel2.eq(i).val() == 'SECINIZ')) {
+                    if (sel3.eq(i).val() == null || sel3.eq(i).val() == undefined || sel3.eq(i).val() == 'SECINIZ')
+                        if (adt != '' && mik != '') {
+                            $('#kaydet').prop('disabled', false);
+                        } else {
+                            $('#kaydet').prop('disabled', true);
+                        }
+                    else
+                        $('#kaydet').prop('disabled', true);
+                }
+                else {
+                    if (adt != '' && mik != '') {
+                        if (sel3.eq(i).val() == null || sel3.eq(i).val() == undefined || sel3.eq(i).val() == 'SECINIZ')
+                            $('#kaydet').prop('disabled', true);
+                        else
+                            $('#kaydet').prop('disabled', false);
+                    } else {
+                        $('#kaydet').prop('disabled', true);
+                    }
+                }
+                    
+        }
+    }
+    function DLRefStokChange(element) {
+        
+        var BOY = $(element).val();
+        if (BOY != null && BOY != undefined) {
+            var adet = $(element).closest('tr').find('input').eq(2).val();
+            if (adet == '') {
+                adet = 0;
+            }
+            $(element).closest('tr').find('input').eq(3).val(Math.round(adet * parseFloat(ToplamKulMetraj) * 1000 / BOY))
+            if ($(element).closest('tr').find('input').eq(1).val() != '' && $(element).closest('tr').find('input').eq(2).val() != '') {
+                var sel1 = $('.DLStok1')
+                var sel2 = $('.DLRefMachine')
+                var sel3 = $('.DLStok2')
+                for (let i = 0; i < sel1.length; i++) {
+                    if (sel1.eq(i).val() == null || sel1.eq(i).val() == undefined || sel1.eq(i).val() == 'SECINIZ')
+                        $('#kaydet').prop('disabled', true);
+                    else {
+                        if (sel2.eq(i).val() == null || sel2.eq(i).val() == undefined || sel2.eq(i).val() == 'SECINIZ') {
+                            if (sel3.eq(i).val() == null || sel3.eq(i).val() == undefined || sel3.eq(i).val() == 'SECINIZ')
+                                $('#kaydet').prop('disabled', true);
+                            else
+                                $('#kaydet').prop('disabled', false);
+                        }
+                        else {
+
+                            $('#kaydet').prop('disabled', false);
+                            
+                        }
+                    }
+                       
+                }
+            }
+        } 
+        else {
+            $(element).closest('tr').find('input').eq(3).val(null)
+
+        }
+        
+    }
+    function stok1Change(element) {
+        $(element).closest('tr').find('select').eq(2).trigger('change')
+        $(element).closest('tr').find('select').eq(3).trigger('change')
+        if ($(element).closest('tr').find('input').eq(1).val() != '' && $(element).closest('tr').find('input').eq(2).val() != '') {
+            var sel1 = $('.DLStok1')
+            var sel2 = $('.DLRefMachine')
+            var sel3 = $('.DLStok2')
+            for (let i = 0; i < sel1.length; i++) {
+                if (sel1.eq(i).val() == null || sel1.eq(i).val() == undefined || sel1.eq(i).val() == 'SECINIZ')
+                    $('#kaydet').prop('disabled', true);
+                else {
+                    if (sel2.eq(i).val() == null || sel2.eq(i).val() == undefined || sel2.eq(i).val() == 'SECINIZ') {
+                        if (sel3.eq(i).val() == null || sel3.eq(i).val() == undefined || sel3.eq(i).val() == 'SECINIZ')
+                            $('#kaydet').prop('disabled', true);
+                        else
+                            $('#kaydet').prop('disabled', false);
+                    }
+                    else {
+
+                        $('#kaydet').prop('disabled', false);
+
+                    }
+                }
+            }
+        }
+    }
+    function GenArtiChange() {
+        DLInputChange()
+    }
+    function ReferansSecimiTemizleDL(element) {
+        $(element).closest('td').find('select').eq(0).val('SECINIZ').trigger('change');
+        $(element).closest('tr').find('td').eq(8).find('select').eq(0).html(null);
+        var option = $('<option/>');
+        option.attr({ 'value': 'SECINIZ', 'disabled': '', 'selected': '' }).text('SEÇİNİZ');
+        $(element).closest('tr').find('td').eq(8).find('select').eq(0).append(option)
+        DLInputChange()
+
     }
 //#endregion
+
 </script>
 </body>
 

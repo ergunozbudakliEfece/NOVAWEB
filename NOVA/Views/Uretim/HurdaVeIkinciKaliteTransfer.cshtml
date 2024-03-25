@@ -6,7 +6,10 @@
 
 <style>
     body {
+        padding-top: 2rem;
         padding-left: 5rem;
+        padding-right: 2rem;
+        padding-bottom: 2rem;
     }
 
     .centercontent {
@@ -118,7 +121,7 @@
 </div>
 
 <script>
-
+   
     var SelectedValues = [];
 
     function ChangeType() {
@@ -171,7 +174,7 @@
         var Type = $('input[name="transfer-islem"]:checked').val();
 
         $('#transfer-button').html(Type == "55" ? "2. KALİTEYE AKTAR" : "HURDAYA AKTAR");
-
+        $('#transfer-table').data('height', $(window).height()-100);
         $.ajax({
             url: `http://192.168.2.13:83/api/seri/hi/${Type}`,
             type: 'GET',
@@ -199,12 +202,13 @@
 
         Arr.forEach(function (a) {
             if (!this[a.STOK_KODU]) {
-                this[a.STOK_KODU] = { STOK_ADI: a.STOK_ADI, STOK_KODU: a.STOK_KODU, MIKTAR: 0 };
+                this[a.STOK_KODU] = { STOK_ADI: a.STOK_ADI, STOK_KODU: a.STOK_KODU, MIKTAR: 0,MIKTAR2:0 };
 
                 Result.push(this[a.STOK_KODU]);
             }
 
             this[a.STOK_KODU].MIKTAR += parseInt(a.MIKTAR);
+            this[a.STOK_KODU].MIKTAR2 += parseInt(a.MIKTAR2);
 
         }, Object.create(null));
 
@@ -341,7 +345,7 @@
         for (var i = 0; i < SelectedValues.length; i++)
         {
             var FilteredData = Data.filter(x => x.SERI_NO == SelectedValues[i])[0];
-            var SelectedData = { "TIP": Type, "HAT_KODU": FilteredData.HAT_KODU, "STOK_KODU": FilteredData.STOK_KODU, "SERI_NO": FilteredData.SERI_NO, "MIKTAR": FilteredData.MIKTAR };
+            var SelectedData = { "TIP": Type, "HAT_KODU": FilteredData.HAT_KODU, "STOK_KODU": FilteredData.STOK_KODU, "SERI_NO": FilteredData.SERI_NO, "MIKTAR": FilteredData.MIKTAR, "MIKTAR2": FilteredData.MIKTAR2 };
 
             DataForSend.push(SelectedData);
         }

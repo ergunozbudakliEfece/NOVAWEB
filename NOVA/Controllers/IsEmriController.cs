@@ -163,11 +163,9 @@ namespace NOVA.Controllers
                 ViewBag.Id = Request.Cookies["Id"].Value;
             }
 
-
-            ViewBag.SIRANO = GetMax();
             ViewBag.Stok_Adlari = GetStokAdlari();
+            ViewBag.SIRANO = GetMax();
             ViewBag.Cariler = GetCariler();
-            ViewBag.Sip = GetSip();
             ViewBag.Seriler = GetSeri();
 
             return View();
@@ -1154,7 +1152,10 @@ namespace NOVA.Controllers
                     Isemri1.Oncelik = 0;
                     Isemri1.DepoKodu = 45;
                     Isemri1.CikisDepoKodu = 45;
-                    Isemri1.SeriNo2 = isemridis[i].GENISLIK.ReplaceAll(".", ",");
+                    if (isemridis[i].GENISLIK != null)
+                    {
+                        Isemri1.SeriNo2 = isemridis[i].GENISLIK.ReplaceAll(".", ",");
+                    }
                     double mik = 0;
                     if (isemridis[i].AGIRLIK.Contains('.'))
                     {

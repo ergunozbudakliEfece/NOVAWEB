@@ -100,6 +100,8 @@
 
 
 <script>
+    var YeniKayitSes = new Audio('http://192.168.2.13/wwwroot/audio/mes_yeni_kayit.mp3');
+
     function UpdateTest(Data)
     {
        
@@ -122,10 +124,23 @@
                 color='white'
                 o='-'
             }
-            html += "<tr><td style='text-align:center'>" + item.HAT_KODU + "</td><td style='text-align:center'>" + item.SAAT + "</td><td style='text-align:center'>" + item.SERI_NO + "</td><td style='max-width:13rem'>" + item.STOK_ADI + "</td><td style='text-align:center'>" + item.DETAY + "</td><td style='text-align:right'>" + item.MIKTAR + " " + item.OLCU_BR1 + "</td><td style='text-align:right'>" + item.MIKTAR2 + " " + item.OLCU_BR2 + "</td><td style='text-align:right'>" + (item.IK_MIKTAR1 != 0 ? item.IK_MIKTAR1 + " " + item.OLCU_BR1 : "-") + "</td><td style='text-align:right'>" + (item.IK_MIKTAR2 != 0 ? item.IK_MIKTAR2 + " " + item.OLCU_BR2 : "-") + "</td><td style='text-align:right'>" + (item.HRD_MIKTAR1 != 0 ? item.HRD_MIKTAR1 + " KG" : "-") + "</td><td style='text-align:right'><span style='color:" + color + "'>" +o +"</span></td><td style='text-align:left;padding-left:2rem'><img src='/assets/img/avatars/" + item.OPERATOR_ID + ".png' class='rounded-circle me-2' style='background-color:white;' height='35' width='35' onerror=\"javascript:this.src='/assets/img/avatars/10000.png'\">" + item.OPERATOR + "</td></tr>";
+
+            var ORT = 0;
+            var PAKET = 0;
+            var BR_MIK_RATE = 0;
+            var BR_MIK_COLOR = 'white';
+
+            if (item.HAT_KODU != 'DL01') {
+                ORT = item.BR_MIK_ORT;
+                PAKET = item.BR_MIK;
+                BR_MIK_RATE = ORT / PAKET;
+                BR_MIK_COLOR = (BR_MIK_RATE < 0.90 || BR_MIK_RATE > 1.10) ? 'red' : '#00ff00';
+            }
+
+            html += "<tr><td style='text-align:center'>" + item.HAT_KODU + "</td><td style='text-align:center'>" + item.SAAT + "</td><td style='text-align:center'>" + item.SERI_NO + "</td><td style='max-width:13rem'>" + item.STOK_ADI + "</td><td style='text-align:center'>" + item.DETAY + "</td><td style='text-align:center'>" + item.MIKTAR + " " + item.OLCU_BR1 + "</td><td style='text-align:center'>" + item.MIKTAR2 + " " + item.OLCU_BR2 + "</td><td style='color:" + BR_MIK_COLOR + " !important;'>" + NumberFormat(PAKET) + "</td><td>" + NumberFormat(ORT) + "</td><td style='text-align:center'>" + (item.IK_MIKTAR1 != 0 ? item.IK_MIKTAR1 + " " + item.OLCU_BR1 : "-") + "</td><td style='text-align:center'>" + (item.IK_MIKTAR2 != 0 ? item.IK_MIKTAR2 + " " + item.OLCU_BR2 : "-") + "</td><td style='text-align:center'>" + (item.HRD_MIKTAR1 != 0 ? item.HRD_MIKTAR1 + " KG" : "-") + "</td><td style='text-align:center'><span style='color:" + color + "'>" + o + "</span></td><td style='text-align:left;padding-left:2rem'><img src='/assets/img/avatars/" + item.OPERATOR_ID + ".png' class='rounded-circle me-2' style='background-color:white;' height='35' width='35' onerror=\"javascript:this.src='/assets/img/avatars/10000.png'\">" + item.OPERATOR + "</td></tr>";
            
         })
-        $('#TUMU .machine-content').html('<div class="tableFixHead"><table class="table table-dark"><thead><tr><th id="a">HAT</th><th>SAAT</th><th>ETİKET-NO</th><th>STOK</th><th>DETAY</th><th style="text-align:right">MİKTAR</th><th style="text-align:right">MİKTAR2</th><th style="text-align:cemter" colspan="2">2.KALITE</th><th style="text-align:right">HURDA</th><th style="text-align:center;padding-left:2rem">FİRE(%)</th><th style="text-align:left;padding-left:2rem">OPERATÖR</th></tr></thead><tbody>' + html + '</tbody></table></div>');
+        $('#TUMU .machine-content').html('<div class="tableFixHead"><table class="table table-dark tableBlack  text-center"><thead><tr><th id="a">HAT</th><th>SAAT</th><th>ETİKET-NO</th><th>STOK</th><th>DETAY</th><th style="text-align:center">MİKTAR</th><th style="text-align:center">MİKTAR2</th><th>M1/M2</th><th>STD (KG/AD)</th><th style="text-align:center" colspan="2">2.KALITE</th><th style="text-align:center">HURDA</th><th style="text-align:center;">FİRE(%)</th><th style="text-align:center;padding-left:2rem">OPERATÖR</th></tr></thead><tbody>' + html + '</tbody></table></div>');
         
         $('#TUMU tbody tr').click(function () {
             ShowProgress();
@@ -167,24 +182,60 @@
                 color = 'white'
                 o = '-'
             }
-            html += "<tr><td style='text-align:center'>" + item.HAT_KODU + "</td><td style='text-align:center'>" + item.SAAT + "</td><td style='text-align:center'>" + item.SERI_NO + "</td><td style='max-width:13rem'>" + item.STOK_ADI + "</td><td style='text-align:center'>" + item.DETAY + "</td><td style='text-align:right'>" + item.MIKTAR + " " + item.OLCU_BR1 + "</td><td style='text-align:right'>" + item.MIKTAR2 + " " + item.OLCU_BR2 + "</td><td style='text-align:right'>" + (item.IK_MIKTAR1 != 0 ? item.IK_MIKTAR1 + " " + item.OLCU_BR1 : "-") + "</td><td style='text-align:right'>" + (item.IK_MIKTAR2 != 0 ? item.IK_MIKTAR2 + " " + item.OLCU_BR2 : "-") + "</td><td style='text-align:right'>" + (item.HRD_MIKTAR1 != 0 ? item.HRD_MIKTAR1 + " KG" : "-") + "</td><td style='text-align:right'><span style='color:" + color + "'>" + o + "</span></td><td style='text-align:left;padding-left:2rem'><img src='/assets/img/avatars/" + item.OPERATOR_ID + ".png' class='rounded-circle me-2' style='background-color:white;' height='35' width='35' onerror=\"javascript:this.src='/assets/img/avatars/10000.png'\">" + item.OPERATOR + "</td></tr>";
+
+            var ORT = 0;
+            var PAKET = 0;
+            var BR_MIK_RATE = 0;
+            var BR_MIK_COLOR = 'white';
+
+            if (item.HAT_KODU == 'DL01')
+            {
+                ORT = item.BR_MIK_ORT;
+                PAKET = item.BR_MIK;
+                BR_MIK_RATE = ORT / PAKET;
+                BR_MIK_COLOR = (BR_MIK_RATE < 0.90 || BR_MIK_RATE > 1.10) ? 'red' : '#00ff00';
+            }
+
+            html += "<tr><td style='text-align:center'>" + item.HAT_KODU + "</td><td style='text-align:center'>" + item.SAAT + "</td><td style='text-align:center'>" + item.SERI_NO + "</td><td style='max-width:13rem'>" + item.STOK_ADI + "</td><td style='text-align:center'>" + item.DETAY + "</td><td style='text-align:center'>" + item.MIKTAR + " " + item.OLCU_BR1 + "</td><td style='text-align:center'>" + item.MIKTAR2 + " " + item.OLCU_BR2 + "</td><td style='color:" + BR_MIK_COLOR + "'>" + NumberFormat(PAKET) + "</td><td>" + NumberFormat(ORT) + "</td><td style='text-align:center'>" + (item.IK_MIKTAR1 != 0 ? item.IK_MIKTAR1 + " " + item.OLCU_BR1 : "-") + "</td><td style='text-align:center'>" + (item.IK_MIKTAR2 != 0 ? item.IK_MIKTAR2 + " " + item.OLCU_BR2 : "-") + "</td><td style='text-align:center'>" + (item.HRD_MIKTAR1 != 0 ? item.HRD_MIKTAR1 + " KG" : "-") + "</td><td style='text-align:center'><span style='color:" + color + "'>" + o + "</span></td><td style='text-align:left;padding-left:2rem'><img src='/assets/img/avatars/" + item.OPERATOR_ID + ".png' class='rounded-circle me-2' style='background-color:white;' height='35' width='35' onerror=\"javascript:this.src='/assets/img/avatars/10000.png'\">" + item.OPERATOR + "</td></tr>";
 
         })
-        $('#yeniTbl').html('<div class="tableFixHead"><table class="table table-dark tableBlack"><thead><tr><th id="a">HAT</th><th>SAAT</th><th>ETİKET-NO</th><th>STOK</th><th>DETAY</th><th style="text-align:right">MİKTAR</th><th style="text-align:right">MİKTAR2</th><th style="text-align:cemter" colspan="2">2.KALITE</th><th style="text-align:right">HURDA</th><th style="text-align:center;padding-left:2rem">FİRE(%)</th><th style="text-align:left;padding-left:2rem">OPERATÖR</th></tr></thead><tbody>' + html + '</tbody></table></div>');
+        $('#yeniTbl').html('<div class="tableFixHead"><table class="table table-dark tableBlack  text-center"><thead><tr><th id="a">HAT</th><th>SAAT</th><th>ETİKET-NO</th><th>STOK</th><th>DETAY</th><th style="text-align:center">MİKTAR</th><th style="text-align:center">MİKTAR2</th><th>M1/M2</th><th>STD (KG/AD)</th><th style="text-align:center" colspan="2">2.KALITE</th><th style="text-align:center">HURDA</th><th style="text-align:center;">FİRE(%)</th><th style="text-align:center;padding-left:2rem">OPERATÖR</th></tr></thead><tbody>' + html + '</tbody></table></div>');
         if (anlik) {
-            $('#YeniEklenenlerModal').delay(2500).fadeIn('slow');
-            setTimeout(function () {
-                $('#YeniEklenenlerModal').modal('show')
-            }, 3000);
-            setTimeout(() => {
+            //$('#YeniEklenenlerModal').delay(2500).fadeIn('slow');
+            //setTimeout(function () {
+            //    $('#YeniEklenenlerModal').modal('show')
+            //}, 3000);
+            //setTimeout(() => {
 
-                $('#YeniEklenenlerModal').delay(2500).fadeOut('slow');
-                setTimeout(function () {
-                    $('#YeniEklenenlerModal').modal('hide')
-                }, 3000);
-            }, "15000");
+            //    $('#YeniEklenenlerModal').delay(2500).fadeOut('slow');
+            //    setTimeout(function () {
+            //        $('#YeniEklenenlerModal').modal('hide')
+            //    }, 3000);
+            //}, "15000");
+
+            var Sound = localStorage.getItem("Sound") === null ? false : (localStorage.getItem("Sound") === 'true');
+
+            if (Sound) {
+                YeniKayitSes.play();
+            }
         }
        
+    }
+
+    function NumberFormat(Value, Decimal = 2)
+    {
+        return Value == 0 || Value == null ? '-' : DecimalSeperator(Value, Decimal);
+    }
+
+    function DecimalSeperator(value, Decimal) {
+        if (Number.isInteger(parseFloat(value)))
+        {
+            return parseInt(value);
+        }
+        else
+        {
+            return value.toFixed(Decimal).replace('.', ',');
+        }
     }
 </script>
 

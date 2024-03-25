@@ -1,0 +1,150 @@
+﻿
+@{
+    ViewBag.Title = "LayoutDemo";
+    Layout = "~/Views/Shared/Layout_Empty.cshtml";
+}
+
+<link href="~/wwwroot/css/BarcodeTrackTree.css" rel="stylesheet" />
+
+@Html.Partial("../Shared/BarcodeScanner")
+
+<div class="nova-card d-flex justify-content-start align-items-center p-3 mb-2">
+
+    <div class="row d-flex justify-content-start align-items-center gap-2">
+        <div class="col-auto">
+            <div class="nova-float-label nova-input-group">
+                <input id="BARCODE_NUMBER" type="text" placeholder="" maxlength="15">
+                <label>SERİ NO</label>
+                <div class="addon">
+                    <button class="nove-primary-button icon-button" onclick="StartQRScanner(QRScan)">
+                        <i class='bx bx-qr-scan'></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button id="GET_DATA_BUTTON" class="nove-primary-button" onclick="GetDataAction()" disabled>BİLGİLERİ GETİR</button>
+        </div>
+    </div>
+</div>
+
+<div id="tree-view" class="nova-card">
+    <div id="panzoom-tree">
+        <div class="tree"></div>
+    </div>
+</div>
+
+<!-- Barcode Detail Modal -->
+<div class="modal fade" id="barcode-detail-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="barcode-title"></h1>
+            </div>
+            <div class="modal-body">
+
+                <table class="table table-bordered table-striped text-break barcode-detail-table">
+                    <tbody>
+                        <tr class="text-center">
+                            <td colspan="2" id="STOCK_NAME"></td>
+                        </tr>
+                        <tr class="text-center">
+                            <td colspan="2" id="STOCK_CODE"></td>
+                        </tr>
+                        <tr class="text-start">
+                            <td class="info border-end-0">
+                                <span>MİKTAR 1</span>
+                                <span>:</span>
+                            </td>
+                            <td class="border-start-0">
+                                <span id="AMOUNT_1"></span>
+                            </td>
+                        </tr>
+
+                        <tr class="text-start">
+                            <td class="info border-end-0">
+                                <span>MİKTAR 2</span>
+                                <span>:</span>
+                            </td>
+                            <td  class="border-start-0">
+                                <span id="AMOUNT_2"></span>
+                            </td>
+                        </tr>
+
+                        <tr class="text-start">
+                            <td class="info border-end-0">
+                                <span>KALINLIK</span>
+                                <span>:</span>
+                            </td>
+                            <td class="border-start-0">
+                                <span id="THICKNESS"></span>
+                            </td>
+                        </tr>
+
+                        <tr class="text-start">
+                            <td class="info border-end-0">
+                                <span>GENİŞLİK</span>
+                                <span>:</span>
+                            </td>
+                            <td class="border-start-0">
+                                <span id="WIDTH"></span>
+                            </td>
+                        </tr>
+
+                        <tr class="text-start">
+                            <td class="info border-end-0">
+                                <span>BOY</span>
+                                <span>:</span>
+                            </td>
+                            <td class="border-start-0">
+                                <span id="HEIGHT"></span>
+                            </td>
+                        </tr>
+
+                        <tr class="text-start">
+                            <td class="info border-end-0">
+                                <span>METRAJ</span>
+                                <span>:</span>
+                            </td>
+                            <td class="border-start-0">
+                                <span id="QUANTITY"></span>
+                            </td>
+                        </tr>
+
+                        <tr class="text-start">
+                            <td class="info border-end-0">
+                                <span>MAKİNE/OPR.</span>
+                                <span>:</span>
+                            </td>
+                            <td class="border-start-0">
+                                <span id="MACHINE_OP"></span>
+                            </td>
+                        </tr>
+
+                        <tr class="text-start">
+                            <td class="info border-end-0">
+                                <span>KAYIT TARİHİ</span>
+                                <span>:</span>
+                            </td>
+                            <td class="border-start-0">
+                                <span id="CREATE_DATE"></span>
+                            </td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center align-items-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">KAPAT</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/wwwroot/libs/observable-slim/observable-slim.js"></script>
+<script src="~/wwwroot/libs/hammerjs/hammer.js"></script>
+<script src="~/wwwroot/libs/panzoom/dist/panzoom.js"></script>
+<script src="~/wwwroot/js/BarcodeTrack.js"></script>
+<script src="~/wwwroot/libs/moment.js/moment.min.js"></script>

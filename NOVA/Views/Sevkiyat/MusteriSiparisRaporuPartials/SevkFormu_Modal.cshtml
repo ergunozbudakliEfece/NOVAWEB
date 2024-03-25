@@ -18,11 +18,24 @@
 
                             <i data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Belgeleri Getir</span>" onclick="BelgeListesi()" class="bi bi-file-earmark-ruled-fill showmodal" style="color:#203289; font-size: x-large;"></i>
                             <i data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Yeni Belge Oluştur</span>" onclick="YeniBelgeOlustur()" id="YeniBelgeOlusturButton" class="bi bi-file-earmark-plus-fill" style="color:#203289; font-size: x-large;"></i>
+                            <i data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Araç Bilgi Girişi</span>" onclick="AracBilgiGiris()" id="AracBilgiGirisButton" class="bx bxs-truck" style="color:#203289; font-size: x-large;"></i>
                         </div>
                         <div class="col-sm-2 col-12" style="width:12.7rem;">
                             <div class="form-label-group outline m-0">
                                 <input type="text" id="CIKIS_DEPO" class="form-control" placeholder="DEPO" autocomplete="off" />
                                 <span><label for="CIKIS_DEPO">DEPO</label></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-12" style="width:12.7rem;">
+                            <div class="form-label-group outline m-0">
+                                <input type="text" id="PLAKA" class="form-control" placeholder="PLAKA" autocomplete="off" />
+                                <span><label for="PLAKA">PLAKA</label></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-12" style="width:12.7rem;">
+                            <div class="form-label-group outline m-0">
+                                <input type="text" id="SOFOR" class="form-control" placeholder="ŞOFÖR" autocomplete="off" />
+                                <span><label for="SOFOR">ŞOFÖR</label></span>
                             </div>
                         </div>
                     </div>
@@ -151,6 +164,11 @@
                                     <div class="col-sm-auto d-flex justify-content-start gap-2">
                                         <div class="d-flex justify-content-center align-items-center mx-2"><div style="width: 1.25rem; height: 1.25rem; background-color: #e9ebff; margin-right: 0.2rem; "></div>AÇIK</div>
                                         <div class="d-flex justify-content-center align-items-center"><div style="width: 1.25rem; height: 1.25rem; background-color: #FAEAEA; margin-right: 0.2rem; "></div>KAPALI</div>
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-primary" style="margin-left: 0.2rem;" onclick="TOPLAM_OZET()">
+                                                Σ
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="col">
                                         <input class="form-control" type="text" placeholder="Ara" id="customSearchTempTable" />
@@ -246,7 +264,7 @@
         $('#CIKIS_DEPO').prop("disabled", false);
         CikisDepo = -1;
 
-        StokAdlariniAyarla();
+        StokDetayBilgisi(SiparisNo);
         DurumAyarla(0);
         MiktarGirisKontrolu();
 
@@ -262,17 +280,35 @@
 
         $('#SIPARIS_BAKIYE').val('-');
 
+
+        $('#SOFOR').val('');
+        $('#PLAKA').val('');
+
         $("#SevkFormu").modal('show');
 
         history.pushState(null, null, window.location.href);
         history.back();
         window.onpopstate = function () { history.forward(); };
     }
+    var DetayBilgisi = [];
+
+    function StokDetayBilgisi(SiparisNo) {
+        $.ajax({
+            url: `http://192.168.2.13:83/api/detaylisip/${SiparisNo}`,
+            type: 'GET',
+            error: () => { },
+            success: (response) => {
+                DetayBilgisi = response.filter(x => x.SIPARIS_NO == SiparisNo);
+            }
+        }).then(() => {
+            StokAdlariniAyarla();
+        });
+    }
 
     function StokAdlariniAyarla() {
         var StokSecimHtml = `<select onchange="StokAdiSec(this.value)" id="STOK_SECIM" class="form-select"><option value="" selected disabled>Lütfen Stok Adı Seçiniz</option>`;
 
-        var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $("#SİPARİS_NO").html());
+        var FiltreliDetay = DetayBilgisi.filter(x => x.SIPARIS_NO == $("#SİPARİS_NO").html());
 
         for (let i = 0; i < FiltreliDetay.length; i++) {
             StokSecimHtml += `<option value="${FiltreliDetay[i].STOK_KODU}">${FiltreliDetay[i].STOK_ADI}</option>`;
@@ -291,7 +327,7 @@
 
         $('#STOK_SECIM').val(STOK_KODU);
 
-        var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $("#SİPARİS_NO").html() && x.STOK_KODU == STOK_KODU);
+        var FiltreliDetay = DetayBilgisi.filter(x => x.SIPARIS_NO == $("#SİPARİS_NO").html() && x.STOK_KODU == STOK_KODU);
 
         StokRehberBilgisi(FiltreliDetay[0].STOK_KODU);
 
@@ -380,11 +416,10 @@
                 if (CikisDepo != -1) {
                     $('#BarkodButton').prop('disabled', false);
                 }
-                else
-                {
+                else {
                     $('#BarkodButton').prop('disabled', true);
                 }
-                
+
                 break;
             case 1:
                 GirisleriSifirla();
@@ -446,8 +481,8 @@
 </script>
 <script>
     function BilgileriGetir() {
-        var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $('#SİPARİS_NO').html() && x.STOK_KODU == $('#STOK_SECIM').val());
-        
+        var FiltreliDetay = DetayBilgisi.filter(x => x.SIPARIS_NO == $('#SİPARİS_NO').html() && x.STOK_KODU == $('#STOK_SECIM').val());
+
         var STOK_ADI = FiltreliDetay[0].STOK_ADI;
         var MIKTAR = $('#MIKTAR').val()
         var OLCU_BR1 = $('#OLCU_BR1').val()
@@ -479,7 +514,9 @@
             "SERI_NO_4": SERI_NO_4,
             "ACIKLAMA_4": ACIKLAMA_4,
             "ACIKLAMA_5": ACIKLAMA_5,
-            "CIKIS_DEPO": CikisDepo
+            "CIKIS_DEPO": CikisDepo,
+            "PLAKA": $('#PLAKA').val() == '' ? null : $('#PLAKA').val(),
+            "SOFOR": $('#SOFOR').val() == '' ? null : $('#SOFOR').val()
         };
     }
 
@@ -578,8 +615,7 @@
 
             var Depo = Depolar.filter(x => x.DEPO_KODU == Kayit[0].CIKIS_DEPO);
 
-            if (Depo.length > 0)
-            {
+            if (Depo.length > 0) {
                 $('#CIKIS_DEPO').val(Depo[0].DEPO_ISMI);
 
                 CikisDepo = Depo[0].DEPO_KODU;
@@ -663,7 +699,7 @@
                                 var HataMesaji = '<div style="overflow-y:auto;max-height:150px;font-size:smaller;margin-bottom:1rem;">';
 
                                 for (var i = 0; i < Hatalar.length; i++) {
-                                    var Filtered = detayli.filter(x => x.SIPARIS_NO == $('#SİPARİS_NO').html() && x.STOK_KODU == Hatalar[i].STOK_KODU);
+                                    var Filtered = DetayBilgisi.filter(x => x.SIPARIS_NO == $('#SİPARİS_NO').html() && x.STOK_KODU == Hatalar[i].STOK_KODU);
                                     HataMesaji = HataMesaji + `<b>${Hatalar[i].STOK_ADI}</b> kalemine girilebilecek maksimum miktar <b>${parseFloat(Filtered[0].BAKIYE_MIKTARI).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${Filtered[0].OLCU_BR1}</b>'dir.<br/>`;
                                 }
 
@@ -702,8 +738,7 @@
                 });
             });
         }
-        else
-        {
+        else {
             Swal.fire({
                 text: "Depo seçimi tamamlanmadan kayıt işlemi yapılamaz",
                 icon: "error",
@@ -815,7 +850,9 @@
                         "EXP_2": null,
                         "EXP_3": null,
                         "GIRIS_DEPO": null,
-                        "CIKIS_DEPO": CikisDepo
+                        "CIKIS_DEPO": CikisDepo,
+                        "PLAKA": Kayitlar[i].PLAKA,
+                        "SOFOR": Kayitlar[i].SOFOR
                     };
 
                     $.ajax({
@@ -884,7 +921,9 @@
                 "EXP_2": null,
                 "EXP_3": null,
                 "GIRIS_DEPO": null,
-                "CIKIS_DEPO": Kayitlar[i].CIKIS_DEPO
+                "CIKIS_DEPO": Kayitlar[i].CIKIS_DEPO,
+                "PLAKA": Kayitlar[i].PLAKA,
+                "SOFOR": Kayitlar[i].SOFOR
             };
 
             $.ajax({
@@ -1012,12 +1051,10 @@
                 e.currentTarget.value = e.currentTarget.value.slice(0, -1);
             }
 
-            if (parseFloat(e.currentTarget.value) < parseFloat(e.currentTarget.min))
-            {
+            if (parseFloat(e.currentTarget.value) < parseFloat(e.currentTarget.min)) {
                 e.currentTarget.value = e.currentTarget.min;
             }
-            else if (parseFloat(e.currentTarget.value) > parseFloat(e.currentTarget.max))
-            {
+            else if (parseFloat(e.currentTarget.value) > parseFloat(e.currentTarget.max)) {
                 e.currentTarget.value = e.currentTarget.max;
             }
         }
@@ -1293,6 +1330,68 @@
     function DepoDegisimDurumu() {
         $('#CIKIS_DEPO').prop('disabled', (Kayitlar.length > 0) ? true : false);
     }
+
+    function TOPLAM_OZET() {
+        if (Kayitlar.length > 0) {
+            const GRUPLANMIS_VERI = Object.groupBy(Kayitlar, ({ STOK_ADI }) => STOK_ADI);
+
+            var tableBody = "";
+
+            var GENEL_TOPLAM_MIKTAR1 = 0;
+            var GENEL_TOPLAM_MIKTAR2 = 0;
+
+            for (const STOK_ADI of Object.getOwnPropertyNames(GRUPLANMIS_VERI)) {
+                var TOPLAM_MIKTAR1 = 0;
+                var TOPLAM_MIKTAR2 = 0;
+
+                for (const VERI of GRUPLANMIS_VERI[STOK_ADI]) {
+                    TOPLAM_MIKTAR1 += parseFloat(VERI.MIKTAR);
+                    TOPLAM_MIKTAR2 += parseFloat(VERI.MIKTAR2);
+                }
+
+                GENEL_TOPLAM_MIKTAR1 += parseFloat(TOPLAM_MIKTAR1);
+                GENEL_TOPLAM_MIKTAR2 += parseFloat(TOPLAM_MIKTAR2);
+
+                tableBody += `<tr>
+                <td>${STOK_ADI}</td>
+                <td>${MiktarFormatla(TOPLAM_MIKTAR2)}</td>
+                <td>${MiktarFormatla(TOPLAM_MIKTAR1)}</td>
+            </tr>`;
+            }
+
+            var STR = `<div class="d-flex flex-column justify-content-center align-items-center gap-2"><span>Belge üzerinde toplam <b>${Kayitlar.length}</b> kalem mevcut.</span>
+<table class="table table-striped table-bordered" style="text-align: center;vertical-align: middle;width: 100%; word-break: auto-phrase;">
+    <thead>
+        <th>STOK ADI</th>
+        <th>MİKTAR 2</th>
+        <th>MİKTAR 1</th>
+    </thead>
+    <tbody>
+        ${tableBody}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td><b>GENEL TOPLAM</b></td>
+            <td><b>${MiktarFormatla(GENEL_TOPLAM_MIKTAR2)}</b></td>
+            <td><b>${MiktarFormatla(GENEL_TOPLAM_MIKTAR1)}</b></td>
+        </tr>
+    </tfoot>
+</table></div>`;
+
+            Swal
+                .fire({
+                    title: "BELGE ÖZETİ",
+                    html: STR,
+                    willOpen: () => {
+                        document.onclick = () => { if (document.activeElement != document.body) document.activeElement.blur(); }
+                    },
+                    confirmButtonText: 'TAMAM'
+                })
+                .then(function (isConfirm) {
+                    document.onclick = () => {  }
+                });
+        }
+    }
 </script>
 
 <style>
@@ -1352,6 +1451,7 @@
     .belgedetailtbl .card-views .card-view {
         margin-top: 0 !important;
     }
+
     .detail-view td {
         padding: 0 !important;
     }
@@ -1360,3 +1460,407 @@
         color: var(--text-color) !important;
     }
 </style>
+
+<div class="modal fade" id="arac-bilgi-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="arac-bilgi-islem" id="arac-button-radio" value="arac" autocomplete="off" onclick="AracBilgiIslemDegistir()" checked>
+                    <label class="btn btn-outline-primary" for="arac-button-radio">ARAÇ</label>
+
+                    <input type="radio" class="btn-check" name="arac-bilgi-islem" id="sofor-button-radio" value="sofor" autocomplete="off" onclick="AracBilgiIslemDegistir()">
+                    <label class="btn btn-outline-primary" for="sofor-button-radio">ŞOFÖR</label>
+                </div>
+            </div>
+            <div class="modal-body">
+
+                <div id="arac-bilgi">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-label-group outline m-2">
+                                <input type="text" id="YENI_PLAKA" class="form-control" autocomplete="off" value="" />
+                                <span><label for="YENI_PLAKA">PLAKA</label></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-label-group outline m-2">
+                                <input type="number" id="YENI_YUK" class="form-control" autocomplete="off" value="" min="0" />
+                                <span><label for="YENI_YUK">YÜK</label></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sofor-bilgi" style="display: none;">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-label-group outline m-2">
+                                <input type="text" id="YENI_AD" class="form-control" autocomplete="off" value="" />
+                                <span><label for="YENI_AD">AD</label></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">KAPAT</button>
+                <button type="button" class="btn btn-primary" onclick="AracBilgileriKaydet()">KAYDET</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(() => { PlakalariGetir(); SoforleriGetir(); });
+
+    var Plakalar = [];
+    var Soforler = [];
+
+    function PlakalariGetir() {
+
+        $.ajax({
+            url: `http://192.168.2.13:83/api/shipping/arac`,
+            type: 'GET',
+            error: () => { },
+            success: (response) => {
+                Plakalar = response.map(X => X.PLAKA);
+                PlakaOtomatikTamamlama(Plakalar);
+            }
+        });
+
+    }
+
+    function SoforleriGetir() {
+        $.ajax({
+            url: `http://192.168.2.13:83/api/shipping/sofor`,
+            type: 'GET',
+            error: () => { },
+            success: (response) => {
+                Soforler = response.map(X => SadeceBasHarfBuyut(X.SOFOR_ADI));
+
+                SoforOtomatikTamamlama(Soforler);
+            }
+        });
+    }
+
+    function PlakaOtomatikTamamlama(arr) {
+        var currentFocus;
+        var inp = document.getElementById('PLAKA');
+
+        let PlakaSorgu = new Fuse(arr, {
+            keys: [],
+            includeMatches: true,
+            threshold: 0.1,
+            distance: 15
+        });
+
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value.trim();
+
+            closeAllLists();
+            if (!val) {
+                return false;
+            }
+            currentFocus = -1;
+
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+
+            this.parentNode.appendChild(a);
+
+            var itemNumber = 0;
+
+            var Sorgu = PlakaSorgu.search(val);
+
+            for (let i = 0; i < Sorgu.length; i++) {
+
+                if (itemNumber < 5) {
+                    b = document.createElement("DIV");
+
+                    b.innerHTML = Sorgu[i].item;
+
+                    b.innerHTML += "<input type='hidden' value='" + Sorgu[i].item + "'>";
+
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+
+                        if (inp.value.trim().length !== 0) {
+                        }
+
+                        closeAllLists();
+
+                        AracBilgiDegistir();
+                    });
+
+                    itemNumber = itemNumber + 1;
+
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+
+                currentFocus++;
+
+                addActive(x);
+            } else if (e.keyCode == 38) {
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+    }
+
+    function SoforOtomatikTamamlama(arr) {
+        var currentFocus;
+        var inp = document.getElementById('SOFOR');
+
+        let SoforSorgu = new Fuse(arr, {
+            keys: [],
+            includeMatches: true,
+            threshold: 0.1,
+            distance: 15
+        });
+
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value.trim();
+
+            closeAllLists();
+            if (!val) {
+                return false;
+            }
+            currentFocus = -1;
+
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+
+            this.parentNode.appendChild(a);
+
+            var itemNumber = 0;
+
+            var Sorgu = SoforSorgu.search(val);
+
+            for (let i = 0; i < Sorgu.length; i++) {
+
+                if (itemNumber < 5) {
+                    b = document.createElement("DIV");
+
+                    b.innerHTML = Sorgu[i].item;
+
+                    b.innerHTML += "<input type='hidden' value='" + Sorgu[i].item + "'>";
+
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+
+                        if (inp.value.trim().length !== 0) {
+                        }
+
+                        closeAllLists();
+
+                        AracBilgiDegistir();
+                    });
+
+                    itemNumber = itemNumber + 1;
+
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+
+                currentFocus++;
+
+                addActive(x);
+            } else if (e.keyCode == 38) {
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+    }
+
+    function AracBilgiDegistir() {
+        for (var i = 0; i < Kayitlar.length; i++) {
+            Kayitlar[i].PLAKA = $('#PLAKA').val() != '' ? $('#PLAKA').val() : '';
+            Kayitlar[i].SOFOR = $('#SOFOR').val() != '' ? SadeceBasHarfBuyut($('#SOFOR').val()) : '';
+        }
+    }
+
+    $('#PLAKA').on("keydown", (e) => {
+        if (e.which == 9) {
+            $('#PLAKAautocomplete-list').html('');
+        }
+    });
+
+    $('#PLAKA').on("blur", (e) => {
+        setTimeout(() => {
+            var val = e.target.value.trimRight();
+
+            if (val) {
+
+                $('#PLAKA').val(Plakalar.includes(val.toUpperCase()) ? val.toUpperCase() : '');
+
+                $('#PLAKAautocomplete-list').html('');
+
+                AracBilgiDegistir();
+            }
+
+        }, 100);
+    });
+
+    $('#SOFOR').on("keydown", (e) => {
+        if (e.which == 9) {
+            $('#SOFORautocomplete-list').html('');
+        }
+    });
+
+    $('#SOFOR').on("blur", (e) => {
+        setTimeout(() => {
+            var val = e.target.value.trimRight();
+
+            if (val) {
+
+                $('#SOFOR').val(Soforler.includes(SadeceBasHarfBuyut(val)) ? SadeceBasHarfBuyut(val) : '');
+
+                $('#SOFORautocomplete-list').html('');
+
+                AracBilgiDegistir();
+            }
+
+        }, 100);
+    });
+
+    function SadeceBasHarfBuyut(text) {
+        const words = text.split(" ");
+
+        return words.map((word) => {
+            return word[0].toLocaleUpperCase('tr') + word.substring(1).toLocaleLowerCase('tr');
+        }).join(" ");
+    }
+</script>
+
+<script>
+    function AracBilgiGiris() {
+
+        $('#arac-button-radio').prop('checked', true);
+
+        $('#YENI_PLAKA').val('');
+        $('#YENI_YUK').val('');
+        $('#YENI_AD').val('');
+
+        AracBilgiIslemDegistir();
+
+        $('#arac-bilgi-modal').modal('show');
+
+    }
+
+    function AracBilgiIslemDegistir() {
+        var Islem = $('input[name="arac-bilgi-islem"]:checked').val();
+
+        switch (Islem) {
+            case "arac":
+                $('#sofor-bilgi').hide();
+                $('#arac-bilgi').show();
+                break;
+            case "sofor":
+                $('#arac-bilgi').hide();
+                $('#sofor-bilgi').show();
+                break;
+        }
+    }
+
+    function AracBilgileriKaydet() {
+        ShowProgress();
+
+        var PLAKA = $('#YENI_PLAKA').val();
+        var YUK = $('#YENI_YUK').val() != '' ? $('#YENI_YUK').val() : 0;
+        var SOFOR = $('#YENI_AD').val() != '' ? SadeceBasHarfBuyut($('#YENI_AD').val()) : '';
+
+        $.when(
+            $.ajax({
+                url: $('#YENI_AD').val() != '' ? `http://192.168.2.13:83/api/shipping/sofor/${SOFOR}` : '',
+                type: 'GET',
+                error: () => { },
+                success: (response) => { }
+            }),
+            $.ajax({
+                url: $('#YENI_PLAKA').val() != '' ? `http://192.168.2.13:83/api/shipping/arac/${PLAKA}/${YUK}` : '',
+                type: 'GET',
+                error: () => { },
+                success: (response) => { }
+            })
+        ).done(() => {
+            $('#SOFOR').val(SOFOR);
+            $('#PLAKA').val(PLAKA);
+
+            HideProgress();
+
+            $('#arac-bilgi-modal').modal('hide');
+
+            PlakalariGetir();
+            SoforleriGetir();
+        });
+    }
+
+    $('#YENI_PLAKA').on('change paste input', (e) => { e.target.value = e.target.value.toUpperCase().replace(' ', ''); });
+</script>

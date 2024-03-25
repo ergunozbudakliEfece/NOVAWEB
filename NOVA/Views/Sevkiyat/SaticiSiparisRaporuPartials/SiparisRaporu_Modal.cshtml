@@ -45,19 +45,19 @@
             <div id="SaticiModalBody" class="modal-body pt-0">
                 <div class="container-fluid pt-2">
                     <div class="row mb-4 gy-3">
-                        <div class="col-md-7 ms-auto" id="Stoklar">
-                        </div>
+                        <div class="col-md-7 ms-auto" id="Stoklar"></div>
                         <div class="col-md-2 ms-auto">
                             <div class="form-label-group outline autocomplete m-0">
                                 <input type="text" id="SIPARIS_BAKIYE" class="form-control" step="0.1" autocomplete="off" disabled />
                                 <span><label for="SIPARIS_BAKIYE">Sipariş Bakiye</label></span>
                             </div>
                         </div>
-                        <div class="col-md-3 ms-auto">
-                            <div class="form-label-group outline autocomplete m-0">
+                        <div class="col-md-3 ms-auto d-flex justify-content-between gap-2">
+                            <div class="form-label-group outline autocomplete m-0 w-100">
                                 <input type="text" id="SERİ_NO" class="form-control" placeholder="Barkod No" autocomplete="off" disabled />
                                 <span><label for="SERİ_NO">Barkod No</label></span>
                             </div>
+                            <i data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Hazır Liste</span>" onclick="HazırListeModal()" id="HazırListeButton" class="bi bi-file-earmark-medical-fill" style="color:#203289; font-size: x-large;"></i>
                         </div>
                     </div>
                     <div class="row gx-3 gy-2">
@@ -156,19 +156,20 @@
                                         <div style="width: 1.25rem; height: 1.25rem; background-color: #FAEAEA;"></div>
                                         <div>KAPALI</div>
                                     </div>
-                                    <div class="col-3 col-sm-auto" style="display:flex;justify-content:start;align-items:center;">
+                                    <div class="col-auto" style="display:flex;justify-content:start;align-items:center;">
                                         <div class="form-check form-switch h-100 position-relative">
-                                            <input class="form-check-input" style="width: 6rem; height: 2rem;" type="checkbox" id="yazdirSwitch" onclick="YazdirSwitch()" checked="">
+                                            <input class="form-check-input" style="width: 6rem; height: 2.25rem;" type="checkbox" id="yazdirSwitch" onclick="YazdirSwitch()" checked="">
                                             <span id="yazdirLabel" style="position: absolute; left: 0.5rem; top: 0.7rem; font-size: 0.7rem; pointer-events: none; color: white;">YAZDIR</span>
                                             <span id="yazdirmaLabel" style="position: absolute; left: 2.1rem; top: 0.7rem; font-size: 0.7rem; pointer-events: none; opacity: 0;">YAZDIRMA</span>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-sm-auto" id="yazici-col" style="display:block;">
-                                        <select id="yazici" class="form-select" style="width:250px;"  onchange="YaziciSec(this.value)">
+                                    <div class="col-4 ps-0" id="yazici-col" style="display:flex;align-items:center;">
+                                        <select id="yazici" class="form-select" style="width:250px;" onchange="YaziciSec(this.value)">
                                         </select>
                                     </div>
-                                    <div class="col-12 col-md-12">
+                                    <div class="col-12 col-md-12" style="display: flex; gap: 1rem;">
                                         <input class="form-control" type="text" placeholder="Ara" id="customSearchTempTable" />
+                                        <button id="tumunu-yazdir" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Tümünü Yazdır</span>"  class="btn btn-primary" onclick="TumKalemleriYazdir()"><i class="bi bi-printer-fill"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -271,6 +272,9 @@
 
     function SaticiRaporModal(e, value, stokKodu) {
         e.stopPropagation();
+
+        HazırListe_Secilen = [];
+
         $("#table").bootstrapTable('collapseAllRows');
 
         EkranAcilisi();
@@ -595,6 +599,8 @@
     function YazdirSwitch() {
         Yazdir = $('#yazdirSwitch').is(':checked');
 
+        $('#tumunu-yazdir').prop('disabled', !Yazdir);
+
         if (!Yazdir) {
             $('#yazdirLabel').removeClass('fadeInAnimasyon');
             $('#yazdirmaLabel').removeClass('fadeOutAnimasyon');
@@ -611,7 +617,7 @@
             $('#yazdirLabel').addClass('fadeInAnimasyon');
             $('#yazdirmaLabel').addClass('fadeOutAnimasyon');
 
-            $('#yazici-col').css('display', 'block');
+            $('#yazici-col').css('display', 'flex');
         }
     }
 </script>
@@ -1095,6 +1101,8 @@
                                         KalemleriGuncelle();
                                         window.onpopstate = function () { history.back(); };
                                     }
+
+                                    HazırListeDurumDegistir();
                                 }
                             });
                         }
@@ -1211,7 +1219,7 @@
     }
 
     function ModalKaydetButtonState() {
-        if ($("#SERİ_NO")?.val()?.trim()?.length > 0) {
+        if ($("#SERİ_NO")?.val()?.trim()?.length <= 0) {
             $("#ModalSaveButton").prop('disabled', true);
         }
         else {
@@ -1457,6 +1465,10 @@
 </script>
 
 <script>
+    $('#ACIK3').on('input', (e) => { e.target.value = e.target.value.toLocaleUpperCase("tr"); });
+    $('#SERİ_NO_3').on('input', (e) => { e.target.value = e.target.value.toLocaleUpperCase("tr"); });
+    $('#SERİ_NO_4').on('input', (e) => { e.target.value = e.target.value.toLocaleUpperCase("tr"); });
+
     $('#ACIK1').on('change paste input', (e) => { LimitedDecimal(e, 1, true); });
     $('#ACIK1').on('blur', (e) => { FormatDecimal(e, 1); });
 
@@ -1702,6 +1714,68 @@
     function YaziciSecModal(Value)
     {
         $('#yazici').val(Value).trigger('change');
+    }
+
+    function TumKalemleriYazdir()
+    {
+        if (Kalemler.length > 0)
+        {
+            ShowProgress();
+
+            var Requests = [];
+            var Printer = $('#yazici').val();
+
+            for (const Kalem of Kalemler)
+            {
+                var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $('#SiparisNo').html() && x.STOK_KODU == Kalem.STOK_KODU)
+
+                var Model = {
+                    "GRUP_ISIM": FiltreliDetay[0].GRUP_ISIM,
+                    "SERI_NO": Kalem.SERI_NO,
+                    "STOK_KODU": Kalem.STOK_KODU,
+                    "STOK_ADI": Kalem.STOK_ADI,
+                    "MIKTAR1": `${parseFloat(Kalem.MIKTAR)}`,
+                    "OLCU_BR1": `${Kalem.OLCU_BR1}`,
+                    "MIKTAR2": `${parseFloat(Kalem.MIKTAR2)}`,
+                    "OLCU_BR2": `${Kalem.OLCU_BR2}`,
+                    "BIRIM_MIKTAR": `${(parseFloat(Kalem.MIKTAR) / parseFloat(Kalem.MIKTAR2)).toFixed(2).toString()}`,
+                    "KALINLIK": Kalem.ACIK2.toString().replace('.', ','),
+                    "GENISLIK": Kalem.ACIK1.toString().replace('.', ','),
+                    "KALITE": Kalem.SERI_NO_3,
+                    "KAPLAMA": Kalem.SERI_NO_4,
+                    "KAYITTARIHI": Kalem.TARIH,
+                    "MENSEI": FiltreliDetay[0].CARI_ISIM,
+                    "FIRMA_SERI_NO": Kalem.ACIK3,
+                    "ACIKLAMA_5": Kalem.ACIKLAMA_5,
+                };
+
+                Requests.push($.ajax({
+                    url: "@Url.Action("SevkiyatEtiket", "Sevkiyat")",
+                    type: 'POST',
+                    data: { "EtiketBilgileri": Model, "Yazdir": Yazdir, "Yazici": Printer },
+                }));
+            }
+
+            Promise.all(Requests).then(values => {
+                HideProgress();
+            });
+        }
+    }
+
+    function HazırListeDurumDegistir() {
+        if (HazırListe_Secilen.length > 0)
+        {
+            var Requests = [];
+
+            for (const INCKEY of HazırListe_Secilen) {
+                Requests.push($.ajax({
+                    url: `http://192.168.2.13:83/api/shipping/hzrsl/durum/${INCKEY}`,
+                    type: 'GET'
+                }));
+            }
+
+            Promise.all(Requests).then(values => { HazırListe_Secilen = []; });
+        }
     }
 </script>
 

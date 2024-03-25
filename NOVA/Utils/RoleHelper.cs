@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using NetOpenX50;
 using Newtonsoft.Json;
 using NOVA.Models;
 using ServiceStack;
@@ -73,6 +74,9 @@ namespace NOVA.Utils
                     bool? hurdaveikincikalite = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 23).USER_AUTH;
                     bool? uretimplanlama = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 47).USER_AUTH;
                     bool? uretimkaynakplanlama = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 48).USER_AUTH;
+                    bool? disticaret = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 49).USER_AUTH;
+                    bool? ihracat = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 50).USER_AUTH;
+                    bool? izlenebilirlik = yetki.FirstOrDefault(t => t.USER_ID == Controller.Request.Cookies["Id"].Value && t.MODULE_INCKEY == 51).USER_AUTH;
                     #endregion
 
                     #region SetViewBag
@@ -120,6 +124,9 @@ namespace NOVA.Utils
                     Controller.ViewBag.DisplayHurdaVeIkinciKalite = hurdaveikincikalite is true ? "block" : "none";
                     Controller.ViewBag.DisplayUretimPlanlama = uretimplanlama is true ? "block" : "none";
                     Controller.ViewBag.DisplayUretimKaynakPlanlama = uretimkaynakplanlama is true ? "block" : "none";
+                    Controller.ViewBag.DisplayDisTicaret = disticaret is true ? "block" : "none";
+                    Controller.ViewBag.DisplayIhracat=ihracat is true ? "block" : "none";
+                    Controller.ViewBag.DisplayIzlenebilirlik=izlenebilirlik is true ? "block" : "none";
                     #endregion
                 }
             }

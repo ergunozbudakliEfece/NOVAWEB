@@ -28,10 +28,7 @@
             <td class="p-1 text-center">
                 <select class="js-select" style="width:200px" onchange="StokDegistir(this, 'TP')" disabled>
                     <option selected disabled>SEÇİNİZ</option>
-                    @foreach (var item in ViewBag.Stok_Adlari)
-                    {
-                        <option value="@item.STOK_KODU">@item.STOK_ADI</option>
-                    }
+                   
                 </select>
             </td>
 
@@ -50,10 +47,7 @@
             <td class="text-center p-1">
                 <select class="js-select" style="width:200px" disabled onchange="ReferansStokSecimi(this, 'TP')">
                     <option selected disabled>SEÇİNİZ</option>
-                    @foreach (var item in ViewBag.Stok_Adlari)
-                    {
-                        <option value="@item.STOK_KODU">@item.STOK_ADI</option>
-                    }
+                   
                 </select>
             </td>
 
@@ -144,137 +138,142 @@
     {
         var Satirlar = Array.from(document.getElementById('TPTable').getElementsByTagName('tr')).slice(1);
         var SeriNoListe = @Html.Raw(Json.Encode(ViewBag.Seriler));
-        var StokAdlari = @Html.Raw(Json.Encode(ViewBag.Stok_Adlari));
-        var IsEmirleri = null;
-        $.ajax({
-            url: `http://192.168.2.13:83/api/isemri/max`,
-            type: 'GET',
-            success: (data) => {
-                IsEmirleri = data;
+        axios.get('http://192.168.2.13:83/api/stokkartlari')
+            .then(function (response) {
+
+       var StokAdlari = response.data;
+       var IsEmirleri = null;
+       $.ajax({
+           url: `http://192.168.2.13:83/api/isemri/max`,
+           type: 'GET',
+           success: (data) => {
+               IsEmirleri = data;
+           }
+       }).then(function () {
+            var OlusturulanIsEmirleri = [];
+var OlusturulanRefIsEmirleri = [];
+
+var TPPivotVeri = [];
+var TPPivotToplamVeri = [];
+
+if (localStorage.TPPivotVeri != null && localStorage.TPPivotVeri != "null") {
+    TPPivotVeri = JSON.parse(localStorage.TPPivotVeri);
+    TPPivotToplamVeri = JSON.parse(localStorage.TPPivotToplamVeri);
+
+    TPPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
+    TPPivotVeri.filter(x => x.REF_ISEMRINO != "-").forEach((item) => { OlusturulanRefIsEmirleri.push(item.REF_ISEMRINO); });
+}
+
+var GuncelSeriData;
+
+$.ajax({
+    url: `http://192.168.2.13:83/api/seri/exec/1`,
+    type: 'GET',
+    success: (data) => {
+        GuncelSeriData = data[0];
+    }
+}).then(() => {
+    Satirlar.forEach((item) => {
+        var Cariler=@Html.Raw(Json.Encode(ViewBag.Cariler));
+        var PaketMiktari = parseInt(item.getElementsByTagName('input')[1].value);
+        var PaketAdedi = parseInt(item.getElementsByTagName('input')[2].value);
+        var Agirlik = parseInt(item.getElementsByTagName('input')[4].value);
+        var AdetAgirlik = Agirlik / PaketAdedi;
+
+        var Makine = item.getElementsByTagName('td')[1].getElementsByTagName('select')[0].value;
+        var Stok = item.getElementsByTagName('td')[2].getElementsByTagName('select')[0].value;
+        var Miktar = item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value;
+
+        var RefMakine = item.getElementsByTagName('select')[2].value;
+        var RefStok = item.getElementsByTagName('select')[3].value;
+
+        var StokAdi = StokAdlari.filter(x => x.STOK_KODU == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == Stok)[0].STOK_ADI : "-";
+        var RefStokAdi = StokAdlari.filter(x => x.STOK_KODU == RefStok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == RefStok)[0].STOK_ADI : "-";
+
+        var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
+        var IsEmirleriRefMakine = IsEmirleri.filter(x => x.MAK_KODU == RefMakine);
+        var Musteri = item.getElementsByTagName("select")[4].value;
+        var SipNo,Sipkont = "";
+        if (Musteri != "EFECE GALVANİZ") {
+            var f = Cariler.filter(x => x.CARI_ISIM == Musteri)[0];
+            SipNo = f.FISNO;
+            Sipkont = f.SIPKONT;
+        }
+        for (var i = 0; i < PaketAdedi; i++) {
+
+            var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (i + 1).toString().padStart(3, '0');
+            var SonRefIsEmri = "-";
+
+            if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
+                SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
             }
-        }).then(function () {
-             var OlusturulanIsEmirleri = [];
- var OlusturulanRefIsEmirleri = [];
 
- var TPPivotVeri = [];
- var TPPivotToplamVeri = [];
+            OlusturulanIsEmirleri.push(SonIsEmri);
 
- if (localStorage.TPPivotVeri != null && localStorage.TPPivotVeri != "null") {
-     TPPivotVeri = JSON.parse(localStorage.TPPivotVeri);
-     TPPivotToplamVeri = JSON.parse(localStorage.TPPivotToplamVeri);
+            if (RefMakine != "SEÇİNİZ")
+            {
+                var SonRefIsEmri = RefMakine + "24" + (IsEmirleriRefMakine[IsEmirleriRefMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (i + 1).toString().padStart(3, '0');
 
-     TPPivotVeri.filter(x => x.ISEMRINO != "-").forEach((item) => { OlusturulanIsEmirleri.push(item.ISEMRINO); });
-     TPPivotVeri.filter(x => x.REF_ISEMRINO != "-").forEach((item) => { OlusturulanRefIsEmirleri.push(item.REF_ISEMRINO); });
- }
+                if (OlusturulanRefIsEmirleri.includes(SonRefIsEmri)) {
+                    SonRefIsEmri = OlusturulanRefIsEmirleri[OlusturulanRefIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanRefIsEmirleri[OlusturulanRefIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
+                }
 
- var GuncelSeriData;
+                if (SeriNoListe.filter(x => x.SERI_NO == GuncelSeriData.SERI_NO).length > 0) {
+                    GuncelSeriData.SERI_NO = GuncelSeriData.SERI_NO.substring(0, 12) + (parseInt(SeriNoListe[SeriNoListe.length - 1].SERI_NO.substring(12, 15)) + 1).toString().padStart(3, '0');
+                }
+                else {
+                    SeriNoListe.push(GuncelSeriData);
+                }
 
- $.ajax({
-     url: `http://192.168.2.13:83/api/seri/exec/1`,
-     type: 'GET',
-     success: (data) => {
-         GuncelSeriData = data[0];
-     }
- }).then(() => {
-     Satirlar.forEach((item) => {
-         var Cariler=@Html.Raw(Json.Encode(ViewBag.Cariler));
-         var PaketMiktari = parseInt(item.getElementsByTagName('input')[1].value);
-         var PaketAdedi = parseInt(item.getElementsByTagName('input')[2].value);
-         var Agirlik = parseInt(item.getElementsByTagName('input')[4].value);
-         var AdetAgirlik = Agirlik / PaketAdedi;
+                OlusturulanRefIsEmirleri.push(SonRefIsEmri);
+            }
 
-         var Makine = item.getElementsByTagName('td')[1].getElementsByTagName('select')[0].value;
-         var Stok = item.getElementsByTagName('td')[2].getElementsByTagName('select')[0].value;
-         var Miktar = item.getElementsByTagName('td')[3].getElementsByTagName('input')[0].value;
+            var Veri = {
+                ISEMRINO: SonIsEmri,
+                STOKADI: StokAdi,
+                GIRDI2: RefMakine != "SEÇİNİZ" ? GuncelSeriData.SERI_NO : "-",
+                REF_ISEMRINO: SonRefIsEmri,
+                REF_STOKOLCUSU: RefStokAdi,
+                ADET: PaketMiktari,
+                REF_ADET: PaketMiktari,
+                AGIRLIK: Math.round(AdetAgirlik),
+                SIPARIS_NO: SipNo,
+                SIPKONT: Sipkont,
+                MUSTERI: Musteri
+            };
 
-         var RefMakine = item.getElementsByTagName('select')[2].value;
-         var RefStok = item.getElementsByTagName('select')[3].value;
+            var ToplamVeri = {
+                STOKADI: RefStokAdi == "-" ? StokAdi : RefStokAdi,
+                ADET: PaketMiktari,
+                MUSTERI: Musteri,
+                AGIRLIK: Math.round(AdetAgirlik)
+            };
 
-         var StokAdi = StokAdlari.filter(x => x.STOK_KODU == Stok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == Stok)[0].STOK_ADI : "-";
-         var RefStokAdi = StokAdlari.filter(x => x.STOK_KODU == RefStok).length > 0 ? StokAdlari.filter(x => x.STOK_KODU == RefStok)[0].STOK_ADI : "-";
+            TPPivotVeri.push(Veri);
+            TPPivotToplamVeri.push(ToplamVeri);
+        }
+    })
 
-         var IsEmirleriMakine = IsEmirleri.filter(x => x.MAK_KODU == Makine);
-         var IsEmirleriRefMakine = IsEmirleri.filter(x => x.MAK_KODU == RefMakine);
-         var Musteri = item.getElementsByTagName("select")[4].value;
-         var SipNo,Sipkont = "";
-         if (Musteri != "EFECE GALVANİZ") {
-             var f = Cariler.filter(x => x.CARI_ISIM == Musteri)[0];
-             SipNo = f.FISNO;
-             Sipkont = f.SIPKONT;
-         }
-         for (var i = 0; i < PaketAdedi; i++) {
+    TPTableCreatePivot(TPPivotVeri);
 
-             var SonIsEmri = Makine + "24" + (IsEmirleriMakine[IsEmirleriMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (i + 1).toString().padStart(3, '0');
-             var SonRefIsEmri = "-";
+    var fark = TPPivotVeri.filter(x => x.REF_ISEMRINO != "-").length;
 
-             if (OlusturulanIsEmirleri.includes(SonIsEmri)) {
-                 SonIsEmri = OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanIsEmirleri[OlusturulanIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-             }
+    if (localStorage.TPPivotVeri != null && localStorage.TPPivotVeri != "null")
+    {
+        fark = fark - JSON.parse(localStorage.TPPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
+    }
 
-             OlusturulanIsEmirleri.push(SonIsEmri);
+    $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
 
-             if (RefMakine != "SEÇİNİZ")
-             {
-                 var SonRefIsEmri = RefMakine + "24" + (IsEmirleriRefMakine[IsEmirleriRefMakine.length - 1].MAX_ISEMRINO).toString().padStart(6, '0') + (i + 1).toString().padStart(3, '0');
+    localStorage.setItem('TPPivotVeri', JSON.stringify(TPPivotVeri));
+    localStorage.setItem('TPPivotToplamVeri', JSON.stringify(TPPivotToplamVeri));
 
-                 if (OlusturulanRefIsEmirleri.includes(SonRefIsEmri)) {
-                     SonRefIsEmri = OlusturulanRefIsEmirleri[OlusturulanRefIsEmirleri.length - 1].substring(0, 12) + (parseInt(OlusturulanRefIsEmirleri[OlusturulanRefIsEmirleri.length - 1].substring(12, 15)) + 1).toString().padStart(3, '0');
-                 }
+    TPTableCreatePivot2Data();
+});
 
-                 if (SeriNoListe.filter(x => x.SERI_NO == GuncelSeriData.SERI_NO).length > 0) {
-                     GuncelSeriData.SERI_NO = GuncelSeriData.SERI_NO.substring(0, 12) + (parseInt(SeriNoListe[SeriNoListe.length - 1].SERI_NO.substring(12, 15)) + 1).toString().padStart(3, '0');
-                 }
-                 else {
-                     SeriNoListe.push(GuncelSeriData);
-                 }
+       })
+            })
 
-                 OlusturulanRefIsEmirleri.push(SonRefIsEmri);
-             }
-
-             var Veri = {
-                 ISEMRINO: SonIsEmri,
-                 STOKADI: StokAdi,
-                 GIRDI2: RefMakine != "SEÇİNİZ" ? GuncelSeriData.SERI_NO : "-",
-                 REF_ISEMRINO: SonRefIsEmri,
-                 REF_STOKOLCUSU: RefStokAdi,
-                 ADET: PaketMiktari,
-                 REF_ADET: PaketMiktari,
-                 AGIRLIK: Math.round(AdetAgirlik),
-                 SIPARIS_NO: SipNo,
-                 SIPKONT: Sipkont,
-                 MUSTERI: Musteri
-             };
-
-             var ToplamVeri = {
-                 STOKADI: RefStokAdi == "-" ? StokAdi : RefStokAdi,
-                 ADET: PaketMiktari,
-                 MUSTERI: Musteri,
-                 AGIRLIK: Math.round(AdetAgirlik)
-             };
-
-             TPPivotVeri.push(Veri);
-             TPPivotToplamVeri.push(ToplamVeri);
-         }
-     })
-
-     TPTableCreatePivot(TPPivotVeri);
-
-     var fark = TPPivotVeri.filter(x => x.REF_ISEMRINO != "-").length;
-
-     if (localStorage.TPPivotVeri != null && localStorage.TPPivotVeri != "null")
-     {
-         fark = fark - JSON.parse(localStorage.TPPivotVeri).filter(x => x.REF_ISEMRINO != "-").length;
-     }
-
-     $.getJSON(`http://192.168.2.13:83/api/seri/1/${fark}`, function (data) { });
-
-     localStorage.setItem('TPPivotVeri', JSON.stringify(TPPivotVeri));
-     localStorage.setItem('TPPivotToplamVeri', JSON.stringify(TPPivotToplamVeri));
-
-     TPTableCreatePivot2Data();
- });
-
-        })
 
     }
 

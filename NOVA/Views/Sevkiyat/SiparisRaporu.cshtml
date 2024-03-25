@@ -250,7 +250,6 @@
                        data-show-footer="false"
                        data-detail-view-by-click="true"
                        data-height="680"
-                       data-detail-formatter="detailFormatter"
                        data-detail-view="true"
                        data-fixed-columns="true"
                        data-fixed-number="0"
@@ -318,56 +317,139 @@
     var detaysiz;
     $(document).ready(function () {
         $('#pageName').html('<div class="dot"></div> Müşteri Sipariş Raporu')
-        $.getJSON("http://192.168.2.13:83/api/detaylisip", function (data) {
-            detayli = data;
-        }).done(function () {
+        
 
             $.getJSON("http://192.168.2.13:83/api/detaysizsip", function (data) {
-                detaysiz = data;
+                detayli = data;
                 $('#table').bootstrapTable("destroy");
                 $('#table').bootstrapTable({ data: data })
             }).done(function () {
                 document.querySelectorAll('input[type="search"]')[0].onkeyup = function (e) {
                     document.querySelectorAll('input[type="search"]')[0].value = e.currentTarget.value.toLocaleUpperCase('TR');
                 };
+                for (let i = 0; i < detayli.length; i++) {
+                    if (!teslimfilter.includes(detayli[i].TESLIM_YERI)) {
+                        teslimfilter.push(detayli[i].TESLIM_YERI)
+                    }
+                    if (!plasiyerFilter.includes(detayli[i].PLASIYER_ADI)) {
+                        plasiyerFilter.push(detayli[i].PLASIYER_ADI)
+                    }
+                    if (!dovFilter.includes(detayli[i].DOV_TIP)) {
+                        dovFilter.push(detayli[i].DOV_TIP)
+                    }
+                }
+                for (let i = 0; i < teslimfilter.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = teslimfilter[i];
+                    option.innerHTML = teslimfilter[i];
+                    document.getElementById("filter").appendChild(option);
+                }
+                for (let i = 0; i < plasiyerFilter.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = plasiyerFilter[i];
+                    option.innerHTML = plasiyerFilter[i];
+                    document.getElementById("plasiyer").appendChild(option);
+                }
+                for (let i = 0; i < dovFilter.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = dovFilter[i];
+                    option.innerHTML = dovFilter[i];
+                    document.getElementById("dovtip").appendChild(option);
+                }
+                $('#filter').select2({ placeholder: "Teslim Yeri" });
+                $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
+                $('#dovtip').select2({ placeholder: "Döviz Tipi" });
                 HideProgress();
             });
 
-            for (let i = 0; i < detayli.length; i++) {
-                if (!teslimfilter.includes(detayli[i].TESLIM_YERI)) {
-                    teslimfilter.push(detayli[i].TESLIM_YERI)
-                }
-                if (!plasiyerFilter.includes(detayli[i].PLASIYER_ADI)) {
-                    plasiyerFilter.push(detayli[i].PLASIYER_ADI)
-                }
-                if (!dovFilter.includes(detayli[i].DOV_TIP)) {
-                    dovFilter.push(detayli[i].DOV_TIP)
-                }
-            }
-            for (let i = 0; i < teslimfilter.length; i++) {
-                var option = document.createElement("option");
-                option.value = teslimfilter[i];
-                option.innerHTML = teslimfilter[i];
-                document.getElementById("filter").appendChild(option);
-            }
-            for (let i = 0; i < plasiyerFilter.length; i++) {
-                var option = document.createElement("option");
-                option.value = plasiyerFilter[i];
-                option.innerHTML = plasiyerFilter[i];
-                document.getElementById("plasiyer").appendChild(option);
-            }
-            for (let i = 0; i < dovFilter.length; i++) {
-                var option = document.createElement("option");
-                option.value = dovFilter[i];
-                option.innerHTML = dovFilter[i];
-                document.getElementById("dovtip").appendChild(option);
-            }
-            $('#filter').select2({ placeholder: "Teslim Yeri" });
-            $('#plasiyer').select2({ placeholder: "Plasiyer Adı" });
-            $('#dovtip').select2({ placeholder: "Döviz Tipi" });
+            
 
+
+
+    })
+    $('#table').on('expand-row.bs.table', function (e, index, row, $detail) {
+        $detail.html('<div class="container-fluid" style="display:flex;justify-content:center;align:center"><div class="heart"><img id="prog" src="/images/novasaydam.png" width="250" /></div></div>')
+        $.getJSON('http://192.168.2.13:83/api/detaylisip/' + row.SIPARIS_NO, function (data) {
+            var detail = data.filter(x => x.SIPARIS_NO == row.SIPARIS_NO);
+            var t = "";
+            var r = 0;
+            var teslimoran = 0;
+
+            var teslimoranssip = 0;
+
+            var teslimoranuretim = 0;
+            var msipbekleyen = 0;
+            var msipteslim = 0;
+            for (let i = 0; i < detail.length; i++) {
+                r++;
+               
+
+                if (detail[i].DOV_TIP != "TRY") {
+                    brut_fiyat = detail[i].BRUT_FIYAT / detail[i].KUR;
+                    net_fiyat = detail[i].DOV_NET_FIYAT;
+                    net_tutar = detail[i].DOV_TUTAR;
+                    bruttop = detail[i].DOV_BRUTTUTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    toplamkdv = detail[i].DOV_TOPLAM_KDV.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    toptevkifat = detail[i].DOV_TEVKIFAT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    geneltop = detail[i].DOV_GENELTOPLAM.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                else {
+                    brut_fiyat = detail[i].BRUT_FIYAT;
+                    net_fiyat = detail[i].NET_FIYAT;
+                    net_tutar = detail[i].NET_TUTAR_KALEM;
+                    bruttop = detail[i].BRUTTUTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    toplamkdv = detail[i].TOPLAM_KDV.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    toptevkifat = detail[i].TEVKIFAT.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    geneltop = detail[i].GENELTOPLAM.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                var ssiporangorsel = 0;
+
+                var uretimorangorsel = 0;
+                if (detail[i].TESLIMAT_ORANI_SSIP) {
+                    ssiporangorsel = Math.round(parseFloat(detail[i].TESLIMAT_ORANI_SSIP) * 100).toString();
+                } else {
+                    ssiporangorsel = 0;
+
+                }
+                if (detail[i].URETIM_ORANI) {
+                    uretimorangorsel = Math.round(parseFloat(detail[i].URETIM_ORANI) * 100).toString();
+                } else {
+                    uretimorangorsel = 0;
+
+                }
+
+                t = t + "<tr><th>" + r + "</th><td class'text-center'>" + detail[i].STOK_ADI + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR1 + "</td><td class='text-nowrap text-center'>" + detail[i].MIKTAR2.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + detail[i].OLCU_BR2 + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].TESLIM_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].TESLIM_ADET.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].BAKIYE_MIKTARI.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-center' style='background-color:#f2faf5'>" + detail[i].BAKIYE_ADET.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</td><td class='text-nowrap text-center' style='background-color:#f2faf5'>" + "<p class='meter' id='meter-msip' style='height:18.36px;'><span style='width:" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI) * 100).toString() + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center ms-1' style='background-color:#f2faf5'>" + "<p class='meter ps-2' id='meter-msip' style='height:18.36px;'><span style='width:" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI2) * 100).toString() + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + Math.round(parseFloat(detail[i].TESLIMAT_ORANI2) * 100).toString() + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].TESLIM_MIKTARI_SSIP == "null" ? detail[i].TESLIM_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + (detail[i].BAKIYE_MIKTARI_SSIP == "null" ? detail[i].BAKIYE_MIKTARI_SSIP.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#fffaed'>" + "<p class='meter' id='meter-ssip' style='height:18.36px;'><span style='width:" + ssiporangorsel + "%'><span class='progress' id='progress-msip'><span style='margin-bottom:10px;text-align:end;color:black'>" + ssiporangorsel + "%</span></span></span></p>" + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILEN_MIKTAR1 == "null" ? detail[i].URETILEN_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + (detail[i].URETILECEK_MIKTAR1 == "null" ? detail[i].URETILECEK_MIKTAR1.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-") + "</td><td class='text-nowrap text-center' style='background-color:#f5f6fc'>" + "<p class='meter' id='meter' style='height:18.36px;'><span style='width:" + uretimorangorsel + "%'><span class='progress' id='progress-uretim'><span style='margin-bottom:10px;text-align:end;color:white'>" + uretimorangorsel + "%" + "</td></tr>"
+                msipbekleyen = msipbekleyen + detail[i].BAKIYE_MIKTARI;
+                msipteslim = msipteslim + detail[i].TESLIM_MIKTARI;
+                teslimoran = teslimoran + parseFloat(parseFloat(detail[i].TESLIMAT_ORANI) * 100);
+                if (detail[i].TESLIMAT_ORANI_SSIP != 0 && detail[i].TESLIMAT_ORANI_SSIP != "null" && detail[i].TESLIMAT_ORANI_SSIP != null) {
+
+                    teslimoranssip = teslimoranssip + parseFloat
+                        (parseFloat(detail[i].TESLIMAT_ORANI_SSIP) * 100);
+
+                }
+                if (detail[i].URETIM_ORANI != 0 && detail[i].URETIM_ORANI != "null" && detail[i].URETIM_ORANI != null) {
+
+                    teslimoranuretim = teslimoranuretim + parseFloat
+                        (parseFloat(detail[i].URETIM_ORANI) * 100);
+
+                }
+
+            }
+
+            var moran = Math.round(teslimoran) / r;
+
+            var moranssip = Math.round(teslimoranssip) / r;
+
+            var moranuretim = Math.round(teslimoranuretim) / r;
+
+
+            var m = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment-msip' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moran + " " + (100 - moran) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent-msip' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moran) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>";
+            var n = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment-ssip' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moranssip + " " + (100 - moranssip) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent-ssip' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moranssip) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>"
+            var o = "<span class='top-0'><svg width='50px' viewBox='0 0 40 40' class='donut'><circle class='donut-hole' cx='20' cy='20' r='15.91549430918954' fill='#fff'></circle> <circle class='donut-ring' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5'></circle><circle class='donut-segment' cx='20' cy='20' r='15.91549430918954' fill='transparent' stroke-width='3.5' stroke-dasharray='" + moranuretim + " " + (100 - moranuretim) + "' stroke-dashoffset='25'></circle><g class='donut-text'><text y='55%' transform='translate(0, 2)'><tspan x='50%' text-anchor='middle' class='donut-percent' style='font-size:13px;font-weight:bold;font-stretch:condensed'>" + Math.round(moranuretim) + "<tspan style='font-size: 10px; font-weight:normal'>%</tspan></tspan> </text></g></svg></span>"
+
+            $detail.html("<table class='table table-borderless'><thead><tr class'text-nowrap'><th class='text-nowrap'>Sıra No</th><th class='text-nowrap text-center' style='padding-left: 10px'>Stok Adı</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 1</th><th class='text-nowrap' style='padding-left: 10px'>Miktar 2</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>Teslim Adet</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>Bekleyen Adet</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f2faf5'>MSIP Süreç2</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Teslim</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Bekleyen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#fffaed'>SSIP Süreç</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretilen</th><th class='text-nowrap' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Bekleyen</th><th class='text-nowrap text-center' style='padding-left: 10px;background-color:#f5f6fc'>Üretim Süreç</th></tr></thead><tbody>" + t + "<tr><td class='p-0'>" + m + "</td><td></td><td></td><td  class='text-center'></td></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5'></td><td style='background-color:#f2faf5' class='text-center'><b><u>Toplam</u></b></td><td style='background-color:#f2faf5'></td><td style='background-color:#f2faf5'></td><td style='background-color:#f2faf5'></td></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td class='p-0'>" + n + "</td><td></td><td class='text-nowrap'></td><td  class='text-center'></td><td style='background-color:#f2faf5' class='text-center'><b>" + msipteslim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</b></td><td style='background-color:#f2faf5'></td><td style='background-color:#f2faf5' class='text-center'><b>" + msipbekleyen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</b></td><td style='background-color:#f2faf5'></td><td style='background-color:#f2faf5'></td><td style='background-color:#f2faf5'></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr><tr><td class='p-0'>" + o + "</td><td></td><td></td><td  class='text-center'></td></td><td style='background-color:#f2faf5' class='text-center'></b></td><td style='background-color:#f2faf5' class='text-center'></td><td style='background-color:#f2faf5'></td><td style='background-color:#f2faf5'></td><td style='background-color:#f2faf5'></td><td style='background-color:#f2faf5'></td></td><td colspan='3' style='background-color:#fffaed'></td><td colspan='3' style='background-color:#f5f6fc'></td></tr></tbody></table>");
         })
-
 
     })
 
@@ -490,9 +572,8 @@
         plasiyerFilter = []
         dovFilter = []
         var data = detayli
-        var data2 = detaysiz;
         if (filterAlgorithm.length > 0) {
-            data2 = data2.filter(x => filterAlgorithm.includes(x.TESLIM_YERI))
+            data = data.filter(x => filterAlgorithm.includes(x.TESLIM_YERI))
         }
         if (plasiyerAlgorithm.length > 0) {
             data = data.filter(x => plasiyerAlgorithm.includes(x.PLASIYER_ADI))
@@ -509,9 +590,9 @@
                 dovFilter.push(data[i].DOV_TIP)
             }
         }
-        for (let i = 0; i < data2.length; i++) {
-            if (!teslimfilter.includes(data2[i].TESLIM_YERI)) {
-                teslimfilter.push(data2[i].TESLIM_YERI)
+        for (let i = 0; i < data.length; i++) {
+            if (!teslimfilter.includes(data[i].TESLIM_YERI)) {
+                teslimfilter.push(data[i].TESLIM_YERI)
             }
         }
 
