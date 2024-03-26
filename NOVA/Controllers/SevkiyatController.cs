@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.Ajax.Utilities;
@@ -208,7 +210,7 @@ namespace NOVA.Controllers
                 Fatura = NetKernel.yeniFatura(Sirket, TFaturaTip.ftLokalDepo);
 
                 FaturaUst = Fatura.Ust();
-                
+
                 string Fatura_Numara = Fatura.YeniNumara("E");
 
                 FaturaUst.FATIRS_NO = Fatura_Numara;
@@ -275,7 +277,7 @@ namespace NOVA.Controllers
                 }
 
                 Sorgu.Kapat();
-                
+
                 Fatura.kayitYeni();
 
                 return Json(new Wrappers.Concrete.SuccessResponse<string>(Fatura_Numara, $"{(!SonucVar ? "Şoför bilgileri bulunamadığı için ek bilgi oluşturulamadı." : "")}"), JsonRequestBehavior.AllowGet);
@@ -1832,6 +1834,43 @@ namespace NOVA.Controllers
             }
             //put a breakpoint here and check datatable
             return dataTable;
+        }
+
+        public void HazirListeSablon()
+        {
+            DataTable Headers = new DataTable("Grid");
+
+            Headers.Columns.AddRange(new List<DataColumn>()
+            {
+                new DataColumn("SİPARİŞ NO"),
+                new DataColumn("STOK KODU"),
+                new DataColumn("MİKTAR 1"),
+                new DataColumn("ÖLÇÜ BİRİMİ 1"),
+                new DataColumn("MİKTAR 2"),
+                new DataColumn("ÖLÇÜ BİRİMİ 2"),
+                new DataColumn("GENİŞLİK"),
+                new DataColumn("KALINLIK"),
+                new DataColumn("FİRMA ÜRÜN NO"),
+                new DataColumn("KALİTE"),
+                new DataColumn("KAPLAMA"),
+            }.ToArray());
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add(Headers, "Ham Veri");
+
+                worksheet.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheet.sheet";
+                    Response.AddHeader("content-disposition", "attachment; filename=hazır_liste.xlsx");
+                    Response.BinaryWrite(content);
+                    Response.End();
+                }
+            }
         }
     }
 }

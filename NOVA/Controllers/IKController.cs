@@ -119,6 +119,10 @@ namespace NOVA.Controllers
 
             await RoleHelper.CheckRoles(this);
             ViewBag.Personels = GetPersonels();
+            if (Session["Personel"] != null)
+            {
+                ViewBag.Personel = Session["Personel"];
+            }
             return View();
         }
         public ActionResult PersonelSubeYonetim()

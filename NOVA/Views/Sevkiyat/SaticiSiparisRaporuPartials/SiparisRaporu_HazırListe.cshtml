@@ -3,10 +3,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5">HAZIR LİSTE</h1>
-                <button id="file-input-button" class="btn btn-primary" style="font-size: x-large; height: 40px; width: 40px; display: flex; justify-content: center; align-items: center;"  data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>İçe Aktar</span>" >
-                    <i class='bx bxs-file-import'></i>
-                </button>
-                <input id="file-input" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" name="name" style="display: none;" />
+
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                    <button id="template-download-button" class="btn btn-primary" style="font-size: x-large; height: 40px; width: 40px; display: flex; justify-content: center; align-items: center;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Şablon İndir</span>">
+                        <i class='bx bxs-download'></i>
+                    </button>
+                    <button id="file-input-button" class="btn btn-primary" style="font-size: x-large; height: 40px; width: 40px; display: flex; justify-content: center; align-items: center;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>İçe Aktar</span>">
+                        <i class='bx bxs-file-import'></i>
+                    </button>
+                    <input id="file-input" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" name="name" style="display: none;" />
+                </div>
             </div>
             <div class="modal-body">
                 <div class="container-fluid d-flex justify-content-center align-items-center">
@@ -213,6 +219,16 @@
 
     var b;
 
+    $('#template-download-button').on('click', function () {
+        $('#template-download-button').prop('disabled', true);
+
+        var DownloadElement = document.createElement('a');
+        DownloadElement.href = "@Url.Action("HazirListeSablon", "Sevkiyat")";
+        DownloadElement.click();
+
+        $('#template-download-button').prop('disabled', false);
+    });
+
     $('#file-input-button').on('click', function () {
         if (GirisDepo == -1) {
             Swal.fire({
@@ -281,25 +297,37 @@
         .then(() =>
         {
             if (HZR_BELGE_NO != null) {
-                for (const row of result) {
-                    row["TYPE"] = 7;
-                    row["BELGE_NO"] = HZR_BELGE_NO;
-                    //row["SIPARIS_NO"] = SiparisNo;
-                    row["INS_USER_ID"] = @Request.Cookies["UserId"].Value;
-                    row["UPD_USER_ID"] = @Request.Cookies["UserId"].Value;
-                    row["EXP_1"] = null;
-                    row["EXP_2"] = null;
-                    row["EXP_3"] = null;
-                    row["GIRIS_DEPO"] = GirisDepo;
-                    row["CIKIS_DEPO"] = 0;
-                    row["PLAKA"] = null;
-                    row["SOFOR"] = null;
-                }
+                const Data = result.map(function (row) {
+                    return {
+                        TYPE: 7,
+                        BELGE_NO: HZR_BELGE_NO,
+                        SIPARIS_NO: row["SİPARİŞ NO"],
+                        STOK_KODU: row["STOK KODU"].replaceAll(',', '.'),
+                        MIKTAR1: row["MİKTAR 1"],
+                        OLCU_BR1: row["ÖLÇÜ BİRİMİ 1"],
+                        MIKTAR2: row["MİKTAR 2"],
+                        OLCU_BR2: row["ÖLÇÜ BİRİMİ 2"],
+                        ACIK1: row["GENİŞLİK"],
+                        ACIK2: row["KALINLIK"].replace('.', ','),
+                        ACIK3: row["FİRMA ÜRÜN NO"],
+                        SERI_NO_3: row["KALİTE"],
+                        SERI_NO_4: row["KAPLAMA"],
+                        INS_USER_ID: @Request.Cookies["UserId"].Value,
+                        UPD_USER_ID: @Request.Cookies["UserId"].Value,
+                        EXP_1: null,
+                        EXP_2: null,
+                        EXP_3: null,
+                        GIRIS_DEPO: GirisDepo,
+                        CIKIS_DEPO: 0,
+                        PLAKA: null,
+                        SOFOR: null,
+                    };
+                });
 
                 $.ajax({
                     url: 'http://192.168.2.13:83/api/shipping/hzrsl',
                     type: 'POST',
-                    data: JSON.stringify(result),
+                    data: JSON.stringify(Data),
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
