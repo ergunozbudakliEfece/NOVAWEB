@@ -349,6 +349,7 @@
         <th data-visible="false" data-field="BOBINNO" data-sortable="true" data-halign="center">BOBİN NO</th>
         <th data-visible="false" data-field="ISEMRIKOD" data-sortable="true" data-halign="center">ÜRETİLECEK MAKİNE</th>*@
                             <th data-field="SERI_NO" data-sortable="true" data-align="center" data-halign="center">RULO KODU</th>
+                            <th data-field="BELGENO" data-sortable="true" data-visible="false" data-align="center" data-halign="center">BELGE NO</th>
                             <th data-field="STOK_ADI" data-sortable="true" data-align="center" data-halign="center">STOK ADI</th>
 
                             <th data-field="RENKKODU" data-sortable="true" data-align="center" data-halign="center">RENKKODU</th>
@@ -1768,9 +1769,13 @@
         var ToplamTum = 0;
         var tonajToplamUSD = 0;
         var tonajToplamEUR = 0;
+        var fiyatkontrol = false;
         items.forEach(function (item) {
             if (item.GIR_KUR_HES_USD_FIYAT != null) {
                 ToplamTum = ToplamTum + (parseFloat(item.GIR_KUR_HES_USD_FIYAT) * parseFloat(item.MIKTAR));
+            }
+            if (item.FIYAT == null) {
+                fiyatkontrol = true;
             }
 
             tonajToplam = tonajToplam + parseFloat(item.MIKTAR);
@@ -1809,9 +1814,14 @@
             $('#topton2').hide();
         }
         if (ozelyetki == 1) {
-
-            document.getElementById("tumortfiyat").innerHTML = "<b>* Ağ. Ort. Fiyat Tümü:</b> &nbsp;$ " + (parseFloat(ToplamUSD) / parseFloat(tonajToplam)).toFixed(4);
-            $('#tumortfiyat').show();
+            if (!fiyatkontrol) {
+                document.getElementById("tumortfiyat").innerHTML = "<b>* Ağ. Ort. Fiyat Tümü:</b> &nbsp;$ " + (parseFloat(ToplamUSD) / parseFloat(tonajToplam)).toFixed(4);
+                $('#tumortfiyat').show();
+            } else {
+                document.getElementById("tumortfiyat").innerHTML = "<b>* Ağ. Ort. Fiyat Tümü:</b> &nbsp; EKSİK BİLGİ";
+                $('#tumortfiyat').show();
+            }
+            
             //document.getElementById("tumtutarfiyat").innerHTML = "<b>** Toplam Tutar Tümü:</b> $ " + ((parseFloat(ToplamUSD) / parseFloat(tonajToplam)) * parseFloat(tonajToplam)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
             //$('#tumtutarfiyat').show();
         }

@@ -5,14 +5,14 @@
         <div class="modal-content p-1" style="overflow-y:auto !important;width:90% !important;margin-left:7% !important;margin-top:1% !important;margin-bottom:1% !important">
             
             <div style="display:flex;justify-content:start;align-items:start">
-                <div style="min-width: 90%">
+                <div style="min-width: 90%" id="modalUst">
                     <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                         <input type="radio" class="btn-check" name="check-tip" id="radioTumu" autocomplete="off" onclick="rehberRadio(this.value)" value="0" checked="checked"><label class="btn btn-outline-primary" for="radioTumu">TÜMÜ</label>
                         <input type="radio" class="btn-check" name="check-tip" id="radioSecilenler" autocomplete="off" onclick="rehberRadio(this.value)" value="1"><label class="btn btn-outline-primary" for="radioSecilenler">SEÇİLENLER</label>
                     </div>
                     <label id="toplamLabelRehber" class="ms-3" style="font-size:16px">Toplam Seçilen Hammadde Ağırlığı: -&#160;&#160;&#160;Toplam Seçilen Hammadde Metrajı: -</label>
                 </div>
-                <div style="min-width:10%">
+                <div style="min-width:10%" id="modalUstClose">
                     <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close" onclick="ModalKapat()"></button>
                 </div>
             </div>
@@ -55,18 +55,28 @@
 
 <script>
     function formatterIslem(value, index, row) {
-        /* return '<button class="btn btn-primary" type="button" onclick="rehberAktar(\''+index.SERI_NO+'\')">SEÇ</button>';*/
-        var kontrol = true;
-        $('#DLHammaddeCard').find('table').eq(0).find('tbody').eq(0).find('tr').each(function () {
-            var $this = $(this);
-            var s = $this.find('input').eq(1).val();
-            if (s == index.SERI_NO)
-                kontrol = false;
-        });
-        if (kontrol)
-            return '<div onclick="checkboxChange(\'' + index.SERI_NO + '\',this,\'' + index.STOK_KODU + '\',\'' + index.ACIK1 + '\',\'' + index.MIKTAR + '\',\'' + index.ACIK2 + '\')"><i class="bi bi-check-circle" style="cursor:pointer;color:red;font-size:x-large;"></i></div>'
-        else
-            return '<div onclick="checkboxChange(\'' + index.SERI_NO + '\',this,\'' + index.STOK_KODU + '\',\'' + index.ACIK1 + '\',\'' + index.MIKTAR + '\',\'' + index.ACIK2 + '\')"><i class="bi bi-check-circle-fill" style="cursor: pointer; color: rgb(113, 221, 55); font-size: x-large;"></i></div>'
+        var secili = $('input[name="uretim-tip"]:checked').val();
+        if (secili == 'DL') {
+            $('#modalUst').show();
+            $('#modalUstClose').css("min-width","10%");
+            /* return '<button class="btn btn-primary" type="button" onclick="rehberAktar(\''+index.SERI_NO+'\')">SEÇ</button>';*/
+            var kontrol = true;
+            $('#DLHammaddeCard').find('table').eq(0).find('tbody').eq(0).find('tr').each(function () {
+                var $this = $(this);
+                var s = $this.find('input').eq(1).val();
+                if (s == index.SERI_NO)
+                    kontrol = false;
+            });
+            if (kontrol)
+                return '<div onclick="checkboxChange(\'' + index.SERI_NO + '\',this,\'' + index.STOK_KODU + '\',\'' + index.ACIK1 + '\',\'' + index.MIKTAR + '\',\'' + index.ACIK2 + '\')"><i class="bi bi-check-circle" style="cursor:pointer;color:red;font-size:x-large;"></i></div>'
+            else
+                return '<div onclick="checkboxChange(\'' + index.SERI_NO + '\',this,\'' + index.STOK_KODU + '\',\'' + index.ACIK1 + '\',\'' + index.MIKTAR + '\',\'' + index.ACIK2 + '\')"><i class="bi bi-check-circle-fill" style="cursor: pointer; color: rgb(113, 221, 55); font-size: x-large;"></i></div>'
+        } else {
+            $('#modalUstClose').css("min-width", "100%");
+            $('#modalUst').hide();
+            return '<button class="btn btn-primary" type="button" onclick="rehberAktar(\'' + index.SERI_NO + '\')">SEÇ</button>';
+        }
+        
     }
     function formatterUrun(value, index, row) {
         return '<span>' + value + '</span>';

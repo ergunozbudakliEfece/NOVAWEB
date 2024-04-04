@@ -6,6 +6,16 @@
 <head>
     <meta charset='utf-8' />
     <style>
+        ::-webkit-scrollbar {
+            width: 3px;
+            height: 5px;
+            background: #7f7f7f38;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #7f7f7f;
+            border-radius: 0.5rem;
+        }
         .fc-daygrid-event {
             white-space: normal !important;
             cursor: pointer;
@@ -19,7 +29,8 @@
         }
 
         #calendar {
-            width: 50vw
+            width: 65vw;
+            height: 95vh;
         }
 
         .fc-toolbar-chunk {
@@ -56,14 +67,18 @@
             }
         }
     </style>
-
+    
+    <script src="~/wwwroot/libs/moment.js/moment-with-locales.js"></script>
     <script src="~/fullcalendar-scheduler-6.0.1/dist/index.global.js"></script>
     <script>
         var calendar = null
         var drag = null;
         var drag1 = null;
         var gerceklesentarih = null;
-
+        var Planlar = [];
+        var time;
+        var inf;
+        var ham, mam,isemri;
         function CreateCalendar() {
             var Calendar = FullCalendar.Calendar;
             var Draggable = FullCalendar.Draggable;
@@ -84,88 +99,106 @@
                     };
                 }
             });
+            axios.get('http://192.168.2.209:83/api/seri/planlama').then((response) => {
+                response.data.forEach((item) => {
+                    Planlar.push({
+                        id: item.ISEMRI,
+                        title: item.ISEMRI,
+                        start: item.TESLIM_TARIHI,
+                        description: '',
+                        inckey: '',
+                        backgroundColor: ''
+                    });
+                })
+                calendar = new Calendar(calendarEl, {
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                    },
+                    locale: "tr",
+                    editable: true,
+                    droppable: true, // this allows things to be dropped onto the calendar
+                    eventTimeFormat: { // like '14:30:00'
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        meridiem: false
+                    },
+                    timeZone: 'UTC',
+                    eventReceive: function (info) {
+                        time = moment(new Date(info.event._instance.range.start)).add(-3, 'hours');
+                        $('#HurdaModal').modal('show')
+                        $('#DateLabel').html('<b>' + info.event.start.toLocaleDateString('TR') + '</b>')
+                        ham = info.draggedEl.attributes[2].value;
+                        mam = info.draggedEl.attributes[3].value;
+                        tarih = time.locale('tr').format("YYYY-MM-DD");
+                        isemri = info.event.title;
+                    },
+                    eventDrop: function (date) {
+
+                        $('#HurdaModal').modal('show')
+
+                        $('#DateLabel').html('<b>' + date.event.start.toLocaleDateString('TR') + '</b>')
+
+                    },
+                    eventClick: function (info) {
+
+
+                        $('#HurdaModal').modal('show')
+                        
+                        time = moment(new Date(info.event._instance.range.start)).add(-3, 'hours');
+                        $('#DateLabel').html('<b>' + time.locale('tr').format('LT') + '</b>')
+                        $('#saat').val(time.locale('tr').format('LT'))
+                        console.log()
+
+
+
+                    },
+                    eventResize: function (info) {
+                        info.revert();
+                    },
+                    dateClick: function (info) {
+                        calendar.changeView('timeGridDay', info.dateStr);
+                    },
+                    eventDidMount: function (info) {
+
+
+                    },
+                    buttonText: {
+                        today: 'Bugün',
+                        month: 'Ay',
+                        week: 'Hafta',
+                        day: 'Gün',
+                        list: 'Liste',
+                        listMonth: 'Aylık Liste',
+                        listYear: 'Yıllık Liste',
+                        listWeek: 'Haftalık Liste',
+                        listDay: 'Günlük Liste'
+                    },
+                })
+
+
+
+                calendar.render();
+                calendar.addEventSource(Planlar);
+            })
+
 
 
             // initialize the calendar
             // -----------------------------------------------------------------
 
-            calendar = new Calendar(calendarEl, {
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-                },
-                locale: "tr",
-                editable: true,
-                droppable: true, // this allows things to be dropped onto the calendar
-                eventTimeFormat: { // like '14:30:00'
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    meridiem: false
-                },
-                eventReceive: function (info) {
-
-
-
-
-
-                },
-                eventDrop: function (date) {
-
-
-                },
-                eventClick: function (info) {
-
-
-
-
-
-
-
-
-                    //info.event.remove();
-
-
-
-
-                },
-                eventResize: function (info) {
-                    info.revert();
-                },
-                dateClick: function (info) {
-                    calendar.changeView('timeGridDay', info.dateStr);
-                },
-                eventDidMount: function (info) {
-
-
-                },
-                buttonText: {
-                    today: 'Bugün',
-                    month: 'Ay',
-                    week: 'Hafta',
-                    day: 'Gün',
-                    list: 'Liste',
-                    listMonth: 'Aylık Liste',
-                    listYear: 'Yıllık Liste',
-                    listWeek: 'Haftalık Liste',
-                    listDay: 'Günlük Liste'
-                },
-            })
-
-
-
-            calendar.render();
 
 
         };
         $(document).ready(() => {
             var d;
-            $.getJSON('http://192.168.2.13:83/api/uretim/tumstoklar', function (data) {
+            $.getJSON('http://192.168.2.209:83/api/seri/planlama', function (data) {
                 d = data;
             }).done(function () {
                 CreateCalendar();
                 for (let i = 0; i < d.length; i++) {
-                    $('#musteri2').append("<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event m1' data-id='1'><div class='fc-event-main'>" + d[i].STOK_ADI + "</div></div>")
+                    $('#musteri2').append("<div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event mt-1 m1' data-id='1' data-ham='" + d[i].HAM_KODU + "' data-mam='" + d[i].MAMUL_KODU +"'><div class='fc-event-main text-center'>" + d[i].ISEMRI + "</div></div>")
                 }
             })
 
@@ -181,32 +214,65 @@
 <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
     <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
 </div>
-<div class="row">
+<div style="display:flex;justify-content:center;align-items:start">
 
-    <div class="col d-flex">
-        <div id='calendar'></div>
-    </div>
-    <div class="col d-flex">
-        <div id='mydraggable' style="width:350px">
+    <div id='mydraggable' style="width:350px">
 
-            <div class="accordion mt-2">
+        <div class="accordion mt-2">
 
-                <div class="accordion-item active mt-1 mb-2" style="background-color:transparent">
-                    <h2 class="accordion-header " id="headingtwo1">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo1" aria-expanded="false" aria-controls="flush-collapseTwo1">
-                            PLANLANACAKLAR
-                        </button>
-                    </h2>
-                    <div id="flush-collapseTwo1" class="accordion-collapse collapse" aria-labelledby="headingtwo1" data-bs-parent="#mydraggable">
-                        <div id="musteri2" style="max-height:450px;overflow-y:auto">
-                            <input class="form-control position-sticky sticky-top" type="text" id="Search1" onkeyup="myFunction1()" placeholder="Ara..">
-                        </div>
+            <div class="accordion-item active mt-1 mb-2" style="background-color:transparent">
+                <h2 class="accordion-header " id="headingtwo1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo1" aria-expanded="true" aria-controls="flush-collapseTwo1">
+                        PLANLANACAKLAR
+                    </button>
+                </h2>
+                <div id="flush-collapseTwo1" class="accordion-collapse collapse show" aria-labelledby="headingtwo1" data-bs-parent="#mydraggable">
+                    <div id="musteri2" style="max-height:89vh;overflow-y:auto">
+                        <input class="form-control position-sticky sticky-top" type="text" id="Search" onkeyup="myFunction()" placeholder="Ara..">
                     </div>
                 </div>
             </div>
-
         </div>
+
     </div>
+    <div class="ms-3" id='calendar'></div>
+    <div class="modal fade" id="HurdaModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog modal-sm modal-dialog-scrollable" style="max-width: 20%;top:20vh">
+            <div class="modal-content" style="max-height:45vh;">
+                <div class="container-fluid mt-3">
+                    <div class="centercontent" id="content7" style="display:unset">
+                        <div class="heart"><img id="progress7" src="/images/novasaydam.png" style="max-width:15vw;display:none" /></div>
+                    </div>
+                    <div class="row text-center mt-1">
+                        <div class="col">
+                            <label class="modal-title" id="DateLabel" style="font-weight:bold"></label>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                       
+                        <div class="col" id="hurdamiktar2div">
+
+                           
+                                <input class="form-control text-center" placeholder="Saat" type="time" id="saat">
+                            
+                            
+
+                        </div>
+                    </div>
+
+
+                    <div class="modal-footer mt-1" style="display:flex;justify-content:center;align-items:center;">
+                        <button class="btn btn-primary" id="ModalSaveButton" type="button" onclick="KaliteKayit()">KAYDET</button>
+                        <button class="btn btn-danger" type="button" onclick="ModalKapat()">KAPAT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
 </div>
 <button type="button" style="display:none" id="ambarButton" class="btn btn-outline-info" onclick="ambarGiris()">AMBAR GİRİŞ TETİKLE</button>
 <script>
@@ -215,42 +281,29 @@
         
         if (c == 0) {
 
-            $('#ambarButton').show();
+            alert('Tebrikler!!')
             c = 1;
         }
         else {
 
-            $('#ambarButton').hide();
+            alert('VOOP!!')
             c = 0;
         }
     });
  
-  
- function ambarGiris() {
-     ShowProgress()
-     $.getJSON('http://192.168.2.13:83/api/uretim/AmGirisTablo', function (data) {
-         console.log(data)
-         $.ajax({
-             url: '@Url.Action("AmbarGiris", "Uretim")',
-             type: 'POST',
-             data: { a: JSON.stringify(data) },
-             error: function (data) {
-                 alert(JSON.stringify(data));
-                 HideProgress()
-             },
-             success: function (data) {
-                 if (data == 'Başarılı') {
-                     Swal.fire('Başarılı!', 'Kayıt başarılı', 'success');
-                 } else {
-                     Swal.fire('Başarısız!', data, 'error');
-                 }
-                 HideProgress()
-             }
-         })
+    function ModalKapat() {
+        $('#HurdaModal').modal('hide')
+        $('#saat').val(null)
+    }
+    function KaliteKayit() {
+        $('#HurdaModal').modal('hide')
+        var data = { ISEMRI:isemri,TARIH: tarih, SAAT: $('#saat').val(), HAM_KODU: ham, MAMUL_KODU: mam }
+        axios.post('http://192.168.2.209:5207/api/seri/planlama/Update', data).then((response) => {
+            alert(response.data)
+        })
+    }
 
-     })
-
-        }
+        
         function ShowProgress() {
             document.body.style.overflow = 'hidden';
             document.activeElement.blur();
@@ -259,7 +312,20 @@
         function HideProgress() {
             document.body.style.overflow = 'auto';
             $('#nova-overlay').fadeOut('slow');
+    }
+    function myFunction() {
+        var input = document.getElementById("Search");
+        var filter = input.value.toLowerCase().replace('ı', 'i');
+        var nodes = document.getElementsByClassName('m1');
+
+        for (i = 0; i < nodes.length; i++) {
+            if (nodes[i].innerText.toLowerCase().includes(filter)) {
+                nodes[i].style.display = "block";
+            } else {
+                nodes[i].style.display = "none";
+            }
         }
+    }
 </script>
 
 
