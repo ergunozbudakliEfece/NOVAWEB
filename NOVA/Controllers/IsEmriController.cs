@@ -32,6 +32,7 @@ using ServiceStack.Text;
 using System.Net.Http;
 using Newtonsoft.Json;
 using NOVA.Wrappers.Abstract;
+using System.Windows.Interop;
 
 namespace NOVA.Controllers
 {
@@ -165,6 +166,7 @@ namespace NOVA.Controllers
 
             ViewBag.Stok_Adlari = GetStokAdlari();
             ViewBag.SIRANO = GetMax();
+            ViewBag.Sip = GetSip();
             ViewBag.Cariler = GetCariler();
             ViewBag.Seriler = GetSeri();
 
@@ -806,7 +808,7 @@ namespace NOVA.Controllers
             return jsonList;
         }
         [HttpPost]
-        public IResponse PostTRPZ(List<IsEmriModel2> isemri)
+        public JsonResult PostTRPZ(List<IsEmriModel2> isemri)
         {
             List<SeriModel> createdlog1 = null;
             var apiUrl2 = "http://192.168.2.13:83/api/seri/1";
@@ -929,19 +931,14 @@ namespace NOVA.Controllers
 
                 TempData["Hata"] = "HATA";
                 var msg = ex.Message;
-                return new Wrappers.Concrete.ErrorResponse(msg);
+                return Json(new Wrappers.Concrete.ErrorResponse(msg), JsonRequestBehavior.AllowGet);
             }
             finally
             {
                 sirket.LogOff();
             }
 
-
-
-
-
-
-            return new Wrappers.Concrete.SuccessResponse<string>("Başarılı!");
+            return Json(new Wrappers.Concrete.SuccessResponse<string>("Başarılı!"), JsonRequestBehavior.AllowGet);
         }
         public class IsEmriModel2
         {

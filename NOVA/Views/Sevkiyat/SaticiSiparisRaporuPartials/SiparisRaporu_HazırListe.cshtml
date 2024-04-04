@@ -5,9 +5,9 @@
                 <h1 class="modal-title fs-5">HAZIR LİSTE</h1>
 
                 <div class="d-flex justify-content-center align-items-center gap-2">
-                    <button id="template-download-button" class="btn btn-primary" style="font-size: x-large; height: 40px; width: 40px; display: flex; justify-content: center; align-items: center;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Şablon İndir</span>">
+                    @*<button id="template-download-button" class="btn btn-primary" style="font-size: x-large; height: 40px; width: 40px; display: flex; justify-content: center; align-items: center;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Şablon İndir</span>">
                         <i class='bx bxs-download'></i>
-                    </button>
+                    </button>*@
                     <button id="file-input-button" class="btn btn-primary" style="font-size: x-large; height: 40px; width: 40px; display: flex; justify-content: center; align-items: center;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>İçe Aktar</span>">
                         <i class='bx bxs-file-import'></i>
                     </button>
@@ -80,13 +80,13 @@
         $('#siparis-raporu-hazir-liste').modal('show');
 
         $.ajax({
-            url: `http://192.168.2.13:83/api/shipping/hzrsl/${SiparisNo}`,
+            url: `http://192.168.2.13:83/api/shipping/hzrsl/0`,
             type: 'GET',
             error: (e) => {
                 $('#siparis-raporu-hazir-liste').modal('hide');
             },
             success: (response) => {
-                HazırListe = response.filter(x => !Kalemler.map(y => y.INCKEY).includes(x.INCKEY));
+                HazırListe = response.filter(x => !Kalemler.map(y => y.INCKEY).includes(x.INCKEY) && x.GIRIS_DEPO == GirisDepo);
             }
         })
         .then(() => {
@@ -107,7 +107,7 @@
     }
 
     function HazırListeIslemFormatter(value, index, row) {
-        if (HazırListe_Secilen.indexOf(index.INCKEY) > -1) {
+        if (HazırListe_Secilen.includes(parseInt(index.INCKEY))) {
             return `<div onclick="HazırListe_Barkod('${index.INCKEY}')"><i class="bi bi-check-circle-fill"  style="color:#71dd37;font-size:x-large;"></i></div>`;
         }
         else {
@@ -116,7 +116,7 @@
     }
 
     function HazırListe_Barkod(INCKEY) {
-        if (HazırListe_Secilen.indexOf(INCKEY) > -1) {
+        if (HazırListe_Secilen.includes(parseInt(INCKEY))) {
             HazırListe_Secilen = HazırListe_Secilen.filter(item => item !== parseInt(INCKEY));
         }
         else {
@@ -138,86 +138,65 @@
         }
     }
 
-    function HazırListeAktar()
-    {
-        if (HazırListe_Secilen.length > 0)
-        {
+    function HazırListeAktar() {
+        if (HazırListe_Secilen.length > 0) {
             var FilteredData = HazırListe.filter(x => HazırListe_Secilen.includes(x.INCKEY));
 
-            var Requests = [];
+            for (let i = 0; i < FilteredData.length; i++) {
+                var Data = FilteredData[i];
+                var INCKEY = Data.INCKEY;
+                var StokAdi = Data.STOK_ADI;
+                var StokKodu = Data.STOK_KODU;
+                var Miktar1 = Data.MIKTAR1;
+                var OlcuBr1 = Data.OLCU_BR1;
+                var Miktar2 = Data.MIKTAR2;
+                var OlcuBr2 = Data.OLCU_BR2;
+                var SeriNo = Data.SERI_NO;
+                var Acik1 = Data.ACIK1;
+                var Acik2 = Data.ACIK2;
+                var Acik3 = Data.ACIK3;
+                var SeriNo3 = Data.SERI_NO_3;
+                var SeriNo4 = Data.SERI_NO_4;
+                var Aciklama4 = null;
+                var Aciklama5 = null;
+                var Tarih = new Date().toLocaleString();
 
-            for (let i = 0; i < FilteredData.length; i++)
-            {
-                Requests.push($.ajax({
-                    url: `http://192.168.2.13:83/api/seri/exec/2`,
-                    type: 'GET',
-                    success: (data) => {
-                        SeriNo = data[0].SERI_NO;
-                    }
-                }));
+                Kalemler.push({
+                    "INCKEY": INCKEY,
+                    "ID": KalemId,
+                    "ACTIVE": true,
+                    "STOK_ADI": StokAdi,
+                    "STOK_KODU": StokKodu,
+                    "MIKTAR": Miktar1,
+                    "OLCU_BR1": OlcuBr1,
+                    "MIKTAR2": Miktar2,
+                    "OLCU_BR2": OlcuBr2,
+                    "SERI_NO": SeriNo,
+                    "ACIK1": Acik1,
+                    "ACIK2": Acik2,
+                    "ACIK3": Acik3,
+                    "SERI_NO_3": SeriNo3,
+                    "SERI_NO_4": SeriNo4,
+                    "ACIKLAMA_4": Aciklama4,
+                    "ACIKLAMA_5": Aciklama5,
+                    "TARIH": Tarih,
+                    "GIRIS_DEPO": GirisDepo,
+                    "CIKIS_DEPO": null
+                });
+
+                KalemId = KalemId + 1;
+                GuncellenenKalem == -1;
             }
 
-            Promise.all(Requests).then((responses) => {
-                var SERILER = responses.map(x => x[0].SERI_NO);
+            $('#TempTable').bootstrapTable("destroy");
+            $('#TempTable').bootstrapTable({ data: Kalemler });
 
-                for (let i = 0; i < FilteredData.length; i++) {
-                    var Data = FilteredData[i];
-                    var INCKEY = Data.INCKEY;
-                    var StokAdi = Data.STOK_ADI;
-                    var StokKodu = Data.STOK_KODU;
-                    var Miktar1 = Data.MIKTAR1;
-                    var OlcuBr1 = Data.OLCU_BR1;
-                    var Miktar2 = Data.MIKTAR2;
-                    var OlcuBr2 = Data.OLCU_BR2;
-                    var SeriNo = SERILER[i];
-                    var Acik1 = Data.ACIK1;
-                    var Acik2 = Data.ACIK2;
-                    var Acik3 = Data.ACIK3;
-                    var SeriNo3 = Data.SERI_NO_3;
-                    var SeriNo4 = Data.SERI_NO_4;
-                    var Aciklama4 = null;
-                    var Aciklama5 = null;
-                    var Tarih = new Date().toLocaleString();
+            GuncelSeriNoGetir();
 
-                    Kalemler.push({
-                        "INCKEY": INCKEY,
-                        "ID": KalemId,
-                        "ACTIVE": true,
-                        "STOK_ADI": StokAdi,
-                        "STOK_KODU": StokKodu,
-                        "MIKTAR": Miktar1,
-                        "OLCU_BR1": OlcuBr1,
-                        "MIKTAR2": Miktar2,
-                        "OLCU_BR2": OlcuBr2,
-                        "SERI_NO": SeriNo,
-                        "ACIK1": Acik1,
-                        "ACIK2": Acik2,
-                        "ACIK3": Acik3,
-                        "SERI_NO_3": SeriNo3,
-                        "SERI_NO_4": SeriNo4,
-                        "ACIKLAMA_4": Aciklama4,
-                        "ACIKLAMA_5": Aciklama5,
-                        "TARIH": Tarih,
-                        "GIRIS_DEPO": GirisDepo,
-                        "CIKIS_DEPO": null
-                    });
-
-                    KalemId = KalemId + 1;
-                    GuncellenenKalem == -1;
-                }
-
-                $('#TempTable').bootstrapTable("destroy");
-                $('#TempTable').bootstrapTable({ data: Kalemler });
-
-                GuncelSeriNoGetir();
-
-                ModalKaydetButtonState();
-                HazırListeModalKapat();
-            });
+            ModalKaydetButtonState();
+            HazırListeModalKapat();
         }
     }
-
-    var b;
 
     $('#template-download-button').on('click', function () {
         $('#template-download-button').prop('disabled', true);
@@ -297,67 +276,76 @@
         .then(() =>
         {
             if (HZR_BELGE_NO != null) {
-                const Data = result.map(function (row) {
-                    return {
-                        TYPE: 7,
-                        BELGE_NO: HZR_BELGE_NO,
-                        SIPARIS_NO: row["SİPARİŞ NO"],
-                        STOK_KODU: row["STOK KODU"].replaceAll(',', '.'),
-                        MIKTAR1: row["MİKTAR 1"],
-                        OLCU_BR1: row["ÖLÇÜ BİRİMİ 1"],
-                        MIKTAR2: row["MİKTAR 2"],
-                        OLCU_BR2: row["ÖLÇÜ BİRİMİ 2"],
-                        ACIK1: row["GENİŞLİK"],
-                        ACIK2: row["KALINLIK"].replace('.', ','),
-                        ACIK3: row["FİRMA ÜRÜN NO"],
-                        SERI_NO_3: row["KALİTE"],
-                        SERI_NO_4: row["KAPLAMA"],
-                        INS_USER_ID: @Request.Cookies["UserId"].Value,
-                        UPD_USER_ID: @Request.Cookies["UserId"].Value,
-                        EXP_1: null,
-                        EXP_2: null,
-                        EXP_3: null,
-                        GIRIS_DEPO: GirisDepo,
-                        CIKIS_DEPO: 0,
-                        PLAKA: null,
-                        SOFOR: null,
-                    };
-                });
 
-                $.ajax({
-                    url: 'http://192.168.2.13:83/api/shipping/hzrsl',
-                    type: 'POST',
-                    data: JSON.stringify(Data),
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    error: () => { },
-                    success: () =>
+                SeriGetir(result.length).then((Seriler) =>
+                {
+                    const Data = result.map(function (row) {
+                        return {
+                            TYPE: 7,
+                            BELGE_NO: HZR_BELGE_NO,
+                            SIPARIS_NO: row["SİPARİŞ NO"],
+                            STOK_KODU: row["STOK KODU"].replaceAll(',', '.'),
+                            MIKTAR1: row["MİKTAR 1"],
+                            OLCU_BR1: row["ÖLÇÜ BİRİMİ 1"],
+                            MIKTAR2: row["MİKTAR 2"],
+                            OLCU_BR2: row["ÖLÇÜ BİRİMİ 2"],
+                            ACIK1: row["GENİŞLİK"],
+                            ACIK2: row["KALINLIK"].replace('.', ','),
+                            ACIK3: row["FİRMA ÜRÜN NO"],
+                            SERI_NO_3: row["KALİTE"],
+                            SERI_NO_4: row["KAPLAMA"],
+                            INS_USER_ID: @Request.Cookies["UserId"].Value,
+                            UPD_USER_ID: @Request.Cookies["UserId"].Value,
+                            EXP_1: null,
+                            EXP_2: null,
+                            EXP_3: null,
+                            GIRIS_DEPO: GirisDepo,
+                            CIKIS_DEPO: 0,
+                            PLAKA: null,
+                            SOFOR: null,
+                        };
+                    });
+
+                    for (let j = 0; j < Data.length; j++)
                     {
-                        $.ajax({
-                            url: `http://192.168.2.13:83/api/shipping/hzrsl/${SiparisNo}`,
-                            type: 'GET',
-                            error: (e) => {
-                                $('#siparis-raporu-hazir-liste').modal('hide');
-                            },
-                            success: (response) => {
-                                HazırListe = response.filter(x => !Kalemler.map(y => y.INCKEY).includes(x.INCKEY));
-                            }
-                        })
-                        .then(() => {
-                            $('#hazir-liste-table').bootstrapTable('destroy');
-                            $('#hazir-liste-table').bootstrapTable({ data: HazırListe });
-
-                            Swal.fire({
-                                title: "BAŞARILI!",
-                                text: "Kayıtlar başarıyla içeri aktarıldı!",
-                                icon: "success"
-                            });
-
-                            HideProgress();
-                        });
+                        Data[j]["SERI_NO"] = Seriler[j];
                     }
+
+                    $.ajax({
+                        url: 'http://192.168.2.13:83/api/shipping/hzrsl',
+                        type: 'POST',
+                        data: JSON.stringify(Data),
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        error: () => { },
+                        success: () =>
+                        {
+                            $.ajax({
+                                url: `http://192.168.2.13:83/api/shipping/hzrsl/${SiparisNo}`,
+                                type: 'GET',
+                                error: (e) => {
+                                    $('#siparis-raporu-hazir-liste').modal('hide');
+                                },
+                                success: (response) => {
+                                    HazırListe = response.filter(x => !Kalemler.map(y => y.INCKEY).includes(x.INCKEY));
+                                }
+                            })
+                            .then(() => {
+                                $('#hazir-liste-table').bootstrapTable('destroy');
+                                $('#hazir-liste-table').bootstrapTable({ data: HazırListe });
+
+                                Swal.fire({
+                                    title: "BAŞARILI!",
+                                    text: "Kayıtlar başarıyla içeri aktarıldı!",
+                                    icon: "success"
+                                });
+
+                                HideProgress();
+                            });
+                        }
+                    });
                 });
             }
             else {
@@ -365,4 +353,34 @@
             }
         });
     }
+
+    async function SeriGetir(SeriSayisi)
+    {
+        var Seriler = [];
+
+        for (let i = 0; i < SeriSayisi; i++)
+        {
+            var response = await axios.get('http://192.168.2.13:83/api/seri/exec/2');
+
+            Seriler.push(response.data[0].SERI_NO);
+        }
+
+        return Seriler;
+    }
+
+    ////Kullanılmıyor, aktarılacak veri kadar istek atmak yerine ilk seri üzerine manual artım yapmak için.
+    //async function SeriDizisiOlustur(ILK_SERI, SERI_SAYISI)
+    //{
+    //    var SERILER = [ILK_SERI];
+    //    var SERI = ILK_SERI;
+
+    //    for (let i = 0; i < SERI_SAYISI; i++)
+    //    {
+    //        SERI = (parseInt(SERI.substring(4)) + 1).toString().padStart(12, '0');
+
+    //        SERILER.push(SERI);
+    //    }
+
+    //    return SERILER;
+    //}
 </script>

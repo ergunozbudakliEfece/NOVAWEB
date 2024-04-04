@@ -150,11 +150,14 @@
                         <div class="card-body p-0">
                             <div id="TempTableToolbar">
                                 <div class="row  my-2 gap-1">
-                                    <div class="col-6 col-md-2 gap-1" style="display: flex; justify-content: start; align-items: center; width: fit-content; padding-right: 0;">
-                                        <div style="width: 1.25rem; height: 1.25rem; background-color: #e9ebff;"></div>
-                                        <div>AÇIK</div>
-                                        <div style="width: 1.25rem; height: 1.25rem; background-color: #FAEAEA;"></div>
-                                        <div>KAPALI</div>
+                                    <div class="col-sm-auto d-flex justify-content-start gap-2">
+                                        <div class="d-flex justify-content-center align-items-center mx-2"><div style="width: 1.25rem; height: 1.25rem; background-color: #e9ebff; margin-right: 0.2rem; "></div>AÇIK</div>
+                                        <div class="d-flex justify-content-center align-items-center"><div style="width: 1.25rem; height: 1.25rem; background-color: #FAEAEA; margin-right: 0.2rem; "></div>KAPALI</div>
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-primary" style="margin-left: 0.2rem;" onclick="TOPLAM_OZET()">
+                                                Σ
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="col-auto" style="display:flex;justify-content:start;align-items:center;">
                                         <div class="form-check form-switch h-100 position-relative">
@@ -1658,7 +1661,7 @@
         var Printer = $('#yazici').val();
         var Kayit = Kalemler.filter(x => x.SERI_NO == BARKOD_NO);
 
-        var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $('#SiparisNo').html() && x.STOK_KODU == Kayit[0].STOK_KODU)
+        var FiltreliDetay = detayli.filter(x => x.STOK_KODU == Kayit[0].STOK_KODU)
 
         if (Kayit.length > 0)
         {
@@ -1687,7 +1690,7 @@
             $.ajax({
                 url: "@Url.Action("SevkiyatEtiket", "Sevkiyat")",
                 type: 'POST',
-                data: { "EtiketBilgileri": Model, "Yazdir": Yazdir, "Yazici": Printer },
+                data: { "EtiketBilgi": [Model], "Yazdir": Yazdir, "Yazici": Printer },
                 error: (e) => { console.log(e) },
                 success: (data) => { YaziciModalKapat(); HideProgress(); }
             }).then(() => { HideProgress(); });
@@ -1727,7 +1730,7 @@
 
             for (const Kalem of Kalemler)
             {
-                var FiltreliDetay = detayli.filter(x => x.SIPARIS_NO == $('#SiparisNo').html() && x.STOK_KODU == Kalem.STOK_KODU)
+                var FiltreliDetay = detayli.filter(x => x.STOK_KODU == Kalem.STOK_KODU)
 
                 var Model = {
                     "GRUP_ISIM": FiltreliDetay[0].GRUP_ISIM,
@@ -1749,16 +1752,14 @@
                     "ACIKLAMA_5": Kalem.ACIKLAMA_5,
                 };
 
-                Requests.push($.ajax({
-                    url: "@Url.Action("SevkiyatEtiket", "Sevkiyat")",
-                    type: 'POST',
-                    data: { "EtiketBilgileri": Model, "Yazdir": Yazdir, "Yazici": Printer },
-                }));
+                Requests.push(Model);
             }
 
-            Promise.all(Requests).then(values => {
-                HideProgress();
-            });
+            $.ajax({
+                url: "@Url.Action("SevkiyatEtiket", "Sevkiyat")",
+                type: 'POST',
+                data: { "EtiketBilgi": Requests, "Yazdir": Yazdir, "Yazici": Printer },
+            }).then(() => { HideProgress(); });
         }
     }
 
@@ -1993,6 +1994,68 @@
     function KayitDepolariDegistir() {
         for (var i = 0; i < Kalemler.length; i++) {
             Kalemler[i].GIRIS_DEPO = GirisDepo;
+        }
+    }
+
+    function TOPLAM_OZET() {
+        if (Kalemler.length > 0) {
+            const GRUPLANMIS_VERI = Object.groupBy(Kalemler, ({ STOK_ADI }) => STOK_ADI);
+
+            var tableBody = "";
+
+            var GENEL_TOPLAM_MIKTAR1 = 0;
+            var GENEL_TOPLAM_MIKTAR2 = 0;
+
+            for (const STOK_ADI of Object.getOwnPropertyNames(GRUPLANMIS_VERI)) {
+                var TOPLAM_MIKTAR1 = 0;
+                var TOPLAM_MIKTAR2 = 0;
+
+                for (const VERI of GRUPLANMIS_VERI[STOK_ADI]) {
+                    TOPLAM_MIKTAR1 += parseFloat(VERI.MIKTAR);
+                    TOPLAM_MIKTAR2 += parseFloat(VERI.MIKTAR2);
+                }
+
+                GENEL_TOPLAM_MIKTAR1 += parseFloat(TOPLAM_MIKTAR1);
+                GENEL_TOPLAM_MIKTAR2 += parseFloat(TOPLAM_MIKTAR2);
+
+                tableBody += `<tr>
+                <td>${STOK_ADI}</td>
+                <td>${MiktarFormatla(TOPLAM_MIKTAR2)}</td>
+                <td>${MiktarFormatla(TOPLAM_MIKTAR1)}</td>
+            </tr>`;
+            }
+
+            var STR = `<div class="d-flex flex-column justify-content-center align-items-center gap-2"><span>Belge üzerinde toplam <b>${Kalemler.length}</b> kalem mevcut.</span>
+<table class="table table-striped table-bordered" style="text-align: center;vertical-align: middle;width: 100%; word-break: auto-phrase;">
+    <thead>
+        <th>STOK ADI</th>
+        <th>MİKTAR 2</th>
+        <th>MİKTAR 1</th>
+    </thead>
+    <tbody>
+        ${tableBody}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td><b>GENEL TOPLAM</b></td>
+            <td><b>${MiktarFormatla(GENEL_TOPLAM_MIKTAR2)}</b></td>
+            <td><b>${MiktarFormatla(GENEL_TOPLAM_MIKTAR1)}</b></td>
+        </tr>
+    </tfoot>
+</table></div>`;
+
+            Swal
+                .fire({
+                    title: "BELGE ÖZETİ",
+                    html: STR,
+                    willOpen: () => {
+                        document.onclick = () => { if (document.activeElement != document.body) document.activeElement.blur(); }
+                    },
+                    confirmButtonText: 'TAMAM'
+                })
+                .then(function (isConfirm) {
+                    document.onclick = () => { }
+                });
         }
     }
 </script>

@@ -414,7 +414,7 @@ namespace NOVA.Controllers
             double f = 0;
 
             List<string> SeriNoListesi = new List<string>();
-            var BelgeNolar = "";
+            var BelgeNolar = new List<string>();
             Kernel kernel = new Kernel();
             IsEmri Isemri = default(IsEmri);
             IsEmri Isemri1 = default(IsEmri);
@@ -453,7 +453,9 @@ namespace NOVA.Controllers
                 List<USKModel> jsonList = ser.Deserialize<List<USKModel>>(json2);
                 try
                 {
-                    
+                    var ACIK2 = "";
+
+
                     if (json2 != null)
                     {
                         
@@ -477,7 +479,11 @@ namespace NOVA.Controllers
                             {
                                 if (miktarsabitle == "E")
                                 {
-                                    netRS.Ac("UPDATE TBLISEMRI SET MIKTAR=" + jsonList[i].KULL_MIKTAR + " WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                                    Isemri = kernel.yeniIsEmri(sirket);
+                                    Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + jsonList[i].ISEMRINO + "\'");
+                                    Isemri.ReceteSaklansin = false;
+                                    Isemri.Miktar = jsonList[i].KULL_MIKTAR;
+                                    Isemri.kayitDuzelt(); 
                                 }
 
                             }
@@ -485,16 +491,10 @@ namespace NOVA.Controllers
 
 
                             uretim = kernel.yeniSerbestUSK(sirket);
-                            try
-                            {
-                                uretim.IsEmrindenGetir(jsonList[i].ISEMRINO);
-                            }
-                            catch (Exception exp)
-                            {
-                                
-                                WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "IsEmrindenGetir() "+exp.Message, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
-                                return $"Hata: {exp.Message}";
-                            }
+                            
+                            uretim.IsEmrindenGetir(jsonList[i].ISEMRINO);
+                            
+                           
                            
                             uretim.UretSon_FisNo = jsonList[i].FIS_NO;
 
@@ -529,25 +529,26 @@ namespace NOVA.Controllers
                             netRS.Ac("SELECT * FROM TBLISEMRI WITH(NOLOCK) WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                             var seri = netRS.FieldByName("SERINO").AsString;
                             var serino2= netRS.FieldByName("SERINO2").AsString;
-                            var ACIK1 = "";
-                            var ACIK2 = "";
-                            var SERI_NO_3 = "";
-                            var SERI_NO_4 = "";
+                            netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + jsonList[i].SERI_NO + "' AND GCKOD='G'");
+                            var ACIK1 = netRS.FieldByName("ACIK1").AsString;
+                            ACIK2 = netRS.FieldByName("ACIK2").AsString;
+                            var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                            var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
                             var fisno = jsonList[i].FIS_NO;
-                            BelgeNolar += " " + fisno;
+                            BelgeNolar.Add("'"+fisno+"'");
                             if (seri == null || seri == "0")
                             {
-                                uretim.OTOSERIURET();
+                                
                                 if (hatkodu == "DL01")
                                 {
-                                    uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, 1);
+                                    var sayi=uretim.SeriEkle(jsonList[i].SERI_NO, ACIK1, ACIK2, "", jsonList[i].KULL_MIKTAR, 1, SERI_NO_3, SERI_NO_4);
                                 }
                                 else
                                 {
-
-                                    uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2);
+                                    uretim.SeriEkle(jsonList[i].SERI_NO, ACIK1, ACIK2, "", jsonList[i].KULL_MIKTAR, jsonList[i].MIKTAR2, SERI_NO_3, SERI_NO_4);
+                                  
                                 }
-                                seri = uretim.SeriOku(0).Seri1;
+                                seri = jsonList[i].SERI_NO;
                             }
 
                          
@@ -596,6 +597,7 @@ namespace NOVA.Controllers
                             }
 
                             netRS1.Ac("SELECT TOP(1)* FROM TBLSERITRA WITH(NOLOCK) WHERE BELGENO='" + fisno + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            var karsi1 = netRS1.FieldByName("SERI_NO").AsString;
                             if (seri == null)
                             {
                                 seri = netRS1.FieldByName("SERI_NO").AsString;
@@ -655,8 +657,7 @@ namespace NOVA.Controllers
                             }
                             else
                             {
-                                netRS1.Ac("SELECT TOP(1)* FROM TBLSERITRA WITH(NOLOCK) WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                                var karsi1 = netRS1.FieldByName("SERI_NO").AsString;
+                                
                                 netRS1.Ac("SELECT * FROM TBLISEMRI WITH(NOLOCK) WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
                                 var referans = netRS1.FieldByName("REFISEMRINO").AsString;
                                 netRS1.Ac("SELECT * FROM TBLISEMRI WITH(NOLOCK) WHERE ISEMRINO='" + referans + "'");
@@ -664,18 +665,21 @@ namespace NOVA.Controllers
                                 var oran = jsonList[i].KULL_MIKTAR / eski;
                                 var miktar2 = netRS1.FieldByName("ACIKLAMA").AsString;
                                 var yeni = miktar2.ToDouble() * oran;
-                                netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi1 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                                netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2='1' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='C'");
-                                netRS1.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "',ACIK3='" + ACIK3 + "',ACIKLAMA_4='" + ACIKLAMA_4 + "',ACIKLAMA_5='" + ACIKLAMA_5 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='C' ");
-                                netRS1.Ac("UPDATE TBLSERITRA SET ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "',MIKTAR2='1' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G' ");
+                                
+
+                                netRS1.Ac("UPDATE TBLSERITRA SET MIKTAR2='1',KARSISERI='" + karsi1 + "', ACIK1 = '" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "',ACIK3='" + ACIK3 + "',ACIKLAMA_4='" + ACIKLAMA_4 + "',ACIKLAMA_5='" + ACIKLAMA_5 + "' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='C' ");
+                                netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "',MIKTAR2='1' WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G' ");
                                 if (referans != null && referans != "")
                                 {
-                                    netRS1.Ac("UPDATE TBLISEMRI SET MIKTAR='" + jsonList[i].KULL_MIKTAR + "',ACIKLAMA='" + Math.Round(yeni) + "' WHERE ISEMRINO='" + referans + "'");
+                                   
+                                    Isemri = kernel.yeniIsEmri(sirket);
+                                    Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + referans + "\'");
+                                    Isemri.ReceteSaklansin = false;
+                                    Isemri.Miktar = jsonList[i].KULL_MIKTAR;
+                                    Isemri.Aciklama = Math.Round(yeni).ToString();
+                                    Isemri.kayitDuzelt();
                                 }
-                                if (kontrol == true)
-                                {
-                                    netRS1.Ac("UPDATE TBLISEMRI SET KAPALI='E' WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
-                                }
+                                
                                 if (etiket==true)
                                 {
                                     netRS1.Ac("SELECT * FROM TBLSERITRA WITH(NOLOCK) WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G'");
@@ -698,18 +702,19 @@ namespace NOVA.Controllers
 
 
                         }
-                        var isemirleri = "";
-                        foreach (var item in jsonList)
-                        {
-                            isemirleri += " " + item.ISEMRINO;
-                        }
-                        var mailList = "";
-                        foreach (var itemlist in jsonList)
-                        {
-                            mailList += JsonConvert.SerializeObject(itemlist) + "</br>";
-                        }
-                        WebMail.SmtpServer = "192.168.2.13";
-                        WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "İş Emirleri", "<p><b>" + isemirleri + "</b></p></br><p>Fiş bilgileri:</p><p>" + BelgeNolar + "</p>"+"</br>"+ mailList, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+
+                        //var isemirleri = new List<string>();
+                        //foreach (var item in jsonList)
+                        //{
+                        //    isemirleri.Add("'"+item.ISEMRINO+"'");
+                        //}
+                        //var mailList = "";
+                        //foreach (var itemlist in jsonList)
+                        //{
+                        //    mailList += JsonConvert.SerializeObject(itemlist) + "</br>";
+                        //}
+                        //WebMail.SmtpServer = "192.168.2.13";
+                        //WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "İş Emirleri", "<p><b>" + String.Join(",",isemirleri) + "</b></p></br><p>Fiş bilgileri:</p><p>" + String.Join(",", BelgeNolar) + "</p>"+"</br>"+ mailList, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
 
                     }
 
@@ -717,21 +722,32 @@ namespace NOVA.Controllers
                     //Stok hareketleri gerçeklestiriliyor
                     //uretim.kayitFisNoIleUretimSonu(uretim.UretSon_FisNo, TUretSonDepo.usdAktif,false,false);
 
-
+                    if (kontrol == true)
+                    {
+                        foreach (var item in jsonList)
+                        {
+                            Isemri = kernel.yeniIsEmri(sirket);
+                            Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + item.ISEMRINO + "\'");
+                            Isemri.ReceteSaklansin = false;
+                            Isemri.Kapali = true;
+                            Isemri.kayitDuzelt();
+                        }
+                        
+                    }
                     return JsonConvert.SerializeObject(SeriNoListesi);
                 }
                 catch (Exception e)
                 {
                     var exp = e.Message;
                     var message = exp;
-                    System.Diagnostics.Debug.Write(exp);
+
                     WebMail.SmtpServer = "192.168.2.13";
                     var isemirleri = "";
                     foreach(var item in jsonList)
                     {
                         isemirleri += " "+item.ISEMRINO;
                     }
-                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "<p><b>" + isemirleri + "</b> üzerinde bir hata oluştu!</p><p>Hata: " + message + "</p><p>Fiş bilgileri:</p><p>" + BelgeNolar + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "<p><b>" + isemirleri + "</b> üzerinde bir hata oluştu!</p><p>Hata: " + message + "</p><p>Fiş bilgileri:</p><p>" + BelgeNolar + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                     return $"Hata: {exp}";
                 }
             }
@@ -1662,7 +1678,7 @@ namespace NOVA.Controllers
                             catch (Exception exp)
                             {
                                 WebMail.SmtpServer = "192.168.2.13";
-                                WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "IsEmrindenGetir() " + exp.Message, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                                WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "IsEmrindenGetir() " + exp.Message, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                                 return $"Hata: {exp.Message}";
                             }
                             uretim.UretSon_FisNo = jsonList[i].FIS_NO;
@@ -1808,7 +1824,7 @@ namespace NOVA.Controllers
                                 {
                                     
                                     fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
-
+                                    
                                     fatUst = fatura.Ust();
                                     fatUst.FATIRS_NO = fatura.YeniNumara("D");
                                     fatUst.CariKod = "12035200100406";
@@ -1869,13 +1885,13 @@ namespace NOVA.Controllers
                                
 
 
-                                var mailList = "";
-                                foreach(var itemlist in jsonList)
-                                {
-                                    mailList += JsonConvert.SerializeObject(itemlist) + "</br>";
-                                }
-                                WebMail.SmtpServer = "192.168.2.13";
-                                WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Fiş Bilgi", "<p><b>" + jsonList[i].ISEMRINO + "</b> Fiş bilgileri:</p><p>" + fisler + "</p></br>"+ikinciNo+","+hurdaNo+"</br>" + mailList, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                                //var mailList = "";
+                                //foreach(var itemlist in jsonList)
+                                //{
+                                //    mailList += JsonConvert.SerializeObject(itemlist) + "</br>";
+                                //}
+                                //WebMail.SmtpServer = "192.168.2.13";
+                                //WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Fiş Bilgi", "<p><b>" + jsonList[i].ISEMRINO + "</b> Fiş bilgileri:</p><p>" + fisler + "</p></br>"+ikinciNo+","+hurdaNo+"</br>" + mailList, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
 
                                 //netRS.Ac("UPDATE TBLSERITRA SET ACIK1='" + ACIKK1 + "',ACIK2='" + ACIKK2 + "',SERI_NO_3='" + SERI_NOO_3 + "',SERI_NO_4='" + SERI_NOO_4 + "' WHERE BELGENO='" + fisno + "' AND SIPNO='" + ISEMRINO + "'");
                                
@@ -1893,7 +1909,7 @@ namespace NOVA.Controllers
                     var message = exp.Message;
                     sirket.LogOff();
                     WebMail.SmtpServer = "192.168.2.13";
-                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "<p><b>" + ISEMRINO + "</b> üzerinde bir hata oluştu!</p><p>Hata: " + message + "</p><p>Fiş bilgileri:</p><p>" + fisler + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "<p><b>" + ISEMRINO + "</b> üzerinde bir hata oluştu!</p><p>Hata: " + message + "</p><p>Fiş bilgileri:</p><p>" + fisler + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                    
 
                     return $"Hata: {message}";
@@ -2190,8 +2206,8 @@ namespace NOVA.Controllers
                             netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO IN (" + fisler + ")");
                             TempData.Remove("FIS_NO");
 
-                            WebMail.SmtpServer = "192.168.2.13";
-                            WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Fiş Bilgi", "<p><b>" + ISEMRINO + "</b> Fiş bilgileri:</p><p>" + (string)fisler + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                            //WebMail.SmtpServer = "192.168.2.13";
+                            //WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Fiş Bilgi", "<p><b>" + ISEMRINO + "</b> Fiş bilgileri:</p><p>" + (string)fisler + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
 
                             //netRS.Ac("UPDATE TBLSERITRA SET ACIK1='" + ACIKK1 + "',ACIK2='" + ACIKK2 + "',SERI_NO_3='" + SERI_NOO_3 + "',SERI_NO_4='" + SERI_NOO_4 + "' WHERE BELGENO='" + fisno + "' AND SIPNO='" + ISEMRINO + "'");
 
@@ -2206,7 +2222,7 @@ namespace NOVA.Controllers
                         var message = exp.Message;
                         System.Diagnostics.Debug.Write(exp);
                         WebMail.SmtpServer = "192.168.2.13";
-                        WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "<p><b>" + ISEMRINO + "</b> üzerinde bir hata oluştu!</p><p>Hata: " + message + "</p><p>Fiş bilgileri:</p><p>" + (string)FisHata + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                        WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "<p><b>" + ISEMRINO + "</b> üzerinde bir hata oluştu!</p><p>Hata: " + message + "</p><p>Fiş bilgileri:</p><p>" + (string)FisHata + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                         TempData.Remove("FIS_NO");
 
                         TempData.Remove("FIS_NO");
@@ -2378,7 +2394,7 @@ namespace NOVA.Controllers
                     }
                     catch (Exception exp)
                     {
-                        WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "IsEmrindenGetir() " + exp.Message, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                        WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "IsEmrindenGetir() " + exp.Message, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                         return $"Hata: {exp.Message}";
                     }
                     uretim.UretSon_FisNo = FISNO;
@@ -2568,11 +2584,8 @@ namespace NOVA.Controllers
 
 
 
-                    WebMail.SmtpServer = "192.168.2.13";
-                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Fiş Bilgi", "<p><b>" + ISEMRINO + "</b> Fiş bilgileri:</p><p>" + uretim.UretSon_FisNo + "</p>" , "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
-
-
-
+                    //WebMail.SmtpServer = "192.168.2.13";
+                    //WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Fiş Bilgi", "<p><b>" + ISEMRINO + "</b> Fiş bilgileri:</p><p>" + uretim.UretSon_FisNo + "</p>" , "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                 }
                 catch (Exception exp)
                 {
@@ -2580,7 +2593,7 @@ namespace NOVA.Controllers
                     var message = exp.Message;
                     System.Diagnostics.Debug.Write(exp);
                     WebMail.SmtpServer = "192.168.2.13";
-                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Hata", "<p><b>" + ISEMRINO + "</b></p><p>Hata: " + message + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                    WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Hata", "<p><b>" + ISEMRINO + "</b></p><p>Hata: " + message + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
 
                     return $"Hata: {message}";
                 }

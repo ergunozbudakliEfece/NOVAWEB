@@ -84,6 +84,16 @@
             z-index: 5;
         }*/
 
+        .tooltip-hat-girdi .tooltip-inner .amount {
+            color: #a3e9ff;
+        }
+        .tooltip-hat-girdi .tooltip-inner .produced {
+            color: #9effab;
+        }
+        .tooltip-hat-girdi .tooltip-inner .balance {
+            color: #ff9e9e;
+        }
+
         .myInput:focus {
             outline: 3px solid #ddd;
         }
@@ -1529,8 +1539,24 @@
         }
 
         function oranFormatter4(value, index, row) {
-            return '<div  data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<div class=\'row flex-nowrap\'><div class=\'col  text-center\'>ORAN</div><div class=\'col  text-center\'>TOPLAM</div><div class=\'col  text-center\'>ÜRETİLEN</div></div><div class=\'row flex-nowrap\'><div class=\'col  text-center\'>' + Math.round(parseFloat(index.ORAN)) + ' %</div><div class=\'col text-nowrap text-center\'>' + Math.round(parseFloat(index.SERI_MIKTAR)) + ' ' + index.OLCU_BR1 + '</div><div class=\'col  text-nowrap text-center\'>' + Math.round(parseFloat(index.URETILEN)) + ' ' + index.OLCU_BR1 + '</div></div>"><p class="meter" style="height: auto;position: relative; border: 1px solid #d9dee3; border-radius: 8px; margin: 0 0.25rem;"><span style="width:' + parseFloat(value) + '%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; display:flex;align-items:center;"><span style="height:auto; color: black;font-size: small;position: absolute; right: 0; left: 0; top: 0; bottom: 0;">' + index.SERI_NO + '</span></span></span></p></div>';
-
+            return `<div data-bs-toggle="tooltip-hat-girdi" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<div class=\'d-flex justify-content-center align-items-center gap-2\'>
+    <div class=\'rate d-flex flex-column justify-content-center align-items-center\'>
+        <span>ORAN</span>
+        <span>${parseInt(index.ORAN)} %</span>
+    </div>
+    <div class=\'amount d-flex flex-column justify-content-center align-items-center\' style=\'color:#90a8ff !important;\'>
+        <span>MİKTAR</span>
+        <span>${parseInt(index.SERI_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${index.OLCU_BR1}</span>
+    </div>
+    <div class=\'produced d-flex flex-column justify-content-center align-items-center\'>
+        <span>ÜRETİLEN</span>
+        <span>${parseInt(index.URETILEN).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${index.OLCU_BR1}</span>
+    </div>
+    <div class=\'balance d-flex flex-column justify-content-center align-items-center\'>
+        <span>KALAN</span>
+        <span>${parseInt(parseFloat(index.SERI_MIKTAR) - parseFloat(index.URETILEN)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) } ${index.OLCU_BR1}</span>
+    </div>
+</div>"><p class="meter" style="height: auto;position: relative; border: 1px solid #d9dee3; border-radius: 8px; margin: 0 0.25rem;"><span style="width:${parseFloat(value)}%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; display:flex;align-items:center;"><span style="height:auto; color: black;font-size: small;position: absolute; right: 0; left: 0; top: 0; bottom: 0;">${index.SERI_NO}</span></span></span></p></div>`;
         }
 
         var UretimListeYedek = [];
@@ -1566,6 +1592,12 @@
                 $('[data-bs-toggle="tooltip"]').tooltip({
                     container: 'body',
                     trigger: 'hover'
+                });
+
+                $('[data-bs-toggle="tooltip-hat-girdi"]').tooltip({
+                    container: 'body',
+                    trigger: 'hover',
+                    template: '<div class="tooltip tooltip-hat-girdi" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
                 });
             });
         }
@@ -2212,6 +2244,13 @@ Seçili makinede iş emri yok.
                 $("#miktar22").prop("disabled", true);
                 $("#ModalSaveButton").prop("disabled", true);
             }
+            if (hat == 'DL01') {
+                if (m1.length > 0) {
+                    $('#ModalSaveButton').prop('disabled', false)
+                } else {
+                    $('#ModalSaveButton').prop('disabled', true)
+                }
+            }
             if (hat != "DL01") {
                 keychangeikinci()
                 keychange2()
@@ -2225,6 +2264,8 @@ Seçili makinede iş emri yok.
                     }) + " " + olcu1 + " / " + olcu2);
                 }
             }
+           
+              
         }
         function keychange2() {
 
@@ -2596,7 +2637,6 @@ Seçili makinede iş emri yok.
                         $("#kontrol").prop('disabled', false);
                     }
                     $("#miktar22").prop("disabled", true);
-                    $("#miktar11").attr('onblur', 'keyblur()');
                     $("#miktar22").val(mik2).hide()
                     
                 } else if (hat == 'MH01') {

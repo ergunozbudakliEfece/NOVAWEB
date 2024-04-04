@@ -457,10 +457,25 @@
         }
     }
     function IslemFormatter(value, index, row) {
-        return `<div class="d-flex justify-content-center align-items-center" style="gap:1rem;">
+
+        var DocumentTypeVal = $('input[name="DocumentTypeRadio"]:checked').val();
+
+        var DocType = parseInt(DocumentTypeVal);
+
+        if (DocType == 7) {
+
+            return `<div class="d-flex justify-content-center align-items-center" style="gap:1rem;">
+            <div onclick="Kopyala('${index.SIPARIS_NO}', '${index.BELGE_NO}', '${index.STOK_KODU}', '${index.GIRIS_DEPO}', '${index.CIKIS_DEPO}')"><i class="bi bi-clipboard2-check-fill" style="color:#595cd9;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Panoya Kopyala</span>"></i></div>
+            <div onclick="ExceleKopyala('${index.SIPARIS_NO}', '${index.BELGE_NO}', '${index.STOK_KODU}', '${index.GIRIS_DEPO}', '${index.CIKIS_DEPO}')"><i class="bi bi-file-earmark-excel-fill" style="color:#595cd9;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Excel'e Kopyala</span>"></i></div>
+             <div onclick="SeriNoModal('${index.SIPARIS_NO}', '${index.BELGE_NO}', '${index.STOK_KODU}', '${index.GIRIS_DEPO}', '${index.CIKIS_DEPO}')"  class="showmodal"  data-bs-toggle="modal" data-bs-target="#SeriNoModal"><i class="bi bi-file-earmark-binary-fill" style="color:#595cd9;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>Seri Bilgileri</span>"></i></div>
+        </div>`;
+        } else {
+
+            return `<div class="d-flex justify-content-center align-items-center" style="gap:1rem;">
             <div onclick="Kopyala('${index.SIPARIS_NO}', '${index.BELGE_NO}', '${index.STOK_KODU}', '${index.GIRIS_DEPO}', '${index.CIKIS_DEPO}')"><i class="bi bi-clipboard2-check-fill" style="color:#595cd9;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Panoya Kopyala</span>"></i></div>
              <div onclick="SeriNoModal('${index.SIPARIS_NO}', '${index.BELGE_NO}', '${index.STOK_KODU}', '${index.GIRIS_DEPO}', '${index.CIKIS_DEPO}')"  class="showmodal"  data-bs-toggle="modal" data-bs-target="#SeriNoModal"><i class="bi bi-file-earmark-binary-fill" style="color:#595cd9;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>Seri Bilgileri</span>"></i></div>
         </div>`;
+        }
     }
 
     function EmptyDataFormatter(value, index, row) {
@@ -625,10 +640,10 @@
         return result;
     }
 
-    function MiktarFormatla(value) {
-        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    function MiktarFormatla(value, digit=2) {
+        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: digit, maximumFractionDigits: digit });
     }
-
+    
     function DecimalFormatter(value) {
         return value?.toString().trim().length > 0 ? parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-";
     }
@@ -690,6 +705,42 @@
 
         Swal.fire({
             title: "Stok kodu kopyalandı.",
+            showConfirmButton: false,
+            icon: "success",
+            timer: "750"
+        });
+    }
+
+    async function ExceleKopyala(SiparisNo, BelgeNo, StokKodu, GirisDepo, CikisDepo) {
+        var Filtered = [];
+
+        var DocumentTypeVal = $('input[name="DocumentTypeRadio"]:checked').val();
+
+        var DocType = parseInt(DocumentTypeVal);
+
+        if (DocType == 7) {
+            Filtered = Belgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo && x.STOK_KODU == StokKodu && x.GIRIS_DEPO == GirisDepo);
+        }
+        else if (DocType == 6) {
+            Filtered = Belgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo && x.STOK_KODU == StokKodu && x.CIKIS_DEPO == CikisDepo);
+        }
+        else if (DocType == 9) {
+            Filtered = Belgeler.filter(x => x.SIPARIS_NO == SiparisNo && x.BELGE_NO == BelgeNo && x.STOK_KODU == StokKodu && x.CIKIS_DEPO == CikisDepo && x.GIRIS_DEPO == GirisDepo);
+        }
+
+        var KopyaVerisi = "";
+
+        for (var i = 0; i < Filtered.length; i++) {
+            KopyaVerisi += `${Filtered[i].SERI_NO}	${Filtered[i].ACIK3}		${"RAL ".concat(Filtered[i].STOK_KODU.split('.')[2])}	${Filtered[i].SERI_NO_3}	${Filtered[i].SERI_NO_4}	${GenislikFormat(Filtered[i].ACIK1)}	${DecimalSeperator(Filtered[i].ACIK2)}	${MiktarFormatla(Filtered[i].MIKTAR2, 0)}	${MiktarFormatla(Filtered[i].MIKTAR1, 0)}			${Filtered[i].CARI_ISIM.split(" ")[0]}		${new Date(Filtered[i].INS_DATE).toLocaleDateString() }\n`;
+        }
+
+        try {
+            await copyToClipboard(KopyaVerisi);
+        } catch (error) {
+        }
+
+        Swal.fire({
+            title: "Seri bilgileri kopyalandı.",
             showConfirmButton: false,
             icon: "success",
             timer: "750"

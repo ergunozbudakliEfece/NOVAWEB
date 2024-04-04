@@ -1,9 +1,5 @@
-﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using iTextSharp.text;
+﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
-using Microsoft.Ajax.Utilities;
 using NetOpenX50;
 using NOVA.Models;
 using NOVA.Utils;
@@ -13,7 +9,6 @@ using ServiceStack.Text;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
 using System.Globalization;
@@ -21,11 +16,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.Security;
@@ -253,30 +246,35 @@ namespace NOVA.Controllers
                     }
                 }
 
-                NetRS Sorgu = NetKernel.yeniNetRS(Sirket);
+                var SonucVar = false;
 
-                var SonucVar = Sorgu.Ac($"SELECT * FROM EFECE2023..TBLEIRSABLON WITH(NOLOCK) WHERE EFECE2023.DBO.TRK(TEMPLATEID) COLLATE Turkish_CI_AS = '{Belgeler.FirstOrDefault().SOFOR.ToLower((new CultureInfo("tr-TR", false)))}'");
-
-                if (SonucVar)
+                if (Belgeler.FirstOrDefault().SOFOR != null)
                 {
-                    EIrsEkBilgi EkBilgi = Fatura.EIrsaliyeEkYeni();
+                    NetRS Sorgu = NetKernel.yeniNetRS(Sirket);
 
-                    EkBilgi.PLAKA = Sorgu.FieldByName("LICENSEPLATEID").AsString;
+                    SonucVar = Sorgu.Ac($"SELECT * FROM EFECE2023..TBLEIRSABLON WITH(NOLOCK) WHERE EFECE2023.DBO.TRK(TEMPLATEID) COLLATE Turkish_CI_AS = '{Belgeler.FirstOrDefault().SOFOR.ToLower((new CultureInfo("tr-TR", false)))}'");
 
-                    EkBilgi.TASIYICIVKN = Sorgu.FieldByName("CARRIERVKN").AsString;
-                    EkBilgi.TASIYICIADI = Sorgu.FieldByName("CARRIERNAME").AsString;
-                    EkBilgi.TASIYICIILCE = Sorgu.FieldByName("CARRIERSUBCITY").AsString;
-                    EkBilgi.TASIYICIIL = Sorgu.FieldByName("CARRIERCITY").AsString;
-                    EkBilgi.TASIYICIULKE = Sorgu.FieldByName("CARRIERCOUNTRY").AsString;
-                    EkBilgi.TASIYICIPOSTAKODU = Sorgu.FieldByName("CARRIERPOSTAL").AsString;
+                    if (SonucVar)
+                    {
+                        EIrsEkBilgi EkBilgi = Fatura.EIrsaliyeEkYeni();
 
-                    EkBilgi.SOFOR1ADI = Sorgu.FieldByName("DPERSON1FIRSTNAME").AsString;
-                    EkBilgi.SOFOR1SOYADI = Sorgu.FieldByName("DPERSON1FAMILYNAME").AsString;
-                    EkBilgi.SOFOR1ACIKLAMA = Sorgu.FieldByName("DPERSON1TITLE").AsString;
-                    EkBilgi.SOFOR1TCKN = Sorgu.FieldByName("DPERSON1NID").AsString;
+                        EkBilgi.PLAKA = Sorgu.FieldByName("LICENSEPLATEID").AsString;
+
+                        EkBilgi.TASIYICIVKN = Sorgu.FieldByName("CARRIERVKN").AsString;
+                        EkBilgi.TASIYICIADI = Sorgu.FieldByName("CARRIERNAME").AsString;
+                        EkBilgi.TASIYICIILCE = Sorgu.FieldByName("CARRIERSUBCITY").AsString;
+                        EkBilgi.TASIYICIIL = Sorgu.FieldByName("CARRIERCITY").AsString;
+                        EkBilgi.TASIYICIULKE = Sorgu.FieldByName("CARRIERCOUNTRY").AsString;
+                        EkBilgi.TASIYICIPOSTAKODU = Sorgu.FieldByName("CARRIERPOSTAL").AsString;
+
+                        EkBilgi.SOFOR1ADI = Sorgu.FieldByName("DPERSON1FIRSTNAME").AsString;
+                        EkBilgi.SOFOR1SOYADI = Sorgu.FieldByName("DPERSON1FAMILYNAME").AsString;
+                        EkBilgi.SOFOR1ACIKLAMA = Sorgu.FieldByName("DPERSON1TITLE").AsString;
+                        EkBilgi.SOFOR1TCKN = Sorgu.FieldByName("DPERSON1NID").AsString;
+                    }
+
+                    Sorgu.Kapat();
                 }
-
-                Sorgu.Kapat();
 
                 Fatura.kayitYeni();
 
@@ -302,9 +300,9 @@ namespace NOVA.Controllers
 
         #region BarkodPDF
         [HttpPost]
-        public string SevkiyatEtiket(Etiket EtiketBilgileri, string Yazici, bool Yazdir)
+        public string SevkiyatEtiket(List<Etiket> EtiketBilgi, string Yazici, bool Yazdir)
         {
-            if (EtiketBilgileri is null)
+            if (EtiketBilgi is null)
                 return null;
 
             iTextSharp.text.Document document = new iTextSharp.text.Document(new iTextSharp.text.Rectangle(246.61417323f, 462.04724409f), 10f, 10f, 10f, 10f);
@@ -323,96 +321,101 @@ namespace NOVA.Controllers
             iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 13, iTextSharp.text.Font.BOLD);
             iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
 
-            iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
-            BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
-            BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
-            BackgroundImage.SetAbsolutePosition(0, 0);
-            document.Add(BackgroundImage);
-
-            PdfPTable table = new PdfPTable(3);
-            table.TotalWidth = 210;
-            table.SetWidths(new float[] { 4f, 0.5f, 5.5f });
-
-            // Header row.
-            table.AddCell(GetHeaderCell(EtiketBilgileri.SERI_NO, fontBoldHeader, 3, 1));
-            table.AddCell(GetHeaderCell(EtiketBilgileri.STOK_ADI, fontBoldHeader, 3, 2));
-
-            PdfPCell cellBlankRow = new PdfPCell(new Phrase(" "));
-            cellBlankRow.Border = 0;
-            cellBlankRow.Colspan = 3;
-            cellBlankRow.HorizontalAlignment = 1;
-            table.AddCell(cellBlankRow);
-
-            // Inner middle row.
-            table.AddCell(GetContentCell("GRUP İSİM", fontBoldContent));
-            table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.GRUP_ISIM)}", fontBoldContent));
-
-            table.AddCell(GetContentCell("MİKTAR 1", fontBoldContent));
-            table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MIKTAR1)} {BosDegerKontrolu(EtiketBilgileri.OLCU_BR1)}", fontBoldContent));
-
-            if (EtiketBilgileri.OLCU_BR1 != EtiketBilgileri.OLCU_BR2)
+            foreach(Etiket EtiketBilgileri in EtiketBilgi)
             {
-                table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
-                table.AddCell(GetContentCell(":", fontBoldContent));
-                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri.OLCU_BR2)}", fontBoldContent));
+                document.NewPage();
 
-                table.AddCell(GetContentCell("BİRİM MİKTAR", fontBoldContent));
+                iTextSharp.text.Image BackgroundImage = iTextSharp.text.Image.GetInstance(imagePath);
+                BackgroundImage.ScaleToFit(document.PageSize.Width, document.PageSize.Height);
+                BackgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING;
+                BackgroundImage.SetAbsolutePosition(0, 0);
+                document.Add(BackgroundImage);
+
+                PdfPTable table = new PdfPTable(3);
+                table.TotalWidth = 210;
+                table.SetWidths(new float[] { 4f, 0.5f, 5.5f });
+
+                // Header row.
+                table.AddCell(GetHeaderCell(EtiketBilgileri.SERI_NO, fontBoldHeader, 3, 1));
+                table.AddCell(GetHeaderCell(EtiketBilgileri.STOK_ADI, fontBoldHeader, 3, 2));
+
+                PdfPCell cellBlankRow = new PdfPCell(new Phrase(" "));
+                cellBlankRow.Border = 0;
+                cellBlankRow.Colspan = 3;
+                cellBlankRow.HorizontalAlignment = 1;
+                table.AddCell(cellBlankRow);
+
+                // Inner middle row.
+                table.AddCell(GetContentCell("GRUP İSİM", fontBoldContent));
                 table.AddCell(GetContentCell(":", fontBoldContent));
-                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MIKTAR1 / EtiketBilgileri.MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri.OLCU_BR1)}/{BosDegerKontrolu(EtiketBilgileri.OLCU_BR2)}", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.GRUP_ISIM)}", fontBoldContent));
+
+                table.AddCell(GetContentCell("MİKTAR 1", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MIKTAR1)} {BosDegerKontrolu(EtiketBilgileri.OLCU_BR1)}", fontBoldContent));
+
+                if (EtiketBilgileri.OLCU_BR1 != EtiketBilgileri.OLCU_BR2)
+                {
+                    table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri.OLCU_BR2)}", fontBoldContent));
+
+                    table.AddCell(GetContentCell("BİRİM MİKTAR", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MIKTAR1 / EtiketBilgileri.MIKTAR2)} {BosDegerKontrolu(EtiketBilgileri.OLCU_BR1)}/{BosDegerKontrolu(EtiketBilgileri.OLCU_BR2)}", fontBoldContent));
+                }
+                else
+                {
+                    table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"-", fontBoldContent));
+
+                    table.AddCell(GetContentCell("BİRİM MİKTAR", fontBoldContent));
+                    table.AddCell(GetContentCell(":", fontBoldContent));
+                    table.AddCell(GetContentCell($"-", fontBoldContent));
+                }
+
+                table.AddCell(GetContentCell("KALINLIK", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.KALINLIK)}", fontBoldContent));
+
+                table.AddCell(GetContentCell("GENİŞLİK", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.GENISLIK)}", fontBoldContent));
+
+                table.AddCell(GetContentCell("KALİTE", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.KALITE)}", fontBoldContent));
+
+                table.AddCell(GetContentCell("KAPLAMA", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.KAPLAMA)}", fontBoldContent));
+
+                table.AddCell(GetContentCell("TARİH", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{TarihFormat(EtiketBilgileri.KAYITTARIHI)}", fontBoldContent));
+
+                table.AddCell(GetContentCell("MENŞEİ/SN", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MENSEI?.Split(' ')[0])} / {BosDegerKontrolu(EtiketBilgileri.FIRMA_SERI_NO)}", fontBoldContent));
+
+                table.AddCell(GetContentCell("BOBİN NO", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.ACIKLAMA_5)}", fontBoldContent));
+
+                table.WriteSelectedRows(0, -1, 20, 390, cb);
+
+                var qrGenerator = new QRCodeGenerator();
+                var qrCodeData = qrGenerator.CreateQrCode(EtiketBilgileri.SERI_NO, QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+                System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
+
+                iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
+                QR.ScaleToFit(85, 85);
+                QR.Alignment = iTextSharp.text.Image.UNDERLYING;
+                QR.SetAbsolutePosition(155, 60);
+                document.Add(QR);
             }
-            else
-            {
-                table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
-                table.AddCell(GetContentCell(":", fontBoldContent));
-                table.AddCell(GetContentCell($"-", fontBoldContent));
-
-                table.AddCell(GetContentCell("BİRİM MİKTAR", fontBoldContent));
-                table.AddCell(GetContentCell(":", fontBoldContent));
-                table.AddCell(GetContentCell($"-", fontBoldContent));
-            }
-
-            table.AddCell(GetContentCell("KALINLIK", fontBoldContent));
-            table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.KALINLIK)}", fontBoldContent));
-
-            table.AddCell(GetContentCell("GENİŞLİK", fontBoldContent));
-            table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.GENISLIK)}", fontBoldContent));
-
-            table.AddCell(GetContentCell("KALİTE", fontBoldContent));
-            table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.KALITE)}", fontBoldContent));
-
-            table.AddCell(GetContentCell("KAPLAMA", fontBoldContent));
-            table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.KAPLAMA)}", fontBoldContent));
-
-            table.AddCell(GetContentCell("TARİH", fontBoldContent));
-            table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{TarihFormat(EtiketBilgileri.KAYITTARIHI)}", fontBoldContent));
-
-            table.AddCell(GetContentCell("MENŞEİ/SN", fontBoldContent));
-            table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.MENSEI?.Split(' ')[0])} / {BosDegerKontrolu(EtiketBilgileri.FIRMA_SERI_NO)}", fontBoldContent));
-
-            table.AddCell(GetContentCell("BOBİN NO", fontBoldContent));
-            table.AddCell(GetContentCell(":", fontBoldContent));
-            table.AddCell(GetContentCell($"{BosDegerKontrolu(EtiketBilgileri.ACIKLAMA_5)}", fontBoldContent));
-
-            table.WriteSelectedRows(0, -1, 20, 390, cb);
-
-            var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(EtiketBilgileri.SERI_NO, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qrCodeData);
-            System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
-
-            iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
-            QR.ScaleToFit(85, 85);
-            QR.Alignment = iTextSharp.text.Image.UNDERLYING;
-            QR.SetAbsolutePosition(155, 60);
-            document.Add(QR);
 
             document.Close();
             Memory.Close();
@@ -1838,39 +1841,36 @@ namespace NOVA.Controllers
 
         public void HazirListeSablon()
         {
-            DataTable Headers = new DataTable("Grid");
+            //DataTable Table = new DataTable("Grid");
 
-            Headers.Columns.AddRange(new List<DataColumn>()
-            {
-                new DataColumn("SİPARİŞ NO"),
-                new DataColumn("STOK KODU"),
-                new DataColumn("MİKTAR 1"),
-                new DataColumn("ÖLÇÜ BİRİMİ 1"),
-                new DataColumn("MİKTAR 2"),
-                new DataColumn("ÖLÇÜ BİRİMİ 2"),
-                new DataColumn("GENİŞLİK"),
-                new DataColumn("KALINLIK"),
-                new DataColumn("FİRMA ÜRÜN NO"),
-                new DataColumn("KALİTE"),
-                new DataColumn("KAPLAMA"),
-            }.ToArray());
+            //Table.Columns.Add("SİPARİŞ NO", typeof(string));
+            //Table.Columns.Add("STOK KODU", typeof(string));
+            //Table.Columns.Add("MİKTAR 1", typeof(string));
+            //Table.Columns.Add("ÖLÇÜ BİRİMİ 1", typeof(string));
+            //Table.Columns.Add("MİKTAR 2", typeof(string));
+            //Table.Columns.Add("ÖLÇÜ BİRİMİ 2", typeof(string));
+            //Table.Columns.Add("GENİŞLİK", typeof(string));
+            //Table.Columns.Add("KALINLIK", typeof(string));
+            //Table.Columns.Add("FİRMA ÜRÜN NO", typeof(string));
+            //Table.Columns.Add("KALİTE", typeof(string));
+            //Table.Columns.Add("KAPLAMA", typeof(string));
 
-            using (var workbook = new XLWorkbook())
-            {
-                var worksheet = workbook.Worksheets.Add(Headers, "Ham Veri");
+            //using (var workbook = new XLWorkbook())
+            //{
+            //    var worksheet = workbook.Worksheets.Add(Table, "Ham Veri");
 
-                worksheet.Columns().AdjustToContents();
+            //    worksheet.Columns().AdjustToContents();
 
-                using (var stream = new MemoryStream())
-                {
-                    workbook.SaveAs(stream);
-                    var content = stream.ToArray();
-                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheet.sheet";
-                    Response.AddHeader("content-disposition", "attachment; filename=hazır_liste.xlsx");
-                    Response.BinaryWrite(content);
-                    Response.End();
-                }
-            }
+            //    using (var stream = new MemoryStream())
+            //    {
+            //        workbook.SaveAs(stream);
+            //        var content = stream.ToArray();
+            //        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheet.sheet";
+            //        Response.AddHeader("content-disposition", "attachment; filename=hazır_liste.xlsx");
+            //        Response.BinaryWrite(content);
+            //        Response.End();
+            //    }
+            //}
         }
     }
 }
