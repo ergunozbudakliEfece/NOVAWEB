@@ -62,6 +62,7 @@
                                         <th data-formatter="EmptyDataFormatter" data-field="SERI_NO_4" data-halign="center" data-align="center">KAPLAMA KALINLIĞI</th>
                                         <th data-formatter="EmptyDataFormatter" data-field="ACIKLAMA_4" data-halign="center" data-align="center">MENŞEİ</th>
                                         <th data-formatter="EmptyDataFormatter" data-field="ACIKLAMA_5" data-halign="center" data-align="center">ESKİ BOBİN NO</th>
+                                        <th data-formatter="SeriListIslemFormatter" data-halign="center" data-align="center">İŞLEM</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -189,5 +190,24 @@
 
     function GenislikFormat(value) {
         return value;
+    }
+
+    function SeriListIslemFormatter(value, index, row) {
+
+        return `<div onclick="SatirKopyala('${index.SERI_NO}	${DecimalSeperator(index.ACIK1)}	${index.SERI_NO_3}	${index.SERI_NO_4}	${MiktarFormatla(index.MIKTAR1)}	${MiktarFormatla(index.MIKTAR2)}	${GenislikFormat(index.ACIK2)}	${index.ACIK3}	${index.ACIKLAMA_4}	${index.ACIKLAMA_5} ')"><i class="bi bi-clipboard2-check-fill" style="color:#595cd9;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Panoya Kopyala</span>"></i></div>`;
+    }
+
+    async function SatirKopyala(KopyaVerisi) {
+        try {
+            await copyToClipboard(KopyaVerisi);
+        } catch (error) {
+        }
+
+        Swal.fire({
+            title: "Seri bilgisi kopyalandı.",
+            showConfirmButton: false,
+            icon: "success",
+            timer: "750"
+        });
     }
 </script>
