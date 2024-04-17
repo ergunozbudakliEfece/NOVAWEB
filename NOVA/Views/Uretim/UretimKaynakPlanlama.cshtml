@@ -1,490 +1,2241 @@
-﻿
+﻿@{
+    Layout = "~/Views/Shared/Layout_Empty.cshtml";
+}
+<link href="~/wwwroot/libs/select2/css/select2.min.css" rel="stylesheet" />
+<link href="~/wwwroot/libs/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
+<script src="~/wwwroot/libs/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="~/wwwroot/libs/bootstrap-table/bootstrap-table-locale-all.min.js"></script>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable="no" />
-    <title>Calendar.js</title>
-    <link href="~/Content/calendar/test/css/styles.css" rel="stylesheet" />
-    <link href="~/Content/calendar/dist/calendar.js.css" rel="stylesheet" />
-    <script src="~/Content/calendar/dist/calendar.js"></script>
-</head>
+<link href="~/wwwroot/libs/litepicker/css/litepicker.min.css" rel="stylesheet" />
+<link href="~/wwwroot/libs/litepicker/css/plugins/mobilefriendly.js.min.css" rel="stylesheet" />
+<link href="~/wwwroot/libs/litepicker/css/plugins/ranges.js.min.css" rel="stylesheet" />
+<script src="~/wwwroot/libs/litepicker/litepicker.min.js"></script>
+<script src="~/wwwroot/libs/litepicker/plugins/ranges.min.js"></script>
+<script src="~/wwwroot/libs/litepicker/plugins/mobilefriendly.min.js"></script>
+<script src="~/wwwroot/libs/select2/js/select2.min.js"></script>
+<style>
+    thead,
+    tbody,
+    tfoot,
+    tr,
+    td,
+    th {
+        background-color: transparent !important;
+    }
 
-<body>
-    <div class="header">
-        <h1 id="header">Calendar.js</h1>
-        <p>A test that shows Calendar.js working, with options to test some of the public functions.</p>
+    .product-tbl {
+        --bs-table-hover-bg: rgb(157 182 255 / 18%) !important;
+    }
+
+        .product-tbl th {
+            text-align: center;
+            color: #737373 !important;
+            background-color: #e5f3ff !important;
+            font-weight: 500;
+            font-size: small;
+        }
+
+        .product-tbl tr[data-index]:nth-child(odd) {
+            background-color: rgba(105, 108, 255, 0.05) !important;
+        }
+
+    .value-input {
+        height: 60px;
+        width: 150px;
+        background-color: transparent;
+        text-align: center;
+        border: none;
+        border-radius: 0.375rem;
+    }
+
+    .nova-float-input{
+        position: relative;
+    }
+
+        .nova-float-input label {
+            position: absolute;
+            left: 0.7rem;
+            top: -0.6rem;
+            background: var(--container-background-color);
+            padding: 0 0.25rem;
+            pointer-events: none;
+            font-size: smaller;
+        }
+    
+        .nova-select{
+            position: relative;
+        }
+
+            .nova-select label {
+                position: absolute;
+                left: 0;
+                top: -1.16rem;
+                font-size: small;
+            }
+</style>
+
+
+
+<div class="nova-card d-flex flex-column justify-content-center align-items-start gap-2 mb-2">
+    <div class="btn-group" role="group">
+        <input type="radio" class="btn-check" name="page-type" id="first-page-radio" data-page="first-page" autocomplete="off" checked>
+        <label class="btn btn-outline-primary" for="first-page-radio">Radio 1</label>
+
+        <input type="radio" class="btn-check" name="page-type" id="second-page-radio" data-page="second-page" autocomplete="off">
+        <label class="btn btn-outline-primary" for="second-page-radio">Radio 2</label>
     </div>
+</div>
 
-    <div class="contents">
-        <div id="myCalendar" style="max-width: 800px;">
-            <p>Some data that should be cleared.</p>
+<div class="nova-card p-3 mb-2">
+    <div id="first-page" class="page">
+        <div id="product-table-toolbar">
+            <div class="row">
+                <div class="col">
+                    <div class="nova-select">
+                        <select class="product-table-parameters" name="grup-kodu" multiple="multiple" style="width: 200px;">
+                            <option value="0050">0050</option>
+                            <option value="0055">0055</option>
+                        </select>
+                        <label>GRUP KODU</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="nova-select">
+                        <select class="product-table-parameters" name="hat-kodu" multiple="multiple" style="width: 200px;">
+                            <option value="DL">DL</option>
+                            <option value="PB">PB</option>
+                            <option value="RF">RF</option>
+                            <option value="BK">BK</option>
+                        </select>
+                        <label>HAT KODU</label>
+                    </div>
+                </div>
+            </div>
         </div>
-        <br>
 
-        <h2>Calendar Container:</h2>
-        <button onclick="document.getElementById( 'myCalendar' ).style.maxWidth = 'none';">Remove Max-Width</button>
-
-        <h2>Navigation:</h2>
-        <button onclick="calendarInstance.moveToPreviousMonth();">Previous Month</button>
-        <button onclick="calendarInstance.moveToNextMonth();">Next Month</button>
-        <button onclick="calendarInstance.moveToPreviousYear();">Previous Year</button>
-        <button onclick="calendarInstance.moveToNextYear();">Next Year</button>
-        <button onclick="console.log( calendarInstance.getCurrentDisplayDate() );">Get Current Display Date</button>
-        <button onclick="setCurrentDisplayDate();">Set Current Display Date</button>
-        <br>
-
-        <h2>Events:</h2>
-        <button onclick="setEvents();">Set Events</button>
-        <button onclick="removeEvent();">Remove Event</button>
-        <button onclick="calendarInstance.clearEvents();">Clear Events</button>
-        <button onclick="console.log( calendarInstance.getEvent( '1234-5678-9' ) );">Get Event</button>
-        <button onclick="calendarInstance.removeExpiredEvents();">Remove Expired Events</button>
-        <br>
-
-        <h2>Groups:</h2>
-        <button onclick="console.log( calendarInstance.getAllGroups() );">Get All Groups</button>
-        <button onclick="calendarInstance.clearAllGroups();">Clear All Groups</button>
-        <button onclick="calendarInstance.removeGroup( 'Group 1' );">Remove Group</button>
-        <br>
-
-        <h2>Internal Clipboard:</h2>
-        <button onclick="calendarInstance.setClipboardEvent( getCopiedEvent() );">Set Clipboard Event</button>
-        <button onclick="console.log( calendarInstance.getClipboardEvents() );">Get Clipboard Events</button>
-        <button onclick="calendarInstance.clearClipboard();">Clear Clipboard</button>
-        <br>
-
-        <h2>Additional Data:</h2>
-        <button onclick="console.log( calendarInstance.getVersion() );">Get Version</button>
-        <button onclick="console.log( calendarInstance.getId() );">Get ID</button>
-        <button onclick="console.log( calendarInstance.isBusy() );">Is Busy</button>
-        <br>
-
-        <h2>Options:</h2>
-        <button onclick="setOptions();">Set Options</button>
-        <button onclick="setSearchOptions();">Set Search Options</button>
-        <button onclick="onlyDotsDisplay();">Set Options (only dots display)</button>
-        <button onclick="turnOnEventNotifications();">Turn On Event Notifications</button>
-        <br />
-
-        <h2>Options (holidays):</h2>
-        <button onclick="addNewHolidays();">Add Holidays</button>
-        <button onclick="removeNewHolidays();">Remove Holidays</button>
-        <button onclick="console.log( calendarInstance.getHolidays() );">Get Holidays</button>
-        <br />
-
-        <h2>Event Types:</h2>
-        <button onclick="addEventType();">Add Event Type</button>
-        <button onclick="removeEventType();">Remove Event Type</button>
-        <br />
-
-        <h2>Main Controls:</h2>
-        <button onclick="calendarInstance.turnOnFullScreen();">Turn On Full-Screen Mode</button>
-        <button onclick="calendarInstance.turnOffFullScreen();">Turn Off Full-Screen Mode</button>
-        <button onclick="console.log( calendarInstance.isFullScreenActivated() );">Is Full-Screen Activated</button>
-        <button onclick="calendarInstance.startTheAutoRefreshTimer();">Start Auto-Refresh Timer</button>
-        <button onclick="calendarInstance.stopTheAutoRefreshTimer();">Stop Auto-Refresh Timer</button>
-        <button onclick="calendarInstance.destroy();">Destroy</button>
+        <table id="product-table"
+                class="table product-tbl text-center align-middle"
+                data-toolbar="#product-table-toolbar"
+                data-height="700"
+                data-virtual-scroll="true"
+                data-show-columns="true"
+                data-search="true"
+                data-show-refresh="false"
+                data-show-toggle="false"
+                data-show-fullscreen="false"
+                data-show-columns-toggle-all="false">
+            <thead>
+                <tr>
+                    <th data-field="MAMUL_KODU" data-visible="false">MAMUL_KODU</th>
+                    <th data-field="STOK_ADI">STOK ADI</th>
+                    <th data-width="1" data-field="GRUP_KOD">GRUP KODU</th>
+                    <th data-field="GRUP_ISIM">GRUP İSİM</th>
+                    <th data-field="KULL4S">HAT KODU</th>
+                    <th data-field="BAKIYE1">BAKİYE 1</th>
+                    <th data-field="BAKIYE2">BAKİYE 2</th>
+                    <th data-field="BEKLEYEN_SIPARIS1">BEKLEYEN SİPARİŞ 1</th>
+                    <th data-field="BEKLEYEN_SIPARIS2">BEKLEYEN SİPARİŞ 2</th>
+                    <th data-field="SATISA_HAZIR1">SATIŞA HAZIR 1</th>
+                    <th data-field="SATISA_HAZIR2">SATIŞA HAZIR 2</th>
+                    <th data-field="BEKL_IE_MIKTAR1">BEKLEYEN İE MİKTAR 1</th>
+                    <th data-field="BEKL_IE_MIKTAR2">BEKLEYEN İE MİKTAR 2</th>
+                    <th data-field="FAB_STOK_MIK1">FABRİKA STOK MİKTAR 1</th>
+                    <th data-field="FAB_STOK_MIK2">FABRİKA STOK MİKTAR 2</th>
+                    <th data-formatter="ValueFormatter" data-cell-style="ValueCellStyle">İŞLEM</th>
+                </tr>
+            </thead>
+        </table>
     </div>
-</body>
+
+    <div id="second-page" class="page" style="display: none;">
+        test2
+    </div>
+</div>
 
 <script>
-    var calendarInstance = new calendarJs("myCalendar", {
-        exportEventsEnabled: true,
-        manualEditingEnabled: true,
-        views: {
-            fullMonth: {
-                showTimesInEvents: false,
-                minimumDayHeight: 0,
-                addYearButtons: false
-            }
-        },
-        fullScreenModeEnabled: true,
-        organizerName: "Your Name",
-        organizerEmailAddress: "your@email.address",
-        visibleDays: [0, 1, 2, 3, 4, 5, 6],
-        events: getEvents(),
-        onEventDragStart: onDragEventStart,
-        onEventDragStop: onDragEventStop,
-        onEventDragDrop: onDragEventDrop,
-        onBeforeEventAddEdit: null,
-        startOfWeekDay: 0,
-        useAmPmForTimeDisplays: false,
-        workingDays: [2],
-        workingHoursStart: "09:00",
-        workingHoursEnd: "17:00"
+    $("input[name='page-type']").on('click', function () {
+        var pageName = $(this).data('page');
+
+        $('.page').not(`#${pageName}`).hide();
+        $(`#${pageName}`).show();
     });
+</script>
 
-    document.title += " v" + calendarInstance.getVersion();
-    document.getElementById("header").innerText += " v" + calendarInstance.getVersion();
+<script>
+    var DEMO_DATA = [
+        {
+            "MAMUL_KODU": "153.01.0004.01.0065",
+            "STOK_ADI": "G.PROFIL 15x25x0,80",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0070",
+            "STOK_ADI": "G.PROFIL 15x25x0,90",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0075",
+            "STOK_ADI": "G.PROFIL 15x25x1,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 257900000000,
+            "BAKIYE2": 73600000000,
+            "BEKLEYEN_SIPARIS1": 7700000000,
+            "BEKLEYEN_SIPARIS2": 2000000000,
+            "SATISA_HAZIR1": 250200000000,
+            "SATISA_HAZIR2": 71600000000,
+            "BEKL_IE_MIKTAR1": 87700000000,
+            "BEKL_IE_MIKTAR2": 11900000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0080",
+            "STOK_ADI": "G.PROFIL 15x25x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0085",
+            "STOK_ADI": "G.PROFIL 15x25x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0090",
+            "STOK_ADI": "G.PROFIL 15x25x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0095",
+            "STOK_ADI": "G.PROFIL 20x20x0,80",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0105",
+            "STOK_ADI": "G.PROFIL 20x20x1,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0110",
+            "STOK_ADI": "G.PROFIL 20x20x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0115",
+            "STOK_ADI": "G.PROFIL 20x20x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 1702300000000,
+            "BAKIYE2": 341200000000,
+            "BEKLEYEN_SIPARIS1": 2617400000,
+            "BEKLEYEN_SIPARIS2": 500000000,
+            "SATISA_HAZIR1": 1699682600000,
+            "SATISA_HAZIR2": 340700000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0120",
+            "STOK_ADI": "G.PROFIL 20x20x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0125",
+            "STOK_ADI": "G.PROFIL 10x30x0,80",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0130",
+            "STOK_ADI": "G.PROFIL 10x30x0,90",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0135",
+            "STOK_ADI": "G.PROFIL 10x30x1,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 1317900000000,
+            "BAKIYE2": 359900000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1317900000000,
+            "SATISA_HAZIR2": 359900000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0140",
+            "STOK_ADI": "G.PROFIL 10x30x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0145",
+            "STOK_ADI": "G.PROFIL 10x30x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0150",
+            "STOK_ADI": "G.PROFIL 10x30x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0185",
+            "STOK_ADI": "G.PROFIL 20x30x0,80",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0195",
+            "STOK_ADI": "G.PROFIL 20x30x1,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 1660100000000,
+            "BAKIYE2": 360400000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1660100000000,
+            "SATISA_HAZIR2": 360400000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0210",
+            "STOK_ADI": "G.PROFIL 20x30x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 1748000000000,
+            "BAKIYE2": 349300000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1748000000000,
+            "SATISA_HAZIR2": 349300000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0220",
+            "STOK_ADI": "G.PROFIL 20x30x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 1440000000000,
+            "BAKIYE2": 221700000000,
+            "BEKLEYEN_SIPARIS1": 9868200000,
+            "BEKLEYEN_SIPARIS2": 1500000000,
+            "SATISA_HAZIR1": 1430131800000,
+            "SATISA_HAZIR2": 220200000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0235",
+            "STOK_ADI": "G.PROFIL 20x30x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 1679000000000,
+            "BAKIYE2": 203800000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1679000000000,
+            "SATISA_HAZIR2": 203800000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0245",
+            "STOK_ADI": "G.PROFIL 25x25x0,80",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0255",
+            "STOK_ADI": "G.PROFIL 25x25x1,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0270",
+            "STOK_ADI": "G.PROFIL 25x25x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 1839000000000,
+            "BAKIYE2": 344700000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1839000000000,
+            "SATISA_HAZIR2": 344700000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0280",
+            "STOK_ADI": "G.PROFIL 25x25x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 1800000000,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1800000000,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0300",
+            "STOK_ADI": "G.PROFIL 25x25x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 174800000000,
+            "BAKIYE2": 21700000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 174800000000,
+            "SATISA_HAZIR2": 21700000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0305",
+            "STOK_ADI": "G.PROFIL 25x25x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0320",
+            "STOK_ADI": "G.PROFIL 20x40x1,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 397600000000,
+            "BAKIYE2": 69400000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 397600000000,
+            "SATISA_HAZIR2": 69400000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0340",
+            "STOK_ADI": "G.PROFIL 20x40x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 3462300000000,
+            "BAKIYE2": 561000000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 3462300000000,
+            "SATISA_HAZIR2": 561000000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0350",
+            "STOK_ADI": "G.PROFIL 20x40x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 14852300000000,
+            "BAKIYE2": 1894200000000,
+            "BEKLEYEN_SIPARIS1": 307753600000,
+            "BEKLEYEN_SIPARIS2": 38500000000,
+            "SATISA_HAZIR1": 14544546400000,
+            "SATISA_HAZIR2": 1855700000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": -100000000
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0350-1",
+            "STOK_ADI": "G.PROFIL 20x40x1,50 ( 8 MT )",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 400000000,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": 10900000000,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": -10500000000,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0365",
+            "STOK_ADI": "G.PROFIL 20x40x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 7609800000000,
+            "BAKIYE2": 798400000000,
+            "BEKLEYEN_SIPARIS1": 11658200000,
+            "BEKLEYEN_SIPARIS2": 1000000000,
+            "SATISA_HAZIR1": 7598141800000,
+            "SATISA_HAZIR2": 797400000000,
+            "BEKL_IE_MIKTAR1": 428200000000,
+            "BEKL_IE_MIKTAR2": 31800000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0390",
+            "STOK_ADI": "G.PROFIL 30x30x1,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0400",
+            "STOK_ADI": "G.PROFIL 30x30x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 925700000000,
+            "BAKIYE2": 147700000000,
+            "BEKLEYEN_SIPARIS1": 251500000,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 925448500000,
+            "SATISA_HAZIR2": 147700000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0410",
+            "STOK_ADI": "G.PROFIL 30x30x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 2990100000000,
+            "BAKIYE2": 392800000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 2990100000000,
+            "SATISA_HAZIR2": 392800000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0425",
+            "STOK_ADI": "G.PROFIL 30x30x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 2706400000000,
+            "BAKIYE2": 276700000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 2706400000000,
+            "SATISA_HAZIR2": 276700000000,
+            "BEKL_IE_MIKTAR1": 1565700000000,
+            "BEKL_IE_MIKTAR2": 92800000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0430",
+            "STOK_ADI": "G.PROFIL 30x30x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0480",
+            "STOK_ADI": "G.PROFIL 30x40x1,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0490",
+            "STOK_ADI": "G.PROFIL 30x40x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 2647200000000,
+            "BAKIYE2": 355300000000,
+            "BEKLEYEN_SIPARIS1": 7583300000,
+            "BEKLEYEN_SIPARIS2": 1000000000,
+            "SATISA_HAZIR1": 2639616700000,
+            "SATISA_HAZIR2": 354300000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0500",
+            "STOK_ADI": "G.PROFIL 30x40x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 2944700000000,
+            "BAKIYE2": 325100000000,
+            "BEKLEYEN_SIPARIS1": 112900800000,
+            "BEKLEYEN_SIPARIS2": 12000000000,
+            "SATISA_HAZIR1": 2831799200000,
+            "SATISA_HAZIR2": 313100000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": 3200000000
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0515",
+            "STOK_ADI": "G.PROFIL 30x40x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 6422800000000,
+            "BAKIYE2": 565100000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 6422800000000,
+            "SATISA_HAZIR2": 565100000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0520",
+            "STOK_ADI": "G.PROFIL 30x40x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0530",
+            "STOK_ADI": "G.PROFIL 40x40x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 839300000000,
+            "BAKIYE2": 106400000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 839300000000,
+            "SATISA_HAZIR2": 106400000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0540",
+            "STOK_ADI": "G.PROFIL 40x40x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 3929900000000,
+            "BAKIYE2": 384400000000,
+            "BEKLEYEN_SIPARIS1": 379250000000,
+            "BEKLEYEN_SIPARIS2": 37000000000,
+            "SATISA_HAZIR1": 3550650000000,
+            "SATISA_HAZIR2": 347400000000,
+            "BEKL_IE_MIKTAR1": 1157800000000,
+            "BEKL_IE_MIKTAR2": 96900000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0540-1",
+            "STOK_ADI": "G.PROFIL 40x40x1,50 (Z100+ZS) 2,50 MT",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0540-2",
+            "STOK_ADI": "G.PROFIL 40x40x1,50 (Z100+ZS) 3,00 MT",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0555",
+            "STOK_ADI": "G.PROFIL 40x40x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 4006800000000,
+            "BAKIYE2": 307600000000,
+            "BEKLEYEN_SIPARIS1": 546959100000,
+            "BEKLEYEN_SIPARIS2": 38100000000,
+            "SATISA_HAZIR1": 3459840900000,
+            "SATISA_HAZIR2": 269500000000,
+            "BEKL_IE_MIKTAR1": 1571200000000,
+            "BEKL_IE_MIKTAR2": 32100000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0560",
+            "STOK_ADI": "G.PROFIL 40x40x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 2732600000000,
+            "BAKIYE2": 173200000000,
+            "BEKLEYEN_SIPARIS1": 88425000000,
+            "BEKLEYEN_SIPARIS2": 5000000000,
+            "SATISA_HAZIR1": 2644175000000,
+            "SATISA_HAZIR2": 168200000000,
+            "BEKL_IE_MIKTAR1": 131900000000,
+            "BEKL_IE_MIKTAR2": 7800000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0565",
+            "STOK_ADI": "G.PROFIL 40x40x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 708600000000,
+            "BAKIYE2": 38800000000,
+            "BEKLEYEN_SIPARIS1": 84888000000,
+            "BEKLEYEN_SIPARIS2": 4000000000,
+            "SATISA_HAZIR1": 623712000000,
+            "SATISA_HAZIR2": 34800000000,
+            "BEKL_IE_MIKTAR1": 787300000000,
+            "BEKL_IE_MIKTAR2": 32000000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0570",
+            "STOK_ADI": "G.PROFIL 30x50x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0580",
+            "STOK_ADI": "G.PROFIL 30x50x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 791200000000,
+            "BAKIYE2": 77700000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 791200000000,
+            "SATISA_HAZIR2": 77700000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0595",
+            "STOK_ADI": "G.PROFIL 30x50x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 2416700000000,
+            "BAKIYE2": 187400000000,
+            "BEKLEYEN_SIPARIS1": 638122400000,
+            "BEKLEYEN_SIPARIS2": 43500000000,
+            "SATISA_HAZIR1": 1778577600000,
+            "SATISA_HAZIR2": 143900000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0595-3",
+            "STOK_ADI": "G.PROFIL 30x50x2,00 6,40 MT",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0600",
+            "STOK_ADI": "G.PROFIL 30x50x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0605",
+            "STOK_ADI": "G.PROFIL 30x50x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0635",
+            "STOK_ADI": "G.PROFIL 40x60x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 3400000000,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 3400000000,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0645",
+            "STOK_ADI": "G.PROFIL 40x60x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 3616000000000,
+            "BAKIYE2": 274600000000,
+            "BEKLEYEN_SIPARIS1": 21844480000,
+            "BEKLEYEN_SIPARIS2": 1600000000,
+            "SATISA_HAZIR1": 3594155520000,
+            "SATISA_HAZIR2": 273000000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0660",
+            "STOK_ADI": "G.PROFIL 40x60x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 7380300000000,
+            "BAKIYE2": 438500000000,
+            "BEKLEYEN_SIPARIS1": 74635580000,
+            "BEKLEYEN_SIPARIS2": 4100000000,
+            "SATISA_HAZIR1": 7305664420000,
+            "SATISA_HAZIR2": 434400000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0660-4",
+            "STOK_ADI": "G.PROFIL 35X45x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": 1315600000000,
+            "BAKIYE2": 100000000000,
+            "BEKLEYEN_SIPARIS1": 671040000000,
+            "BEKLEYEN_SIPARIS2": 50000000000,
+            "SATISA_HAZIR1": 644560000000,
+            "SATISA_HAZIR2": 50000000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": 730400000000,
+            "FAB_STOK_MIK2": 55600000000
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0665",
+            "STOK_ADI": "G.PROFIL 40x60x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 1210200000000,
+            "BAKIYE2": 59800000000,
+            "BEKLEYEN_SIPARIS1": 22401000000,
+            "BEKLEYEN_SIPARIS2": 1000000000,
+            "SATISA_HAZIR1": 1187799000000,
+            "SATISA_HAZIR2": 58800000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0670",
+            "STOK_ADI": "G.PROFIL 40x60x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 2598900000000,
+            "BAKIYE2": 112100000000,
+            "BEKLEYEN_SIPARIS1": 430099200000,
+            "BEKLEYEN_SIPARIS2": 16000000000,
+            "SATISA_HAZIR1": 2168800800000,
+            "SATISA_HAZIR2": 96100000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0680",
+            "STOK_ADI": "G.PROFIL 50x50x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 5598500000000,
+            "BAKIYE2": 554000000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 5598500000000,
+            "SATISA_HAZIR2": 554000000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0700",
+            "STOK_ADI": "G.PROFIL 50x50x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 3419300000000,
+            "BAKIYE2": 268200000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 3419300000000,
+            "SATISA_HAZIR2": 268200000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0715",
+            "STOK_ADI": "G.PROFIL 50x50x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 1495300000000,
+            "BAKIYE2": 91400000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1495300000000,
+            "SATISA_HAZIR2": 91400000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0720",
+            "STOK_ADI": "G.PROFIL 50x50x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 1259400000000,
+            "BAKIYE2": 63200000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1259400000000,
+            "SATISA_HAZIR2": 63200000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0725",
+            "STOK_ADI": "G.PROFIL 50x50x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 138600000000,
+            "BAKIYE2": 6100000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 138600000000,
+            "SATISA_HAZIR2": 6100000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0728",
+            "STOK_ADI": "G.PROFIL 50x70x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0730",
+            "STOK_ADI": "G.PROFIL 40x80x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0740",
+            "STOK_ADI": "G.PROFIL 40x80x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 1225900000000,
+            "BAKIYE2": 77800000000,
+            "BEKLEYEN_SIPARIS1": 26371840000,
+            "BEKLEYEN_SIPARIS2": 1600000000,
+            "SATISA_HAZIR1": 1199528160000,
+            "SATISA_HAZIR2": 76200000000,
+            "BEKL_IE_MIKTAR1": 605100000000,
+            "BEKL_IE_MIKTAR2": 38700000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0750",
+            "STOK_ADI": "G.PROFIL 40x80x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 3256428000000,
+            "BAKIYE2": 169100000000,
+            "BEKLEYEN_SIPARIS1": 8790640000,
+            "BEKLEYEN_SIPARIS2": 400000000,
+            "SATISA_HAZIR1": 3247637360000,
+            "SATISA_HAZIR2": 168700000000,
+            "BEKL_IE_MIKTAR1": 641000000000,
+            "BEKL_IE_MIKTAR2": 21400000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0755",
+            "STOK_ADI": "G.PROFIL 40x80x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 2882800000000,
+            "BAKIYE2": 119600000000,
+            "BEKLEYEN_SIPARIS1": 62540000000,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 2820260000000,
+            "SATISA_HAZIR2": 119600000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0760",
+            "STOK_ADI": "G.PROFIL 40x80x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 1415400000000,
+            "BAKIYE2": 54200000000,
+            "BEKLEYEN_SIPARIS1": 1218626000000,
+            "BEKLEYEN_SIPARIS2": 34000000000,
+            "SATISA_HAZIR1": 196774000000,
+            "SATISA_HAZIR2": 20200000000,
+            "BEKL_IE_MIKTAR1": 720600000000,
+            "BEKL_IE_MIKTAR2": 24100000000,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0770-1",
+            "STOK_ADI": "G.PROFIL 60x60x1,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 1903600000000,
+            "BAKIYE2": 150200000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1903600000000,
+            "SATISA_HAZIR2": 150200000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0775",
+            "STOK_ADI": "G.PROFIL 60x60x1,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 1597100000000,
+            "BAKIYE2": 104600000000,
+            "BEKLEYEN_SIPARIS1": 184602880000,
+            "BEKLEYEN_SIPARIS2": 11200000000,
+            "SATISA_HAZIR1": 1412497120000,
+            "SATISA_HAZIR2": 93400000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0790",
+            "STOK_ADI": "G.PROFIL 60x60x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 2896100000000,
+            "BAKIYE2": 149300000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 2896100000000,
+            "SATISA_HAZIR2": 149300000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0791-3",
+            "STOK_ADI": "G.PROFIL 60x60x2,00 (7.00 MT)",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0795",
+            "STOK_ADI": "G.PROFIL 60x60x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": 3841600000000,
+            "BAKIYE2": 159000000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 3841600000000,
+            "SATISA_HAZIR2": 159000000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0796",
+            "STOK_ADI": "G.PROFIL 60x60x2,70",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0800",
+            "STOK_ADI": "G.PROFIL 60x60x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 925000000000,
+            "BAKIYE2": 32400000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 925000000000,
+            "SATISA_HAZIR2": 32400000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0810",
+            "STOK_ADI": "G.PROFIL 70x70x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 926000000000,
+            "BAKIYE2": 43900000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 926000000000,
+            "SATISA_HAZIR2": 43900000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0815",
+            "STOK_ADI": "G.PROFIL 70x70x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 1816500000000,
+            "BAKIYE2": 61400000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1816500000000,
+            "SATISA_HAZIR2": 61400000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0820",
+            "STOK_ADI": "G.PROFIL 70x70x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0830",
+            "STOK_ADI": "G.PROFIL 40x100x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 2329000000000,
+            "BAKIYE2": 96600000000,
+            "BEKLEYEN_SIPARIS1": 2603230000,
+            "BEKLEYEN_SIPARIS2": 100000000,
+            "SATISA_HAZIR1": 2326396770000,
+            "SATISA_HAZIR2": 96500000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0830-1",
+            "STOK_ADI": "G.PROFIL 40x100x2,00 (7,10 MT)",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0830-2",
+            "STOK_ADI": "G.PROFIL 40x100x2,00 (4,45 MT)",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0835",
+            "STOK_ADI": "G.PROFIL 40x100x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 948000000000,
+            "BAKIYE2": 32700000000,
+            "BEKLEYEN_SIPARIS1": 78096960000,
+            "BEKLEYEN_SIPARIS2": 2400000000,
+            "SATISA_HAZIR1": 869903040000,
+            "SATISA_HAZIR2": 30300000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0840",
+            "STOK_ADI": "G.PROFIL 40x100x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 1335100000000,
+            "BAKIYE2": 39300000000,
+            "BEKLEYEN_SIPARIS1": 553597250000,
+            "BEKLEYEN_SIPARIS2": 13500000000,
+            "SATISA_HAZIR1": 781502750000,
+            "SATISA_HAZIR2": 25800000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0850",
+            "STOK_ADI": "G.PROFIL 80x80x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 2881000000000,
+            "BAKIYE2": 108000000000,
+            "BEKLEYEN_SIPARIS1": 149025500000,
+            "BEKLEYEN_SIPARIS2": 5000000000,
+            "SATISA_HAZIR1": 2731974500000,
+            "SATISA_HAZIR2": 103000000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0865",
+            "STOK_ADI": "G.PROFIL 80x80x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 1859700000000,
+            "BAKIYE2": 58400000000,
+            "BEKLEYEN_SIPARIS1": 55884600000,
+            "BEKLEYEN_SIPARIS2": 1500000000,
+            "SATISA_HAZIR1": 1803815400000,
+            "SATISA_HAZIR2": 56900000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0870",
+            "STOK_ADI": "G.PROFIL 80x80x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 892400000000,
+            "BAKIYE2": 23200000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 892400000000,
+            "SATISA_HAZIR2": 23200000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0878",
+            "STOK_ADI": "G.PROFIL 50x100x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 2277100000000,
+            "BAKIYE2": 64100000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 2277100000000,
+            "SATISA_HAZIR2": 64100000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0880",
+            "STOK_ADI": "G.PROFIL 100x100x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 373100000000,
+            "BAKIYE2": 11100000000,
+            "BEKLEYEN_SIPARIS1": 22410420000,
+            "BEKLEYEN_SIPARIS2": 600000000,
+            "SATISA_HAZIR1": 350689580000,
+            "SATISA_HAZIR2": 10500000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0885",
+            "STOK_ADI": "G.PROFIL 100x100x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 969200000000,
+            "BAKIYE2": 23800000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 969200000000,
+            "SATISA_HAZIR2": 23800000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0890",
+            "STOK_ADI": "G.PROFIL 100x100x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 889700000000,
+            "BAKIYE2": 17700000000,
+            "BEKLEYEN_SIPARIS1": 802610000,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 888897390000,
+            "SATISA_HAZIR2": 17700000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0900",
+            "STOK_ADI": "G.PROFIL 60x80x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 307900000000,
+            "BAKIYE2": 13000000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 307900000000,
+            "SATISA_HAZIR2": 13000000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0901",
+            "STOK_ADI": "G.PROFIL 60x80x2,20",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0905",
+            "STOK_ADI": "G.PROFIL 60x80x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0910",
+            "STOK_ADI": "G.PROFIL 60x80x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0920",
+            "STOK_ADI": "G.PROFIL 60x100x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0925",
+            "STOK_ADI": "G.PROFIL 60x100x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0930",
+            "STOK_ADI": "G.PROFIL 60x100x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0960",
+            "STOK_ADI": "G.PROFIL 50x100x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0960-2",
+            "STOK_ADI": "G.PROFİL 50x90x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 323400000000,
+            "BAKIYE2": 13700000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 323400000000,
+            "SATISA_HAZIR2": 13700000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0965",
+            "STOK_ADI": "G.PROFIL 50x100x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 2402300000000,
+            "BAKIYE2": 78300000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 2402300000000,
+            "SATISA_HAZIR2": 78300000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0980",
+            "STOK_ADI": "G.PROFIL 60x120x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 281500000000,
+            "BAKIYE2": 9600000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 281500000000,
+            "SATISA_HAZIR2": 9600000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0985",
+            "STOK_ADI": "G.PROFIL 60x120x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 20500000000,
+            "BAKIYE2": 500000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 20500000000,
+            "SATISA_HAZIR2": 500000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0990",
+            "STOK_ADI": "G.PROFIL 60x120x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 101700000000,
+            "BAKIYE2": 2400000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 101700000000,
+            "SATISA_HAZIR2": 2400000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0990-5",
+            "STOK_ADI": "G.PROFIL 60x120x3,00 ( 9,10 MT ) 350 GR",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0990-6",
+            "STOK_ADI": "G.PROFIL 60x120x3,00 ( 11,10 MT ) 350 GR",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.0990-7",
+            "STOK_ADI": "G.PROFIL 60x120x3,00 ( 7,60 MT ) 350 GR",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.1000",
+            "STOK_ADI": "G.PROFIL 90x90x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 845900000000,
+            "BAKIYE2": 28700000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 845900000000,
+            "SATISA_HAZIR2": 28700000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.1005",
+            "STOK_ADI": "G.PROFIL 90x90x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 1154600000000,
+            "BAKIYE2": 30800000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 1154600000000,
+            "SATISA_HAZIR2": 30800000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.1010",
+            "STOK_ADI": "G.PROFIL 90x90x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.1020",
+            "STOK_ADI": "G.PROFIL 80x100x2,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 159700000000,
+            "BAKIYE2": 5300000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 159700000000,
+            "SATISA_HAZIR2": 5300000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.1025",
+            "STOK_ADI": "G.PROFIL 80x100x2,50",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": 300600000000,
+            "BAKIYE2": 8000000000,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": 300600000000,
+            "SATISA_HAZIR2": 8000000000,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.1030",
+            "STOK_ADI": "G.PROFIL 80x100x3,00",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.01.1067",
+            "STOK_ADI": "G.PROFIL 40x60x1,50 (Z275)",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01,PB02",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        },
+        {
+            "MAMUL_KODU": "153.01.0004.02.028-1",
+            "STOK_ADI": "G.BORU 42*2,00 (9,00MM)",
+            "GRUP_KOD": 55,
+            "GRUP_ISIM": "GALVANIZLI PROFILLER",
+            "KULL4S": "PB01",
+            "BAKIYE1": null,
+            "BAKIYE2": null,
+            "BEKLEYEN_SIPARIS1": null,
+            "BEKLEYEN_SIPARIS2": null,
+            "SATISA_HAZIR1": null,
+            "SATISA_HAZIR2": null,
+            "BEKL_IE_MIKTAR1": null,
+            "BEKL_IE_MIKTAR2": null,
+            "FAB_STOK_MIK1": null,
+            "FAB_STOK_MIK2": null
+        }
+    ];
 
-    function turnOnEventNotifications() {
-        calendarInstance.setOptions({
-            eventNotificationsEnabled: true
-        });
+
+
+    function ValueFormatter(value, row, index) {
+        return `<input class="value-input" type="text" data-row="${index}" />`;
     }
 
-    function addEventType() {
-        console.log("Event type added: " + calendarInstance.addEventType(5, "A New Event Type"));
-    }
-
-    function removeEventType() {
-        console.log("Event type removed: " + calendarInstance.removeEventType(5));
-    }
-
-    function setEvents() {
-        calendarInstance.setEvents(getEvents());
-    }
-
-    function removeEvent() {
-        calendarInstance.removeEvent(new Date(), "Test Title 2");
-    }
-
-    function daysInMonth(year, month) {
-        return new Date(year, month + 1, 0).getDate();
-    }
-
-    function setOptions() {
-        calendarInstance.setOptions({
-            manualEditingEnabled: false,
-            exportEventsEnabled: false,
-            showDayNumberOrdinals: false,
-            fullScreenModeEnabled: false,
-            showTimelineArrowsOnViews: false,
-            maximumEventTitleLength: 10,
-            maximumEventDescriptionLength: 10,
-            maximumEventLocationLength: 10,
-            maximumEventGroupLength: 10,
-            tooltipsEnabled: true,
-            visibleDays: [0, 1, 2, 3, 4],
-            hideEventsWithoutGroupAssigned: true,
-            showHolidays: false,
-            allowHtmlInDisplay: true,
-            workingDays: [],
-            views: {
-                fullMonth: {
-                    minimumDayHeight: 70,
-                    maximumEventsPerDayDisplay: 0,
-                    allowEventScrolling: true,
-                    showDayNamesHeaders: false
-                },
-                fullWeek: {
-                    showDayNamesHeaders: false
-                }
-            }
-        });
-    }
-
-    function setSearchOptions() {
-        calendarInstance.setSearchOptions({
-            left: 10,
-            top: 10
-        });
-    }
-
-    function onlyDotsDisplay() {
-        calendarInstance.setOptions({
-            views: {
-                fullMonth: {
-                    useOnlyDotEvents: true
-                }
-            }
-        });
-    }
-
-    function setCurrentDisplayDate() {
-        var newDate = new Date();
-        newDate.setMonth(newDate.getMonth() + 3);
-
-        calendarInstance.setCurrentDisplayDate(newDate);
-    }
-
-    function getEvents() {
-        var previousDay = new Date(),
-            today9 = new Date(),
-            today11 = new Date(),
-            tomorrow = new Date(),
-            firstDayInNextMonth = new Date(),
-            lastDayInNextMonth = new Date(),
-            today = new Date(),
-            today3HoursAhead = new Date(),
-            previousYear = new Date(),
-            nextYear = new Date(),
-            overlappingEvent1 = new Date(),
-            overlappingEventTo1 = new Date(),
-            overlappingEvent2 = new Date(),
-            overlappingEventTo2 = new Date(),
-            overlappingEvent3 = new Date(),
-            overlappingEventTo3 = new Date(),
-            overlappingEvent4 = new Date(),
-            overlappingEventTo4 = new Date(),
-            overlappingEvent5 = new Date(),
-            overlappingEventTo5 = new Date();
-
-        previousDay.setDate(previousDay.getDate() - 1);
-        today11.setHours(11);
-        tomorrow.setDate(today11.getDate() + 1);
-        today9.setHours(9);
-
-        firstDayInNextMonth.setDate(1);
-        firstDayInNextMonth.setDate(firstDayInNextMonth.getDate() + daysInMonth(firstDayInNextMonth.getFullYear(), firstDayInNextMonth.getMonth()));
-
-        lastDayInNextMonth.setDate(1);
-        lastDayInNextMonth.setMonth(lastDayInNextMonth.getMonth() + 1);
-        lastDayInNextMonth.setDate(lastDayInNextMonth.getDate() + daysInMonth(lastDayInNextMonth.getFullYear(), lastDayInNextMonth.getMonth()) - 1);
-
-        today.setHours(21, 59, 0, 0);
-        today.setDate(today.getDate() + 3);
-        today3HoursAhead.setHours(23, 59, 0, 0);
-        today3HoursAhead.setDate(today3HoursAhead.getDate() + 3);
-
-        previousYear.setFullYear(previousYear.getFullYear() - 1);
-        nextYear.setFullYear(nextYear.getFullYear() + 1);
-
-        overlappingEvent1.setDate(overlappingEvent1.getDate() - 3);
-        overlappingEventTo1.setDate(overlappingEventTo1.getDate() - 3);
-        overlappingEvent2.setDate(overlappingEvent2.getDate() - 3);
-        overlappingEventTo2.setDate(overlappingEventTo2.getDate() - 3);
-        overlappingEvent3.setDate(overlappingEvent3.getDate() - 3);
-        overlappingEventTo3.setDate(overlappingEventTo3.getDate() - 3);
-        overlappingEvent4.setDate(overlappingEvent4.getDate() - 3);
-        overlappingEventTo4.setDate(overlappingEventTo4.getDate() - 3);
-        overlappingEvent5.setDate(overlappingEvent5.getDate() - 3);
-        overlappingEventTo5.setDate(overlappingEventTo5.getDate() - 3);
-        overlappingEvent1.setHours(0, 10, 0, 0);
-        overlappingEventTo1.setHours(1, 10, 0, 0);
-        overlappingEvent2.setHours(0, 35, 0, 0);
-        overlappingEventTo2.setHours(1, 35, 0, 0);
-        overlappingEvent3.setHours(1, 20, 0, 0);
-        overlappingEventTo3.setHours(2, 20, 0, 0);
-        overlappingEvent4.setHours(2, 0, 0, 0);
-        overlappingEventTo4.setHours(3, 0, 0, 0);
-        overlappingEvent5.setHours(3, 30, 0, 0);
-        overlappingEventTo5.setHours(4, 40, 0, 0);
-
-        return [
-            {
-                from: overlappingEvent1,
-                to: overlappingEventTo1,
-                title: "Overlapping Event 1",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                group: "Group 1",
-                type: 1,
-                customTags: {
-                    testTag: true
-                }
-            },
-            {
-                from: overlappingEvent2,
-                to: overlappingEventTo2,
-                title: "Overlapping Event 2",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                group: "Group 1",
-                type: 1,
-                customTags: true
-            },
-            {
-                from: overlappingEvent3,
-                to: overlappingEventTo3,
-                title: "Overlapping Event 3",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                group: "Group 1",
-                type: 1,
-                customTags: [1]
-            },
-            {
-                from: overlappingEvent4,
-                to: overlappingEventTo4,
-                title: "Overlapping Event 4",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                group: "Group 1",
-                type: 1,
-                customTags: 1
-            },
-            {
-                from: overlappingEvent5,
-                to: overlappingEventTo5,
-                title: "Overlapping Event 5",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                group: "Group 1",
-                type: 1,
-                customTags: "Test Tag"
-            },
-            {
-                from: previousYear,
-                to: previousYear,
-                title: "Previous Year",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                isAllDay: true,
-                group: "Group 2",
-                type: 2
-            },
-            {
-                from: nextYear,
-                to: nextYear,
-                title: "Next Year",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                isAllDay: true,
-                group: "Group 2",
-                type: 2
-            },
-            {
-                from: previousDay,
-                to: previousDay,
-                title: "Previous Day",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                isAllDay: true,
-                color: "#FF0000",
-                colorText: "#FFFF00",
-                colorBorder: "#00FF00",
-                repeatEvery: 5,
-                id: "1234-5678-9",
-                group: "Group 1",
-                locked: true,
-                type: 3
-            },
-            {
-                from: today11,
-                to: tomorrow,
-                title: "Title 1",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                isAllDay: false,
-                group: "group 1"
-            },
-            {
-                from: tomorrow,
-                to: today11,
-                title: "Title Bad (should not show)",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                isAllDay: false,
-                group: "group 1",
-                type: 0
-            },
-            {
-                from: today9,
-                to: today9,
-                title: "Title 2",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                isAllDay: true,
-                group: "Group 1",
-                url: "https://www.google.com/",
-                type: 4
-            },
-            {
-                from: firstDayInNextMonth,
-                to: firstDayInNextMonth,
-                title: "First Day 1",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                isAllDay: true,
-                color: "#00FF00",
-                colorText: "#FF0000",
-                repeatEvery: 4,
-                type: 0
-            },
-            {
-                from: firstDayInNextMonth,
-                to: firstDayInNextMonth,
-                title: "First Day 2",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                isAllDay: true,
-                color: "#00FF00",
-                colorText: "#FF0000",
-                repeatEvery: 4,
-                type: 0
-            },
-            {
-                from: lastDayInNextMonth,
-                to: lastDayInNextMonth,
-                title: "Last Day 1",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                location: "Teams Meeting",
-                isAllDay: true,
-                color: "#0000FF",
-                repeatEvery: 2,
-                type: 0
-            },
-            {
-                from: today,
-                to: today3HoursAhead,
-                title: "Regular Event",
-                description: "This is a another <b>description</b> of the event that has been added, so it can be shown in the pop-up dialog.",
-                repeatEvery: 1,
-                repeatEveryExcludeDays: [6, 0],
-                repeatEnds: new Date(today.getFullYear() + 1, 0, 1),
-                group: "Group 1",
-                type: 0
-            }
-        ];
-    }
-
-    function onDragEventStart(eventDetails) {
-        console.log("Event drag started: " + eventDetails.id);
-    }
-
-    function onDragEventStop(eventDetails) {
-        console.log("Event drag stopped: " + eventDetails.id);
-    }
-
-    function onDragEventDrop(eventDetails, dropDate) {
-        console.log("Event drag dropped: " + eventDetails.id + ". Date dropped: " + dropDate);
-    }
-
-    function getCopiedEvent() {
-        var today = new Date(),
-            todayPlus1Hour = new Date();
-
-        todayPlus1Hour.setHours(today.getHours() + 1);
-
+    function ValueCellStyle(value, row, index) {
         return {
-            from: today,
-            to: todayPlus1Hour,
-            title: "Copied Event",
-            description: "This is a another description of the event that has been added, so it can be shown in the pop-up dialog.",
-            group: "Group 1"
+            css: {
+                padding: 0
+            }
         }
     }
 
-    function addNewHolidays() {
-        var today = new Date();
+    $(document).ready(function () {
+        $('.product-table-parameters').select2();
 
-        var holiday1 = {
-            day: today.getDate(),
-            month: today.getMonth() + 1,
-            year: today.getFullYear(),
-            title: "Google Day",
-            onClick: function () {
-                window.open("https://www.google.com/", "_blank");
+        $('select').on('select2:close', function (evt) {
+            var uldiv = $(this).siblings('span.select2').find('ul')
+            var count = uldiv.find('li').length - 1;
+
+            if (count > 2) {
+                uldiv.html("<li>" + count + " seçim yapıldı</li>")
             }
-        };
+        });
 
-        var holiday2 = {
-            day: today.getDate(),
-            month: today.getMonth() + 1,
-            title: "Calendar.js Day",
-            backgroundColor: "lightblue",
-            textColor: "maroon",
-            onClick: function () {
-                window.open("https://github.com/williamtroup/Calendar.js", "_blank");
-            }
-        };
+        $('#product-table').on('post-body.bs.table', function () {
+            $('.value-input').on('input keydown keyup paste', function () {
+                $(this).val($(this).val().replace(/\D/g, ''));
+            });
+        });
 
-        calendarInstance.addHolidays([holiday1, holiday2]);
-    }
+        $('#product-table').bootstrapTable({ data: DEMO_DATA, locale: 'tr-TR' });
 
-    function removeNewHolidays() {
-        calendarInstance.removeHolidays(["Google Day", "Calendar.js Day"]);
-    }
-    document.title = 'Nova | Üretim Kaynak Planlama'
+        //new Litepicker({
+        //    element: document.getElementById('date-filter'),
+        //    singleMode: false,
+        //    format: 'DD/MM/YYYY',
+        //    plugins: ['mobilefriendly'],
+        //    resetButton: true,
+        //    autoApply: true,
+        //    tooltipText: {
+        //        one: 'GÜN',
+        //        other: 'GÜN'
+        //    },
+        //    tooltipNumber: (totalDays) => {
+        //        return totalDays - 1;
+        //    }
+        //})
+    });
 </script>
