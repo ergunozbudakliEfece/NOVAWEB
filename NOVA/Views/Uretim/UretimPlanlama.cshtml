@@ -6,6 +6,8 @@
 <head>
     <meta charset='utf-8' />
     <style>
+
+
         ::-webkit-scrollbar {
             width: 3px;
             height: 5px;
@@ -16,6 +18,7 @@
             background: #7f7f7f;
             border-radius: 0.5rem;
         }
+
         .fc-daygrid-event {
             white-space: normal !important;
             cursor: pointer;
@@ -67,9 +70,12 @@
             }
         }
     </style>
-    
+
     <script src="~/wwwroot/libs/moment.js/moment-with-locales.js"></script>
     <script src="~/fullcalendar-scheduler-6.0.1/dist/index.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.js"></script>
     <script>
         var calendar = null
         var drag = null;
@@ -80,6 +86,7 @@
         var inf;
         var ham, mam,isemri;
         function CreateCalendar() {
+            Planlar=[];
             var Calendar = FullCalendar.Calendar;
             var Draggable = FullCalendar.Draggable;
 
@@ -129,27 +136,27 @@
                         time = moment(new Date(info.event._instance.range.start)).add(-3, 'hours');
                         $('#HurdaModal').modal('show')
                         $('#DateLabel').html('<b>' + info.event.start.toLocaleDateString('TR') + '</b>')
-                        ham = info.draggedEl.attributes[2].value;
-                        mam = info.draggedEl.attributes[3].value;
                         tarih = time.locale('tr').format("YYYY-MM-DD");
                         isemri = info.event.title;
+
                     },
                     eventDrop: function (date) {
 
+                        time = moment(new Date(date.event._instance.range.start)).add(-3, 'hours');
                         $('#HurdaModal').modal('show')
-
                         $('#DateLabel').html('<b>' + date.event.start.toLocaleDateString('TR') + '</b>')
+                        tarih = time.locale('tr').format("YYYY-MM-DD");
+                        isemri = date.event.title;
 
                     },
                     eventClick: function (info) {
 
 
-                        $('#HurdaModal').modal('show')
-                        
-                        time = moment(new Date(info.event._instance.range.start)).add(-3, 'hours');
-                        $('#DateLabel').html('<b>' + time.locale('tr').format('LT') + '</b>')
-                        $('#saat').val(time.locale('tr').format('LT'))
-                        console.log()
+                       time = moment(new Date(info.event._instance.range.start)).add(-3, 'hours');
+                       $('#HurdaModal').modal('show')
+                       $('#DateLabel').html('<b>' + info.event.start.toLocaleDateString('TR') + '</b>')
+                       tarih = time.locale('tr').format("YYYY-MM-DD");
+                       isemri = info.event.title;
 
 
 
@@ -160,9 +167,9 @@
                     dateClick: function (info) {
                         calendar.changeView('timeGridDay', info.dateStr);
                     },
-                    eventDidMount: function (info) {
-
-
+                    eventDidMount: (arg) => {
+                        const eventId = arg.event.id
+                        arg.el.className = arg.el.className + " context-menu-one"
                     },
                     buttonText: {
                         today: 'Bugün',
@@ -181,6 +188,9 @@
 
                 calendar.render();
                 calendar.addEventSource(Planlar);
+                   $( "a" ).on( "contextmenu", function() {
+                      alert('hi')
+                     } );
             })
 
 
@@ -250,13 +260,13 @@
                         </div>
                     </div>
                     <div class="row mt-2">
-                       
+
                         <div class="col" id="hurdamiktar2div">
 
-                           
-                                <input class="form-control text-center" placeholder="Saat" type="time" id="saat">
-                            
-                            
+
+                            <input class="form-control text-center" placeholder="Saat" type="time" id="saat">
+
+
 
                         </div>
                     </div>
@@ -274,11 +284,23 @@
 
 
 </div>
+<div id="contextMenu" class="context-menu"
+     style="display:none">
+    <ul>
+        <li><a href="#">Element-1</a></li>
+        <li><a href="#">Element-2</a></li>
+        <li><a href="#">Element-3</a></li>
+        <li><a href="#">Element-4</a></li>
+        <li><a href="#">Element-5</a></li>
+        <li><a href="#">Element-6</a></li>
+        <li><a href="#">Element-7</a></li>
+    </ul>
+</div>
 <button type="button" style="display:none" id="ambarButton" class="btn btn-outline-info" onclick="ambarGiris()">AMBAR GİRİŞ TETİKLE</button>
 <script>
     var c = 0;
     hotkeys('ctrl+space', function (event, handler) {
-        
+
         if (c == 0) {
 
             alert('Tebrikler!!')
@@ -290,20 +312,22 @@
             c = 0;
         }
     });
- 
+
     function ModalKapat() {
         $('#HurdaModal').modal('hide')
-        $('#saat').val(null)
+        $('#saat').val(null).trigger('change')
     }
     function KaliteKayit() {
         $('#HurdaModal').modal('hide')
-        var data = { ISEMRI:isemri,TARIH: tarih, SAAT: $('#saat').val(), HAM_KODU: ham, MAMUL_KODU: mam }
-        axios.post('http://192.168.2.209:5207/api/seri/planlama/Update', data).then((response) => {
-            alert(response.data)
-        })
+        var data = { ISEMRINO:isemri,TARIH: tarih, SAAT: $('#saat').val() }
+        axios.post('http://192.168.2.209:83/api/seri/planlama/Update', data).then(function (response){
+            CreateCalendar()
+        }).catch(function (err) {
+              alert(err)
+            })
     }
 
-        
+
         function ShowProgress() {
             document.body.style.overflow = 'hidden';
             document.activeElement.blur();
@@ -312,8 +336,8 @@
         function HideProgress() {
             document.body.style.overflow = 'auto';
             $('#nova-overlay').fadeOut('slow');
-    }
-    function myFunction() {
+        }
+        function myFunction() {
         var input = document.getElementById("Search");
         var filter = input.value.toLowerCase().replace('ı', 'i');
         var nodes = document.getElementsByClassName('m1');
@@ -326,6 +350,34 @@
             }
         }
     }
+     
+   
+
+$(function() {
+        $.contextMenu({
+            selector: '.context-menu-one', 
+            callback: function(key, options) {
+                var m = "clicked: " + key;
+                window.console && console.log(m) || alert(m); 
+                console.log(options)
+            },
+            items: {
+                "edit": {name: "Edit", icon: "edit"},
+                "cut": {name: "Cut", icon: "cut"},
+               copy: {name: "Copy", icon: "copy"},
+                "paste": {name: "Paste", icon: "paste"},
+                "delete": {name: "Delete", icon: "delete"},
+                "sep1": "---------",
+                "quit": {name: "Quit", icon: function(){
+                    return 'context-menu-icon context-menu-icon-quit';
+                }}
+            }
+        });
+
+        $('.context-menu-one').on('click', function(e){
+            console.log('clicked', this);
+        })    
+});
 </script>
 
 
