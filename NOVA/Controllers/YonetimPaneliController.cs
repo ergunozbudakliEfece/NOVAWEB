@@ -21,6 +21,8 @@ using static NOVA.Controllers.LoginController;
 using static ServiceStack.LicenseUtils;
 using System.Security.Cryptography;
 using System.IO;
+using NOVA.Utils;
+using Newtonsoft.Json;
 
 namespace NOVA.Controllers
 {
@@ -377,7 +379,7 @@ namespace NOVA.Controllers
         }
 
        
-        public ActionResult KullaniciAyar()
+        public ActionResult UygulamaAyarlari()
         {
             var m = GetModules(10);
             if (m[0].ACTIVE != "1")
@@ -739,7 +741,7 @@ namespace NOVA.Controllers
             var s = new SelectList(GetRoleApiData(), "ROLE_ID", "ROLE_NAME");
             ViewBag.Roles = s;
 
-            return View("Kullanici");
+            return View();
         }
         public ActionResult UygulamaIstatistik()
         {
@@ -1324,6 +1326,35 @@ namespace NOVA.Controllers
 
             return jsonList;
         }
+        public List<PersonelModel> GetPersonelDataByID(int id)
+        {
+
+
+            var apiUrl = "http://192.168.2.13:83/api/personel/id:" + id;
+
+            //Connect API
+            Uri url = new Uri(apiUrl);
+            WebClient client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+
+            string json = client.DownloadString(url);
+            //END
+
+            //JSON Parse START
+
+            List<PersonelModel> jsonList = JsonConvert.DeserializeObject<List<PersonelModel>>(json);
+
+            //END
+
+            return jsonList;
+        }
+        public class PersonelModel
+        {
+            public int USER_ID { get; set; }
+            public string ISIM { get; set; }
+            public string SOYISIM { get; set; }
+            public string CINSIYET { get; set; }
+        }
         public int GetLink()
         {
 
@@ -1425,8 +1456,8 @@ namespace NOVA.Controllers
                             {
                                 subject = "NOVA | Kullanıcı Bilgileriniz";
                             }
-                            string u = "http://localhost:44332/sifre/index?l=U2FsdGVkX1+2HP5R1j2vhaIUaH77YI3wYDqv3RSHko4=&us=U2FsdGVkX1+ro1yUzE2P+eB5lCVq54zigdaUmTCdunI=";
-                            string body = "Merhaba Çalışma Arkadaşım,</br></br>Nova, Efece Galvaniz çalışanların çalışmalarını kolaylaştırmak üzere tasarlanmış mobil ve web uygulamalardır.</br></br>Mobil uygulama yüklemek için “İş ve Süreç Geliştirme” departmanı ile iletişime geçebilirsiniz.</br></br>Web uygulamaya;</br></br>Bilgisayar üzerinde → <strong><a href='http://nova.efece.com'>NOVA</a></strong> </br></br>Mobil için → <strong><a href='http://192.168.2.13'>NOVA</a></strong> </br></br>Linklerine tıklayarak ulaşabilirsiniz.</br></br>Efece Galvaniz çatısı altında yapacağın çalışmalarında sana kolaylık sağlayabilmem için uygulamaya giriş yapabileceğin kullanıcı adın ve şifren aşağıdaki gibidir;</br></br><strong>Kullanıcı Adı: " + GetUserByMail(model.MailAdresi[i]).USER_NAME + "</strong></br></br><strong>Şifre: <a href='"+u+"'> Şifreyi değiştirmek için tıklayın.</a></strong></br></br>Kullanıcı bilgileriniz yapacağınız işlemlerde kayıt tutulmasında kullanılacağı için şifrenizi uygulamaya giriş yaptıktan sonra kişisel olmayan bir şifrenizle değiştirip <strong><u>kimseyle</u></strong> paylaşmamanızı öneririz.";
+                            string u = "http://nova.efece.com/sifre/index?l=U2FsdGVkX1+2HP5R1j2vhaIUaH77YI3wYDqv3RSHko4=&us=U2FsdGVkX1+ro1yUzE2P+eB5lCVq54zigdaUmTCdunI=";
+                            string body = "Merhaba "+ GetUserByMail(model.MailAdresi[i]).USER_FIRSTNAME + " "+ (GetPersonelDataByID(GetUserByMail(model.MailAdresi[i]).USER_ID.ToInt())[0].CINSIYET=="KADIN"?"Hanım":"Bay") + ",</br></br>Nova, Efece çalışanlarının işlerini kolaylaştırmak üzere tasarlanmış bir uygulamadır.</br></br>Nova’ya herhangi bir web tarayıcı üzerinden;</br></br>Efece Menderes içerisinde → <a href='nova.efece.com'>NOVA</a>  | Efece Menderes dışında → <a href='192.168.2.13'>NOVA</a> </br></br>Linklerine tıklayarak ulaşabilirsiniz.</br></br>Uygulamaya giriş yapabileceğiniz kullanıcı adınız ve şifrenizi oluşturabileceğiniz link aşağıdaki gibidir:</br></br><strong>Kullanıcı Adınız : " + GetUserByMail(model.MailAdresi[i]).USER_NAME + "</strong></br></br><a href='"+u+ "'>Şifrenizi oluşturmak için tıklayın.</a></br></br><strong>Şifrenizi kendinize özel bilgileriniz, kredi kartı veya interaktif bankacılık şifrelerinizde kullandığınız karakterler ile oluşturmamanızı ve kimseyle paylaşmamanızı öneririz.</strong></br></br>Nova ile ilgili her türlü sorun,öneri ve şikayetleriniz için <a href='surecgelistirme@efecegalvaniz.com'>surecgelistirme@efecegalvaniz.com</a> adresine mail gönderebilirsiniz.</br></br>İyi çalışmalar dilerim.</br></br>" + Imzalar.Imza;
 
 
                             WebMail.SmtpServer = "192.168.2.13";
@@ -1483,7 +1514,7 @@ namespace NOVA.Controllers
 
                         
                         string u = "http://nova.efece.com/sifre/index?l="+ Encrypt(GetLink().ToString()) + "&us="+ Encrypt(GetUserByMail(model.MailAdresi[i]).USER_NAME);
-                        string body = "Merhaba Çalışma Arkadaşım,</br></br>Nova, Efece Galvaniz çalışanların çalışmalarını kolaylaştırmak üzere tasarlanmış mobil ve web uygulamalardır.</br></br>Mobil uygulama yüklemek için “İş ve Süreç Geliştirme” departmanı ile iletişime geçebilirsiniz.</br></br>Web uygulamaya;</br></br>Bilgisayar üzerinde → <strong><a href='http://nova.efece.com'>NOVA</a></strong> </br></br>Mobil için → <strong><a href='http://192.168.2.13'>NOVA</a></strong> </br></br>Linklerine tıklayarak ulaşabilirsiniz.</br></br>Efece Galvaniz çatısı altında yapacağın çalışmalarında sana kolaylık sağlayabilmem için uygulamaya giriş yapabileceğin kullanıcı adın ve şifren aşağıdaki gibidir;</br></br><strong>Kullanıcı Adı: " + GetUserByMail(model.MailAdresi[i]).USER_NAME + "</strong></br></br><strong>Şifre: <a href='" + u + "'>Şifreyi değiştirmek için tıklayın.</a></strong></br></br>Kullanıcı bilgileriniz yapacağınız işlemlerde kayıt tutulmasında kullanılacağı için şifrenizi uygulamaya giriş yaptıktan sonra kişisel olmayan bir şifrenizle değiştirip <strong><u>kimseyle</u></strong> paylaşmamanızı öneririz.";
+                        string body = "Merhaba " + GetUserByMail(model.MailAdresi[i]).USER_FIRSTNAME + " " + (GetPersonelDataByID(GetUserByMail(model.MailAdresi[i]).USER_ID.ToInt())[0].CINSIYET == "KADIN" ? "Hanım" : "Bey") + ",</br></br>Nova, Efece çalışanlarının işlerini kolaylaştırmak üzere tasarlanmış bir uygulamadır.</br></br>Nova’ya herhangi bir web tarayıcı üzerinden;</br></br>Efece Menderes içerisinde → <a href='nova.efece.com'>NOVA</a>  | Efece Menderes dışında → <a href='192.168.2.13'>NOVA</a> </br></br>Linklerine tıklayarak ulaşabilirsiniz.</br></br>Uygulamaya giriş yapabileceğiniz kullanıcı adınız ve şifrenizi oluşturabileceğiniz link aşağıdaki gibidir:</br></br><strong>Kullanıcı Adınız : " + GetUserByMail(model.MailAdresi[i]).USER_NAME + "</strong></br></br><a href='" + u + "'>Şifrenizi oluşturmak için tıklayın.</a></br></br><strong>Şifrenizi kendinize özel bilgileriniz, kredi kartı veya interaktif bankacılık şifrelerinizde kullandığınız karakterler ile oluşturmamanızı ve kimseyle paylaşmamanızı öneririz.</strong></br></br>Nova ile ilgili her türlü sorun,öneri ve şikayetleriniz için <a href='surecgelistirme@efecegalvaniz.com'>surecgelistirme@efecegalvaniz.com</a> adresine mail gönderebilirsiniz.</br></br>İyi çalışmalar dilerim.</br></br>" + Imzalar.Imza;
 
                         WebMail.Send(model.MailAdresi[i].ToString(), subject, body, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                         //WebMail.Send("ergunozbudakli@efecegalvaniz.com,ergunozbudakli@gmail.com,ugurkonakci@gmail.com,ugurkonakci@efecegalvaniz.com", subject, body, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
@@ -1514,7 +1545,7 @@ namespace NOVA.Controllers
             }
            
             
-            return RedirectToAction("KullaniciAyar");
+            return RedirectToAction("UygulamaAyarlari");
         }
         [HttpPost]
         public async Task<ActionResult> KullaniciAyar([Bind(Prefix = "Item1")] User user)

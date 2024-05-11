@@ -71,9 +71,6 @@ namespace NOVA.Controllers
             }
 
             await RoleHelper.CheckRoles(this);
-            ViewBag.Makine = GetMak();
-            ViewBag.Girdi = GetGirdi();
-            ViewBag.Cikti = GetCikti();
             ViewBag.Id = Request.Cookies["Id"].Value;
 
 
@@ -117,7 +114,44 @@ namespace NOVA.Controllers
 
             return View();
         }
+        public async Task<ActionResult> UretimPlani()
+        {
+            int moduleId = 52;
 
+            List<Modules> Modules = await AuthHelper.GetModules(moduleId);
+
+            if (Modules[0].ACTIVE != "1")
+            {
+                return RedirectToAction("Maintenance", "Home");
+            }
+            if (Request.Cookies["Id"] == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            User UserData = await RoleHelper.RoleControl(Request.Cookies["Id"].Value, moduleId);
+
+            if (UserData.SELECT_AUTH != true)
+            {
+                Session["ModulYetkiMesajı"] = "Modüle yetkiniz bulunmamaktadır";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                bool Logged = await AuthHelper.LoginLog(Request.Cookies["Id"].Value, Request.Cookies["LogId"].Value, moduleId);
+
+                if (!Logged)
+                {
+                    FormsAuthentication.SignOut();
+                    return RedirectToAction("Login", "Login");
+                }
+            }
+
+            await RoleHelper.CheckRoles(this);
+            ViewBag.Id = Request.Cookies["Id"].Value;
+
+            return View();
+        }
         public async Task<ActionResult> UretimKaynakPlanlama()
         {
             int moduleId = 48;
@@ -541,7 +575,29 @@ namespace NOVA.Controllers
                                 
                                 if (hatkodu == "DL01")
                                 {
-                                    var sayi=uretim.SeriEkle(jsonList[i].SERI_NO, ACIK1, ACIK2, "", jsonList[i].KULL_MIKTAR, 1, SERI_NO_3, SERI_NO_4);
+                                    apiUrl2 = "http://192.168.2.13:83/api/seri/exec/3";
+
+                                    //Connect API
+                                    url2 = new Uri(apiUrl2);
+                                    client = new WebClient();
+                                    client.Encoding = System.Text.Encoding.UTF8;
+
+                                    json2 = client.DownloadString(url2);
+
+                                    List<OtoSeriModel> otoseri = ser.Deserialize<List<OtoSeriModel>>(json2);
+                                    var sayi = uretim.SeriEkle(otoseri[0].SERI_NO, ACIK1, ACIK2, "", jsonList[i].KULL_MIKTAR, 1, SERI_NO_3, SERI_NO_4);
+
+                                    //uretim.OTOSERIURET();
+                                    //var sayi=uretim.SeriEkle(uretim.SeriOku(0).Seri1, ACIK1, ACIK2, "", jsonList[i].KULL_MIKTAR, 1, SERI_NO_3, SERI_NO_4);
+                                    for (int j = 0; j < uretim.SeriSayisi; j++)
+                                    {
+                                        KalemSeri okunan_seri = uretim.SeriOku(j);
+                                        System.Diagnostics.Debug.WriteLine($"{j} okunan_seri 1: " + okunan_seri.Seri1 +
+                                           " okunan_seri 2: " + okunan_seri.Seri2 +
+                                           " Miktar: " + okunan_seri.Miktar.ToString() +
+                                           " Açıklama 1: " + okunan_seri.Aciklama1 +
+                                           " Açıklama 2: " + okunan_seri.Aciklama2);
+                                    }
                                 }
                                 else
                                 {
@@ -551,9 +607,8 @@ namespace NOVA.Controllers
                                 seri = jsonList[i].SERI_NO;
                             }
 
-                         
 
-                            
+
                             uretim.FisUret();
                             uretim.Kaydet();
                                 
@@ -610,7 +665,7 @@ namespace NOVA.Controllers
                             netRS1.Ac("SELECT TOP(1)* FROM TBLSERITRA WITH(NOLOCK) WHERE BELGENO='" + fisno + "' AND GCKOD='C' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
 
                             var seri_no = netRS1.FieldByName("SERI_NO").AsString;
-                            netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WITH(NOLOCK) WHERE SERI_NO='" + seri_no + "' AND GCKOD='G'");
+                            netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WITH(NOLOCK) WHERE SERI_NO='" + seri_no + "' AND GCKOD='G' AND LEFT(BELGENO,1)<>'D'");
                             ACIK1 = netRS.FieldByName("ACIK1").AsString;
                             ACIK2 = netRS.FieldByName("ACIK2").AsString;
                             var ACIK3 = netRS.FieldByName("ACIK3").AsString;
@@ -623,7 +678,7 @@ namespace NOVA.Controllers
                             {
 
                                 netRS1.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO='" + fisno + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
-                                netRS1.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "',ACIK3='" + ACIK3 + "',ACIKLAMA_4='" + ACIKLAMA_4 + "',ACIKLAMA_5='" + ACIKLAMA_5 + "' WHERE BELGENO='" + fisno + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='C' ");
+                                netRS1.Ac("UPDATE TBLSERITRA SET ACIK1 = '" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "',ACIK3='" + ACIK3 + "',ACIKLAMA_4='" + ACIKLAMA_4 + "',ACIKLAMA_5='" + ACIKLAMA_5 + "',MIKTAR2='1' WHERE BELGENO='" + fisno + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='C' ");
                                 netRS1.Ac("UPDATE TBLSERITRA SET ACIK1='"+serino2+"',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "',MIKTAR2='1' WHERE BELGENO='" + fisno + "' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND GCKOD='G' ");
 
                                 if (hatkodu != "BK01" && hatkodu != "DL01")
@@ -1703,7 +1758,9 @@ namespace NOVA.Controllers
 
                             seri = netRS.FieldByName("SERINO").AsString;
                             var Stokkodu = netRS.FieldByName("STOK_KODU").AsString;
+                            netRS.Ac("SELECT * FROM TBLISEMRIREC WITH(NOLOCK)  WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
 
+                            var miktarsabitle = netRS.FieldByName("MIKTARSABITLE").AsString;
                             NetRS SeriNoTakipRS = kernel.yeniNetRS(sirket);
 
                             SeriNoTakipRS.Ac($"SELECT * FROM TBLSTSABIT  WITH(NOLOCK) WHERE STOK_KODU='{jsonList[i].ISEMRINO}'");
@@ -1725,10 +1782,14 @@ namespace NOVA.Controllers
                             {
                                 if (seri == null)
                                 {
+                                    
                                     if (i == 0)
                                     {
-                                        uretim.OTOSERIURET();
-                                        uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
+                                        
+                                            uretim.OTOSERIURET();
+                                            uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
+                                        
+                                        
                                     }
                                     else
                                     {
@@ -1748,9 +1809,10 @@ namespace NOVA.Controllers
                             netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + jsonList[i].SERI_NO + "' WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
 
                             fisno = uretim.UretSon_FisNo;
-                          
-                                uretim.FisUret();
-                                uretim.Kaydet();
+                           
+                            uretim.FisUret();
+                            uretim.Kaydet();
+                           
                             
                             if (i != jsonList.Count - 1)
                             {
@@ -1882,7 +1944,7 @@ namespace NOVA.Controllers
                                     fatKalem.SeriEkle(karsii, ACIKK1, ACIKK2, "", ikincimik1.ToDouble(), ikincimik2.ToDouble(), SERI_NOO_3, SERI_NOO_4);
                                     fatura.kayitYeni();
                                 }
-                               
+
 
 
                                 //var mailList = "";
@@ -1892,9 +1954,8 @@ namespace NOVA.Controllers
                                 //}
                                 //WebMail.SmtpServer = "192.168.2.13";
                                 //WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Fiş Bilgi", "<p><b>" + jsonList[i].ISEMRINO + "</b> Fiş bilgileri:</p><p>" + fisler + "</p></br>"+ikinciNo+","+hurdaNo+"</br>" + mailList, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
-
-                                //netRS.Ac("UPDATE TBLSERITRA SET ACIK1='" + ACIKK1 + "',ACIK2='" + ACIKK2 + "',SERI_NO_3='" + SERI_NOO_3 + "',SERI_NO_4='" + SERI_NOO_4 + "' WHERE BELGENO='" + fisno + "' AND SIPNO='" + ISEMRINO + "'");
                                
+
                                 return karsii;
                             }
 
@@ -3114,7 +3175,10 @@ namespace NOVA.Controllers
             public string SARF { get; set; }
             public string HES_SARF { get; set; }
         }
-
+        public class OtoSeriModel
+        {
+            public string SERI_NO { get; set; }
+        }
         #region MES
 
         public async Task<ActionResult> MES()

@@ -294,7 +294,7 @@ if (!String.prototype.formatString) {
 
                             if (settings.start_date == null) {
                                 // if set null, will get from 365 days from now
-                                start_date = new Date("2024-12-31");
+                                start_date = new Date("2023-12-31");
                                 start_date.setMonth(start_date.getMonth() - 12);
                                 start_date.setDate(start_date.getDate() + 1)
 

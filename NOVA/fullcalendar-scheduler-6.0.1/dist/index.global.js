@@ -2675,6 +2675,7 @@ var FullCalendar = (function (exports) {
             let nextDate = dateEnv.add(dateEnv.startOf(currentDate, currentDateProfile.currentRangeUnit), // important for start-of-month
             currentDateProfile.dateIncrement);
             return this.build(nextDate, 1, forceToValid);
+
         }
         // Builds a structure holding dates/ranges for rendering around the given date.
         // Optional direction param indicates whether the date is being incremented/decremented

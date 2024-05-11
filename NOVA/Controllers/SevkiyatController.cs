@@ -240,7 +240,7 @@ namespace NOVA.Controllers
 
                     foreach (SevkiyatBelge BELGE in BELGELER)
                     {
-                        FaturaKalem.Gir_Depo_Kodu = BELGE.GIRIS_DEPO;
+                        FaturaKalem.Gir_Depo_Kodu =35;
                         FaturaKalem.DEPO_KODU = BELGE.CIKIS_DEPO;
                         FaturaKalem.SeriEkle(BELGE.SERI_NO, BELGE.ACIK1, BELGE.ACIK2, "", BELGE.MIKTAR1, BELGE.MIKTAR2, BELGE.SERI_NO_3, BELGE.SERI_NO_4);
                     }

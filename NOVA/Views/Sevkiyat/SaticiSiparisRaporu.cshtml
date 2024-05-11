@@ -161,6 +161,9 @@
         pointer-events: none;
     }
 </style>
+<script>
+    $('#title').html('Nova | Satıcı Siparişi Raporu')
+</script>
 <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:flex;justify-content:center;align-items:center;">
     <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
 </div>
@@ -269,6 +272,10 @@
                             <th data-field="STOK_ADI" data-halign="center" data-align="center" data-sortable="true" data-formatter="stokadiFormatter">Stok Adı</th>
                             <th data-field="MIKTAR" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktar1Formatter">Miktar1</th>
                             <th data-field="MIKTAR2" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktar2Formatter">Miktar2</th>
+                            <th data-field="GENISLIK" data-halign="center" data-align="center" data-sortable="true" data-formatter="genFormatter">Genişlik</th>
+                            <th data-field="GERCEK_KALINLIK" data-halign="center" data-align="center" data-sortable="true">Kalınlık</th>
+                            <th data-field="KALITE" data-halign="center" data-align="center" data-sortable="true">Kalite</th>
+                            <th data-field="KAPLAMA_KALINLIK" data-halign="center" data-align="center" data-sortable="true">Kaplama</th>
                             <th data-field="TESLIM_YERI" data-halign="center" data-align="center" data-sortable="true" data-formatter="teslimFormatter">Teslim Yeri</th>
                             <th data-field="TESLIM_MIKTARI" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter">SSIP Teslim</th>
                             <th data-field="BAKIYE_MIKTARI" data-halign="center" data-align="center" data-sortable="true" data-formatter="miktarFormatter">SSIP Bekleyen</th>
@@ -379,7 +386,7 @@
         }
     }
     function islemFormatter(value, index, row) {
-        return `<div onclick="SaticiRaporModal(event, this, '${index.STOK_KODU}')"  data-bs-toggle="modal" class="showmodal" data-bs-target="#SiparisModal"><i class="bi bi-file-earmark-text-fill" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Kabul Formu Oluştur</span>"></i></div>`;
+        return `<div onclick="SaticiRaporModal(event, this, '${index.STOK_KODU}', '${index.SIRA}')"  data-bs-toggle="modal" class="showmodal" data-bs-target="#SiparisModal"><i class="bi bi-file-earmark-text-fill" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<span>Kabul Formu Oluştur</span>"></i></div>`;
     }
     function sipFormatter(value, index, row) {
         var SeriNo = '<label hidden>' + value + '</label>';
@@ -610,6 +617,13 @@
         document.body.style.overflow = 'auto';
         $('#nova-overlay').fadeOut('slow');
     }
+    function genFormatter(value, row, index) {
+        if (value != null)
+            return parseFloat(value).toLocaleString()
+        else {
+            return '-'
+        }
+    }
 </script>
 <style>
     .autocomplete {
@@ -643,4 +657,5 @@
         background-color: DodgerBlue !important;
         color: #ffffff;
     }
+    
 </style>

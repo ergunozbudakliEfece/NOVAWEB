@@ -33,7 +33,9 @@
         font-size: 35px;
     }
 
-
+    .fixed-table-footer thead{
+        display:none !important;
+    }
 
 
     .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
@@ -65,7 +67,7 @@
 
 
     .search {
-        width: 50%;
+        width: 30%;
     }
 
 
@@ -78,7 +80,12 @@
         white-space: unset !important;
     }
 
-
+    #mobilMod{
+        display:none;
+    }
+    #pcMod {
+        display: unset;
+    }
     @@media screen and (max-width: 600px) {
         .select2 {
             width: 70vw !important;
@@ -91,7 +98,19 @@
         .menu2 {
             display: none;
         }
+        #mobilMod {
+            display: unset;
+        }
 
+        #pcMod {
+            display: none;
+        }
+        .search{
+            width:100%;
+        }
+        .container-fluid{
+            margin-left:-3rem;
+        }
     }
 </style>
 
@@ -104,21 +123,27 @@
         <div class="card" style="font-size:14px;letter-spacing:1px">
 
             <div class="card-header pb-0">
+                <div class="row">
+                    <div class="col">
+                        <div class="btn-group menu1">
+                            <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" style="">
+                                <li><a class="dropdown-item" onclick="change(1)">Standart</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" onclick="change(2)">Detaylı</a></li>
 
-                <div class="btn-group menu1">
-                    <button type="button" class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" style="">
-                        <li><a class="dropdown-item" onclick="change(1)">Standart</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" onclick="change(2)">Detaylı</a></li>
 
+                            </ul>
 
-                    </ul>
+                        </div>
+                    </div>
+                   
                 </div>
+                
 
                 <div class="btn-group menu2" role="group" aria-label="Basic radio toggle button group">
                     <input type="radio" class="btn-check" onclick="change(1)" name="btnradio" id="btnradio1" checked="" autocomplete="off">
@@ -127,6 +152,7 @@
                     <label class="btn btn-outline-secondary" for="btnradio2">Detaylı</label>
 
                 </div>
+               
 
 
             </div>
@@ -139,62 +165,79 @@
 
                         <select id="filter" multiple="multiple" name="filterAlgorithm">
                         </select>
+                        <div id="pcMod">
+                            <label style="color: black;margin-left:2rem"><b>Toplamlar:</b></label>
+                            <label style="color: #a3c9ff;" id="TopKg">Toplam KG:</label>
+                            <label style="color: green; margin-left: 2rem" id="TopMt">Toplam MT:</label>
+                            <label style="color: #ff9e9e; margin-left: 2rem " id="TopM2">Toplam M2:</label>
+                            <label style="color: #697a8d; margin-left: 2rem " id="TopAD">Toplam AD:</label>
+                        </div>
+                        <div id="mobilMod">
+                            <div class="row">
+                                <div class="col"><label style="color: #a3c9ff" id="mobilTopKg">Toplam KG:</label></div>
+                                <div class="col"><label style="color: green;" id="mobilTopMt">Toplam MT:</label></div>
+                               
+                            </div>
+                            <div class="row">
+                                <div class="col"><label style="color: #ff9e9e" id="mobilTopM2">Toplam M2:</label></div>
+                                <div class="col"><label style="color: #697a8d" id="mobilTopAD">Toplam AD:</label></div>
+                            </div>
+                            </div>
+                        </div>
+
+
+                        <table id="table"
+                               class="table table-striped"
+                               data-show-fullscreen="true"
+                               data-buttons-order="['filterTable','columns']"
+                               data-toggle="table"
+                               data-show-export="false"
+                               data-export-data-type="all"
+                               data-export-types="['excel']"
+                               data-pagination="true"
+                               data-page-size="100"
+                               data-toolbar="#toolbar"
+                               data-search="true"
+                               data-show-columns="true"
+                               data-show-columns-toggle-all="true"
+                               data-locale="tr-TR"
+                               data-filter-control="true"
+                               data-filter-control-multiple-search="true"
+                               data-loading-template="loadingTemplate"
+                               data-height="780"
+                               data-mobile-responsive="true"
+                               data-detail-view="false"
+                               data-detail-formatter="detailFormatter"
+                               data-check-on-init="true"
+                               data-trim-on-search="false"
+                               data-show-footer="true">
+                            <thead>
+                                <tr>
+                                    <th data-field="STOK_ADI" data-halign="center" data-sortable="true" data-width="50" data-width-unit="px" data-formatter="formatterAciklama">Stok Adı</th>
+                                    <th data-field="SATISA_HAZIR" data-halign="center" data-sortable="true" data-formatter="satishzrFormatter" data-footer-formatter="sumFormatter">Satışa Hazır</th>
+                                    <th data-field="BEKLEYEN_SIPARIS" data-halign="center" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
+                                    <th data-field="BAKIYE" data-halign="center" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
+                                    <th data-field="BEKL_IE_MIKTAR" data-halign="center" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
+                                    <th data-field="FAB_STOK_MIK" data-halign="center" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
+                                    <th data-field="GRUP_KODU" data-halign="center" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
+                                    <th data-formatter="girisFormatter" data-halign="center" data-searchable="false">Son Girişler</th>
+                                    <th data-formatter="cikisFormatter" data-halign="center" data-searchable="false">Son Çıkışlar</th>
+                                    @{
+                                        if (ViewBag.OzelYetki)
+                                        {
+                                            <th data-formatter="listefiyatiFormatter" data-visible="false" data-halign="center" data-searchable="false">Liste Fiyatı</th>
+                                            <th data-formatter="iskontoFormatter" data-halign="center" data-searchable="false">İskonto</th>
+                                            <th data-formatter="fiyatlarFormatter" data-halign="center" data-searchable="false">Toptan/Perakende<br /> <span style="color:red">KDV HARİÇ</span></th>
+                                        }
+                                    }
+                                    <th data-field="TESLIM_TARIHI" data-sortable="true" data-visible="false" data-halign="center">Termin Tarihi</th>
+
+                                </tr>
+                            </thead>
+                        </table>
+
 
                     </div>
-
-
-                    <table id="table"
-                           class="table table-striped"
-                           data-show-fullscreen="true"
-                           data-buttons-order="['filterTable','columns']"
-                           data-toggle="table"
-                           data-show-export="false"
-                           data-export-data-type="all"
-                           data-export-types="['excel']"
-                           data-pagination="true"
-                           data-page-size="100"
-                           data-toolbar="#toolbar"
-                           data-search="true"
-                           data-show-columns="true"
-                           data-show-columns-toggle-all="true"
-                           data-locale="tr-TR"
-                           data-filter-control="true"
-                           data-filter-control-multiple-search="true"
-                           data-loading-template="loadingTemplate"
-                           data-height="780"
-                           data-mobile-responsive="true"
-                           data-show-footer="false"
-                           data-detail-view="false"
-                           data-detail-formatter="detailFormatter"
-                           data-check-on-init="true"
-                           data-trim-on-search="false">
-                        <thead>
-                            <tr>
-                                <th data-field="STOK_ADI" data-halign="center" data-sortable="true" data-width="50" data-width-unit="px" data-formatter="formatterAciklama">Stok Adı</th>
-                                <th data-field="SATISA_HAZIR" data-halign="center" data-sortable="true" data-formatter="satishzrFormatter">Satışa Hazır</th>
-                                <th data-field="BEKLEYEN_SIPARIS" data-halign="center" data-formatter="sipFormatter" data-sortable="true">Bekleyen Sipariş</th>
-                                <th data-field="BAKIYE" data-halign="center" data-formatter="bakiyeFormatter" data-sortable="true">Bakiye</th>
-                                <th data-field="BEKL_IE_MIKTAR" data-halign="center" data-sortable="true" data-formatter="ieFormatter">Bekleyen İş Emri</th>
-                                <th data-field="FAB_STOK_MIK" data-halign="center" data-sortable="true" data-formatter="fabFormatter">Fabrika Stok</th>
-                                <th data-field="GRUP_KODU" data-halign="center" data-visible="false" data-filter-strict-search="false">Grup Adı</th>
-                                <th data-formatter="girisFormatter" data-halign="center" data-searchable="false">Son Girişler</th>
-                                <th data-formatter="cikisFormatter" data-halign="center" data-searchable="false">Son Çıkışlar</th>
-                                @{
-                                    if (ViewBag.OzelYetki)
-                                    {
-                                        <th data-formatter="listefiyatiFormatter" data-visible="false" data-halign="center" data-searchable="false">Liste Fiyatı</th>
-                                        <th data-formatter="iskontoFormatter" data-halign="center" data-searchable="false">İskonto</th>
-                                        <th data-formatter="fiyatlarFormatter" data-halign="center" data-searchable="false">Toptan/Perakende<br /> <span style="color:red">KDV HARİÇ</span></th>
-                                    }
-                                }
-                                <th data-field="TESLIM_TARIHI" data-sortable="true" data-visible="false" data-halign="center">Termin Tarihi</th>
-
-                            </tr>
-                        </thead>
-                    </table>
-
-
-                </div>
                 <div id="employeeTableWrapper2" class="tableWrapper">
                     <div id="toolbar2">
 
@@ -219,14 +262,15 @@
                            data-locale="tr-TR"
                            data-filter-control="true"
                            data-filter-control-multiple-search="true"
-                           data-mobile-responsive="true">
+                           data-mobile-responsive="true"
+                           data-export-options='{"fileName":"Stok_Bilgileri"}'>
                         <thead>
                             <tr>
                                 <th data-field="STOK_ADI" data-sortable="true" data-formatter="adFormatter">Stok Adı</th>
-                                <th data-field="SATISA_HAZIR" data-sortable="true" data-formatter="fabadFormatter">Satışa Hazır Miktar</th>
-                                <th data-field="SAT_HZR_ADET" data-sortable="true" data-formatter="fabadFormatter">Satışa Hazır Adet</th>
-                                <th data-field="BEKLEYEN_SIPARIS" ddata-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Miktar</th>
-                                <th data-field="BEK_SIP_ADET" ddata-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Adet</th>
+                                <th data-field="SATISA_HAZIR" data-sortable="true" data-editable-type="text" data-formatter="sathazmikFormatter">Satışa Hazır Miktar</th>
+                                <th data-field="SAT_HZR_ADET" data-sortable="true" data-formatter="sathazFormatter">Satışa Hazır Adet</th>
+                                <th data-field="BEKLEYEN_SIPARIS" data-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Miktar</th>
+                                <th data-field="BEK_SIP_ADET" data-sortable="true" data-formatter="fabadFormatter">Bekleyen Sipariş Adet</th>
                                 <th data-field="BAKIYE" data-sortable="true" data-formatter="fabadFormatter">Bakiye Miktar</th>
                                 <th data-field="AD_BAKIYE" data-sortable="true" data-formatter="fabadFormatter">Bakiye Adet</th>
                                 <th data-field="BEKL_IE_MIKTAR" data-sortable="true" data-formatter="fabadFormatter">Bekleyen İş Emri Miktar</th>
@@ -250,7 +294,7 @@
     </div>
 </div>
 <script>
-
+    
     $("#divPartial").show();
 
     document.getElementById("satis1").className = "nav__link active";
@@ -313,7 +357,22 @@
     }
     function fabadFormatter(value, row, index) {
 
-        return value.toLocaleString("tr-TR");
+        return '<span>' + value.toLocaleString("tr-TR")+'</span>';
+    }
+    $('#table2').tableExport({
+        type: 'excel',
+        mso: {
+            fileFormat: 'xls',
+            worksheetName: ['Table 1']
+        }
+    });
+    function sathazFormatter(value, row, index) {
+
+        return '<span>' + row.SAT_HZR_ADET.toLocaleString("tr-TR") + '</span>';
+    }
+    function sathazmikFormatter(value, row, index) {
+
+        return '<span>'+' '+'</span>'+'<span>' + row.SATISA_HAZIR.toLocaleString("tr-TR") + '</span>';
     }
     function satishzrFormatter(value, row, index) {
         var val = "";
@@ -487,7 +546,8 @@
                     $("#table2").bootstrapTable('destroy').bootstrapTable({
                         data: data
                     }).after(function () {
-                            HideProgress()
+                        HideProgress()
+
                         })
                 })
                
@@ -674,6 +734,86 @@
             return value;
         }
 
+    }
+    function sumFormatter(data) {
+        var totalKG = 0;
+        var totalMT = 0;
+        var totalAD = 0;
+        var totalM2 = 0;
+        $.each(data, function () {
+            if (this.OLCU_BIRIMI=='KG')
+                totalKG += this.SATISA_HAZIR;
+            if (this.OLCU_BIRIMI == 'MT')
+                totalMT += this.SATISA_HAZIR;
+            if (this.OLCU_BIRIMI == 'M2')
+                totalM2 += this.SATISA_HAZIR;
+            if (this.OLCU_BIRIMI == 'AD')
+                totalAD += this.SATISA_HAZIR;
+        })
+        $('#TopKg').html('<b>'+totalKG.toLocaleString('TR-tr',{
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }) +' KG</b>')
+        $('#TopMt').html('<b>' +totalMT.toLocaleString('TR-tr',{
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }) +' MT</b>')
+        $('#TopM2').html('<b>' +totalM2.toLocaleString('TR-tr',{
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }) + ' M2</b>')
+        $('#TopAD').html('<b>' + totalAD.toLocaleString('TR-tr', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }) + ' AD</b>')
+        $('#mobilTopKg').html('<b>' + totalKG.toLocaleString('TR-tr', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }) + ' KG</b>')
+        $('#mobilTopMt').html('<b>' + totalMT.toLocaleString('TR-tr', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }) + ' MT</b>')
+        $('#mobilTopM2').html('<b>' + totalM2.toLocaleString('TR-tr', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }) + ' M2</b>')
+        $('#mobilTopAD').html('<b>' + totalAD.toLocaleString('TR-tr', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }) + ' AD</b>')
+        if (totalKG == 0)
+            $('#TopKg').hide();
+        else
+            $('#TopKg').show();
+        if (totalMT == 0)
+            $('#TopMt').hide();
+        else
+            $('#TopMt').show();
+        if (totalM2 == 0)
+            $('#TopM2').hide();
+        else
+            $('#TopM2').show();
+        if (totalAD == 0)
+            $('#TopAD').hide();
+        else
+            $('#TopAD').show();
+        if (totalKG == 0)
+            $('#mobilTopKg').hide();
+        else
+            $('#mobilTopKg').show();
+        if (totalMT == 0)
+            $('#mobilTopMt').hide();
+        else
+            $('#mobilTopMt').show();
+        if (totalM2 == 0)
+            $('#mobilTopM2').hide();
+        else
+            $('#mobilTopM2').show();
+        if (totalAD == 0)
+            $('#mobilTopAD').hide();
+        else
+            $('#mobilTopAD').show();
     }
 </script>
 

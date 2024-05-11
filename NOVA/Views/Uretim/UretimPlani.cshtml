@@ -9,17 +9,20 @@
         .fc-timegrid-event {
             font-size: xx-small;
         }
+
         .select2-selection {
             text-align: center;
         }
+
         .btn-success {
             color: #fff;
             background-color: #63a876;
             border-color: #63a876;
             box-shadow: 0 0.125rem 0.25rem 0 rgba(99, 168, 118, 0.4);
         }
-        #fc-dom-1{
-            text-align:center;
+
+        #fc-dom-1 {
+            text-align: center;
         }
 
         ::-webkit-scrollbar {
@@ -36,21 +39,21 @@
         .fc-daygrid-event {
             white-space: normal !important;
             cursor: pointer;
-
         }
-            .fc-daygrid-event:hover{
-                opacity:.8;
+
+            .fc-daygrid-event:hover {
+                opacity: .8;
             }
 
 
-            html, body {
-                margin: 0;
-                padding: 0 1rem 0 2.5rem !important;
-                font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-                font-size: 14px;
-                --fc-button-border-color: white;
-                --fc-today-bg-color: #cfdafa;
-            }
+        html, body {
+            margin: 0;
+            padding: 0 1rem 0 2.5rem !important;
+            font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+            font-size: 14px;
+            --fc-button-border-color: white;
+            --fc-today-bg-color: #cfdafa;
+        }
 
         #calendar {
             width: 65vw;
@@ -94,7 +97,7 @@
             color: white; /* White text */
             padding: 10px 24px; /* Some padding */
             cursor: pointer; /* Pointer/hand icon */
-            width:100px; /* Set a width if needed */
+            width: 100px; /* Set a width if needed */
             display: block; /* Make the buttons appear below each other */
         }
 
@@ -106,8 +109,9 @@
             .btn-group-vertical button:hover {
                 background-color: #3e8e41;
             }
+
         .accordion .accordion-item.active {
-             box-shadow:none !important; 
+            box-shadow: none !important;
         }
     </style>
 
@@ -134,7 +138,7 @@
 
             var containerEl = document.getElementById('mydraggable');
             var calendarEl = document.getElementById('calendar');
-            
+
             // initialize the external events
             // -----------------------------------------------------------------
 
@@ -186,344 +190,14 @@
                     },
                     locale: "tr",
                     editable: true,
-                    droppable: true, 
-                    eventTimeFormat: { 
+                    droppable: true,
+                    eventTimeFormat: {
                         hour: '2-digit',
                         minute: '2-digit',
                         meridiem: false
                     },
                     timeZone: 'UTC',
                     firstDay: 1,
-                    eventReceive: function (info) {
-                        
-                        if ($('button[title="Ay Görünümü"]').attr('class').includes('active')) {
-                            if ((new Date(info.event._instance.range.start).getDate() < new Date().getDate() && new Date(info.event._instance.range.start).getMonth() == new Date().getMonth()) || new Date(info.event._instance.range.start).getMonth() < new Date().getMonth()) {
-
-                                Swal.fire({
-                                    title: "Geçmiş tarihe planlama yapamazsınız!",
-                                    icon: "info"
-                                });
-                                axios.get('http://192.168.2.13:83/api/seri/planlama/' + $('select').eq(0).val()).then((response) => {
-                                    var filtered = [];
-                                    for (let i = 0; i < response.data.length; i++) {
-                                        var f = filtered.filter(x => x.MAMUL_KODU == response.data[i].MAMUL_KODU)
-                                        if (f.length == 0) {
-                                            filtered.push({ "ISEMRINO": response.data[i].ISEMRI, "MAMUL_KODU": response.data[i].MAMUL_KODU, "MAMUL_ADI": response.data[i].MAMUL_ADI, "TARIH": response.data[i].TESLIM_TARIHI, "TOPLAM_MIKTAR": response.data[i].TOPLAM_MIKTAR, "TOPLAM_MIKTAR2": response.data[i].TOPLAM_MIKTAR2, "OLCU_BR1": response.data[i].OLCU_BR1, "OLCU_BR2": response.data[i].OLCU_BR2 })
-                                        }
-                                    }
-                                    filtered.forEach((item) => {
-                                        if (item.ISEMRINO != null) {
-                                            Planlar.push({
-                                                id: item.MAMUL_KODU,
-                                                title: item.MAMUL_ADI.replace('<br>', ' ') + " " + item.TOPLAM_MIKTAR.toLocaleString('TR') + " " + item.OLCU_BR1 + " | " + item.TOPLAM_MIKTAR2.toLocaleString('TR') + " " + item.OLCU_BR2,
-                                                start: item.TARIH,
-                                                description: '',
-                                                inckey: '',
-                                                backgroundColor: ''
-                                            });
-                                        }
-                                        else {
-                                            Planlar.push({
-                                                id: item.MAMUL_KODU,
-                                                title: item.MAMUL_ADI.replace('<br>', ' ') + " " + item.TOPLAM_MIKTAR.toLocaleString('TR') + " " + item.OLCU_BR1 + " | " + item.TOPLAM_MIKTAR2.toLocaleString('TR') + " " + item.OLCU_BR2,
-                                                start: item.TARIH,
-                                                description: '',
-                                                inckey: '',
-                                                backgroundColor: 'green'
-                                            });
-                                        }
-                                    })
-                                    var listEvent = calendar.getEvents();
-                                    listEvent.forEach(event => {
-                                        event.remove()
-                                    });
-                                    calendar.addEventSource(Planlar);
-                                    updateMenu()
-
-                                })
-                            } else {
-                                time = moment(new Date(info.event._instance.range.start)).add(-3, 'hours');
-                                $('#HurdaModal').modal('show')
-                                $('#DateLabel').html('<b>' + info.event.start.toLocaleDateString('TR') + '</b>')
-                                tarih = time.locale('tr').format("YYYY-MM-DD");
-
-                                var dat = d.filter(x => x.MAMUL_KODU === info.event.id)
-                                isemri = [];
-                                stok = info.event.id;
-                                for (let i = 0; i < dat.length; i++) {
-                                    if (dat[i].ISEMRI != null) {
-                                        isemri.push(dat[i].ISEMRI)
-                                    }
-                                }
-                                
-                            }
-                        } else {
-                            if ((new Date(info.event._instance.range.start).getDate() < new Date().getDate() && new Date(info.event._instance.range.start).getMonth() == new Date().getMonth()) || new Date(info.event._instance.range.start).getMonth() < new Date().getMonth()) {
-
-                                Swal.fire({
-                                    title: "Geçmiş tarihe planlama yapamazsınız!",
-                                    icon: "info"
-                                });
-                                axios.get('http://192.168.2.13:83/api/seri/planlama/' + $('select').eq(0).val()).then((response) => {
-                                    var filtered = [];
-                                    var filtered1 = [];
-                                    response.data = response.data.filter(x => x.ISEMRI != null && x.ISEMRI.substring(0, 4) == $('select').eq(0).val());
-                                    for (let i = 0; i < response.data.length; i++) {
-                                        var f = filtered.filter(x => x.MAMUL_KODU == response.data[i].MAMUL_KODU)
-                                        if (f.length == 0) {
-                                            filtered.push({ "MAMUL_KODU": response.data[i].MAMUL_KODU, "MAMUL_ADI": response.data[i].MAMUL_ADI, "TARIH": response.data[i].TESLIM_TARIHI, "TOPLAM_MIKTAR": response.data[i].TOPLAM_MIKTAR, "TOPLAM_MIKTAR2": response.data[i].TOPLAM_MIKTAR2, "OLCU_BR1": response.data[i].OLCU_BR1, "OLCU_BR2": response.data[i].OLCU_BR2 })
-                                        }
-                                    }
-                                    response.data = response.data.filter(x => x.ISEMRI == null);
-                                    for (let i = 0; i < response.data.length; i++) {
-                                        var f1 = filtered.filter(x => x.MAMUL_KODU == response.data[i].MAMUL_KODU)
-                                        if (f1.length == 0) {
-                                            filtered1.push({ "MAMUL_KODU": response.data[i].MAMUL_KODU, "MAMUL_ADI": response.data[i].MAMUL_ADI, "TARIH": response.data[i].TESLIM_TARIHI, "TOPLAM_MIKTAR": response.data[i].TOPLAM_MIKTAR, "TOPLAM_MIKTAR2": response.data[i].TOPLAM_MIKTAR2, "OLCU_BR1": response.data[i].OLCU_BR1, "OLCU_BR2": response.data[i].OLCU_BR2 })
-                                        }
-                                    }
-                                    filtered1.forEach((item) => {
-                                        Planlar.push({
-                                            id: item.MAMUL_KODU,
-                                            title: item.MAMUL_ADI.replace('<br>', ' ') + " " + item.TOPLAM_MIKTAR.toLocaleString('TR') + " " + item.OLCU_BR1 + " | " + item.TOPLAM_MIKTAR2.toLocaleString('TR') + " " + item.OLCU_BR2,
-                                            start: item.TARIH,
-                                            description: '',
-                                            inckey: '',
-                                            backgroundColor: ''
-                                        });
-                                    })
-                                    var listEvent = calendar.getEvents();
-                                    listEvent.forEach(event => {
-                                        event.remove()
-                                    });
-                                    calendar.addEventSource(Planlar);
-                                    updateMenu()
-
-                                })
-                            } else {
-                                var dat = d.filter(x => x.MAMUL_KODU === info.event.id)
-                                isemri = [];
-                                for (let i = 0; i < dat.length; i++) {
-                                    isemri.push(dat[i].ISEMRI)
-                                }
-                                tarih = moment(new Date(info.event._instance.range.start)).add(-3, 'hours').locale('tr').format("YYYY-MM-DD");
-                                saat = moment(new Date(info.event._instance.range.start)).add(-3, 'hours').locale('tr').format("HH:mm");
-                                var data = [];
-                                for (let i = 0; i < isemri.length; i++) {
-                                    data.push({ ISEMRINO: isemri[i], TARIH: tarih, SAAT: saat })
-                                }
-
-                                axios.post('http://192.168.2.13:83/api/seri/planlama/Update', data).then(function (response) {
-                                    var $oldBtn = $('.fc-button-active').eq(0).attr('class').split(' ')[0]
-                                    axios.get('http://192.168.2.13:83/api/seri/planlama/' + $('select').eq(0).val()).then((response) => {
-                                        var filtered = [];
-                                        response.data = response.data.filter(x => x.ISEMRI.substring(0, 4) == $('select').eq(0).val());
-                                        for (let i = 0; i < response.data.length; i++) {
-                                            var f = filtered.filter(x => x.MAMUL_KODU == response.data[i].MAMUL_KODU)
-                                            if (f.length == 0) {
-                                                filtered.push({ "MAMUL_KODU": response.data[i].MAMUL_KODU, "MAMUL_ADI": response.data[i].MAMUL_ADI, "TARIH": response.data[i].TESLIM_TARIHI, "TOPLAM_MIKTAR": response.data[i].TOPLAM_MIKTAR, "TOPLAM_MIKTAR2": response.data[i].TOPLAM_MIKTAR2, "OLCU_BR1": response.data[i].OLCU_BR1, "OLCU_BR2": response.data[i].OLCU_BR2 })
-                                            }
-                                        }
-                                        Planlar = [];
-                                        filtered.forEach((item) => {
-                                            Planlar.push({
-                                                id: item.MAMUL_KODU,
-                                                title: item.MAMUL_ADI.replace('<br>', ' ') + " " + item.TOPLAM_MIKTAR.toLocaleString('TR') + " " + item.OLCU_BR1 + " | " + item.TOPLAM_MIKTAR2.toLocaleString('TR') + " " + item.OLCU_BR2,
-                                                start: item.TARIH,
-                                                description: '',
-                                                inckey: '',
-                                                backgroundColor: ''
-                                            });
-                                        })
-                                        var listEvent = calendar.getEvents();
-                                        listEvent.forEach(event => {
-                                            event.remove()
-                                        });
-                                        calendar.addEventSource(Planlar);
-                                        updateMenu()
-
-                                    })
-                                }).catch(function (err) {
-                                    alert(err)
-                                })
-                            }
-                            
-                        }
-                        
-                        
-                        
-
-                    },
-                    eventDrop: function (info) {
-                        if ($('button[title="Ay Görünümü"]').attr('class').includes('active')) {
-                            if ((new Date(info.event._instance.range.start).getDate() < new Date().getDate() && new Date(info.event._instance.range.start).getMonth() == new Date().getMonth()) || new Date(info.event._instance.range.start).getMonth() < new Date().getMonth()) {
-
-                                Swal.fire({
-                                    title: "Geçmiş tarihe planlama yapamazsınız!",
-                                    icon: "info"
-                                });
-                                axios.get('http://192.168.2.13:83/api/seri/planlama/' + $('select').eq(0).val()).then((response) => {
-                                    var filtered = [];
-                                    var filtered1 = [];
-                                    response.data = response.data.filter(x => x.ISEMRI != null && x.ISEMRI.substring(0, 4) == $('select').eq(0).val());
-                                    for (let i = 0; i < response.data.length; i++) {
-                                        var f = filtered.filter(x => x.MAMUL_KODU == response.data[i].MAMUL_KODU)
-                                        if (f.length == 0) {
-                                            filtered.push({ "MAMUL_KODU": response.data[i].MAMUL_KODU, "MAMUL_ADI": response.data[i].MAMUL_ADI, "TARIH": response.data[i].TESLIM_TARIHI, "TOPLAM_MIKTAR": response.data[i].TOPLAM_MIKTAR, "TOPLAM_MIKTAR2": response.data[i].TOPLAM_MIKTAR2, "OLCU_BR1": response.data[i].OLCU_BR1, "OLCU_BR2": response.data[i].OLCU_BR2 })
-                                        }
-                                    }
-                                    response.data = response.data.filter(x => x.ISEMRI == null);
-                                    for (let i = 0; i < response.data.length; i++) {
-                                        var f1 = filtered.filter(x => x.MAMUL_KODU == response.data[i].MAMUL_KODU)
-                                        if (f1.length == 0) {
-                                            filtered1.push({ "MAMUL_KODU": response.data[i].MAMUL_KODU, "MAMUL_ADI": response.data[i].MAMUL_ADI, "TARIH": response.data[i].TESLIM_TARIHI, "TOPLAM_MIKTAR": response.data[i].TOPLAM_MIKTAR, "TOPLAM_MIKTAR2": response.data[i].TOPLAM_MIKTAR2, "OLCU_BR1": response.data[i].OLCU_BR1, "OLCU_BR2": response.data[i].OLCU_BR2 })
-                                        }
-                                    }
-                                    filtered1.forEach((item) => {
-                                        Planlar.push({
-                                            id: item.MAMUL_KODU,
-                                            title: item.MAMUL_ADI.replace('<br>', ' ') + " " + item.TOPLAM_MIKTAR.toLocaleString('TR') + " " + item.OLCU_BR1 + " | " + item.TOPLAM_MIKTAR2.toLocaleString('TR') + " " + item.OLCU_BR2,
-                                            start: item.TARIH,
-                                            description: '',
-                                            inckey: '',
-                                            backgroundColor: ''
-                                        });
-                                    })
-                                    var listEvent = calendar.getEvents();
-                                    listEvent.forEach(event => {
-                                        event.remove()
-                                    });
-                                    calendar.addEventSource(Planlar);
-                                    updateMenu()
-
-                                })
-                            } else {
-                                time = moment(new Date(info.event._instance.range.start)).add(-3, 'hours');
-                                $('#HurdaModal').modal('show')
-                                $('#DateLabel').html('<b>' + info.event.start.toLocaleDateString('TR') + '</b>')
-                                tarih = time.locale('tr').format("YYYY-MM-DD");
-
-                                var dat = d.filter(x => x.MAMUL_KODU === info.event.id)
-                                isemri = [];
-                                stok = info.event.id;
-                                for (let i = 0; i < dat.length; i++) {
-                                    isemri.push(dat[i].ISEMRI)
-                                }
-                            }
-                        } else {
-                            if ((new Date(info.event._instance.range.start).getDate() < new Date().getDate() && new Date(info.event._instance.range.start).getMonth() == new Date().getMonth()) || new Date(info.event._instance.range.start).getMonth() < new Date().getMonth()) {
-
-                                Swal.fire({
-                                    title: "Geçmiş tarihe planlama yapamazsınız!",
-                                    icon: "info"
-                                });
-                                axios.get('http://192.168.2.13:83/api/seri/planlama/' + $('select').eq(0).val()).then((response) => {
-                                    var filtered = [];
-                                    response.data = response.data.filter(x => x.ISEMRI.substring(0, 4) == $('select').eq(0).val());
-                                    for (let i = 0; i < response.data.length; i++) {
-                                        var f = filtered.filter(x => x.MAMUL_KODU == response.data[i].MAMUL_KODU)
-                                        if (f.length == 0) {
-                                            filtered.push({ "MAMUL_KODU": response.data[i].MAMUL_KODU, "MAMUL_ADI": response.data[i].MAMUL_ADI, "TARIH": response.data[i].TESLIM_TARIHI, "TOPLAM_MIKTAR": response.data[i].TOPLAM_MIKTAR, "TOPLAM_MIKTAR2": response.data[i].TOPLAM_MIKTAR2, "OLCU_BR1": response.data[i].OLCU_BR1, "OLCU_BR2": response.data[i].OLCU_BR2 })
-                                        }
-                                    }
-                                    Planlar = [];
-                                    filtered.forEach((item) => {
-                                        Planlar.push({
-                                            id: item.MAMUL_KODU,
-                                            title: item.MAMUL_ADI.replace('<br>', ' ') + " " + item.TOPLAM_MIKTAR.toLocaleString('TR') + " " + item.OLCU_BR1 + " | " + item.TOPLAM_MIKTAR2.toLocaleString('TR') + " " + item.OLCU_BR2,
-                                            start: item.TARIH,
-                                            description: '',
-                                            inckey: '',
-                                            backgroundColor: ''
-                                        });
-                                    })
-                                    var listEvent = calendar.getEvents();
-                                    listEvent.forEach(event => {
-                                        event.remove()
-                                    });
-                                    calendar.addEventSource(Planlar);
-                                    updateMenu()
-
-                                })
-                            } else {
-                                var dat = d.filter(x => x.MAMUL_KODU === info.event.id)
-                                isemri = [];
-                                for (let i = 0; i < dat.length; i++) {
-                                    isemri.push(dat[i].ISEMRI)
-                                }
-                                tarih = moment(new Date(info.event._instance.range.start)).add(-3, 'hours').locale('tr').format("YYYY-MM-DD");
-                                saat = moment(new Date(info.event._instance.range.start)).add(-3, 'hours').locale('tr').format("HH:mm");
-                                var data = [];
-                                for (let i = 0; i < isemri.length; i++) {
-                                    data.push({ ISEMRINO: isemri[i], TARIH: tarih, SAAT: saat })
-                                }
-
-                                axios.post('http://192.168.2.13:83/api/seri/planlama/Update', data).then(function (response) {
-                                    var $oldBtn = $('.fc-button-active').eq(0).attr('class').split(' ')[0]
-                                    axios.get('http://192.168.2.13:83/api/seri/planlama/' + $('select').eq(0).val()).then((response) => {
-                                        var filtered = [];
-                                        response.data = response.data.filter(x => x.ISEMRI.substring(0, 4) == $('select').eq(0).val());
-                                        for (let i = 0; i < response.data.length; i++) {
-                                            var f = filtered.filter(x => x.MAMUL_KODU == response.data[i].MAMUL_KODU)
-                                            if (f.length == 0) {
-                                                filtered.push({ "MAMUL_KODU": response.data[i].MAMUL_KODU, "MAMUL_ADI": response.data[i].MAMUL_ADI, "TARIH": response.data[i].TESLIM_TARIHI, "TOPLAM_MIKTAR": response.data[i].TOPLAM_MIKTAR, "TOPLAM_MIKTAR2": response.data[i].TOPLAM_MIKTAR2, "OLCU_BR1": response.data[i].OLCU_BR1, "OLCU_BR2": response.data[i].OLCU_BR2 })
-                                            }
-                                        }
-                                        Planlar = [];
-                                        filtered.forEach((item) => {
-                                            Planlar.push({
-                                                id: item.MAMUL_KODU,
-                                                title: item.MAMUL_ADI.replace('<br>', ' ') + " " + item.TOPLAM_MIKTAR.toLocaleString('TR') + " " + item.OLCU_BR1 + " | " + item.TOPLAM_MIKTAR2.toLocaleString('TR') + " " + item.OLCU_BR2,
-                                                start: item.TARIH,
-                                                description: '',
-                                                inckey: '',
-                                                backgroundColor: ''
-                                            });
-                                        })
-                                        var listEvent = calendar.getEvents();
-                                        listEvent.forEach(event => {
-                                            event.remove()
-                                        });
-                                        calendar.addEventSource(Planlar);
-                                        updateMenu()
-
-
-                                    })
-                                }).catch(function (err) {
-                                    alert(err)
-                                })
-                            }
-
-                        }
-                       
-
-                    },
-                    eventClick: function (info) {
-
-
-                        time = moment(new Date(info.event._instance.range.start)).add(-3, 'hours');
-
-                       $('#HurdaModal').modal('show')
-                       $('#DateLabel').html('<b>' + info.event.start.toLocaleDateString('TR') + '</b>')
-                        tarih = time.locale('tr').format("YYYY-MM-DD");
-                        $('#saat').val(time.locale('tr').format("HH:mm"))
-                        var dat = d.filter(x => x.MAMUL_KODU === info.event.id)
-                        isemri = [];
-                        stok = info.event.id;
-                        for (let i = 0; i < dat.length; i++) {
-                            isemri.push(dat[i].ISEMRI)
-                        }
-
-                    },
-                    eventResize: function (info) {
-                        info.revert();
-                    },
-                    dateClick: function (info) {
-                        calendar.changeView('timeGridDay', info.dateStr);
-                    },
-                    eventDidMount: (arg) => {
-                        const eventId = arg.event.id
-                        arg.el.className = arg.el.className + " context-menu-one"
-                    },
                     buttonText: {
                         today: 'Bugün',
                         month: 'Ay',
@@ -535,6 +209,7 @@
                         listWeek: 'Haftalık Liste',
                         listDay: 'Günlük Liste'
                     },
+                    initialView: 'listYear'
                 })
 
 
@@ -555,26 +230,26 @@
                    });
                 var Aylar = ['OCAK', 'ŞUBAT', 'MART', 'NİSAN', 'MAYIS', 'HAZİRAN', 'TEMMUZ', 'AĞUSTOS', 'EYLÜL', 'EKİM', 'KASIM', 'ARALIK'];
                 var index = "";
-                
-                
+
+
                 $('#fc-dom-1').find('br').remove();
                 $('#fc-dom-1').find('.fc-button-group').remove();
                 var alltd = $("td[data-date]")
                 for (let i = 0; i < alltd.length; i++) {
                     if ((new Date($("td[data-date]").eq(i).data('date')).getDate() < new Date().getDate() && new Date($("td[data-date]").eq(i).data('date')).getMonth() == new Date().getMonth() && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear()) || (new Date($("td[data-date]").eq(i).data('date')).getMonth() < new Date().getMonth()) && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear() || new Date($("td[data-date]").eq(i).data('date')).getFullYear() < new Date().getFullYear())  {
                         $("td[data-date]").eq(i).css("background-color", "#eaeaea");
-                      
+
                     }
-                   
+
                 }
                 $('.fc-prev-button').eq(0).click(function () {
                     var alltd = $("td[data-date]")
                     for (let i = 0; i < alltd.length; i++) {
                         if ((new Date($("td[data-date]").eq(i).data('date')).getDate() < new Date().getDate() && new Date($("td[data-date]").eq(i).data('date')).getMonth() == new Date().getMonth() && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear()) || (new Date($("td[data-date]").eq(i).data('date')).getMonth() < new Date().getMonth()) && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear() || new Date($("td[data-date]").eq(i).data('date')).getFullYear() < new Date().getFullYear()) {
                             $("td[data-date]").eq(i).css("background-color", "#eaeaea");
-                            
+
                         }
-                        
+
                     }
                 }).css('background-color', '#697FC2')
                 $('.fc-next-button').eq(0).click(function () {
@@ -582,9 +257,9 @@
                     for (let i = 0; i < alltd.length; i++) {
                         if ((new Date($("td[data-date]").eq(i).data('date')).getDate() < new Date().getDate() && new Date($("td[data-date]").eq(i).data('date')).getMonth() == new Date().getMonth() && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear()) || (new Date($("td[data-date]").eq(i).data('date')).getMonth() < new Date().getMonth()) && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear() || new Date($("td[data-date]").eq(i).data('date')).getFullYear() < new Date().getFullYear()) {
                             $("td[data-date]").eq(i).css("background-color", "#eaeaea");
-                            
+
                         }
-                        
+
                     }
                 }).css('background-color', '#697FC2')
                 $('.fc-today-button').eq(0).click(function () {
@@ -592,9 +267,9 @@
                     for (let i = 0; i < alltd.length; i++) {
                         if ((new Date($("td[data-date]").eq(i).data('date')).getDate() < new Date().getDate() && new Date($("td[data-date]").eq(i).data('date')).getMonth() == new Date().getMonth() && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear()) || (new Date($("td[data-date]").eq(i).data('date')).getMonth() < new Date().getMonth()) && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear() || new Date($("td[data-date]").eq(i).data('date')).getFullYear() < new Date().getFullYear()) {
                             $("td[data-date]").eq(i).css("background-color", "#eaeaea");
-                            
+
                         }
-                       
+
                     }
                 }).css('background-color', '#697FC2')
                 $('.fc-dayGridMonth-button').eq(0).click(function () {
@@ -602,9 +277,9 @@
                     for (let i = 0; i < alltd.length; i++) {
                         if ((new Date($("td[data-date]").eq(i).data('date')).getDate() < new Date().getDate() && new Date($("td[data-date]").eq(i).data('date')).getMonth() == new Date().getMonth() && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear()) || (new Date($("td[data-date]").eq(i).data('date')).getMonth() < new Date().getMonth()) && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear() || new Date($("td[data-date]").eq(i).data('date')).getFullYear() < new Date().getFullYear()) {
                             $("td[data-date]").eq(i).css("background-color", "#eaeaea");
-                            
+
                         }
-                       
+
                     }
                 }).css('background-color', '#697FC2')
                 $('.fc-timeGridWeek-button').eq(0).click(function () {
@@ -612,9 +287,9 @@
                     for (let i = 0; i < alltd.length; i++) {
                         if ((new Date($("td[data-date]").eq(i).data('date')).getDate() < new Date().getDate() && new Date($("td[data-date]").eq(i).data('date')).getMonth() == new Date().getMonth() && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear()) || (new Date($("td[data-date]").eq(i).data('date')).getMonth() < new Date().getMonth()) && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear() || new Date($("td[data-date]").eq(i).data('date')).getFullYear() < new Date().getFullYear()) {
                             $("td[data-date]").eq(i).css("background-color", "#eaeaea");
-                            
+
                         }
-                        
+
                     }
                 }).css('background-color', '#697FC2')
                 $('.fc-timeGridDay-button').eq(0).click(function () {
@@ -622,9 +297,9 @@
                     for (let i = 0; i < alltd.length; i++) {
                         if ((new Date($("td[data-date]").eq(i).data('date')).getDate() < new Date().getDate() && new Date($("td[data-date]").eq(i).data('date')).getMonth() == new Date().getMonth() && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear()) || (new Date($("td[data-date]").eq(i).data('date')).getMonth() < new Date().getMonth()) && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear() || new Date($("td[data-date]").eq(i).data('date')).getFullYear() < new Date().getFullYear()) {
                             $("td[data-date]").eq(i).css("background-color", "#eaeaea");
-                            
+
                         }
-                       
+
                     }
                 }).css('background-color', '#697FC2')
                 $('.fc-listYear-button').eq(0).click(function () {
@@ -632,9 +307,9 @@
                     for (let i = 0; i < alltd.length; i++) {
                         if ((new Date($("td[data-date]").eq(i).data('date')).getDate() < new Date().getDate() && new Date($("td[data-date]").eq(i).data('date')).getMonth() == new Date().getMonth() && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear()) || (new Date($("td[data-date]").eq(i).data('date')).getMonth() < new Date().getMonth()) && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear() || new Date($("td[data-date]").eq(i).data('date')).getFullYear() < new Date().getFullYear()) {
                             $("td[data-date]").eq(i).css("background-color", "#eaeaea");
-                            
+
                         }
-                        
+
                     }
                 }).css('background-color', '#697FC2')
                 $('.fc-today').eq(0).click(function () {
@@ -642,11 +317,19 @@
                     for (let i = 0; i < alltd.length; i++) {
                         if ((new Date($("td[data-date]").eq(i).data('date')).getDate() < new Date().getDate() && new Date($("td[data-date]").eq(i).data('date')).getMonth() == new Date().getMonth() && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear()) || (new Date($("td[data-date]").eq(i).data('date')).getMonth() < new Date().getMonth()) && new Date($("td[data-date]").eq(i).data('date')).getFullYear() == new Date().getFullYear() || new Date($("td[data-date]").eq(i).data('date')).getFullYear() < new Date().getFullYear()) {
                             $("td[data-date]").eq(i).css("background-color", "#eaeaea");
-                            
+
                         }
-                        
+
                     }
-                }).css('background-color','#697FC2')
+                }).css('background-color', '#697FC2')
+                var index='<select class="form-select mb-2" onchange= "selectChange()"><option>DL01</option><option>PB01</option><option>PB02</option><option>BK01</option><option>MH01</option><option>TP01</option><option>RF02</option><option>RF03</option></select >';
+                $('#fc-dom-1').append('</br><div class="fc-button-group mt-1">' + index + '</div>')
+                if (con != "") {
+
+                    $('select').eq(0).val(con)
+                } else {
+                    $('select').eq(0).val('DL01').trigger('change');
+                }
                 /*var width = $(window).width()*/
                 //if (width > 400) {
                 //    for (let i = 0; i < Aylar.length; i++) {
@@ -656,10 +339,10 @@
 
                 //    }
                 //    $('#fc-dom-1').append('</br><div class="fc-button-group mt-1">' + index + '</div>')
-                //} 
-                
-                
-                
+                //}
+
+
+
             })
 
 
@@ -671,6 +354,7 @@
 
         };
         var d;
+        var con = "";
         var distinct;
         var cons = new Date().getMonth();
         function changeMonth(val) {
@@ -679,11 +363,11 @@
             calendar.gotoDate(date)
         }
         $(document).ready(() => {
-            
-            
+
+
             refresh()
             $('.fc-toolbar.fc-header-toolbar').addClass('row col-lg-12');
-            
+
         });
         function refresh() {
             if (drag != null) {
@@ -691,8 +375,8 @@
                 drag.destroy()
             }
             $.getJSON('http://192.168.2.13:83/api/seri/planlama/' + $('select').eq(0).val(), function (data) {
-                var y = data.filter(x => x.ISEMRI != null);
-                d = y.filter(x => x.ISEMRI.substring(0,4)==$('select').eq(0).val());
+               
+                d = data;
                 distinct = [];
                 d=d.sort(function (a, b) {
                     if (a.TESLIM_TARIHI > b.TESLIM_TARIHI) { return 1 }
@@ -706,14 +390,7 @@
                 }
                 var planlananlar = data.filter(x => x.ISEMRI == null);
                 CreateCalendar();
-                if ($('select').eq(0).val() != 'DL01')
-                    $('#musteri2').html('<div style="display:flex;justify-content:center;align:center"><input class="form-control position-sticky sticky-top" type="text" id="Search" onkeyup="myFunction()" placeholder="Ara.."><button type="button" onclick="showPlanModal()" class="btn btn-success ms-1"><i class="bx bx-plus bx-xs"></i></button></div>');
-                else {
-                    $('#musteri2').html('<input class="form-control position-sticky sticky-top" type="text" id="Search" onkeyup="myFunction()" placeholder="Ara..">');
-                }
-                for (let i = 0; i < planlananlar.length; i++) {
-                    $('#musteri2').append("<div style='border-radius:1rem;background-color:green;border-color:green !important' class='plan fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event mt-1 m1' data-id='" + planlananlar[i].MAMUL_KODU + "'><div style='box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 2px;border-radius:1rem;color:white;' class='fc-event-main text-center'>" + planlananlar[i].MAMUL_ADI + " <p style='margin-top:0;margin-bottom:0;'>" + planlananlar[i].TOPLAM_MIKTAR.toLocaleString('TR') + " " + planlananlar[i].OLCU_BR1 + " | " + planlananlar[i].TOPLAM_MIKTAR2 + " " + planlananlar[i].OLCU_BR2 + "</p><p style='margin-top:0;margin-bottom:0;'>(" + moment(new Date(planlananlar[i].TESLIM_TARIHI)).locale('tr').format("DD-MM-YYYY HH:mm") + ")</p></div></div>")
-                }
+               
 
                 $(".plan").on("dblclick", function () {
                     Swal.fire({
@@ -734,26 +411,9 @@
 
                     })
                 });
-                for (let i = 0; i < distinct.length; i++) {
-                    var color = "";
-                    var fontcolor = ""
-                    var border=""
-                    if (moment(new Date(d.filter(x => x.MAMUL_KODU == distinct[i])[0].TESLIM_TARIHI)).locale('tr').format("HH:mm") == "00:00") {
-                        color = "var(--fc-today-bg-color)"
-                        fontcolor = "gray"
-                        border="transparent"
-                        
-                    } else {
-                        color = "var(--fc-event-bg-color)"
-                        fontcolor = "white"
-                        border ="#697FC2"
-                    }
-                    $('#musteri2').append("<div style='border-radius:1rem;background-color:" + color + ";border-color:" + border + " !important' class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event mt-1 m1' data-id='" + distinct[i] + "'><div style='box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 2px;border-radius:1rem;color:" + fontcolor + ";' class='fc-event-main text-center'>" + d.filter(x => x.MAMUL_KODU == distinct[i])[0].MAMUL_ADI + " <p style='margin-top:0;margin-bottom:0;'>" + (d.filter(x => x.MAMUL_KODU == distinct[i])[0].TOPLAM_MIKTAR).toLocaleString('TR') + " " + d.filter(x => x.MAMUL_KODU == distinct[i])[0].OLCU_BR1 + " | " + d.filter(x => x.MAMUL_KODU == distinct[i])[0].TOPLAM_MIKTAR2 + " " + d.filter(x => x.MAMUL_KODU == distinct[i])[0].OLCU_BR2 + "</p><p style='margin-top:0;margin-bottom:0;'>(" + moment(new Date(d.filter(x => x.MAMUL_KODU == distinct[i])[0].TESLIM_TARIHI)).locale('tr').format("DD-MM-YYYY HH:mm") + ")</p></div></div>")
-                }
-            }).done(function () {
-                changeMonth(cons);
+                
             })
-            
+
         }
 
     </script>
@@ -761,7 +421,7 @@
 
 </head>
 <script>
-    $('#title').html('Nova | Üretim Planlama')
+    $('#title').html('Nova | Üretim Planı')
 </script>
 <div id="nova-overlay" style="position: absolute; background: #00000080; left: 0; right: 0; bottom: 0; top: 0; z-index: 9999999;display:none;justify-content:center;align-items:center;">
     <div class="heart"><img id="progress" src="~/images/novasaydam.png" width="400" /></div>
@@ -771,26 +431,15 @@
     <div class="row">
         <div class="col-2">
             <div id='mydraggable' style="width:250px;" class="ms-2 mt-2">
-                
+
                 <div class="accordion mt-2">
 
                     <div class="accordion-item active mt-1 mb-2" style="background-color:transparent">
                         <h2 class="accordion-header " id="headingtwo1">
-                            <select class="form-select mb-2" onchange="selectChange()">
-                                <option>DL01</option>
-                                <option>PB01</option>
-                                <option>PB02</option>
-                                <option>BK01</option>
-                                <option>MH01</option>
-                                <option>TP01</option>
-                                <option>RF02</option>
-                                <option>RF03</option>
-                            </select>
-
                         </h2>
                         <div id="flush-collapseTwo1" class="accordion-collapse collapse show" aria-labelledby="headingtwo1" data-bs-parent="#mydraggable">
                             <div id="musteri2" style="max-height:89vh;overflow-y:auto">
-                                <input class="form-control position-sticky sticky-top" type="text" id="Search" onkeyup="myFunction()" placeholder="Ara..">
+
 
                             </div>
                         </div>
@@ -802,9 +451,9 @@
         <div class="col-8">
             <div id='calendar'></div>
         </div>
-        
-    </div>
 
+    </div>
+    
 
     <div class="modal fade" id="HurdaModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
 
@@ -860,8 +509,8 @@
                         <div class="col">
 
 
-                           <select class="form-select" style="text-align:center" id="stokSelect">      
-                           </select>
+                            <select class="form-select" style="text-align:center" id="stokSelect">
+                            </select>
 
 
 
@@ -899,17 +548,17 @@
 
 </div>
 @*<div id="contextMenu" class="context-menu"
-     style="display:none">
-    <ul>
-        <li><a href="#">Element-1</a></li>
-        <li><a href="#">Element-2</a></li>
-        <li><a href="#">Element-3</a></li>
-        <li><a href="#">Element-4</a></li>
-        <li><a href="#">Element-5</a></li>
-        <li><a href="#">Element-6</a></li>
-        <li><a href="#">Element-7</a></li>
-    </ul>
-</div>*@
+         style="display:none">
+        <ul>
+            <li><a href="#">Element-1</a></li>
+            <li><a href="#">Element-2</a></li>
+            <li><a href="#">Element-3</a></li>
+            <li><a href="#">Element-4</a></li>
+            <li><a href="#">Element-5</a></li>
+            <li><a href="#">Element-6</a></li>
+            <li><a href="#">Element-7</a></li>
+        </ul>
+    </div>*@
 <button type="button" style="display:none" id="ambarButton" class="btn btn-outline-info" onclick="ambarGiris()">AMBAR GİRİŞ TETİKLE</button>
 <script>
     var c = 0;
@@ -982,7 +631,7 @@
             axios.post('http://192.168.2.13:83/api/seri/planlama/abstract/update', data).then(function (response) {
                 axios.get('http://192.168.2.13:83/api/seri/planlama/' + $('select').eq(0).val()).then((response) => {
                     var filtered = [];
-                    
+
                     response.data = response.data.filter(x => x.ISEMRI!=null&&x.ISEMRI.substring(0, 4) == $('select').eq(0).val());
                     for (let i = 0; i < response.data.length; i++) {
                         var f = filtered.filter(x => x.MAMUL_KODU == response.data[i].MAMUL_KODU)
@@ -1066,7 +715,7 @@
                 alert(err)
             })
         }
-        
+
     }
 
     function Sil() {
@@ -1194,7 +843,7 @@
             alert(err)
         })
     }
-   
+
         function ShowProgress() {
             document.body.style.overflow = 'hidden';
             document.activeElement.blur();
@@ -1217,15 +866,15 @@
             }
         }
     }
-     
-   
+
+
 
 //$(function() {
 //        $.contextMenu({
-//            selector: '.context-menu-one', 
+//            selector: '.context-menu-one',
 //            callback: function(key, options) {
 //                var m = "clicked: " + key;
-//                window.console && console.log(m) || alert(m); 
+//                window.console && console.log(m) || alert(m);
 //                console.log(options)
 //            },
 //            items: {
@@ -1243,10 +892,11 @@
 
 //        $('.context-menu-one').on('click', function(e){
 //            console.log('clicked', this);
-//        })    
+//        })
 
 //});
     function selectChange() {
+        con=$('select').eq(0).val()
         refresh()
     }
     function updateMenu(){
@@ -1326,7 +976,7 @@
             });
             $('#stokSelect').select2({ dropdownParent: $('#PlanModal') });
         })
-        
+
         $('#PlanModal').modal('show');
     }
     function hidePlanModal() {
@@ -1342,5 +992,6 @@
         })
     }
 </script>
+
 
 

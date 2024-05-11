@@ -217,9 +217,10 @@ async function GetDetailData(Barcode)
         $('#WIDTH').html(`${response.data[0].GENISLIK}`);
         $('#HEIGHT').html(`${ZeroToHypen(response.data[0].BOY)}`);
         $('#QUANTITY').html(`${NumberFormatter(response.data[0].METRAJ, 'M')}`);
+        $('#ACIK5').html(`${EmptyTextToHypen(response.data[0].ACIKLAMA_5)}`);
 
         $('#MACHINE_OP').html(`${EmptyTextToHypen(response.data[0].MAK_KODU)} / ${EmptyTextToHypen(response.data[0].KAYITYAPANKUL)}`);
-
+        $('#SIP_NO').html(`${EmptyTextToHypen(response.data[0].SIP_NO)}`);
         $('#CREATE_DATE').html(`${moment(response.data[0].KAYITTARIHI).format('DD/MM/YYYY HH:mm:ss')}`);
 
         HideProgress();
