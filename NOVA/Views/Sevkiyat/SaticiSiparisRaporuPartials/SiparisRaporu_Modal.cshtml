@@ -1,4 +1,7 @@
-﻿<div class="modal fade" id="SiparisModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
+﻿<script src="~/wwwroot/libs/clipboard.js/clipboard.min.js"></script>
+
+
+<div class="modal fade" id="SiparisModal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="SiparisModalLabel" aria-hidden="true">
     <div id="ModalAyar" class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 90% !important;">
         <div id="SiparisModalContent" class="modal-content" style="height:90vh;box-shadow: inset 0 0 15px #dbdbdb;">
 
@@ -96,33 +99,36 @@
                                     <div class="accordion-body p-3">
 
                                         <div class="row gy-3">
-                                            <div class="col-12 col-sm-4 col-lg">
-                                                <div class="form-label-group outline m-0">
-                                                    <input type="number" id="ACIK2" class="form-control" step="0.01" autocomplete="off" value="" />
+                                            <div class="col-12 col-sm-4 col-lg" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                                                <button class="btn btn-primary" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Ek Bilgileri Yapıştır</span>" onclick="EkBilgileriYapistir()">
+                                                    <i class="bi bi-clipboard2-check-fill"></i>
+                                                </button>
+                                                <div class="form-label-group outline m-0 w-100">
+                                                    <input type="number" id="ACIK2" class="form-control" step="0.01" autocomplete="on" value="" />
                                                     <span><label for="ACIK2">KALINLIK</label></span>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4 col-lg">
                                                 <div class="form-label-group outline m-0">
-                                                    <input type="number" id="ACIK1" class="form-control" step="0.1" autocomplete="off" value="" />
+                                                    <input type="number" id="ACIK1" class="form-control" step="0.1" autocomplete="on" value="" />
                                                     <span><label for="ACIK1">GENİŞLİK</label></span>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4 col-lg">
                                                 <div class="form-label-group outline m-0">
-                                                    <input type="text" id="ACIK3" class="form-control" autocomplete="off" value="" />
+                                                    <input type="text" id="ACIK3" class="form-control" autocomplete="on" value="" />
                                                     <span><label for="ACIK3">ÜRÜN NO</label></span>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4 col-lg">
                                                 <div class="form-label-group outline m-0">
-                                                    <input type="text" id="SERİ_NO_3" class="form-control" autocomplete="off" value="" />
+                                                    <input type="text" id="SERİ_NO_3" class="form-control" autocomplete="on" value="" />
                                                     <span><label for="SERİ_NO_3">KALİTE</label></span>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4 col-lg">
                                                 <div class="form-label-group outline m-0">
-                                                    <input type="text" id="SERİ_NO_4" class="form-control" autocomplete="off" value="" />
+                                                    <input type="text" id="SERİ_NO_4" class="form-control" autocomplete="on" value="" />
                                                     <span><label for="SERİ_NO_4">KAPLAMA</label></span>
                                                 </div>
                                             </div>
@@ -172,7 +178,7 @@
                                     </div>
                                     <div class="col-12 col-md-12" style="display: flex; gap: 1rem;">
                                         <input class="form-control" type="text" placeholder="Ara" id="customSearchTempTable" />
-                                        <button id="tumunu-yazdir" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Tümünü Yazdır</span>"  class="btn btn-primary" onclick="TumKalemleriYazdir()"><i class="bi bi-printer-fill"></i></button>
+                                        <button id="tumunu-yazdir" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Tümünü Yazdır</span>" class="btn btn-primary" onclick="TumKalemleriYazdir()"><i class="bi bi-printer-fill"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -258,7 +264,48 @@
     </div>
 </div>
 
-
+<!-- BELGE_SECIM_LOCAL_STORAGE -->
+<div class="modal fade" id="recovered-documents" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-center align-items-center">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">KURTARILMIŞ BELGELER</h1>
+            </div>
+            <div class="modal-body">
+                <table id="recovered-document-table"
+                       data-search="false"
+                       data-show-refresh="false"
+                       data-show-toggle="false"
+                       data-show-fullscreen="false"
+                       data-show-columns="false"
+                       data-show-columns-toggle-all="false"
+                       data-detail-view="false"
+                       data-show-export="false"
+                       data-click-to-select="true"
+                       data-minimum-count-columns="2"
+                       data-show-pagination-switch="false"
+                       data-page-size="5"
+                       data-page-list="[5,20,50,100]"
+                       data-pagination="false"
+                       data-id-field="id"
+                       data-show-footer="false"
+                       data-mobile-responsive="true"
+                       data-locale="tr-TR" ,
+                       data-row-style="TabloSatirStili">
+                    <thead>
+                        <tr>
+                            <th data-field="BELGE_NO" data-halign="center" data-align="center">BELGE NO</th>
+                            <th data-halign="center" data-align="center" data-formatter="RecoveredDocumentFormatter">İŞLEM</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer d-flex justify-content-center align-items-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">KAPAT</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script>
@@ -273,7 +320,7 @@
     var AcilisStok;
     var BelgedenGelenKayitlar = [];
 
-    function SaticiRaporModal(e, value, stokKodu) {
+    function SaticiRaporModal(e, value, stokKodu, sira) {
         e.stopPropagation();
 
         HazırListe_Secilen = [];
@@ -285,9 +332,9 @@
         YeniBelgeNoGetir();
         StokAdlariAyarla();
         AlanlarıTemizle();
-        StokDegistir(stokKodu);
-        ButonAyarla(0);
+        StokDegistir(sira);
         GuncelSiparisBakiye();
+        ButonAyarla(0);
         ModalKaydetButtonState();
         FullscreenModal();
         GuncelSeriNoGetir();
@@ -324,16 +371,20 @@
                     $('#yazici-modal').append(new Option(item.PRINTER_NAME, item.PRINTER_NAME));
                 });
 
-                if (localStorage.getItem("yazici") == undefined || localStorage.getItem("yazici") == null || localStorage.getItem("yazici") == 'null')
-                {
+                if (localStorage.getItem("yazici") == undefined || localStorage.getItem("yazici") == null || localStorage.getItem("yazici") == 'null') {
                     localStorage.setItem("yazici", $('#yazici').val());
                 }
-                else
-                {
+                else {
                     $('#yazici').val(localStorage.getItem("yazici"));
                 }
             },
         });
+
+
+        setTimeout(() => {
+            SetInitialLocalStorageValue();
+            GetLocalStorageValue();
+        }, 150);
     }
 
     function GetSiparisDetailsWithStockCode(StokKodu) {
@@ -378,14 +429,14 @@
 
                 for (var j = 0; j < filtered.length; j++) {
                     if (filtered[j].ACTIVE) {
-                        StokOptions += '<option value="' + uniqueStok[i].STOK_KODU + '">' + uniqueStok[i].STOK_ADI + '</option>';
+                        StokOptions += `<option value="${uniqueStok[i].SIRA}" data-sira="${uniqueStok[i].SIRA}" data-stok-kodu="${uniqueStok[i].STOK_KODU}">${uniqueStok[i].STOK_ADI}</option>`;
                         AcikVarMi = true;
                         break;
                     }
                 }
 
                 if (!AcikVarMi) {
-                    StokOptions += '<option disabled value="' + uniqueStok[i].STOK_KODU + '" style="color:#CDD4DA;">' + uniqueStok[i].STOK_ADI + '</option>';
+                    StokOptions += `<option disabled value="${uniqueStok[i].SIRA}" data-sira="${uniqueStok[i].SIRA}" data-stok-kodu="${uniqueStok[i].STOK_KODU}">${uniqueStok[i].STOK_ADI}</option>`;
                 }
             }
         }
@@ -393,7 +444,7 @@
             var detail = GetSiparisDetails();
 
             for (let i = 0; i < detail.length; i++) {
-                StokOptions += '<option value="' + detail[i].STOK_KODU + '">' + detail[i].STOK_ADI + '</option>';
+                StokOptions += `<option value="${detail[i].SIRA}" data-sira="${detail[i].SIRA}" data-stok-kodu="${detail[i].STOK_KODU}">${detail[i].STOK_ADI}</option>`;
             }
         }
 
@@ -426,7 +477,8 @@
         }
     }
 
-    function StokDegistir(value) {
+    function StokDegistir(SIRA) {
+        var value = $('#StokAdlari').find(`[data-sira='${SIRA}']`).data('stok-kodu');
         var detail = GetSiparisDetailsWithStockCode(value);
 
         document.getElementById("Olcubr1").value = detail[0].OLCU_BR1;
@@ -435,7 +487,7 @@
         document.getElementById("Miktar1").disabled = false;
         document.getElementById("Miktar2").disabled = false;
 
-        document.getElementById("StokAdlari").value = value;
+        document.getElementById("StokAdlari").value = SIRA;
 
         document.getElementById("kalemkaydetbtn").disabled = true;
 
@@ -451,13 +503,13 @@
 
     function GuncelSiparisBakiye() {
         var SiparisNo = document.getElementById("SiparisNo").innerHTML;
-        var StokKodu = document.getElementById("StokAdlari").value;
+        var StokKodu = $('#StokAdlari').find(':selected').data('stok-kodu');
 
-        if (StokKodu == "") {
+        if (StokKodu == undefined || StokKodu == null) {
             $("#SIPARIS_BAKIYE").val("-");
         }
         else {
-            var Filtered = detayli.filter(x => x.SIPARIS_NO == SiparisNo && x.STOK_KODU == StokKodu);
+            var Filtered = detayli.filter(x => x.SIPARIS_NO == SiparisNo && x.STOK_KODU == StokKodu && x.SIRA == $('#StokAdlari').find(':selected').val());
             var BakiyeMiktar = parseFloat(Filtered[0].BAKIYE_MIKTARI).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             $("#SIPARIS_BAKIYE").val(BakiyeMiktar);
         }
@@ -512,7 +564,6 @@
         AlanlarıTemizle();
         ButonAyarla(0);
         StokAdlariAyarla();
-        StokDegistir(AcilisStok);
         GuncelSeriNoGetir();
         GuncelSiparisBakiye();
         YazdirSwitch();
@@ -627,7 +678,7 @@
 
 <script>
     function BilgileriGetir() {
-        var detail = GetSiparisDetailsWithStockCode(document.getElementById("StokAdlari").value);
+        var detail = GetSiparisDetailsWithStockCode($('#StokAdlari').find(':selected').data('stok-kodu'));
 
         var StokAdi = detail[0].STOK_ADI;
         var Miktar1 = $('#Miktar1').val();
@@ -649,7 +700,7 @@
             "ID": KalemId,
             "ACTIVE": true,
             "STOK_ADI": StokAdi,
-            "STOK_KODU": document.getElementById("StokAdlari").value,
+            "STOK_KODU": $('#StokAdlari').find(':selected').data('stok-kodu'),
             "MIKTAR": Miktar1,
             "OLCU_BR1": OlcuBr1,
             "MIKTAR2": Miktar2,
@@ -663,13 +714,14 @@
             "ACIKLAMA_4": Aciklama4,
             "ACIKLAMA_5": Aciklama5,
             "TARIH": Tarih,
+            "SIRA": $('#StokAdlari').find(':selected').val(),
             "GIRIS_DEPO": GirisDepo,
             "CIKIS_DEPO": null
         };
     }
 
     function BilgileriDoldur(value) {
-        StokDegistir(value.STOK_KODU);
+        StokDegistir(value.SIRA);
 
         document.getElementById("Miktar1").value = value.MIKTAR;
         document.getElementById("Olcubr1").value = value.OLCU_BR1;
@@ -775,6 +827,7 @@
         GuncelSiparisBakiye();
         ModalKaydetButtonState();
         GuncelSeriNoGetir();
+        SetLocalStorageValue();
 
         if (GirisDepo != -1) {
             $("#StokAdlari").prop("disabled", false);
@@ -833,6 +886,7 @@
 
         GuncelSiparisBakiye();
         ModalKaydetButtonState();
+        SetLocalStorageValue();
 
         if (GirisDepo != -1 && SaveType == 0) {
             $("#StokAdlari").prop("disabled", false);
@@ -882,6 +936,7 @@
 
                 GuncelSiparisBakiye();
                 ModalKaydetButtonState();
+                SetLocalStorageValue();
             }
         });
     }
@@ -1206,6 +1261,8 @@
                 customClass: 'AreYouSureAlert'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    var BELGE_NO = document.getElementById("BelgeNo").innerHTML;
+                    DeleteLocalStorageValue(BELGE_NO);
                     Kalemler = [];
                     SiparisNo = -1;
                     window.onpopstate = function () { history.back(); };
@@ -1222,16 +1279,12 @@
     }
 
     function ModalKaydetButtonState() {
-        if ($("#SERİ_NO")?.val()?.trim()?.length <= 0) {
-            $("#ModalSaveButton").prop('disabled', true);
+
+        if (Kalemler.length > 0 && GirisDepo != -1) {
+            $("#ModalSaveButton").prop('disabled', false);
         }
         else {
-            if (Kalemler.length > 0 && GirisDepo != -1) {
-                $("#ModalSaveButton").prop('disabled', false);
-            }
-            else {
-                $("#ModalSaveButton").prop('disabled', true);
-            }
+            $("#ModalSaveButton").prop('disabled', true);
         }
     }
 </script>
@@ -1239,7 +1292,7 @@
 <script>
     function KalemleriEkle()
     {
-        var ProcUrl = "http://192.168.2.13:83/api/shipping/" + PageType;
+        var ProcUrl = "http://192.168.2.13:83/api/belge/exec/1";
 
         var BelgeNoDurumu = false;
 
@@ -1363,7 +1416,7 @@
 
             $.ajax({
                     type: "PUT",
-                url: "http://192.168.2.13:83/api/shipping/" + Kalemler[i].INC_KEY,
+                    url: "http://192.168.2.13:83/api/shipping/" + Kalemler[i].INC_KEY,
                     data: JSON.stringify(Item),
                     headers: {
                         'Accept': 'application/json',
@@ -1610,6 +1663,8 @@
             if (!index.ACTIVE) {
                 return `<div class="d-flex justify-content-center align-items-center" style="gap:0.7rem;">
 
+                <div onclick=""><i class="bi bi-clipboard2-check-fill i-disabled" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Ek Bilgileri Kopyala</span>"></i></div>
+
                 <div onclick=""><i class="bi bi-file-earmark-text-fill i-disabled" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Yazdır</span>"></i></div>
 
                 <div onclick=""><i class="bi bi-file-earmark-text-fill i-disabled" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Güncelle</span>"></i></div>
@@ -1619,6 +1674,8 @@
         }
 
         return `<div class="d-flex justify-content-center align-items-center" style="gap:0.7rem;">
+
+        <div class="ek-bilgi-kopyala" onclick="EkBilgileriKopyala('${index.SERI_NO}')"><i class="bi bi-clipboard2-check-fill" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Ek Bilgileri Kopyala</span>"></i></div>
 
         <div onclick="YaziciModalAc('${index.SERI_NO}')"><i class="bi bi-printer-fill" style="color:#203289;font-size:x-large;" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Yazdır</span>"></i></div>
 
@@ -1655,13 +1712,60 @@
 </script>
 
 <script>
+    function EkBilgileriKopyala(SERI_NO)
+    {
+        var Bilgiler = Kalemler.filter(x => x.SERI_NO == SERI_NO)[0];
+
+        if (Bilgiler != undefined)
+        {
+            var EkBilgiler = {
+                ACIK1: Bilgiler.ACIK1,
+                ACIK2: Bilgiler.ACIK2,
+                ACIK3: Bilgiler.ACIK3,
+                SERI_NO_3: Bilgiler.SERI_NO_3,
+                SERI_NO_4: Bilgiler.SERI_NO_4
+            };
+
+            localStorage.setItem("satici-ek-bilgiler", JSON.stringify(EkBilgiler));
+
+            Swal.fire({
+                title: "Ek bilgiler kopyalandı.",
+                showConfirmButton: false,
+                icon: "success",
+                timer: "750"
+            });
+        }
+    }
+
+    function EkBilgileriYapistir()
+    {
+        var EkBilgiler = JSON.parse(localStorage.getItem("satici-ek-bilgiler"));
+
+        if (EkBilgiler != null)
+        {
+            $("#ACIK1").val(EkBilgiler.ACIK1);
+            $("#ACIK2").val(EkBilgiler.ACIK2);
+            $("#ACIK3").val(EkBilgiler.ACIK3);
+            $("#SERİ_NO_3").val(EkBilgiler.SERI_NO_3);
+            $("#SERİ_NO_4").val(EkBilgiler.SERI_NO_4);
+
+
+            Swal.fire({
+                title: "Ek bilgiler yapıştırıldı.",
+                showConfirmButton: false,
+                icon: "success",
+                timer: "750"
+            });
+        }
+    }
+
     function SevkiyatCiktisiAl(BARKOD_NO = null)
     {
         BARKOD_NO = BARKOD_NO ?? $('#YaziciModalBarkod').html();
         var Printer = $('#yazici').val();
         var Kayit = Kalemler.filter(x => x.SERI_NO == BARKOD_NO);
 
-        var FiltreliDetay = detayli.filter(x => x.STOK_KODU == Kayit[0].STOK_KODU)
+        var FiltreliDetay = detayli.filter(x => x.STOK_KODU == Kayit[0].STOK_KODU && x.SIPARIS_NO == $('#SiparisNo').html())
 
         if (Kayit.length > 0)
         {
@@ -1995,6 +2099,8 @@
         for (var i = 0; i < Kalemler.length; i++) {
             Kalemler[i].GIRIS_DEPO = GirisDepo;
         }
+
+        SetLocalStorageValue();
     }
 
     function TOPLAM_OZET() {
@@ -2057,6 +2163,122 @@
                     document.onclick = () => { }
                 });
         }
+    }
+
+    function SetInitialLocalStorageValue() {
+        var SIPARIS_NO = document.getElementById("SiparisNo").innerHTML;
+        var SIPARIS_BILGI = JSON.parse(localStorage.getItem(`satici-siparis-${SIPARIS_NO}`));
+
+        if (SIPARIS_BILGI == null || SIPARIS_BILGI == undefined) {
+            localStorage.setItem(`satici-siparis-${SIPARIS_NO}`, JSON.stringify({ BELGELER: [] }));
+        }
+    }
+
+    function SetLocalStorageValue() {
+        var SIPARIS_NO = document.getElementById("SiparisNo").innerHTML;
+        var SIPARIS_BILGI = JSON.parse(localStorage.getItem(`satici-siparis-${SIPARIS_NO}`));
+
+        if (SIPARIS_BILGI != null || SIPARIS_BILGI != undefined) {
+            var BELGE_NO = document.getElementById("BelgeNo").innerHTML;
+
+            var BELGE = SIPARIS_BILGI.BELGELER.filter(x => x.BELGE_NO == BELGE_NO)[0];
+
+            if (BELGE_NO != null || BELGE_NO != undefined) {
+                SIPARIS_BILGI.BELGELER = SIPARIS_BILGI.BELGELER.filter(x => x.BELGE_NO != BELGE_NO);
+            }
+
+            var BELGE =
+            {
+                IRS_NO: $('#IRS_NO').val(),
+                BELGE_NO: BELGE_NO,
+                DEPO: GirisDepo,
+                KALEMLER: Kalemler
+            }
+
+            SIPARIS_BILGI.BELGELER.push(BELGE);
+
+            localStorage.setItem(`satici-siparis-${SIPARIS_NO}`, JSON.stringify(SIPARIS_BILGI));
+        }
+    }
+
+    function GetLocalStorageValue() {
+        var SIPARIS_NO = document.getElementById("SiparisNo").innerHTML;
+
+        var SIPARIS_BILGI = JSON.parse(localStorage.getItem(`satici-siparis-${SIPARIS_NO}`));
+
+        if (SIPARIS_BILGI != null || SIPARIS_BILGI != undefined)
+        {
+            if (SIPARIS_BILGI.BELGELER.length > 0)
+            {
+                $('#recovered-document-table').bootstrapTable({ data: SIPARIS_BILGI.BELGELER.map((x) => { return { BELGE_NO: x.BELGE_NO }; }) });
+
+                $('#recovered-documents').modal('show');
+            }
+        }
+    }
+
+    function SelectLocalStorageValue(BELGE_NO) {
+        var SIPARIS_NO = document.getElementById("SiparisNo").innerHTML;
+
+        var SIPARIS_BILGI = JSON.parse(localStorage.getItem(`satici-siparis-${SIPARIS_NO}`));
+
+        if (SIPARIS_BILGI != null || SIPARIS_BILGI != undefined) {
+            var BELGE = SIPARIS_BILGI.BELGELER.filter(x => x.BELGE_NO == BELGE_NO)[0];
+
+            if (BELGE != null || BELGE != undefined) {
+                $('#IRS_NO').val(BELGE.IRS_NO);
+
+                $('#BelgeNo').html(BELGE.BELGE_NO);
+
+                var Depo = Depolar.filter(x => x.DEPO_KODU == BELGE.DEPO);
+                GirisDepo = BELGE.DEPO;
+                $('#GIRIS_DEPO').val(Depo[0].DEPO_ISMI);
+
+                KalemId = BELGE.KALEMLER.length + 1;
+                Kalemler = BELGE.KALEMLER;
+                $('#TempTable').bootstrapTable("destroy");
+                $('#TempTable').bootstrapTable({ data: Kalemler });
+
+                $('#recovered-documents').modal('hide');
+            }
+        }
+    }
+
+    function DeleteLocalStorageValue(BELGE_NO) {
+        var SIPARIS_NO = document.getElementById("SiparisNo").innerHTML;
+        var SIPARIS_BILGI = JSON.parse(localStorage.getItem(`satici-siparis-${SIPARIS_NO}`));
+
+        if (SIPARIS_BILGI != null || SIPARIS_BILGI != undefined)
+        {
+            SIPARIS_BILGI.BELGELER = SIPARIS_BILGI.BELGELER.filter(x => x.BELGE_NO != BELGE_NO);
+
+            localStorage.setItem(`satici-siparis-${SIPARIS_NO}`, JSON.stringify(SIPARIS_BILGI));
+
+            SIPARIS_BILGI = JSON.parse(localStorage.getItem(`satici-siparis-${SIPARIS_NO}`));
+
+            if (SIPARIS_BILGI != null || SIPARIS_BILGI != undefined) {
+                if (SIPARIS_BILGI.BELGELER.length > 0) {
+                    $('#recovered-document-table').bootstrapTable('destroy')
+                    $('#recovered-document-table').bootstrapTable({ data: SIPARIS_BILGI.BELGELER.map((x) => { return { BELGE_NO: x.BELGE_NO }; }) });
+
+                    $('#recovered-documents').modal('show');
+                }
+            }
+
+            if (SIPARIS_BILGI.BELGELER.length <= 0) {
+                localStorage.removeItem(`satici-siparis-${SIPARIS_NO}`);
+
+                $('#recovered-documents').modal('hide');
+            }
+        }
+    }
+
+    function RecoveredDocumentFormatter(e, index, row)
+    {
+        return `<div>
+                    <button class="btn btn-primary" id="recovered-document-select" type="button" onclick="SelectLocalStorageValue('${index.BELGE_NO}')">SEÇ</button>
+                    <button class="btn btn-primary" id="recovered-document-delete" type="button" onclick="DeleteLocalStorageValue('${index.BELGE_NO}')">SİL</button>
+                </div>`
     }
 </script>
 

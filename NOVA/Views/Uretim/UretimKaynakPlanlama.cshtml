@@ -6,13 +6,17 @@
 <link href="~/wwwroot/libs/select2/css/select2.min.css" rel="stylesheet" />
 <link href="~/wwwroot/libs/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 <link href="~/wwwroot/libs/bootstrap-table/extensions/group-by-v2/bootstrap-table-group-by.min.css" rel="stylesheet" />
+
+
 <script src="~/wwwroot/libs/observable-slim/observable-slim.min.js"></script>
 <script src="~/wwwroot/libs/bootstrap-table/bootstrap-table.min.js"></script>
 <script src="~/wwwroot/libs/bootstrap-table/bootstrap-table-locale-all.min.js"></script>
 <script src="~/wwwroot/libs/select2/js/select2.min.js"></script>
 <script src="~/wwwroot/libs/air-datepicker/air-datepicker.min.js"></script>
 <script src="~/wwwroot/libs/bootstrap-table/extensions/group-by-v2/bootstrap-table-group-by.min.js"></script>
-
+<script>
+    document.title = "Nova | Üretim Kaynak Planlama";
+</script>
 <style>
     thead,
     tbody,
@@ -35,9 +39,9 @@
             font-size: small;
         }
 
-        #first-page tr[data-index]:nth-child(odd) {
-            background-color: rgba(105, 108, 255, 0.05) !important;
-        }
+    #first-page tr[data-index]:nth-child(odd) {
+        background-color: rgba(105, 108, 255, 0.05) !important;
+    }
 
     .value-input {
         height: 30px;
@@ -140,7 +144,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 1.5rem;
+        gap: 1rem;
         padding: 0.25rem 0;
     }
 
@@ -190,10 +194,11 @@
                                     <label>TARİH ARALIĞI 2</label>
                                 </div>
                             </div>
-                            <div class="col-12 col-sm-6 col-md-3 col-lg-1">
+                            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-1">
                                 <div class="nova-float-input" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="Belirlenen tarih aralıklarında gerçekleşen satış miktarının yüzdelik oranda ne kadar büyüyeceğini ifade eder.">
-                                    <input id="growth-rate" type="number" value="0" step="5" min="0" class="form-control" />
+                                    <input id="growth-rate" type="number" value="0" step="5" min="0" class="form-control" style="padding-left: 1.4rem" />
                                     <label>BÜYÜME ORANI</label>
+                                    <span style="position: absolute;top: 7px;left: 7px;">%</span>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 col-md-3 col-lg-1">
@@ -300,7 +305,6 @@
 </div>
 
 <script>
-    $('#title').html('Nova | Üretim Kaynak Planlama')
     var Planned = [];
     var Data = [];
     var Parameters_TMP = null;
@@ -310,7 +314,7 @@
         "DateRange_2": null,
         "GrowthRate": 0,
         "Rate": 1,
-        "RequirementParameters": ["BAKİYE","BEKL. İE","FAB. STOK","SSIP"]
+        "RequirementParameters": []
     }
     var DateRange_1;
     var DateRange_2;
@@ -324,24 +328,34 @@
     });
 
     $(document).ready(function () {
+        ShowProgress();
+
         $('#product-table').bootstrapTable({ data: [], locale: 'tr-TR' });
         $('#resource-table').bootstrapTable({ data: [], locale: 'tr-TR' });
 
         var ParametersLocal = JSON.parse(localStorage.getItem("parameters")) ?? Parameters;
 
-        $('#requirement-parameters-select').val(ParametersLocal.RequirementParameters);
+        if (ParametersLocal.RequirementParameters.length > 0) {
+            $('#requirement-parameters-select').val(ParametersLocal.RequirementParameters);
+        }
+
+        $('#growth-rate').val(ParametersLocal.GrowthRate);
+        $('#rate').val(ParametersLocal.Rate);
+
+        Parameters.GrowthRate = ParametersLocal.GrowthRate;
+        Parameters.Rate = ParametersLocal.Rate;
 
         var CurrentDate = moment();
 
-        var StartDate = new Date(parseInt(CurrentDate.format('YYYY')) - 1, parseInt(CurrentDate.format('M')) - 1, parseInt(CurrentDate.format('D')));
-        var EndDate = new Date(parseInt(CurrentDate.format('YYYY')) - 1, parseInt(CurrentDate.format('M')) + 2, parseInt(CurrentDate.format('D')));
+        var DefaultStartDate = new Date(parseInt(CurrentDate.format('YYYY')) - 1, parseInt(CurrentDate.format('M')) - 1, parseInt(CurrentDate.format('D')));
+        var DefaultEndDate = new Date(parseInt(CurrentDate.format('YYYY')) - 1, parseInt(CurrentDate.format('M')) + 2, parseInt(CurrentDate.format('D')));
         var MinDate = new Date(2022, 12, 1);
 
         DateRange_1 = new AirDatepicker('#date-range-1', {
             multipleDatesSeparator: '-',
             range: true,
             minDate: MinDate,
-            selectedDates: [StartDate, EndDate],
+            selectedDates: [DefaultStartDate, DefaultEndDate],
             onHide: (isFinished) => { if (DateRange_1.selectedDates.length < 2) { DateRange_1.clear(); PAGE_HANDLER.DateRange_1 = null; } },
             onSelect: (date, formattedDate, datepicker) => {
                 if (date.datepicker.selectedDates.length <= 1) {
@@ -368,7 +382,39 @@
             }
         });
 
-        PAGE_HANDLER.DateRange_1 = CreateDateParameter(DateRange_1);
+        if (ParametersLocal.DateRange_1 == null && ParametersLocal.DateRange_2 == null) {
+            DateRange_1.selectDate(DefaultStartDate);
+            DateRange_1.selectDate(DefaultEndDate);
+            Parameters.DateRange_1 = CreateDateParameter(DateRange_1);
+
+            DateRange_2.clear();
+            Parameters.DateRange_2 = null;
+        }
+        else if (ParametersLocal.DateRange_1 == null && ParametersLocal.DateRange_2 != null) {
+            DateRange_2.selectDate(moment(ParametersLocal.DateRange_2.split("-")[0]));
+            DateRange_2.selectDate(moment(ParametersLocal.DateRange_2.split("-")[1]));
+            Parameters.DateRange_2 = ParametersLocal.DateRange_2;
+
+            DateRange_1.clear();
+            Parameters.DateRange_1 = null;
+        }
+        else if (ParametersLocal.DateRange_1 != null && ParametersLocal.DateRange_2 == null) {
+            DateRange_1.selectDate(moment(ParametersLocal.DateRange_1.split("-")[0]));
+            DateRange_1.selectDate(moment(ParametersLocal.DateRange_1.split("-")[1]));
+            Parameters.DateRange_1 = ParametersLocal.DateRange_1;
+
+            DateRange_2.clear();
+            Parameters.DateRange_2 = null;
+        }
+        else {
+            DateRange_1.selectDate(moment(ParametersLocal.DateRange_1.split("-")[0]));
+            DateRange_1.selectDate(moment(ParametersLocal.DateRange_1.split("-")[1]));
+            Parameters.DateRange_1 = ParametersLocal.DateRange_1;
+
+            DateRange_2.selectDate(moment(ParametersLocal.DateRange_2.split("-")[0]));
+            DateRange_2.selectDate(moment(ParametersLocal.DateRange_2.split("-")[1]));
+            Parameters.DateRange_2 = ParametersLocal.DateRange_2;
+        }
 
         $('#requirement-parameters-select').selectpicker('refresh');
 
@@ -383,15 +429,17 @@
         $('#product-table').on('all.bs.table', function (name, args) {
             $('th[data-type="planned"]').eq(0).find('.fht-cell').html(`
             <div class="planned-filters">
-                <i class="bx bx-filter-alt planned-filter" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="Planlanmış olanları göster." onclick="FilterPlannedData()"></i>
-                <i class='bx bx-spreadsheet planned-filter' data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="Tümünü göster." onclick="FilterPlannedData(true)"></i>
-                <i class='bx bx-trash planned-filter' data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="Planlanmış olanları temizle." onclick="ClearPlannedLocalStorage()"></i>
+                <i class="bx bx-book-bookmark planned-filter" data-bs-toggle="tooltip-table" data-bs-placement="top" data-bs-html="true" title="Planlanmış olanları göster" onclick="FilterPlannedData()"></i>
+                <i class="bx bx-filter-alt planned-filter" data-bs-toggle="tooltip-table" data-bs-placement="top" data-bs-html="true" title="İhtiyaç olanları göster" onclick="FilterNeededData()"></i>
+                <i class='bx bx-spreadsheet planned-filter' data-bs-toggle="tooltip-table" data-bs-placement="top" data-bs-html="true" title="Tümünü göster" onclick="FilterPlannedData(true)"></i>
+                <i class='bx bx-trash planned-filter' data-bs-toggle="tooltip-table" data-bs-placement="top" data-bs-html="true" title="Planlanmış olanları temizle" onclick="ClearPlannedLocalStorage()"></i>
             </div>`);
-
         });
 
-        ReadLocalStorageToPlanned();
-        FetchData(true);
+        setTimeout(() => {
+            ReadLocalStorageToPlanned();
+            FetchData(true);
+        }, 250);
     });
 
     function FetchData(FirstRender = false) {
@@ -413,6 +461,7 @@
             $('#last-update-time').html(moment().format('HH:mm:ss'));
 
             $('#product-table').on('post-body.bs.table', function () {
+
                 $('.planlanan-miktar-1').on('keyup paste', function () {
                     var Regex = new RegExp('^[1-9][0-9]*$');
 
@@ -604,8 +653,7 @@
     }
 
     function ParameterTrigger() {
-        if (JSON.stringify(Parameters) != JSON.stringify(Parameters_TMP))
-        {
+        if (JSON.stringify(Parameters) != JSON.stringify(Parameters_TMP)) {
             $('#fetch-data-button > i').css('animation', 'heartBeat 1s ease-in-out infinite');
         }
         else {
@@ -622,10 +670,19 @@
     }
 
     function ClearPlannedLocalStorage() {
+        Swal.fire({
+            icon: "success",
+            title: "Bilgiler silindi",
+            showConfirmButton: false,
+            timer: 1500
+        });
+
         Planned = [];
         localStorage.removeItem("planned");
 
-        FilterPlannedData(true);
+        var FilteredData = Data.filter(x => $('#group-code-select').val().includes(x.GRUP_ISIM));
+
+        $('#product-table').bootstrapTable("load", FilteredData);
     }
 
     function FilterPlannedData(ShowAll = false) {
@@ -634,6 +691,13 @@
         if (!ShowAll) {
             FilteredData = Data.filter(y => Planned.map(x => x.MAMUL_KODU).includes(y.MAMUL_KODU) && $('#group-code-select').val().includes(y.GRUP_ISIM));
         }
+
+        $('#product-table').bootstrapTable("load", FilteredData);
+    }
+
+    function FilterNeededData()
+    {
+        var FilteredData = Data.filter(x => $('#group-code-select').val().includes(x.GRUP_ISIM) && (x.IHTIYAC_MIKTAR1 > 0 || x.IHTIYAC_MIKTAR2 > 0));
 
         $('#product-table').bootstrapTable("load", FilteredData);
     }
@@ -860,7 +924,6 @@
             }
         }
     }
-
 
     function ResourcesGenislikFormatter(value, row, index) {
         return value == 0 ? 'R' : value;
