@@ -883,81 +883,68 @@
 <script>
     function Kaydet()
     {
-        var ProcUrl = "http://192.168.2.13:83/api/belge/exec/2";
+        var BELGE_NO = $('#BELGE_NO').html();
+        for (var i = 0; i < Kayitlar.length; i++) {
+            var Item = {
+                "TYPE": SayfaTipi,
+                "SIPARIS_NO": $('#SİPARİS_NO').html(),
+                "BELGE_NO": $('#BELGE_NO').html(),
+                "SERI_NO": Kayitlar[i].SERI_NO,
+                "STOK_KODU": Kayitlar[i].STOK_KODU,
+                "MIKTAR1": parseFloat(Kayitlar[i].MIKTAR),
+                "OLCU_BR1": Kayitlar[i].OLCU_BR1,
+                "MIKTAR2": parseFloat(Kayitlar[i].MIKTAR2),
+                "OLCU_BR2": Kayitlar[i].OLCU_BR2,
+                "ACIK1": Kayitlar[i].ACIK2,
+                "ACIK2": Kayitlar[i].ACIK1,
+                "ACIK3": Kayitlar[i].ACIK3,
+                "SERI_NO_3": Kayitlar[i].SERI_NO_3,
+                "SERI_NO_4": Kayitlar[i].SERI_NO_4,
+                "ACIKLAMA_4": Kayitlar[i].ACIKLAMA_4,
+                "ACIKLAMA_5": Kayitlar[i].ACIKLAMA_5,
+                "INS_USER_ID": @Request.Cookies["UserId"].Value,
+                "UPD_USER_ID": @Request.Cookies["UserId"].Value,
+                "EXP_1": null,
+                "EXP_2": null,
+                "EXP_3": null,
+                "GIRIS_DEPO": null,
+                "CIKIS_DEPO": CikisDepo,
+                "PLAKA": Kayitlar[i].PLAKA,
+                "SOFOR": Kayitlar[i].SOFOR
+            };
 
-        var BelgeNoDurumu = false;
+            $.ajax({
+                type: "POST",
+                url: "http://192.168.2.13:83/api/shipping",
+                data: JSON.stringify(Item),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                success: function () {
+                    Swal.fire(
+                        'Başarılı!',
+                        'İşlem başarılı',
+                        'success'
+                    );
 
-        $.getJSON(ProcUrl, function (data) {
-            BelgeNoDurumu = ($('#BELGE_NO').html() == data[0].SIRADAKI_BELGE_NO);
-        }).done(() =>
-        {
-            if (BelgeNoDurumu) {
-                for (var i = 0; i < Kayitlar.length; i++) {
-                    var Item = {
-                        "TYPE": SayfaTipi,
-                        "SIPARIS_NO": $('#SİPARİS_NO').html(),
-                        "BELGE_NO": $('#BELGE_NO').html(),
-                        "SERI_NO": Kayitlar[i].SERI_NO,
-                        "STOK_KODU": Kayitlar[i].STOK_KODU,
-                        "MIKTAR1": parseFloat(Kayitlar[i].MIKTAR),
-                        "OLCU_BR1": Kayitlar[i].OLCU_BR1,
-                        "MIKTAR2": parseFloat(Kayitlar[i].MIKTAR2),
-                        "OLCU_BR2": Kayitlar[i].OLCU_BR2,
-                        "ACIK1": Kayitlar[i].ACIK2,
-                        "ACIK2": Kayitlar[i].ACIK1,
-                        "ACIK3": Kayitlar[i].ACIK3,
-                        "SERI_NO_3": Kayitlar[i].SERI_NO_3,
-                        "SERI_NO_4": Kayitlar[i].SERI_NO_4,
-                        "ACIKLAMA_4": Kayitlar[i].ACIKLAMA_4,
-                        "ACIKLAMA_5": Kayitlar[i].ACIKLAMA_5,
-                        "INS_USER_ID": @Request.Cookies["UserId"].Value,
-                        "UPD_USER_ID": @Request.Cookies["UserId"].Value,
-                        "EXP_1": null,
-                        "EXP_2": null,
-                        "EXP_3": null,
-                        "GIRIS_DEPO": null,
-                        "CIKIS_DEPO": CikisDepo,
-                        "PLAKA": Kayitlar[i].PLAKA,
-                        "SOFOR": Kayitlar[i].SOFOR
-                    };
-
-                    $.ajax({
-                        type: "POST",
-                        url: "http://192.168.2.13:83/api/shipping",
-                        data: JSON.stringify(Item),
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        success: function () {
-                            Swal.fire(
-                                'Başarılı!',
-                                'İşlem başarılı',
-                                'success'
-                            );
-
-                            $('#SevkFormu').modal('hide');
-                            HideProgress();
-                        },
-                        error: function (msg) {
-                            Swal.fire(
-                                'Hata Oluştu!',
-                                'Girilen Stok Miktarlarını Kontrol Ediniz.',
-                                'error'
-                            );
-                            HideProgress();
-                        }
-                    });
+                    $('#SevkFormu').modal('hide');
+                    HideProgress();
+                },
+                error: function (msg) {
+                    Swal.fire(
+                        'Hata Oluştu!',
+                        'Girilen Stok Miktarlarını Kontrol Ediniz.',
+                        'error'
+                    );
+                    HideProgress();
                 }
-            }
-            else
-            {
-                BelgeNoDegisti();
-                HideProgress();
-            }
+            });
+        }
 
-            $('#SevkFormKaydetButton').prop('disabled', true);
-        });
+        DeleteLocalStorageValue(BELGE_NO);
+
+        $('#SevkFormKaydetButton').prop('disabled', true);
     }
 
     function Guncelle()

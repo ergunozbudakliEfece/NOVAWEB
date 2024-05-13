@@ -100,7 +100,7 @@
 
                                         <div class="row gy-3">
                                             <div class="col-12 col-sm-4 col-lg" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-                                                <button class="btn btn-primary" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Ek Bilgileri Yapıştır</span>" onclick="EkBilgileriYapistir()">
+                                                <button class="btn btn-primary" style="width: 70px; height: 35px; display: flex; justify-content: center; align-items: center; padding: 0; " data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Ek Bilgileri Yapıştır</span>" onclick="EkBilgileriYapistir()">
                                                     <i class="bi bi-clipboard2-check-fill"></i>
                                                 </button>
                                                 <div class="form-label-group outline m-0 w-100">
@@ -1292,23 +1292,7 @@
 <script>
     function KalemleriEkle()
     {
-        var ProcUrl = "http://192.168.2.13:83/api/belge/exec/1";
-
-        var BelgeNoDurumu = false;
-
-        $.getJSON(ProcUrl, function (data) {
-            BelgeNoDurumu = (document.getElementById("BelgeNo").innerHTML == data[0].SIRADAKI_BELGE_NO);
-        }).done(() =>
-        {
-            if (BelgeNoDurumu)
-            {
-                KalemleriKaliciKaydet();
-            }
-            else
-            {
-                BelgeNoDegisti();
-            }
-        });
+        KalemleriKaliciKaydet();
     }
 
     function KalemleriKaliciKaydet()
@@ -1352,6 +1336,8 @@
                 },
                 success: function ()
                 {
+                    DeleteLocalStorageValue(document.getElementById("BelgeNo").innerHTML);
+
                     Swal.fire({
                             text: "İşlem başarılı.",
                             icon: "success",
