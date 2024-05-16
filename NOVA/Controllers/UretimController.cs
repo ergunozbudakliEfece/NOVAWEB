@@ -1736,6 +1736,7 @@ namespace NOVA.Controllers
                                 WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "IsEmrindenGetir() " + exp.Message, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
                                 return $"Hata: {exp.Message}";
                             }
+                            uretim.NetsisTransaction(TTransactionTipi.ttBaslat);
                             uretim.UretSon_FisNo = jsonList[i].FIS_NO;
 
                             uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
@@ -1812,8 +1813,8 @@ namespace NOVA.Controllers
                            
                             uretim.FisUret();
                             uretim.Kaydet();
-                           
                             
+
                             if (i != jsonList.Count - 1)
                             {
 
@@ -1958,7 +1959,7 @@ namespace NOVA.Controllers
 
                                 return karsii;
                             }
-
+                            uretim.NetsisTransaction(TTransactionTipi.ttBitir);
 
                         }
                     }
@@ -1971,8 +1972,8 @@ namespace NOVA.Controllers
                     sirket.LogOff();
                     WebMail.SmtpServer = "192.168.2.13";
                     WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "<p><b>" + ISEMRINO + "</b> üzerinde bir hata oluştu!</p><p>Hata: " + message + "</p><p>Fiş bilgileri:</p><p>" + fisler + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
-                   
 
+                    uretim.NetsisTransaction(TTransactionTipi.ttGeriAl);
                     return $"Hata: {message}";
                 }
                 finally
@@ -2008,7 +2009,7 @@ namespace NOVA.Controllers
                         uretim = kernel.yeniSerbestUSK(sirket);
                         uretim.IsEmrindenGetir(ISEMRINO);
                         uretim.UretSon_FisNo = uretim.SonFisNumarasi("N");
-
+                        uretim.NetsisTransaction(TTransactionTipi.ttBaslat);
                         uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
                         uretim.BelgeTipi = TBelgeTipi.btIsEmri;
                         uretim.Proje_Kodu = "1";
@@ -2096,6 +2097,7 @@ namespace NOVA.Controllers
                         {
                             uretim.FisUret();
                             uretim.Kaydet();
+                            uretim.NetsisTransaction(TTransactionTipi.ttBitir);
                             if (TempData["FIS_NO"] != null)
                             {
                                 TempData["FIS_NO"] = TempData["FIS_NO"].ToString() + "," + "'" + uretim.UretSon_FisNo + "'";
@@ -2111,8 +2113,10 @@ namespace NOVA.Controllers
                         {
                             if (exp.Message == "Fiş numarası sistemde kayıtlı. " + fisno)
                             {
+                                uretim.NetsisTransaction(TTransactionTipi.ttGeriAl);
                                 goto repeat;
                             }
+
                         }
 
 
