@@ -3839,7 +3839,7 @@ namespace NOVA.Controllers
             return cell;
         }
         
-        public JsonResult HurdaVeIkinciKaliteEtiketOlustur(Etiket EtiketBilgisi, string Yazici)
+        public JsonResult HurdaVeIkinciKaliteEtiketOlustur(Etiket EtiketBilgisi, string Yazici, string Aciklama)
         {
             try
             {
@@ -3945,7 +3945,7 @@ namespace NOVA.Controllers
 
                 WebMail.SmtpServer = "192.168.2.13";
 
-                WebMail.Send("yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com, alidonmez@efecegalvaniz.com, muratruzgar@efecegalvaniz.com, surecgelistirme@efecegalvaniz.com", "HURDA & İKİNCİ KALİTE BİLGİLENDİRME", $"<p>Merhaba,</p> <p>{Request.Cookies["Name"].Value} tarafından tartılan {EtiketBilgisi.STOK_ADI} toplam {EtiketBilgisi.MIKTAR1} KG'dir. </p> <p>İyi çalışmalar dilerim.</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                WebMail.Send("surecgelistirme@efecegalvaniz.com", "HURDA & İKİNCİ KALİTE BİLGİLENDİRME", $"<p>Merhaba,</p> <p>{Request.Cookies["Name"].Value} tarafından tartılan {Aciklama} açıklamalı {EtiketBilgisi.STOK_ADI} toplam {EtiketBilgisi.MIKTAR1} KG'dir. </p> <p>İyi çalışmalar dilerim.</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
 
                 return Json(new Wrappers.Concrete.SuccessResponse<string>("Etiket başarıyla oluşturuldu."));
             }

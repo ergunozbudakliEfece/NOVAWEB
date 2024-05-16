@@ -764,7 +764,10 @@
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row mb-3">
-                            <input class="form-control text-center" id="hurda-ikinci-kalite-modal-miktar" type="number" placeholder="Miktar 1" >
+                            <input class="form-control text-center" id="hurda-ikinci-kalite-modal-aciklama" type="text" placeholder="Açıklama" autocomplete="off">
+                        </div>
+                        <div class="row mb-3">
+                            <input class="form-control text-center" id="hurda-ikinci-kalite-modal-miktar" type="number" placeholder="Miktar 1" autocomplete="off">
                         </div>
                         <div class="row">
                             <select id="hurda-ikinci-kalite-modal-yazici" class="form-select" style="width: 100%;"></select>
@@ -772,7 +775,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center align-items-center">
-                    <button type="button" class="btn btn-primary" onclick="HurdaVeIkinciKaliteEtiketOlustur()">KAYDET VE YAZDIR</button>
+                    <button id="hurda-ikinci-kalite-olustur" type="button" class="btn btn-primary" onclick="HurdaVeIkinciKaliteEtiketOlustur()" >KAYDET VE YAZDIR</button>
                     <button type="button" class="btn btn-danger" onclick="HurdaVeIkinciKaliteModalKapat()">KAPAT</button>
                 </div>
             </div>
@@ -1966,84 +1969,135 @@
 
         function HurdaVeIkinciKaliteEtiketOlustur()
         {
-            var IslemTipi = $('input[name="makine-ieuk"]:checked').val();
-
-            if (IslemTipi != undefined && (IslemTipi == "ikinci-kalite" || IslemTipi == "hurda"))
+            if(HurdaVeIkinciKaliteGirisKontrol())
             {
-                ShowProgress();
+                var IslemTipi = $('input[name="makine-ieuk"]:checked').val();
 
-                var SERI = (IslemTipi == "ikinci-kalite" ? "I" : "H").padEnd((15 - $('#hurda-ikinci-kalite-modal-miktar').val().length), "0") + $('#hurda-ikinci-kalite-modal-miktar').val();
+                if (IslemTipi != undefined && (IslemTipi == "ikinci-kalite" || IslemTipi == "hurda"))
+                {
+                    ShowProgress();
 
-                var ETIKET_BILGI = {
-                    "SERI_NO": SERI,
-                    "STOK_ADI": IslemTipi == "ikinci-kalite" ? "İKİNCİ KALİTE" : "HURDA",
-                    "MIKTAR1": parseInt($('#hurda-ikinci-kalite-modal-miktar').val()),
-                    "OLCU_BR1": "KG",
-                    "MIKTAR2": null,
-                    "OLCU_BR2": null,
-                    "STOK_KODU": IslemTipi == "ikinci-kalite" ? "İKİNCİ KALİTE" : "HURDA",
-                    "GENISLIK": null,
-                    "GRUP_ISIM": null,
-                    "BOY": null,
-                    "KAYITYAPANKUL": null,
-                    "KAYITTARIHI": null,
-                    "SIPARIS_CARI": null,
-                    "MAK_KODU": null,
-                    "KALINLIK": null,
-                    "METRAJ": null,
-                    "ACIKLAMA_5": null,
-                    "KALITE": null,
-                    "KAPLAMA": null,
-                    "MENSEI": null,
-                    "FIRMA_SERI_NO": null,
-                    "BIRIM_MIKTAR": null,
-                    "REF_HAT_KODU": null,
-                    "REF_STOK_ADI": null
-                };
+                    var SERI = (IslemTipi == "ikinci-kalite" ? "I" : "H").padEnd((15 - $('#hurda-ikinci-kalite-modal-miktar').val().length), "0") + $('#hurda-ikinci-kalite-modal-miktar').val();
 
-                HurdaVeIkinciKaliteModalKapat();
+                    var ETIKET_BILGI = {
+                        "SERI_NO": SERI,
+                        "STOK_ADI": IslemTipi == "ikinci-kalite" ? "İKİNCİ KALİTE" : "HURDA",
+                        "MIKTAR1": parseInt($('#hurda-ikinci-kalite-modal-miktar').val()),
+                        "OLCU_BR1": "KG",
+                        "MIKTAR2": null,
+                        "OLCU_BR2": null,
+                        "STOK_KODU": IslemTipi == "ikinci-kalite" ? "İKİNCİ KALİTE" : "HURDA",
+                        "GENISLIK": null,
+                        "GRUP_ISIM": null,
+                        "BOY": null,
+                        "KAYITYAPANKUL": null,
+                        "KAYITTARIHI": null,
+                        "SIPARIS_CARI": null,
+                        "MAK_KODU": null,
+                        "KALINLIK": null,
+                        "METRAJ": null,
+                        "ACIKLAMA_5": null,
+                        "KALITE": null,
+                        "KAPLAMA": null,
+                        "MENSEI": null,
+                        "FIRMA_SERI_NO": null,
+                        "BIRIM_MIKTAR": null,
+                        "REF_HAT_KODU": null,
+                        "REF_STOK_ADI": null
+                    };
 
-                var YaziciSecim = $('#hurda-ikinci-kalite-modal-yazici').val();
+                    HurdaVeIkinciKaliteModalKapat();
 
-                $.ajax({
-                    url: '@Url.Action("HurdaVeIkinciKaliteEtiketOlustur", "Uretim")',
-                    type: 'POST',
-                    data: { EtiketBilgisi: ETIKET_BILGI, Yazici: YaziciSecim },
-                    error: () => { 
-                        Swal.fire({
-                            position: "center",
-                            icon: "error",
-                            title: "Beklenmeyen bir hata oluştu",
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
+                    var YaziciSecim = $('#hurda-ikinci-kalite-modal-yazici').val();
+                    var Aciklama = $('#hurda-ikinci-kalite-modal-aciklama').val();
 
-                        HideProgress();
-                    },
-                    success: (response) => {
-                        if (response.IsSuccess) {
-                            Swal.fire({
-                                position: "center",
-                                icon: "success",
-                                title: response.Value,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        }
-                        else {
+                    $.ajax({
+                        url: '@Url.Action("HurdaVeIkinciKaliteEtiketOlustur", "Uretim")',
+                        type: 'POST',
+                        data: { EtiketBilgisi: ETIKET_BILGI, Yazici: YaziciSecim, Aciklama: Aciklama },
+                        error: () => {
                             Swal.fire({
                                 position: "center",
                                 icon: "error",
-                                title: response.Message,
+                                title: "Beklenmeyen bir hata oluştu",
                                 showConfirmButton: false,
                                 timer: 1500
                             });
-                        }
 
-                        HideProgress();
-                    }
+                            HideProgress();
+                        },
+                        success: (response) => {
+                            if (response.IsSuccess) {
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: response.Value,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+                            else {
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "error",
+                                    title: response.Message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+
+                            HideProgress();
+                        }
+                    });
+                }
+            }
+            else{
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "Lütfen tüm alanları doldurunuz",
+                    showConfirmButton: false,
+                    timer: 1500
                 });
             }
+        }
+
+        $('#hurda-ikinci-kalite-modal-miktar').on('keydown keyup blur paste', function (){
+            if($(this).val().trim() != ''){
+                $(this).css('border-color', '');
+            }else{
+                $(this).css('border-color', 'red');
+            }
+        });
+
+        $('#hurda-ikinci-kalite-modal-aciklama').on('keydown keyup blur paste', function (){
+            if($(this).val().trim() != ''){
+                $(this).css('border-color', '');
+            }else{
+                $(this).css('border-color', 'red');
+            }
+        });
+
+        function HurdaVeIkinciKaliteGirisKontrol()
+        {
+            var miktar = $('#hurda-ikinci-kalite-modal-miktar').val().trim();
+            var aciklama = $('#hurda-ikinci-kalite-modal-aciklama').val().trim();
+
+            if(miktar == '' || aciklama == '')
+            {
+                if(miktar == '')
+                {
+                    $('#hurda-ikinci-kalite-modal-miktar').css('border-color', 'red');
+                }
+                if(aciklama == '')
+                {
+                    $('#hurda-ikinci-kalite-modal-aciklama').css('border-color', 'red');
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         function HurdaVeIkinciKaliteModalKapat()
@@ -2051,6 +2105,8 @@
             $('input[name="uretim-islem"][value=0]').click();
             $('#hurda-ikinci-kalite-modal').modal('hide');
             $('#hurda-ikinci-kalite-modal-miktar').val('');
+            $('#hurda-ikinci-kalite-modal-yazici').css('border-color', '');
+            $('#hurda-ikinci-kalite-modal-miktar').css('border-color', '');
         }
 
 
@@ -2353,17 +2409,19 @@ Seçili makinede iş emri yok.
                 if (bant) {
                     if (hat != "DL01") {
 
-                        Swal.fire(
-                            'Dikkat!',
-                            'Makineye takılan miktardan fazla miktar giremezsiniz.(' + max+')',
-                            'info'
-                        )
+                        Swal.fire({
+                            title: 'Dikkat!',
+                            text: 'Makineye takılan miktardan fazla miktar giremezsiniz.(' + max + ')',
+                            icon: 'info',
+                            confirmButtonText: 'Tamam'
+                        })
                         $("#miktar11").val(null)
                     } else {
                         Toast.fire({
                             icon: 'info',
                             title: '<div style="display:flex" class="justify-content-center">Dikkat!</div>',
-                            text: 'Makineye takılan girdi miktarı kalanı ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
+                            text: 'Makineye takılan girdi miktarı kalanı ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.',
+                            confirmButtonText: 'Tamam'
                         });
                     }
 
@@ -2372,13 +2430,15 @@ Seçili makinede iş emri yok.
                         Toast.fire({
                             icon: 'info',
                             title: '<div style="display:flex" class="justify-content-center">Dikkat!</div>',
-                            text: 'İş emrindeki üretilebilir miktar ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
+                            text: 'İş emrindeki üretilebilir miktar ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.',
+                            confirmButtonText: 'Tamam'
                         });
                     } else {
                         Toast.fire({
                             icon: 'info',
                             title: '<div style="display:flex" class="justify-content-center">Dikkat!</div>',
-                            text: 'Makineye takılan girdi miktarı kalanı ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
+                            text: 'Makineye takılan girdi miktarı kalanı ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.',
+                            confirmButtonText: 'Tamam'
                         });
                     }
 
@@ -4610,7 +4670,6 @@ Seçili makinede iş emri yok.
         function keychangeikinci() {
             var m1 = $("#miktar11").val();
             var m2 = $("#miktar22").val();
-
             var ikinci2 = $("#ikincimik2").val();
             if (ikinci2.length > 0) {
                 $("#ikincimik1").val(Math.round((m1 / m2) * ikinci2)).prop("disabled",false);
@@ -4618,7 +4677,24 @@ Seçili makinede iş emri yok.
             } else {
                 $("#ikincimik1").val(null).prop("disabled",true);
             }
-            keychangeikinci1();
+            if (m2 != "") {
+                var m = Math.round((m1 / m2) * ikinci2)+parseInt(m1)
+                if (m <= max) {
+                    keychangeikinci1();
+                } else {
+                    $("#miktar11").val("").trigger('keyup');
+                    $('#BirimMik2').html('-');
+                    $("#ikincimik2").prop('disabled', true);
+                    Swal.fire({
+                        title:'Dikkat!',
+                        text:'Makineye takılan miktardan fazla miktar giremezsiniz.(' + max + ')',
+                        icon: 'info',
+                        confirmButtonText: 'Tamam'
+                    }
+                    )
+
+                }
+            }
 
         }
         function keychangeikinci1() {
@@ -5810,7 +5886,7 @@ Seçili makinede iş emri yok.
                 });
             });
         }
-        
+
     </script>
 </body>
 
