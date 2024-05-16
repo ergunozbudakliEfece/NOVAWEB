@@ -91,7 +91,12 @@
         SetFullscreen(document.getElementsByClassName('qr-scanner-area')[0]);
 
         Scanner.addListener('scan', function (content) {
-            BarkodBakiyeGetir(content);
+            if (content[0] == "H" || content[0] == "I") {
+                HurdaVeIkinciKaliteBarkodGetir(content);
+            }
+            else {
+                BarkodBakiyeGetir(content);
+            }
         });
 
         let Cameras = [];
@@ -174,6 +179,109 @@
         else if (Item.msRequestFullscreen) {
             Item.msRequestFullscreen();
         }
+    }
+
+    function HurdaVeIkinciKaliteBarkodGetir(BARKOD_NO)
+    {
+        var ISLEM_TIPI = BARKOD_NO[0];
+        var MIKTAR = parseInt(BARKOD_NO.substr(1));
+
+        Swal.fire({
+            text: 'ÜRÜN BİLGİLERİ',
+            html: `<div class="d-flex flex-column justify-content-center align-items-center gap-2">
+                        <table class="table table-striped table-bordered" style="text-align: center;vertical-align: middle;width: 100%; word-break: auto-phrase;">
+                            <thead>
+                                <th>BARKOD NO</th>
+                                <th>MİKTAR 1</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>${ISLEM_TIPI == "H" ? "HURDA" : "İKİNCİ KALİTE"}</td>
+                                    <td>${MiktarFormatla(MIKTAR)} KG</td>  
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>`,
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            denyButtonColor: '#ff973f',
+            confirmButtonText: 'Ekle',
+            denyButtonText: 'Ekle ve Kapat',
+            cancelButtonText: "Kapat",
+            target: document.getElementsByClassName("qr-controls")[0],
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Kayitlar.push({
+                    "ID": KayitId,
+                    "ACTIVE": true,
+                    "STOK_ADI": ISLEM_TIPI == "H" ? "HURDA" : "IKINCIKALITE",
+                    "STOK_KODU": ISLEM_TIPI == "H" ? "HURDA" : "IKINCIKALITE",
+                    "MIKTAR": MIKTAR,
+                    "OLCU_BR1": "KG",
+                    "MIKTAR2": 0,
+                    "OLCU_BR2": null,
+                    "SERI_NO": BARKOD_NO,
+                    "ACIK1": null,
+                    "ACIK2": null,
+                    "ACIK3": null,
+                    "SERI_NO_3": null,
+                    "SERI_NO_4": null,
+                    "ACIKLAMA_4": null,
+                    "ACIKLAMA_5": null,
+                    "GIRIS_DEPO": GirisDepo,
+                    "CIKIS_DEPO": CikisDepo,
+                    "PLAKA": $('#PLAKA').val() == '' ? null : $('#PLAKA').val(),
+                    "SOFOR": $('#SOFOR').val() == '' ? null : $('#SOFOR').val()
+                });
+
+                KayitId += 1;
+                LocalStorageTrigger();
+                DurumDegisikligi(0);
+
+                $('#STOK_ADLARI').prop("disabled", false);
+                $('#BarkodButton').prop("disabled", false);
+
+                $('#DepoTransferTable').bootstrapTable("load", Kayitlar);
+            }
+            if (result.isDenied)
+            {
+                Kayitlar.push({
+                    "ID": KayitId,
+                    "ACTIVE": true,
+                    "STOK_ADI": ISLEM_TIPI == "H" ? "HURDA" : "IKINCIKALITE",
+                    "STOK_KODU": ISLEM_TIPI == "H" ? "HURDA" : "IKINCIKALITE",
+                    "MIKTAR": MIKTAR,
+                    "OLCU_BR1": "KG",
+                    "MIKTAR2": 0,
+                    "OLCU_BR2": null,
+                    "SERI_NO": BARKOD_NO,
+                    "ACIK1": null,
+                    "ACIK2": null,
+                    "ACIK3": null,
+                    "SERI_NO_3": null,
+                    "SERI_NO_4": null,
+                    "ACIKLAMA_4": null,
+                    "ACIKLAMA_5": null,
+                    "GIRIS_DEPO": GirisDepo,
+                    "CIKIS_DEPO": CikisDepo,
+                    "PLAKA": $('#PLAKA').val() == '' ? null : $('#PLAKA').val(),
+                    "SOFOR": $('#SOFOR').val() == '' ? null : $('#SOFOR').val()
+                });
+
+                KayitId += 1;
+                LocalStorageTrigger();
+                DurumDegisikligi(0);
+
+                $('#STOK_ADLARI').prop("disabled", false);
+                $('#BarkodButton').prop("disabled", false);
+
+                $('#DepoTransferTable').bootstrapTable("load", Kayitlar);
+
+                Close();
+            }
+        });
     }
 
     function BarkodBakiyeGetir(BarkodNo) {
@@ -275,7 +383,9 @@
                                         "ACIKLAMA_4": ACIKLAMA_4,
                                         "ACIKLAMA_5": ACIKLAMA_5,
                                         "GIRIS_DEPO": GirisDepo,
-                                        "CIKIS_DEPO": CikisDepo
+                                        "CIKIS_DEPO": CikisDepo,
+                                        "PLAKA": $('#PLAKA').val() == '' ? null : $('#PLAKA').val(),
+                                        "SOFOR": $('#SOFOR').val() == '' ? null : $('#SOFOR').val()
                                     });
 
                                     KayitId += 1;

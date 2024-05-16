@@ -3834,6 +3834,123 @@ namespace NOVA.Controllers
 
             return cell;
         }
+        
+        public JsonResult HurdaVeIkinciKaliteEtiketOlustur(Etiket EtiketBilgisi, string Yazici)
+        {
+            try
+            {
+                if (EtiketBilgisi == null)
+                    return Json(new Wrappers.Concrete.ErrorResponse("Etiket bilgisi bulunamadı."));
+
+                iTextSharp.text.Document document = new iTextSharp.text.Document(new iTextSharp.text.Rectangle(246.61417323f, 462.04724409f), 0, 0, 0, 0);
+
+                string imagePath = System.IO.Path.Combine(Server.MapPath("~\\Outputs\\Sources"), "EFECE_ETIKET.png");
+                string pdfPath = System.IO.Path.Combine(Server.MapPath("~\\Outputs\\Labels\\Production"), $"{DateTime.UtcNow.ToUnixTime()}.pdf");
+
+                FileStream Memory = new FileStream(pdfPath, FileMode.Create);
+                PdfWriter writer = PdfWriter.GetInstance(document, Memory);
+
+                document.Open();
+
+                PdfContentByte cb = writer.DirectContent;
+
+                iTextSharp.text.Font fontNormal = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontBoldHeader = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 13, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontBoldContent = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 11, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font fontBoldTarget = FontFactory.GetFont(BaseFont.COURIER, "CP1254", 16, iTextSharp.text.Font.BOLD);
+
+                PdfPTable table = new PdfPTable(3);
+                table.TotalWidth = 225;
+                table.SetWidths(new float[] { 4.25f, 0.5f, 5.25f });
+
+                // Header row.
+                //table.AddCell(GetHeaderCell(EtiketBilgisi.SERI_NO, fontBoldHeader, 3, 1));
+                table.AddCell(GetHeaderCell(EtiketBilgisi.STOK_ADI, fontBoldHeader, 3, 3));
+
+                PdfPCell cellBlankRow = new PdfPCell(new Phrase(" "));
+                cellBlankRow.Border = 0;
+                cellBlankRow.Colspan = 3;
+                cellBlankRow.HorizontalAlignment = 1;
+                table.AddCell(cellBlankRow);
+
+                // Inner middle row.
+                table.AddCell(GetContentCell("MİKTAR", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{MiktarFormat(EtiketBilgisi.MIKTAR1, EtiketBilgisi.OLCU_BR1)}", fontBoldContent));
+
+                table.AddCell(GetContentCell("MİKTAR 2", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"-", fontBoldContent));
+
+                table.AddCell(GetContentCell("KALINLIK", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"-", fontBoldContent));
+
+                table.AddCell(GetContentCell("GENİŞLİK", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"-", fontBoldContent));
+
+                table.AddCell(GetContentCell("BOY", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"-", fontBoldContent));
+
+                table.AddCell(GetContentCell("METRAJ", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"-", fontBoldContent));
+
+                table.AddCell(GetContentCell("TARİH/SAAT", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{TarihFormat(DateTime.Now)}", fontBoldContent));
+
+                table.AddCell(GetContentCell("OPERATÖR", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"{Request.Cookies["UserName"].Value}", fontBoldContent));
+
+                table.AddCell(GetContentCell("MÜŞTERİ", fontBoldContent));
+                table.AddCell(GetContentCell(":", fontBoldContent));
+                table.AddCell(GetContentCell($"-", fontBoldContent));
+
+                table.WriteSelectedRows(0, -1, 15, 390, cb);
+
+                var qrGenerator = new QRCodeGenerator();
+                var qrCodeData = qrGenerator.CreateQrCode(EtiketBilgisi.SERI_NO, QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+                System.Drawing.Image qrCodeImage = qrCode.GetGraphic(45, System.Drawing.Color.Black, System.Drawing.Color.Transparent, true);
+
+                iTextSharp.text.Image QR = iTextSharp.text.Image.GetInstance(ImageToByteArray(qrCodeImage));
+                QR.ScaleToFit(85, 85);
+                QR.Alignment = iTextSharp.text.Image.UNDERLYING;
+                QR.SetAbsolutePosition(155, 70);
+                document.Add(QR);
+
+                document.Close();
+                Memory.Close();
+
+                using (var pdocument = PdfiumViewer.PdfDocument.Load(pdfPath))
+                {
+                    using (var printDocument = pdocument.CreatePrintDocument())
+                    {
+                        printDocument.PrinterSettings.PrintFileName = $"{EtiketBilgisi.SERI_NO}.pdf";
+                        printDocument.PrinterSettings.PrinterName = Yazici;
+                        printDocument.DocumentName = $"{EtiketBilgisi.SERI_NO}.pdf";
+                        printDocument.PrinterSettings.PrintFileName = $"{EtiketBilgisi.SERI_NO}.pdf";
+                        printDocument.PrintController = new StandardPrintController();
+                        printDocument.Print();
+                    }
+                }
+
+                WebMail.SmtpServer = "192.168.2.13";
+
+                WebMail.Send("yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com, alidonmez@efecegalvaniz.com, muratruzgar@efecegalvaniz.com, surecgelistirme@efecegalvaniz.com", "HURDA & İKİNCİ KALİTE BİLGİLENDİRME", $"<p>Merhaba,</p> <p>{Request.Cookies["Name"].Value} tarafından tartılan {EtiketBilgisi.STOK_ADI} toplam {EtiketBilgisi.MIKTAR1} KG'dir. </p> <p>İyi çalışmalar dilerim.</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+
+                return Json(new Wrappers.Concrete.SuccessResponse<string>("Etiket başarıyla oluşturuldu."));
+            }
+            catch(Exception e)
+            {
+                return Json(new Wrappers.Concrete.ErrorResponse(e));
+            }
+        }
+        
         #endregion
 
         #region Hurda & 2. Kalite Transfer

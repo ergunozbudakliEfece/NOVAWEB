@@ -99,10 +99,15 @@
                                     <div class="accordion-body p-3">
 
                                         <div class="row gy-3">
-                                            <div class="col-12 col-sm-4 col-lg" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-                                                <button class="btn btn-primary" style="width: 70px; height: 35px; display: flex; justify-content: center; align-items: center; padding: 0; " data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Ek Bilgileri Yapıştır</span>" onclick="EkBilgileriYapistir()">
-                                                    <i class="bi bi-clipboard2-check-fill"></i>
+                                            <div class="col-auto col-sm-4 col-md-auto" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                                                <button class="btn btn-primary" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Ek Bilgileri Yapıştır</span>" onclick="EkBilgileriYapistir()">
+                                                    <i class='bx bx-paste'></i>
                                                 </button>
+                                                <button class="btn btn-primary" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>Siparişten Ek Bilgi Getir</span>" onclick="SiparistenEkBilgiGetir()">
+                                                    <i class='bx bx-file'></i>
+                                                </button>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-lg" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
                                                 <div class="form-label-group outline m-0 w-100">
                                                     <input type="number" id="ACIK2" class="form-control" step="0.01" autocomplete="on" value="" />
                                                     <span><label for="ACIK2">KALINLIK</label></span>
@@ -2265,6 +2270,27 @@
                     <button class="btn btn-primary" id="recovered-document-select" type="button" onclick="SelectLocalStorageValue('${index.BELGE_NO}')">SEÇ</button>
                     <button class="btn btn-primary" id="recovered-document-delete" type="button" onclick="DeleteLocalStorageValue('${index.BELGE_NO}')">SİL</button>
                 </div>`
+    }
+
+    function SiparistenEkBilgiGetir()
+    {
+        var SIPARIS_NO = document.getElementById("SiparisNo").innerHTML;
+        var SIRA = $('#StokAdlari').val();
+        var STOK_KODU = $('#StokAdlari').find(`[data-sira='${SIRA}']`).data('stok-kodu');
+
+        var BILGI = detayli.filter(x => x.SIPARIS_NO == SIPARIS_NO && x.STOK_KODU == STOK_KODU && x.SIRA == SIRA)[0];
+
+        if (BILGI != undefined)
+        {
+            $("#ACIK1").val(BILGI.GENISLIK ?? '');
+            $("#ACIK2").val(BILGI.GERCEK_KALINLIK?.replace(',', '.') ?? '');
+            //$("#ACIK3").val(BILGI.ACIK3 ?? '');
+            $("#SERİ_NO_3").val(BILGI.KALITE ?? '');
+            $("#SERİ_NO_4").val(BILGI.KAPLAMA_KALINLIK ?? '');
+
+            $("#ACIK1").trigger('blur')
+            $("#ACIK2").trigger('blur')
+        }
     }
 </script>
 

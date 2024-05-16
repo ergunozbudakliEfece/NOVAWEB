@@ -25,20 +25,22 @@
         padding: 0 0 0 4rem !important;
     }
 
-    #UstIslemButton {
+    .UstIslemButton {
         border: 1px solid #595cd9;
+        width: 30px;
+        height: 30px;
     }
 
-        #UstIslemButton:hover {
+       .UstIslemButton:hover {
             background-color: #595cd9;
         }
 
-        #UstIslemButton i {
+        .UstIslemButton i {
             color: #595cd9;
             font-size: x-large;
         }
 
-    #UstIslemButton:hover i {
+    .UstIslemButton:hover i {
         color: white !important;
     }
 </style>
@@ -137,7 +139,7 @@
                             <th data-visible="false" data-formatter="EmptyDataFormatter" data-field="PLAKA" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">PLAKA</th>
                             <th data-visible="false" data-formatter="EmptyDataFormatter" data-field="SOFOR" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">SOFOR</th>
                             <th data-formatter="EmptyDataFormatter" data-field="INS_USER_NAME" data-sortable="true" data-halign="center" data-align="center" data-filter-control="input">KAYIT YAPAN</th>
-                            <th data-visible="false" data-sortable="true" data-halign="center" data-align="center" data-field="ISLEM_ROW" data-formatter="UstIslemFormatter">İŞLEM</th>
+                            <th data-sortable="true" data-halign="center" data-align="center" data-field="ISLEM_ROW" data-formatter="UstIslemFormatter">İŞLEM</th>
                         </tr>
                     </thead>
                 </table>
@@ -237,8 +239,6 @@
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'GIRIS_DEPO');
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'CIKIS_DEPO');
 
-            $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'ISLEM_ROW');
-
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'PLAKA');
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'SOFOR');
         }
@@ -250,8 +250,6 @@
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'GIRIS_DEPO');
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'CIKIS_DEPO');
 
-            $('#SevkMalKabulTable').bootstrapTable('showColumn', 'ISLEM_ROW');
-
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'PLAKA');
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'SOFOR');
         }
@@ -262,8 +260,6 @@
 
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'GIRIS_DEPO');
             $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'CIKIS_DEPO');
-
-            $('#SevkMalKabulTable').bootstrapTable('hideColumn', 'ISLEM_ROW');
 
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'PLAKA');
             $('#SevkMalKabulTable').bootstrapTable('showColumn', 'SOFOR');
@@ -307,8 +303,6 @@
 
     $("#divPartial").show();
 
-
-
     var type = 'fa';
 
     function loadingTemplate(message) {
@@ -333,16 +327,27 @@
 
     function UstIslemFormatter(value, index, row)
     {
-        if (!index.ACTIVE)
-        {
-            return `<button type="button" id="UstIslemButton" class="btn btn-icon" disabled>
-                        <i class='bx bx-transfer-alt'></i>
-                    </button>`;
-        }
+        var DocumentTypeVal = $('input[name="DocumentTypeRadio"]:checked').val();
+        var DocType = parseInt(DocumentTypeVal);
 
-        return `<button type="button" id="UstIslemButton" class="btn btn-icon" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<span>D.A.T. Oluştur</span>" onclick="DepolarArasiTransferBelgesiOlusturOnay('${index.BELGE_NO}')">
-                    <i class='bx bx-transfer-alt'></i>
-                </button>`;
+
+        if (DocType == 9) {
+            return `<div class="d-flex justify-content-center align-items-center gap-2">
+                        <button ${index.ACTIVE ? '' : 'disabled'} type="button" class="btn btn-icon UstIslemButton" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>D.A.T. Oluştur</span>" onclick="DepolarArasiTransferBelgesiOlusturOnay('${index.BELGE_NO}')">
+                            <i class='bx bx-transfer-alt'></i>
+                        </button>
+                        <button type="button" class="btn btn-icon UstIslemButton" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Belgeyi Sil</span>" onclick="BelgeSilmeOnayi('${index.BELGE_NO}')">
+                            <i class='bx bxs-trash'></i>
+                        </button>
+                    </div>`;
+        }
+        else {
+            return `<div class="d-flex justify-content-center align-items-center gap-2">
+                        <button type="button" class="btn btn-icon UstIslemButton" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" data-bs-html="true" data-bs-original-title="<span>Belgeyi Sil</span>" onclick="BelgeSilmeOnayi('${index.BELGE_NO}')">
+                            <i class='bx bxs-trash'></i>
+                        </button>
+                    </div>`;
+        }
     }
 
     async function DepolarArasiTransferBelgesiOlusturOnay(BELGE_NO)
@@ -659,6 +664,55 @@
                 }
             }
         }
+    }
+
+    function BelgeSilmeOnayi(BELGE_NO)
+    {
+        Swal.fire({
+            title: `<b>${BELGE_NO}</b> no'lu belge silinecek, onaylıyor musunuz?`,
+            html: "Onay için aşağıdaki alana '<b>EVET</b>' yazınız",
+            input: 'text',
+            showCancelButton: true,
+            confirmButtonText: 'SİL',
+            cancelButtonText: 'İPTAL'
+        }).then((result) => {
+            if (!result.isDismissed)
+            {
+                if (result.value?.trim().toLocaleUpperCase() == 'EVET') {
+                    ShowProgress();
+
+                    axios.delete(`http://192.168.2.13:83/api/shipping/${BELGE_NO}/0`)
+                        .then((result) => {
+                            Swal.fire({
+                                title: "İşlem Başarılı",
+                                html: `<b>${BELGE_NO}</b> no'lu belge başarıyla silindi`,
+                                icon: "success",
+                                confirmButtonText: 'TAMAM'
+                            });
+
+                            HideProgress();
+                        })
+                        .catch(() => {
+                            Swal.fire({
+                                title: "İşlem Başarısız",
+                                text: "Beklenmeyen bir hata oluştu",
+                                icon: "error",
+                                confirmButtonText: 'TAMAM'
+                            });
+
+                            HideProgress();
+                        });
+                }
+                else {
+                    Swal.fire({
+                        title: "İşlem Başarısız",
+                        text: "Onay verilmediği için silme işlemi gerçekleştirilemedi",
+                        icon: "error",
+                        confirmButtonText: 'TAMAM'
+                    });
+                }
+            }
+        });
     }
 </script>
 
