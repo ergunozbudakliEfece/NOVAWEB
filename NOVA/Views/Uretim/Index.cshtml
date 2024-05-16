@@ -294,6 +294,11 @@
             height: 15px;
         }
 
+        #hurda-ikinci-kalite-modal .row > * {
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+        }
+
 
         @@media screen and (max-height:800px) {
             #stokadlari {
@@ -749,6 +754,31 @@
         </div>
     </div>
 
+    <!-- İkinci Kalite ve Hurda Kayıt Modal -->
+    <div class="modal fade" id="hurda-ikinci-kalite-modal" data-bs-backdrop="static" tabindex="-1" style="padding-left: 50px;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center align-items-center">
+                    <h1 class="modal-title fs-5" id="hurda-ikinci-kalite-modal-title">Modal title</h1>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row mb-3">
+                            <input class="form-control text-center" id="hurda-ikinci-kalite-modal-miktar" type="number" placeholder="Miktar 1" >
+                        </div>
+                        <div class="row">
+                            <select id="hurda-ikinci-kalite-modal-yazici" class="form-select" style="width: 100%;"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center align-items-center">
+                    <button type="button" class="btn btn-primary" onclick="HurdaVeIkinciKaliteEtiketOlustur()">KAYDET VE YAZDIR</button>
+                    <button type="button" class="btn btn-danger" onclick="HurdaVeIkinciKaliteModalKapat()">KAPAT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <style>
         #BekleyenIsEmirleriTable {
             margin-top: 0 !important;
@@ -779,9 +809,9 @@
                 var Makineler = `<div class="btn-group" style="grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) );display:grid;grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group">`;
 
                 for (var i = 0; i < data.length; i++) {
-                    var MachineType = data[i].HAT_KODU.substring(0, 2).toLowerCase();
+                    var MachineType = data[i].HAT_KODU;
 
-                    if (MachineType != "sm") {
+                    if ((MachineType != "SM02") && MachineType != "SM03") {
                         Makineler += `<input type="radio" class="btn-check" name="makine-ie" id="${data[i].HAT_KODU}" onclick="MakineBekleyenIsEmri(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                     }
                 }
@@ -794,12 +824,15 @@
                 var Makineler = `<div class="btn-group" style="grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) );display:grid;grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group">`;
 
                 for (var i = 0; i < data.length; i++) {
-                    var MachineType = data[i].HAT_KODU.substring(0,2);
+                    var MachineType = data[i].HAT_KODU;
 
-                    if (MachineType != "SM") {
+                    if ((MachineType != "SM02") && MachineType != "SM03") {
                         Makineler += `<input type="radio" class="btn-check" name="makine-ieuk" id="${data[i].HAT_KODU}" onclick="c(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                     }
                 }
+
+                Makineler += `<input type="radio" class="btn-check" name="makine-ieuk" id="ikinci-kalite-uk" onclick="c(this.value)" value="ikinci-kalite" autocomplete="off"><label class="btn btn-outline-primary" for="ikinci-kalite-uk">2.KLT</label>`;
+                Makineler += `<input type="radio" class="btn-check" name="makine-ieuk" id="hurda-uk" onclick="c(this.value)" value="hurda" autocomplete="off"><label class="btn btn-outline-primary" for="hurda-uk">HURDA</label>`;
 
                 $('#UretimKaydiMakine').html(Makineler + `</div>`);
             });
@@ -1060,7 +1093,7 @@
                 islem = '<th data-visible="true" data-width="0" data-formatter="IsEmriDetayIslemFormatter" data-halign="center" data-align="center" data-sortable="false">İŞLEM</th>'
             switch (MakineKodu) {
                 case "DL01":
-                    
+
 
                     return `<th data-visible="false" data-width="0" data-field="TARIH" data-halign="center" data-align="center" data-sortable="true" data-formatter="BekleyenIsEmriTarihFormatter">TARİH</th>
                         <th data-visible="false" data-width="0" data-field="HAM_SERINO" data-halign="center" data-align="center" data-sortable="true">HAMMADDE BARKOD NO</th>
@@ -1175,7 +1208,7 @@
 
         function IsEmriDetayIslemFormatter(value, row, index, field)
         {
-            
+
             if(row.KAPALI == "H")
             {
                 var ButonSinifi = KapatilacakIsEmirleri.indexOf(row.ALT_ISEMRI) > -1 ? "bi bi-check-circle-fill ignored" : "bi bi-check-circle ignored";
@@ -1344,7 +1377,7 @@
            }
         }
          function SeciliIsEmirleriniAc(){
-             if (AcilacakIsEmirleri.length > 0) { 
+             if (AcilacakIsEmirleri.length > 0) {
          var Liste = '<div style="overflow-y:auto;max-height:150px;font-size:smaller;margin-bottom:1rem;">';
 
          for (var i = 0; i < AcilacakIsEmirleri.length; i++)
@@ -1407,9 +1440,9 @@
                 var Makineler = `<div class="btn-group" style="grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) );display:grid;grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group">`;
 
                 for (var i = 0; i < data.length; i++) {
-                    var MachineType = data[i].HAT_KODU.substring(0, 2).toLowerCase();
+                    var MachineType = data[i].HAT_KODU;
 
-                    if (MachineType != "sm") {
+                    if ((MachineType != "SM02") && MachineType != "SM03") {
                         Makineler += `<input type="radio" class="btn-check" name="makine-ie" id="${data[i].HAT_KODU}" onclick="UretimeGirenler(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                     }
                 }
@@ -1463,7 +1496,7 @@
                     });
                 }
             });
-            
+
         }
 
         function UnitFormatter(value, row, index) {
@@ -1540,22 +1573,22 @@
 
         function oranFormatter4(value, index, row) {
             return `<div data-bs-toggle="tooltip-hat-girdi" data-popup="tooltip-custom" data-bs-placement="left" data-bs-html="true" data-bs-original-title="<div class=\'d-flex justify-content-center align-items-center gap-2\'>
-    <div class=\'rate d-flex flex-column justify-content-center align-items-center\'>
-        <span>ORAN</span>
-        <span>${parseInt(index.ORAN)} %</span>
-    </div>
-    <div class=\'amount d-flex flex-column justify-content-center align-items-center\' style=\'color:#90a8ff !important;\'>
-        <span>MİKTAR</span>
-        <span>${parseInt(index.SERI_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${index.OLCU_BR1}</span>
-    </div>
-    <div class=\'produced d-flex flex-column justify-content-center align-items-center\'>
-        <span>ÜRETİLEN</span>
-        <span>${parseInt(index.URETILEN).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${index.OLCU_BR1}</span>
-    </div>
-    <div class=\'balance d-flex flex-column justify-content-center align-items-center\'>
-        <span>KALAN</span>
-        <span>${parseInt(parseFloat(index.SERI_MIKTAR) - parseFloat(index.URETILEN)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) } ${index.OLCU_BR1}</span>
-    </div>
+        <div class=\'rate d-flex flex-column justify-content-center align-items-center\'>
+            <span>ORAN</span>
+            <span>${parseInt(index.ORAN)} %</span>
+        </div>
+        <div class=\'amount d-flex flex-column justify-content-center align-items-center\' style=\'color:#90a8ff !important;\'>
+            <span>MİKTAR</span>
+            <span>${parseInt(index.SERI_MIKTAR).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${index.OLCU_BR1}</span>
+        </div>
+        <div class=\'produced d-flex flex-column justify-content-center align-items-center\'>
+            <span>ÜRETİLEN</span>
+            <span>${parseInt(index.URETILEN).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${index.OLCU_BR1}</span>
+        </div>
+        <div class=\'balance d-flex flex-column justify-content-center align-items-center\'>
+            <span>KALAN</span>
+            <span>${parseInt(parseFloat(index.SERI_MIKTAR) - parseFloat(index.URETILEN)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${index.OLCU_BR1}</span>
+        </div>
 </div>"><p class="meter" style="height: auto;position: relative; border: 1px solid #d9dee3; border-radius: 8px; margin: 0 0.25rem;"><span style="width:${parseFloat(value)}%;"><span class="progress custom-progress" id="progress-msip" style=" height: 1.5rem; display:flex;align-items:center;"><span style="height:auto; color: black;font-size: small;position: absolute; right: 0; left: 0; top: 0; bottom: 0;">${index.SERI_NO}</span></span></span></p></div>`;
         }
 
@@ -1698,9 +1731,10 @@
                    opt = $("<option>").val(data[i].PRINTER_NAME).text(data[i].PRINTER_NAME);
 
                     $('#yazici').append(opt);
+                    $('#hurda-ikinci-kalite-modal-yazici').append(opt.clone());
                 }
             }).done(function () {
-                $('#yazici').select2(
+                $('select').select2(
                     {
                         "language": {
                             "noResults": function () {
@@ -1717,6 +1751,7 @@
                 }
                 else {
                     $('#yazici').val(localStorage.getItem("yazici"));
+                    $('#hurda-ikinci-kalite-modal-yazici').val(localStorage.getItem("yazici"));
                     $('#yazici').trigger('change');
                 }
             })
@@ -1927,180 +1962,296 @@
                 });
             }
         }
+
+
+        function HurdaVeIkinciKaliteEtiketOlustur()
+        {
+            var IslemTipi = $('input[name="makine-ieuk"]:checked').val();
+
+            if (IslemTipi != undefined && (IslemTipi == "ikinci-kalite" || IslemTipi == "hurda"))
+            {
+                ShowProgress();
+
+                var SERI = (IslemTipi == "ikinci-kalite" ? "I" : "H").padEnd((15 - $('#hurda-ikinci-kalite-modal-miktar').val().length), "0") + $('#hurda-ikinci-kalite-modal-miktar').val();
+
+                var ETIKET_BILGI = {
+                    "SERI_NO": SERI,
+                    "STOK_ADI": IslemTipi == "ikinci-kalite" ? "İKİNCİ KALİTE" : "HURDA",
+                    "MIKTAR1": parseInt($('#hurda-ikinci-kalite-modal-miktar').val()),
+                    "OLCU_BR1": "KG",
+                    "MIKTAR2": null,
+                    "OLCU_BR2": null,
+                    "STOK_KODU": IslemTipi == "ikinci-kalite" ? "İKİNCİ KALİTE" : "HURDA",
+                    "GENISLIK": null,
+                    "GRUP_ISIM": null,
+                    "BOY": null,
+                    "KAYITYAPANKUL": null,
+                    "KAYITTARIHI": null,
+                    "SIPARIS_CARI": null,
+                    "MAK_KODU": null,
+                    "KALINLIK": null,
+                    "METRAJ": null,
+                    "ACIKLAMA_5": null,
+                    "KALITE": null,
+                    "KAPLAMA": null,
+                    "MENSEI": null,
+                    "FIRMA_SERI_NO": null,
+                    "BIRIM_MIKTAR": null,
+                    "REF_HAT_KODU": null,
+                    "REF_STOK_ADI": null
+                };
+
+                HurdaVeIkinciKaliteModalKapat();
+
+                var YaziciSecim = $('#hurda-ikinci-kalite-modal-yazici').val();
+
+                $.ajax({
+                    url: '@Url.Action("HurdaVeIkinciKaliteEtiketOlustur", "Uretim")',
+                    type: 'POST',
+                    data: { EtiketBilgisi: ETIKET_BILGI, Yazici: YaziciSecim },
+                    error: () => { 
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "Beklenmeyen bir hata oluştu",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        HideProgress();
+                    },
+                    success: (response) => {
+                        if (response.IsSuccess) {
+                            Swal.fire({
+                                position: "center",
+                                icon: "success",
+                                title: response.Value,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                        else {
+                            Swal.fire({
+                                position: "center",
+                                icon: "error",
+                                title: response.Message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+
+                        HideProgress();
+                    }
+                });
+            }
+        }
+
+        function HurdaVeIkinciKaliteModalKapat()
+        {
+            $('input[name="uretim-islem"][value=0]').click();
+            $('#hurda-ikinci-kalite-modal').modal('hide');
+            $('#hurda-ikinci-kalite-modal-miktar').val('');
+        }
+
+
         var sabit = "";
         var btnid = "";
         function c(value) {
             CheckLogin().then((response) => {
                 if (response) {
-                    $("#tablo").show();
-                    ShowProgress();
-                    $("#uretimkaydi").focus();
-                    sabit = value;
-                    btnid = value;
-                    var url = "";
-                    if (value == 'DL01') {
-                        url1 = "http://192.168.2.13:83/api/ie/TOPDL/" + value;
-                    } else {
-                        url1 = "http://192.168.2.13:83/api/ie/TOP/" + value;
+                    if (value == "ikinci-kalite") {
+                        $('#hurda-ikinci-kalite-modal-title').html('İKİNCİ KALİTE');
+
+                        if (!(localStorage.getItem("yazici") == undefined || localStorage.getItem("yazici") == null || localStorage.getItem("yazici") == 'null')) {
+                            $('#hurda-ikinci-kalite-modal-yazici').val(localStorage.getItem("yazici"));
+                        }
+
+                        $('#hurda-ikinci-kalite-modal-yazici').select2();
+
+                        $('#hurda-ikinci-kalite-modal').modal('show');
                     }
-                    
+                    else if (value == "hurda") {
+                        $('#hurda-ikinci-kalite-modal-title').html('HURDA');
 
-                    UretimListe(sabit);
-                    var data = null;
-                    $.getJSON(url1, function (d) {
-                        data = d;
-                    }).done(function () {
+                        if (!(localStorage.getItem("yazici") == undefined || localStorage.getItem("yazici") == null || localStorage.getItem("yazici") == 'null')) {
+                            $('#hurda-ikinci-kalite-modal-yazici').val(localStorage.getItem("yazici"));
+                        }
+
+                        $('#hurda-ikinci-kalite-modal-yazici').select2();
+
+                        $('#hurda-ikinci-kalite-modal').modal('show');
+                    }
+                    else {
+                        $("#tablo").show();
+                        ShowProgress();
+                        $("#uretimkaydi").focus();
+                        sabit = value;
+                        btnid = value;
+                        var url = "";
                         if (value == 'DL01') {
-                            
-                                 
-
-                                    document.getElementById("stokadlari").replaceChildren();
-                                    if (data.length > 0) {
-                                        
-                                        var b = document.createElement("button");
-                                        b.className = "mak btn btn-outline-secondary";
-                                        b.style.width = "295px";
-                                        b.style.height = "fit-content";
-                                        b.setAttribute("data-seri", data[0].SERINO);
-                                        b.setAttribute("data-hat", "DL01");
-                                        b.setAttribute("data-miktarsabit", data[0].MIKTARSABITLE);
-                                        b.setAttribute("data-genislik", '-');
-                                        var top = 0;
-                                        var body = "<b>" + (data[0].SERINO != null ? data[0].SERINO : '-') + "</b></br><b>" + data[0].STOK_ADI + "</b></br>"
-                                        
-                                        var top1 = 0;
-                                        var top2 = 0;
-                                        for (let i = 0; i < data.length; i++) {
-                                            top += data[i].IER_MIKTAR
-                                            body += "<span style='font-size:12px'> " + data[i].SERINO2 + " MM → " + data[i].MIKTAR2.toLocaleString() + " AD → " + data[i].MIKTAR.toLocaleString() + " " + " KG</span></br>"
-                                            top1 += data[i].IER_MIKTAR
-                                            top2 += data[i].SU_MIKTAR
-                                        }
-                                        var oran = (top2 / top1)*100
-                                        b.setAttribute("data-top", top);
-                                        b.innerHTML = body
-                                        $('#stokadlari').css('display', 'grid');
-                                        b.setAttribute("onclick", "showmodal(this)");
-                                        var p = document.createElement("p");
-                                        p.className = "meter mt-1";
-                                        p.style = "height:auto";
-                                        var span1 = document.createElement("span");
-                                        span1.style = "width:" + Math.round(oran) +"%";
-                                        var span2 = document.createElement("span");
-                                        span2.className = "progress";
-                                        span2.id = "progress-msip";
-                                        var span3 = document.createElement("span");
-                                        span3.style = "margin-bottom:10px;text-align:end;color:black";
-                                        span3.innerHTML = oran.toFixed(2) + "%";
-                                        span2.appendChild(span3);
-                                        span1.appendChild(span2);
-                                        p.appendChild(span1);
-                                        b.appendChild(p);
-                                        document.getElementById("stokadlari").appendChild(b);
-                                    }
-                                    else {
-                                        $('#stokadlari').css('display', 'flex');
-                                        $('#stokadlari').html(`<div class="w-100 h-100 d-flex justify-content-center align-items-center text-center"><span class="text-center">
-
-Seçili makinede iş emri yok.
-
-
-</span></div>`);
-                                    }
-                                    HideProgress();
-                                    $("#UretimListeTable").show();
-
-                                
-                            
+                            url1 = "http://192.168.2.13:83/api/ie/TOPDL/" + value;
                         } else {
-                            document.getElementById("stokadlari").replaceChildren();
-                            if (data.length > 0) {
-                                for (let i = 0; i < data.length; i++) {
+                            url1 = "http://192.168.2.13:83/api/ie/TOP/" + value;
+                        }
+
+
+                        UretimListe(sabit);
+                        var data = null;
+                        $.getJSON(url1, function (d) {
+                            data = d;
+                        }).done(function () {
+                            if (value == 'DL01') {
+
+
+
+                                document.getElementById("stokadlari").replaceChildren();
+                                if (data.length > 0) {
 
                                     var b = document.createElement("button");
                                     b.className = "mak btn btn-outline-secondary";
                                     b.style.width = "295px";
-                                    b.style.height = "145px";
-                                    b.setAttribute("data-stokkodu", data[i].STOK_KODU);
-                                    b.setAttribute("data-seri", data[i].SERINO);
-                                    b.setAttribute("data-genislik", data[i].BANT_GENISLIGI);
-                                    if (value == 'DL01') {
-                                        //if (data[i].MIKTARSABITLE == "H") {
-                                        //    b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
-                                        //} else {
-                                        //    b.setAttribute("data-top", data[i].TOPLAM_MIKTAR_REC);
-                                        //}
-                                        b.setAttribute("data-top", r)
+                                    b.style.height = "fit-content";
+                                    b.setAttribute("data-seri", data[0].SERINO);
+                                    b.setAttribute("data-hat", "DL01");
+                                    b.setAttribute("data-miktarsabit", data[0].MIKTARSABITLE);
+                                    b.setAttribute("data-genislik", '-');
+                                    var top = 0;
+                                    var body = "<b>" + (data[0].SERINO != null ? data[0].SERINO : '-') + "</b></br><b>" + data[0].STOK_ADI + "</b></br>"
 
-                                    } else {
-                                        b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
+                                    var top1 = 0;
+                                    var top2 = 0;
+                                    for (let i = 0; i < data.length; i++) {
+                                        top += data[i].IER_MIKTAR
+                                        body += "<span style='font-size:12px'> " + data[i].SERINO2 + " MM → " + data[i].MIKTAR2.toLocaleString() + " AD → " + data[i].MIKTAR.toLocaleString() + " " + " KG</span></br>"
+                                        top1 += data[i].IER_MIKTAR
+                                        top2 += data[i].SU_MIKTAR
                                     }
-
-                                    b.setAttribute("data-kul", data[i].KULL_MIKTAR);
-                                    b.setAttribute("data-hat", data[i].HAT_KODU);
-                                    b.setAttribute("data-mik2", data[i].TOPLAM_MIKTAR2);
-                                    b.setAttribute("data-isemri", data[i].ISEMRINO);
-
-                                    if (value == 'DL01') {
-                                        b.setAttribute("data-miktarsabit", data[i].MIKTARSABITLE);
-                                    }
-
-                                    b.setAttribute("data-kul2", data[i].KULL_MIKTAR2);
-                                    b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
-
-                                    /*b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].SIP_CARI_ISIM + "</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";*/
-                                    if (value == 'DL01') {
-                                        b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
-                                    } else {
-                                        b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
-                                    }
-                                    if (data[i].URETILEBILIR == 'H') {
-                                        b.setAttribute("disabled", "disabled");
-
-                                        if (value == 'DL01') {
-                                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
-                                        } else {
-                                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
-                                        }
-                                    }
-
-
+                                    var oran = (top2 / top1) * 100
+                                    b.setAttribute("data-top", top);
+                                    b.innerHTML = body
+                                    $('#stokadlari').css('display', 'grid');
                                     b.setAttribute("onclick", "showmodal(this)");
                                     var p = document.createElement("p");
                                     p.className = "meter mt-1";
                                     p.style = "height:auto";
                                     var span1 = document.createElement("span");
-                                    span1.style = "width:" + data[i].ORAN + "%";
+                                    span1.style = "width:" + Math.round(oran) + "%";
                                     var span2 = document.createElement("span");
                                     span2.className = "progress";
                                     span2.id = "progress-msip";
                                     var span3 = document.createElement("span");
                                     span3.style = "margin-bottom:10px;text-align:end;color:black";
-                                    span3.innerHTML = data[i].ORAN + "%";
+                                    span3.innerHTML = oran.toFixed(2) + "%";
                                     span2.appendChild(span3);
                                     span1.appendChild(span2);
                                     p.appendChild(span1);
                                     b.appendChild(p);
-
-                                    $('#stokadlari').css('display', 'grid');
-
                                     document.getElementById("stokadlari").appendChild(b);
                                 }
-                            } else {
-                                $('#stokadlari').css('display', 'flex');
-                                $('#stokadlari').html(`<div class="w-100 h-100 d-flex justify-content-center align-items-center text-center"><span class="text-center">
+                                else {
+                                    $('#stokadlari').css('display', 'flex');
+                                    $('#stokadlari').html(`<div class="w-100 h-100 d-flex justify-content-center align-items-center text-center"><span class="text-center">
 
 Seçili makinede iş emri yok.
 
 
 </span></div>`);
+                                }
+                                HideProgress();
+                                $("#UretimListeTable").show();
+
+
+
+                            } else {
+                                document.getElementById("stokadlari").replaceChildren();
+                                if (data.length > 0) {
+                                    for (let i = 0; i < data.length; i++) {
+
+                                        var b = document.createElement("button");
+                                        b.className = "mak btn btn-outline-secondary";
+                                        b.style.width = "295px";
+                                        b.style.height = "145px";
+                                        b.setAttribute("data-stokkodu", data[i].STOK_KODU);
+                                        b.setAttribute("data-seri", data[i].SERINO);
+                                        b.setAttribute("data-genislik", data[i].BANT_GENISLIGI);
+                                        if (value == 'DL01') {
+                                            //if (data[i].MIKTARSABITLE == "H") {
+                                            //    b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
+                                            //} else {
+                                            //    b.setAttribute("data-top", data[i].TOPLAM_MIKTAR_REC);
+                                            //}
+                                            b.setAttribute("data-top", r)
+
+                                        } else {
+                                            b.setAttribute("data-top", data[i].TOPLAM_MIKTAR);
+                                        }
+
+                                        b.setAttribute("data-kul", data[i].KULL_MIKTAR);
+                                        b.setAttribute("data-hat", data[i].HAT_KODU);
+                                        b.setAttribute("data-mik2", data[i].TOPLAM_MIKTAR2);
+                                        b.setAttribute("data-isemri", data[i].ISEMRINO);
+
+                                        if (value == 'DL01') {
+                                            b.setAttribute("data-miktarsabit", data[i].MIKTARSABITLE);
+                                        }
+
+                                        b.setAttribute("data-kul2", data[i].KULL_MIKTAR2);
+                                        b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
+
+                                        /*b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].SIP_CARI_ISIM + "</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";*/
+                                        if (value == 'DL01') {
+                                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                                        } else {
+                                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                                        }
+                                        if (data[i].URETILEBILIR == 'H') {
+                                            b.setAttribute("disabled", "disabled");
+
+                                            if (value == 'DL01') {
+                                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                                            } else {
+                                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                                            }
+                                        }
+
+
+                                        b.setAttribute("onclick", "showmodal(this)");
+                                        var p = document.createElement("p");
+                                        p.className = "meter mt-1";
+                                        p.style = "height:auto";
+                                        var span1 = document.createElement("span");
+                                        span1.style = "width:" + data[i].ORAN + "%";
+                                        var span2 = document.createElement("span");
+                                        span2.className = "progress";
+                                        span2.id = "progress-msip";
+                                        var span3 = document.createElement("span");
+                                        span3.style = "margin-bottom:10px;text-align:end;color:black";
+                                        span3.innerHTML = data[i].ORAN + "%";
+                                        span2.appendChild(span3);
+                                        span1.appendChild(span2);
+                                        p.appendChild(span1);
+                                        b.appendChild(p);
+
+                                        $('#stokadlari').css('display', 'grid');
+
+                                        document.getElementById("stokadlari").appendChild(b);
+                                    }
+                                } else {
+                                    $('#stokadlari').css('display', 'flex');
+                                    $('#stokadlari').html(`<div class="w-100 h-100 d-flex justify-content-center align-items-center text-center"><span class="text-center">
+
+Seçili makinede iş emri yok.
+
+
+</span></div>`);
+                                }
+                                HideProgress();
+                                $("#UretimListeTable").show();
                             }
-                            HideProgress();
-                            $("#UretimListeTable").show();
-                        }
 
 
-                    })
+                        })
+                    }
                 }
             });
         }
@@ -2118,7 +2269,7 @@ Seçili makinede iş emri yok.
             } else {
                 $('#ModalSaveButton').prop('disabled', true)
             }
-            /* 
+            /*
              if (hat == "DL01") {
 
      var olculer = $("#SiparisModalLabel2").html();
@@ -2158,7 +2309,7 @@ Seçili makinede iş emri yok.
      }
  }
             */
-           
+
 
         }
         function keychange1() {
@@ -2201,7 +2352,7 @@ Seçili makinede iş emri yok.
                 })
                 if (bant) {
                     if (hat != "DL01") {
-                        
+
                         Swal.fire(
                             'Dikkat!',
                             'Makineye takılan miktardan fazla miktar giremezsiniz.(' + max+')',
@@ -2215,7 +2366,7 @@ Seçili makinede iş emri yok.
                             text: 'Makineye takılan girdi miktarı kalanı ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
                         });
                     }
-                    
+
                 } else {
                     if (hat != "DL01") {
                         Toast.fire({
@@ -2230,7 +2381,7 @@ Seçili makinede iş emri yok.
                             text: 'Makineye takılan girdi miktarı kalanı ' + max + ' olduğundan ' + max + ' olarak güncellenmiştir.'
                         });
                     }
-                   
+
                 }
 
 
@@ -2264,8 +2415,8 @@ Seçili makinede iş emri yok.
                     }) + " " + olcu1 + " / " + olcu2);
                 }
             }
-           
-              
+
+
         }
         function keychange2() {
 
@@ -2550,7 +2701,7 @@ Seçili makinede iş emri yok.
             seri = value.dataset.seri
             if (hat != 'DL01')
                 max = parseInt(value.dataset.top) - parseInt(value.dataset.kul)
-            else 
+            else
                 max = parseInt(value.dataset.top)
             max2 = parseInt(value.dataset.mik2)
             if (hat == 'DL01') {
@@ -2618,7 +2769,7 @@ Seçili makinede iş emri yok.
                     $('#modaliconhesapla').hide()
                     $("#kontrolcol").show();
                     $("#kontrol").prop('disabled', false);
-                    
+
 
                     $('#ikinciDiv').hide();
                     $("#hurdamik").hide();
@@ -2638,7 +2789,7 @@ Seçili makinede iş emri yok.
                     }
                     $("#miktar22").prop("disabled", true);
                     $("#miktar22").val(mik2).hide()
-                    
+
                 } else if (hat == 'MH01') {
                     $("#kontrolcol").show();
                     $("#miktar11").val(max);
@@ -3445,7 +3596,7 @@ Seçili makinede iş emri yok.
         genislik='null'
         if ( hat.substring(0, 2) != "MH") {
             if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "PB" && hat.substring(0, 2) != "BK" && hat.substring(0, 2) != "RF") {
-               
+
                 $.ajax({
                     url: '@Url.Action("UretimSonuKaydi", "Uretim")',
                     type: 'POST',
@@ -3735,10 +3886,8 @@ Seçili makinede iş emri yok.
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <select id="yazici" class="form-select" style="width:250px" onchange="YaziciOnChange()">
-                                    </select>
+                                    <select id="yazici" class="form-select" style="width:250px" onchange="YaziciOnChange()"></select>
                                 </div>
-
                             </div>
 
                             <div class="form-check form-switch">
@@ -4629,7 +4778,7 @@ Seçili makinede iş emri yok.
                     });
                 }
             });
-            
+
 
         }
     </script>
@@ -4755,9 +4904,9 @@ Seçili makinede iş emri yok.
             var Makineler = `<div class="btn-group" style="grid-template-columns: repeat( auto-fit, minmax(80px, 1fr) );display:grid;grid-gap: 0.25rem 0;" role="group" aria-label="Basic radio toggle button group">`;
 
             for (var i = 0; i < data.length; i++) {
-                var MachineType = data[i].HAT_KODU.substring(0, 2).toLowerCase();
+                var MachineType = data[i].HAT_KODU;
 
-                if (MachineType != "sm") {
+                if ((MachineType != "SM02") && MachineType != "SM03") {
                     Makineler += `<input type="radio" class="btn-check" name="makine-ie-uretilmis" id="${data[i].HAT_KODU}" onclick="UretilmisEtiketleriGetir(this.value)" value="${data[i].HAT_KODU}" autocomplete="off"><label class="btn btn-outline-primary" for="${data[i].HAT_KODU}">${data[i].HAT_KODU}</label>`;
                 }
             }
@@ -5486,7 +5635,7 @@ Seçili makinede iş emri yok.
                     });
                 }
             });
-            
+
         }
         function AmbarGirCik(value, mik) {
             ShowProgress();
@@ -5526,7 +5675,7 @@ Seçili makinede iş emri yok.
             })
         }
         function Hesap(value) {
-            
+
             $.getJSON('http://192.168.2.13:83/api/seri/hesapla/' + seri + '/' + value, function (data) {
 
                 var d = data.filter(x => x.GENISLIK == genislik.toString())

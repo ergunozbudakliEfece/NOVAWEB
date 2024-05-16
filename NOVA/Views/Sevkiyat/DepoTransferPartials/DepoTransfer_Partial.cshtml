@@ -226,7 +226,7 @@
                            data-toggle="table">
                         <thead>
                             <tr>
-                                <th data-formatter="NullCheck" data-field="SERI_NO" data-sortable="true" data-halign="center" data-align="center">BARKOD NO</th>
+                                <th data-formatter="SeriFormatter" data-field="SERI_NO" data-sortable="true" data-halign="center" data-align="center">BARKOD NO</th>
                                 <th data-formatter="NullCheck" data-field="STOK_ADI" data-sortable="true" data-halign="center" data-align="center">STOK ADI</th>
                                 <th data-formatter="MiktarFormatla" data-field="MIKTAR" data-sortable="true" data-halign="center" data-align="center">MİKTAR 1</th>
                                 <th data-formatter="NullCheck" data-field="OLCU_BR1" data-sortable="true" data-halign="center" data-align="center">BİRİM 1</th>
@@ -921,6 +921,10 @@
         return (Value == null) || (Value == "") ? "-" : Value;
     }
 
+    function SeriFormatter(Value) {
+        return (Value == null) || (Value == "") || Value?.substr(0, 1) == "H" || Value?.substr(0, 1)=="I" ? "-" : Value;
+    }
+    
     function DepoFormatter(Value) {
         var FiltreliDepolar = Depolar.filter(x => x.DEPO_KODU == Value);
 
@@ -928,7 +932,7 @@
     }
 
     function MiktarFormatla(value) {
-        return parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return value == 0 || value == null || value == undefined ? "-" : parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function KalinlikFormatter(value, index, row) {

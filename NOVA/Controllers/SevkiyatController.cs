@@ -1,4 +1,5 @@
-﻿using iTextSharp.text;
+﻿using DocumentFormat.OpenXml.Drawing;
+using iTextSharp.text;
 using iTextSharp.text.pdf;
 using NetOpenX50;
 using NOVA.Models;
@@ -222,11 +223,11 @@ namespace NOVA.Controllers
                 FaturaUst.EKACK13 = "NKT";
                 FaturaUst.KDV_DAHILMI = true;
 
-                IEnumerable<IGrouping<string, SevkiyatBelge>> STOK_KODU_GRUP = Belgeler.GroupBy(x => x.STOK_KODU);
+                IEnumerable<IGrouping<(string, int), SevkiyatBelge>> STOK_KODU_GRUP = Belgeler.GroupBy(x => (x.STOK_KODU, x.GIRIS_DEPO));
 
-                foreach (IGrouping<string, SevkiyatBelge> BELGELER in STOK_KODU_GRUP)
+                foreach (IGrouping<(string, int), SevkiyatBelge> BELGELER in STOK_KODU_GRUP)
                 {
-                    string STOK_KODU = BELGELER.Key;
+                    string STOK_KODU = BELGELER.Key.Item1;
                     double TOPLAM_MIKTAR = BELGELER.Sum(x => x.MIKTAR1);
                     double TOPLAM_MIKTAR2 = BELGELER.Sum(x => x.MIKTAR2);
 
@@ -238,11 +239,24 @@ namespace NOVA.Controllers
                     FaturaKalem.ProjeKodu = "1";
                     FaturaKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
 
-                    foreach (SevkiyatBelge BELGE in BELGELER)
+                    string SeriTakibi = FaturaKalem.SeriTakibi;
+
+                    if (SeriTakibi == "E")
                     {
-                        FaturaKalem.Gir_Depo_Kodu =35;
-                        FaturaKalem.DEPO_KODU = BELGE.CIKIS_DEPO;
-                        FaturaKalem.SeriEkle(BELGE.SERI_NO, BELGE.ACIK1, BELGE.ACIK2, "", BELGE.MIKTAR1, BELGE.MIKTAR2, BELGE.SERI_NO_3, BELGE.SERI_NO_4);
+                        foreach (SevkiyatBelge BELGE in BELGELER)
+                        {
+                            FaturaKalem.Gir_Depo_Kodu = 35;
+                            FaturaKalem.DEPO_KODU = BELGE.CIKIS_DEPO;
+                            FaturaKalem.SeriEkle(BELGE.SERI_NO, BELGE.ACIK1, BELGE.ACIK2, "", BELGE.MIKTAR1, BELGE.MIKTAR2, BELGE.SERI_NO_3, BELGE.SERI_NO_4);
+                        }
+                    }
+                    else
+                    {
+                        foreach (SevkiyatBelge BELGE in BELGELER)
+                        {
+                            FaturaKalem.Gir_Depo_Kodu = 35;
+                            FaturaKalem.DEPO_KODU = BELGE.CIKIS_DEPO;
+                        }
                     }
                 }
 
