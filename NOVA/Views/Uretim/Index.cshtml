@@ -1608,7 +1608,7 @@
                 type: 'GET',
                 success: (response) => {
                     if (JSON.stringify(response) !== JSON.stringify(UretimListeYedek)) {
-                        UretimListeYedek = response;
+                        UretimListeYedek = response.slice(0,15);
                     }
 
                     $('#UretimListeTable').bootstrapTable('destroy');
@@ -2115,6 +2115,8 @@
         function c(value) {
             CheckLogin().then((response) => {
                 if (response) {
+                    $('#UretimListeTable').bootstrapTable('destroy')
+                    $('#UretimListeTable').bootstrapTable({ data: [], processing: true });
                     if (value == "ikinci-kalite") {
                         $('#hurda-ikinci-kalite-modal-title').html('İKİNCİ KALİTE');
 
@@ -2255,18 +2257,24 @@ Seçili makinede iş emri yok.
                                         b.setAttribute("data-top2", data[i].TOPLAM_MIKTAR2);
 
                                         /*b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><span style='font-size:12px'> " + data[i].SIP_CARI_ISIM + "</span></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";*/
-                                        if (value == 'DL01') {
-                                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                                        var altkisim = "";
+                                        if (data[i].OLCU_BR1 == data[i].OLCU_BR2) {
+                                            altkisim = data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1
                                         } else {
-                                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</b></br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                                            altkisim = data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2
+                                        }
+                                        if (value == 'DL01') {
+                                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</b></br><span style='font-size:12px'> " + altkisim + "</span>";
+                                        } else {
+                                            b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br><b>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</b></br><span style='font-size:12px'> " + altkisim + "</span>";
                                         }
                                         if (data[i].URETILEBILIR == 'H') {
                                             b.setAttribute("disabled", "disabled");
 
                                             if (value == 'DL01') {
-                                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</br><span style='font-size:12px'> " + + altkisim + "</span>";
                                             } else {
-                                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</br><span style='font-size:12px'> " + data[i].KULL_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " / " + data[i].TOPLAM_MIKTAR.toLocaleString() + " " + data[i].OLCU_BR1 + " || " + data[i].KULL_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + " / " + data[i].TOPLAM_MIKTAR2.toLocaleString() + " " + data[i].OLCU_BR2 + "</span>";
+                                                b.innerHTML = "<b>" + data[i].STOK_ADI + "</b></br>" + (data[i].SERINO != null ? data[i].SERINO : '-') + "</br><span style='font-size:12px'> " + + altkisim + "</span>";
                                             }
                                         }
 
@@ -2510,9 +2518,16 @@ Seçili makinede iş emri yok.
                         }
                     } else {
                         $("#ModalSaveButton").prop("disabled", false);
-                    }
-                $("#ikincimik2").prop("disabled", false);
-                $("#hurdamik").prop("disabled", false);
+                }
+                if ($("#ikincimik2").val().length == 0) {
+
+                    $("#ikincimik2").prop("disabled", false);
+                }
+                if ($("#hurdamik").val().length == 0) {
+
+                    $("#hurdamik").prop("disabled", false);
+                }
+                
                 m1 = $("#miktar11").val();
                 m2 = $("#miktar22").val();
                 if (hat != 'PB01' && hat != 'PB02') {
@@ -2529,12 +2544,21 @@ Seçili makinede iş emri yok.
 
             } else {
                 $("#ModalSaveButton").prop("disabled", true)
-                $("#ikincimik1").prop("disabled", true);
-                $("#hurdamik").prop("disabled", true);
-                $("#ikincimik2").val(null);
-                $("#ikincimik1").val(null);
-                $("#hurdamik").val(null);
-                $("#BirimMik").html(" - ")
+                if ($("#ikincimik1").val().length == 0) {
+
+                    $("#ikincimik1").prop("disabled", true);
+                    $("#ikincimik2").val(null);
+                    $("#ikincimik1").val(null);
+
+                    $("#BirimMik").html(" - ")
+                }
+                if ($("#hurdamik").val().length==0) {
+                    $("#hurdamik").prop("disabled", true);
+
+
+                    $("#hurdamik").val(null);
+                }
+                
             }
             keychangeikinci()
         }
@@ -2836,7 +2860,7 @@ Seçili makinede iş emri yok.
                     $("#ikincimik1").hide();
                     $("#ikincimik2").hide();
                     $("#ikincimik2").attr('onkeyup', 'keychangeikinci()');
-                    $("#hurdamik").attr('onkeyup', '');
+                    $("#hurdamik").attr('onkeyup', 'hurdaChange()');
                     $("#BirimMik").hide();
                     $("#hurdaMHdiv").hide();
                     $("#BirimMik2").hide();
@@ -2887,7 +2911,7 @@ Seçili makinede iş emri yok.
                     $("#BirimMik2").show();
                     $("#hurdaMHdiv").hide();
                     $("#ikincimik2").attr('onkeyup', 'keychangeikinci()');
-                    $("#hurdamik").attr('onkeyup', '');
+                    $("#hurdamik").attr('onkeyup', 'hurdaChange()');
                 }
                 else if (hat == 'BK01') {
                     $("#miktar11").prop("disabled", false);
@@ -2903,7 +2927,7 @@ Seçili makinede iş emri yok.
                     $("#BirimMik2").show();
                     $("#hurdaMHdiv").hide();
                     $("#ikincimik2").attr('onkeyup', 'keychangeikinci()');
-                    $("#hurdamik").attr('onkeyup', '');
+                    $("#hurdamik").attr('onkeyup', 'hurdaChange()');
                 }
                 else if (hat.substring(0,2) == 'RF') {
                     $("#miktar11").prop("disabled", false);
@@ -2918,7 +2942,7 @@ Seçili makinede iş emri yok.
                     $("#BirimMik").show();
                     $("#BirimMik2").show();
                     $("#ikincimik2").attr('onkeyup', 'keychangeikinci()');
-                    $("#hurdamik").attr('onkeyup', '');
+                    $("#hurdamik").attr('onkeyup', 'hurdaChange()');
                     $("#hurdaMHdiv").hide();
                 }
                 else {
@@ -2934,7 +2958,7 @@ Seçili makinede iş emri yok.
                     $("#BirimMik").show();
                     $("#BirimMik2").show();
                     $("#ikincimik2").attr('onkeyup', 'keychangeikinci()');
-                    $("#hurdamik").attr('onkeyup', '');
+                    $("#hurdamik").attr('onkeyup', 'hurdaChange()');
                     $("#hurdaMHdiv").hide();
                 }
                 $("#SiparisModalLabel").html(value.innerHTML.split("<br>")[0] + "<br>" + value.innerHTML.split("<br>")[1].split("<p")[0]);
@@ -3655,7 +3679,7 @@ Seçili makinede iş emri yok.
         if (genislik == '-')
         genislik='null'
         if ( hat.substring(0, 2) != "MH") {
-            if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "PB" && hat.substring(0, 2) != "BK" && hat.substring(0, 2) != "RF") {
+            if (hat.substring(0, 2) != "TP" && hat.substring(0, 2) != "PB" && hat.substring(0, 2) != "BK" && hat.substring(0, 2) != "RF" && hat.substring(0, 2) != "SM") {
 
                 $.ajax({
                     url: '@Url.Action("UretimSonuKaydi", "Uretim")',
@@ -3737,7 +3761,9 @@ Seçili makinede iş emri yok.
 
 
 
-                    loadPB(hat, stok, mik1.toString().trim(), mik2.toString().trim())
+                        loadPB(hat, stok, mik1.toString().trim(), mik2.toString().trim())
+
+
 
 
                 } else {
@@ -3840,10 +3866,8 @@ Seçili makinede iş emri yok.
             var etiket = $("#etiketyazdir").is(':checked');
             var etiketOnizleme = $("#etiket-onizleme").is(':checked');
             var k = $("#kontrol").is(':checked');
-
-
-                 var etiket = $("#etiketyazdir").is(':checked');
-                 var etiketOnizleme = $("#etiket-onizleme").is(':checked');
+            var etiket = $("#etiketyazdir").is(':checked');
+            var etiketOnizleme = $("#etiket-onizleme").is(':checked');
             var k = $("#kontrol").is(':checked');
             var isorhat = "";
             if (hat == 'TP01') {
@@ -3851,12 +3875,13 @@ Seçili makinede iş emri yok.
             } else {
                 isorhat = hat;
             }
-            $.ajax({
-                url: '@Url.Action("TrpzUretim", "Uretim")',
-                type: 'POST',
-                data: { "stokkodu": stok, "ISEMRINO": isorhat, "SERI_NO": "", "KULL_MIKTAR":miktar1, "mik2":miktar2, "kontrol": k, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": 0, "sonMu": sonMu },
-                error: function (data1) {
-                    modalKaydetKontrol = true;
+            if (hat.substring(0, 2) != 'SM') {
+                $.ajax({
+                    url: '@Url.Action("TrpzUretim", "Uretim")',
+                    type: 'POST',
+                    data: { "stokkodu": stok, "ISEMRINO": isorhat, "SERI_NO": "", "KULL_MIKTAR": miktar1, "mik2": miktar2, "kontrol": k, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": 0, "sonMu": sonMu },
+                    error: function (data1) {
+                        modalKaydetKontrol = true;
                         console.log(data1);
                         HideProgress();
                         $("#SiparisModal").modal('hide');
@@ -3868,15 +3893,15 @@ Seçili makinede iş emri yok.
                         if (data1.substring(0, 4) != 'Hata') {
 
 
-                                HideProgress();
-                                $("#SiparisModal").modal('hide');
-                                playOnay()
-                                Swal.fire('Başarılı!', 'Başarılı!!', 'success');
+                            HideProgress();
+                            $("#SiparisModal").modal('hide');
+                            playOnay()
+                            Swal.fire('Başarılı!', 'Başarılı!!', 'success');
 
-                                if ($("#etiketyazdir").is(':checked')) {
-                                    TrpzBarkod(data1);
-                                }
-                                document.getElementById(btnid).onclick();
+                            if ($("#etiketyazdir").is(':checked')) {
+                                TrpzBarkod(data1);
+                            }
+                            document.getElementById(btnid).onclick();
 
 
                         } else {
@@ -3890,6 +3915,49 @@ Seçili makinede iş emri yok.
 
                     }
                 });
+            } else {
+                $.ajax({
+                    url: '@Url.Action("SMUretim", "Uretim")',
+                    type: 'POST',
+                    data: { "stokkodu": stok, "ISEMRINO": isorhat, "SERI_NO": "", "KULL_MIKTAR": miktar1, "mik2": miktar2, "kontrol": k, "hurdamik": hurdamik, "ikincimik1": ikincimik1, "ikincimik2": ikincimik2, "dongu": 0, "sonMu": sonMu },
+                    error: function (data1) {
+                        modalKaydetKontrol = true;
+                        console.log(data1);
+                        HideProgress();
+                        $("#SiparisModal").modal('hide');
+                        playHata1()
+                        Swal.fire('Başarısız!', 'Kayıt başarısız,tekrar deneyin', 'error');
+                    },
+                    success: function (data1) {
+                        modalKaydetKontrol = true;
+                        if (data1.substring(0, 4) != 'Hata') {
+
+
+                            HideProgress();
+                            $("#SiparisModal").modal('hide');
+                            playOnay()
+                            Swal.fire('Başarılı!', 'Başarılı!!', 'success');
+
+                            if ($("#etiketyazdir").is(':checked')) {
+                                TrpzBarkod(data1);
+                            }
+                            document.getElementById(btnid).onclick();
+
+
+                        } else {
+                            HideProgress();
+                            $("#SiparisModal").modal('hide');
+                            playHata1()
+                            Swal.fire('Başarısız!', data1, 'error');
+                            document.getElementById(btnid).onclick();
+
+                        }
+
+                    }
+                });
+            
+            }
+
 
 
 
@@ -4020,7 +4088,7 @@ Seçili makinede iş emri yok.
                         <div class="col">
 
 
-                            <input class="form-control text-center" placeholder="HURDA KG" type="number" id="hurdamik">
+                            <input class="form-control text-center" placeholder="HURDA KG" type="number" id="hurdamik" onkeyup="hurdaChange()">
 
                         </div>
 
@@ -4667,10 +4735,37 @@ Seçili makinede iş emri yok.
             }
 
         }
+        function hurdaChange() {
+            var m1 = $("#miktar11").val();
+            var ikinci = $('#ikincimik1').val();
+           
+                var h = $('#hurdamik').val();
+            if (h == '' || h == null)
+                h = "0";
+            if (m1 == '' || m1 == null)
+                m1 = "0";
+            if (ikinci == '' || ikinci == null)
+                ikinci = "0";
+                    var sum = parseInt(h) + parseInt(ikinci) + parseInt(m1);
+                    if (sum > max) {
+                        $("#hurdamik").val('').trigger('keyup')
+                        Swal.fire({
+                            title: 'Dikkat!',
+                            text: 'Makineye takılan miktardan fazla miktar giremezsiniz.(' + max + ')',
+                            icon: 'info',
+                            confirmButtonText: 'Tamam'
+                        })
+                    }
+                
+            
+        }
         function keychangeikinci() {
             var m1 = $("#miktar11").val();
             var m2 = $("#miktar22").val();
             var ikinci2 = $("#ikincimik2").val();
+            var hurdamik = $("#hurdamik").val();
+            if (hurdamik == '' || hurdamik == null)
+                hurdamik = "0";
             if (ikinci2.length > 0) {
                 $("#ikincimik1").val(Math.round((m1 / m2) * ikinci2)).prop("disabled",false);
 
@@ -4678,20 +4773,20 @@ Seçili makinede iş emri yok.
                 $("#ikincimik1").val(null).prop("disabled",true);
             }
             if (m2 != "") {
-                var m = Math.round((m1 / m2) * ikinci2)+parseInt(m1)
+                var m = Math.round((m1 / m2) * ikinci2) + parseInt(m1) + parseInt(hurdamik)
                 if (m <= max) {
                     keychangeikinci1();
                 } else {
                     $('#BirimMik2').html('-');
-                    $("#ikincimik2").val('').trigger('keyup')
-                    $("#ikincimik2").prop('disabled', true);
+                    $("#ikincimik2").val('')
+                    $('#ikincimik1').val(null).prop("disabled", true)
+                    /*$("#ikincimik2").prop('disabled', true);*/
                     Swal.fire({
                         title:'Dikkat!',
                         text:'Makineye takılan miktardan fazla miktar giremezsiniz.(' + max + ')',
                         icon: 'info',
                         confirmButtonText: 'Tamam'
-                    }
-                    )
+                    })
 
                 }
             }
