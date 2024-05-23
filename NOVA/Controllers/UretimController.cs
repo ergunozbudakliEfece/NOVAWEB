@@ -606,6 +606,7 @@ namespace NOVA.Controllers
                                 }
                                 seri = jsonList[i].SERI_NO;
                             }
+                            
 
 
 
@@ -616,7 +617,7 @@ namespace NOVA.Controllers
                           
                             NetRS netRS1 = kernel.yeniNetRS(sirket);
                             f = recmik - jsonList[i].KULL_MIKTAR;
-                            if (miktarsabitle != "H")
+                            if (miktarsabitle != "H" && miktarsabitle != null)
                             {
                                 if (f > 0 && hatkodu == "DL01")
                                 {
@@ -626,7 +627,7 @@ namespace NOVA.Controllers
                                     fatUst.FATIRS_NO = fatura.YeniNumara("A");
                                     fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                                     fatUst.CikisYeri = TCikisYeri.cySerbest;
-                                    fatUst.CariKod = "12035200100406";
+                                    //fatUst.CariKod = "12035200100406";
                                     fatUst.Tarih = DateTime.Now;
                                     fatUst.ENTEGRE_TRH = DateTime.Now;
                                     fatUst.FiiliTarih = DateTime.Now;
@@ -817,6 +818,317 @@ namespace NOVA.Controllers
                 sirket.LogOff();
                 kernel.FreeNetsisLibrary();
             }
+        }
+        public string SMUretim(string stokkodu, string ISEMRINO, string SERI_NO, string KULL_MIKTAR, string mik2, bool kontrol, string hurdamik, string ikincimik1, string ikincimik2, int dongu, bool sonMu)
+        {
+            var seri = "";
+
+            Kernel kernel = new Kernel();
+            IsEmri Isemri = default(IsEmri);
+            Sirket sirket = default(Sirket);
+            SerbestUSK uretim = default(SerbestUSK);
+            NetRS netRS = default(NetRS);
+            Fatura fatura = default(Fatura);
+            FatUst fatUst = default(FatUst);
+            FatKalem fatKalem = default(FatKalem);
+
+
+            var fisler = "";
+            var sum = 0;
+            var fisno = "";
+            var apiUrl2 = "";
+
+            try
+            {
+                JavaScriptSerializer ser = new JavaScriptSerializer();
+
+
+
+
+                apiUrl2 = "http://192.168.2.13:83/api/ie/USK/" + ISEMRINO.Substring(0, 4) + "/" + stokkodu + "/0/" + Convert.ToInt32(KULL_MIKTAR) + "/" + Convert.ToInt32(mik2) + "/" + 0;
+
+
+
+                //Connect API
+                Uri url2 = new Uri(apiUrl2);
+                WebClient client = new WebClient();
+                client.Encoding = System.Text.Encoding.UTF8;
+                var json2 = client.DownloadString(url2);
+
+                var karsi = "";
+                if (json2 != null)
+                {
+                    sirket = kernel.yeniSirket(TVTTipi.vtMSSQL,
+                                        "EFECE2023",
+                                        "TEMELSET",
+                                        "",
+                                        Request.Cookies["UserName"].Value,
+                                        LoginController.Decrypt(Request.Cookies["UserPassword"].Value), 0);
+                    List<USKModel> jsonList = ser.Deserialize<List<USKModel>>(json2);
+
+                    for (var i = 0; i < jsonList.Count; i++)
+                    {
+                        double miktar2 = jsonList[i].KULL_MIKTAR;
+                        double miktar1 = jsonList[i].MIKTAR2;
+
+
+
+                        netRS = kernel.yeniNetRS(sirket);
+                        uretim = kernel.yeniSerbestUSK(sirket);
+                        try
+                        {
+                            uretim.IsEmrindenGetir(jsonList[i].ISEMRINO);
+                        }
+                        catch (Exception exp)
+                        {
+                            WebMail.SmtpServer = "192.168.2.13";
+                            WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "IsEmrindenGetir() " + exp.Message, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                            return $"Hata: {exp.Message}";
+                        }
+                        uretim.NetsisTransaction(TTransactionTipi.ttBaslat);
+                        uretim.UretSon_FisNo = jsonList[i].FIS_NO;
+                        uretim.UretSon_Tarih = Convert.ToDateTime(DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+                        uretim.BelgeTipi = TBelgeTipi.btIsEmri;
+                        uretim.Proje_Kodu = "1";
+                        uretim.UretSon_Depo = 45;
+                        uretim.I_Yedek1 = 45;
+                        uretim.I_Yedek2 = 0;
+                        uretim.OTO_YMAM_GIRDI_CIKTI = true;
+                        uretim.OTO_YMAM_STOK_KULLAN = false;
+                        uretim.ReceteGetir = true;
+                        uretim.BAKIYE_DEPO = 0;
+                        uretim.F_Yedek1 = miktar2;
+                        uretim.UretSon_Miktar = miktar1;
+                        netRS.Ac("SELECT * FROM TBLISEMRI WITH(NOLOCK)  WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+
+                        seri = netRS.FieldByName("SERINO").AsString;
+                        var Stokkodu = netRS.FieldByName("STOK_KODU").AsString;
+                        netRS.Ac("SELECT * FROM TBLISEMRIREC WITH(NOLOCK)  WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+
+                        var miktarsabitle = netRS.FieldByName("MIKTARSABITLE").AsString;
+                        NetRS SeriNoTakipRS = kernel.yeniNetRS(sirket);
+
+                        SeriNoTakipRS.Ac($"SELECT * FROM TBLSTSABIT  WITH(NOLOCK) WHERE STOK_KODU='{jsonList[i].ISEMRINO}'");
+
+                        var SeriNoTakip = SeriNoTakipRS.FieldByName("GIRIS_SERI").AsString;
+                        netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WHERE SERI_NO='" + jsonList[i].SERI_NO + "' AND GCKOD='G'");
+                        var ACIK1 = netRS.FieldByName("ACIK1").AsString;
+                        var ACIK2 = netRS.FieldByName("ACIK2").AsString;
+                        var SERI_NO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                        var SERI_NO_4 = netRS.FieldByName("SERI_NO_4").AsString;
+                        if (SeriNoTakip == "E")
+                        {
+
+
+                            uretim.SeriEkle(jsonList[i].SERI_NO, ACIK1, ACIK2, "", miktar1, miktar2, SERI_NO_3, SERI_NO_4);
+
+                        }
+                        else
+                        {
+                            if (seri == null)
+                            {
+
+                                if (i == 0)
+                                {
+
+                                    uretim.OTOSERIURET();
+                                    uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
+
+
+                                }
+                                else
+                                {
+                                    uretim.SeriEkle(karsi, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
+                                }
+
+                            }
+                            else
+                            {
+                                uretim.SeriEkle(seri, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
+                            }
+                        }
+
+
+
+
+                        netRS.Ac("UPDATE TBLISEMRIREC SET SERINO='" + jsonList[i].SERI_NO + "' WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+
+                        fisno = uretim.UretSon_FisNo;
+
+                        uretim.FisUret();
+                        uretim.Kaydet();
+
+
+                        if (i != jsonList.Count - 1)
+                        {
+
+                            fisler = fisler + "'" + fisno + "'" + ",";
+                        }
+                        else
+                        {
+
+                            fisler = fisler + "'" + fisno + "'";
+                        }
+                        if (i == 0)
+                        {
+                            netRS.Ac("SELECT * FROM TBLSERITRA WITH(NOLOCK) WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND BELGETIP='C' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                            karsi = netRS.FieldByName("SERI_NO").AsString;
+                        }
+
+
+                        netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WITH(NOLOCK) WHERE GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "' AND BELGENO<>'" + fisno + "' ORDER BY SIRA_NO DESC");
+                        var mikold = netRS.FieldByName("MIKTAR").AsFloat;
+
+
+                        netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "',ACIK1='" + ACIK1 + "',ACIK2='" + ACIK2 + "',SERI_NO_3='" + SERI_NO_3 + "',SERI_NO_4='" + SERI_NO_4 + "' WHERE BELGENO='" + fisno + "' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+
+                        netRS.Ac("SELECT * FROM TBLISEMRI WITH(NOLOCK) WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+                        var referans = netRS.FieldByName("REFISEMRINO").AsString;
+
+
+
+                        netRS.Ac("UPDATE TBLISEMRI SET MIKTAR='" + (mikold != 0 ? mikold + jsonList[i].KULL_MIKTAR : jsonList[i].KULL_MIKTAR) + "' WHERE ISEMRINO='" + referans + "'");
+
+
+
+                        netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WITH(NOLOCK) WHERE BELGENO='" + uretim.UretSon_FisNo + "' AND GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "'");
+                        seri = netRS.FieldByName("SERI_NO").AsString;
+                        if (i == jsonList.Count - 1)
+                        {
+                            if (kontrol)
+                            {
+                                for (int j = 0; j < jsonList.Count; j++)
+                                {
+                                    Isemri = kernel.yeniIsEmri(sirket);
+                                    Isemri.kayitOku(TOkumaTipi.otAc, "ISEMRINO = \'" + jsonList[j].ISEMRINO + "\'");
+                                    Isemri.ReceteSaklansin = false;
+                                    Isemri.Kapali = true;
+                                    Isemri.kayitDuzelt();
+                                }
+                            }
+
+                            netRS.Ac("SELECT * FROM TBLISEMRI WITH(NOLOCK) WHERE ISEMRINO='" + jsonList[i].ISEMRINO + "'");
+
+                            seri = netRS.FieldByName("SERINO").AsString;
+                            var Stokkoduu = netRS.FieldByName("STOK_KODU").AsString;
+                            netRS.Ac("SELECT TOP(1) * FROM TBLSERITRA WITH(NOLOCK) WHERE GCKOD='G' AND SIPNO='" + jsonList[i].ISEMRINO + "' ORDER BY SIRA_NO DESC");
+                            var karsii = netRS.FieldByName("SERI_NO").AsString;
+
+                            netRS.Ac("SELECT TOP(1)* FROM TBLSERITRA WITH(NOLOCK) WHERE SERI_NO='" + jsonList[i].SERI_NO + "' AND GCKOD='G'");
+                            var ACIKK1 = netRS.FieldByName("ACIK1").AsString;
+                            var ACIKK2 = netRS.FieldByName("ACIK2").AsString;
+                            var SERI_NOO_3 = netRS.FieldByName("SERI_NO_3").AsString;
+                            var SERI_NOO_4 = netRS.FieldByName("SERI_NO_4").AsString;
+                            System.Diagnostics.Debug.WriteLine(fisler);
+                            //netRS.Ac("UPDATE TBLSERITRA SET SERI_NO='" + karsi + "' WHERE BELGENO IN (" + fisler + ") AND GCKOD='G'");
+                            //netRS.Ac("UPDATE TBLSERITRA SET KARSISERI='" + karsi + "' WHERE BELGENO IN (" + fisler + ")");
+                            var hurdaNo = "";
+                            var ikinciNo = "";
+
+                            Task.Delay(2000).Wait();
+
+                            if (hurdamik != null && hurdamik != "0")
+                            {
+
+                                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
+
+                                fatUst = fatura.Ust();
+                                fatUst.FATIRS_NO = fatura.YeniNumara("D");
+                                //fatUst.CariKod = "12035200100406";
+                                fatUst.TIPI = TFaturaTipi.ft_Bos;
+                                fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                                fatUst.Tarih = DateTime.Now;
+                                fatUst.FiiliTarih = DateTime.Now;
+                                fatUst.PLA_KODU = "45";
+                                fatUst.Proje_Kodu = "1";
+                                fatUst.KDV_DAHILMI = true;
+                                fatUst.Aciklama = fisno;
+                                fatKalem = fatura.kalemYeni(stokkodu);
+
+                                ///Giriş Depo Kodu
+                                fatKalem.Gir_Depo_Kodu = 60;
+                                fatKalem.DEPO_KODU = 45;
+                                fatKalem.STra_GCMIK = hurdamik.ToDouble();
+                                fatKalem.STra_BF = 0;
+                                fatKalem.STra_ACIK = jsonList[i].ISEMRINO.Substring(0, 4);
+                                fatKalem.Olcubr = 1;
+                                fatKalem.ProjeKodu = "1";
+                                fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                                hurdaNo = fatUst.FATIRS_NO;
+                                fatKalem.SeriEkle(karsii, ACIKK1, ACIKK2, "", hurdamik.ToDouble(), 0, SERI_NOO_3, SERI_NOO_4);
+                                fatura.kayitYeni();
+                            }
+                            if (ikincimik1 != null && ikincimik1 != "0")
+                            {
+                                fatura = kernel.yeniFatura(sirket, TFaturaTip.ftLokalDepo);
+
+                                fatUst = fatura.Ust();
+                                fatUst.FATIRS_NO = fatura.YeniNumara("D");
+                                //fatUst.CariKod = "12035200100406";
+                                fatUst.TIPI = TFaturaTipi.ft_Bos;
+                                fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
+                                fatUst.Tarih = DateTime.Now;
+                                fatUst.FiiliTarih = DateTime.Now;
+                                fatUst.PLA_KODU = "45";
+                                fatUst.Proje_Kodu = "1";
+                                fatUst.Aciklama = fisno;
+                                fatUst.KDV_DAHILMI = true;
+                                fatKalem = fatura.kalemYeni(stokkodu);
+
+                                ///Giriş Depo Kodu
+                                fatKalem.Gir_Depo_Kodu = 55;
+                                fatKalem.DEPO_KODU = 45;
+                                fatKalem.STra_GCMIK = ikincimik1.ToDouble();
+                                fatKalem.STra_GCMIK2 = ikincimik2.ToDouble();
+                                fatKalem.STra_ACIK = jsonList[i].ISEMRINO.Substring(0, 4);
+                                fatKalem.STra_BF = 0;
+                                fatKalem.Olcubr = 1;
+                                fatKalem.ProjeKodu = "1";
+                                fatKalem.D_YEDEK10 = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+                                ikinciNo = fatUst.FATIRS_NO;
+                                fatKalem.SeriEkle(karsii, ACIKK1, ACIKK2, "", ikincimik1.ToDouble(), ikincimik2.ToDouble(), SERI_NOO_3, SERI_NOO_4);
+                                fatura.kayitYeni();
+                            }
+
+
+
+                            //var mailList = "";
+                            //foreach(var itemlist in jsonList)
+                            //{
+                            //    mailList += JsonConvert.SerializeObject(itemlist) + "</br>";
+                            //}
+                            //WebMail.SmtpServer = "192.168.2.13";
+                            //WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com", "Fiş Bilgi", "<p><b>" + jsonList[i].ISEMRINO + "</b> Fiş bilgileri:</p><p>" + fisler + "</p></br>"+ikinciNo+","+hurdaNo+"</br>" + mailList, "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+
+
+                            return karsii;
+                        }
+                        uretim.NetsisTransaction(TTransactionTipi.ttBitir);
+
+                    }
+                }
+
+            }
+            catch (Exception exp)
+            {
+
+                var message = exp.Message;
+                sirket.LogOff();
+                WebMail.SmtpServer = "192.168.2.13";
+                WebMail.Send("ergunozbudakli@efecegalvaniz.com,ugurkonakci@efecegalvaniz.com,dincersipka@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com", "Üretim Sonu Kaydı Hata", "<p><b>" + ISEMRINO + "</b> üzerinde bir hata oluştu!</p><p>Hata: " + message + "</p><p>Fiş bilgileri:</p><p>" + fisler + "</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+
+                uretim.NetsisTransaction(TTransactionTipi.ttGeriAl);
+                return $"Hata: {message}";
+            }
+            finally
+            {
+                sirket.LogOff();
+                Marshal.ReleaseComObject(sirket);
+                kernel.FreeNetsisLibrary();
+                Marshal.ReleaseComObject(kernel);
+            }
+
+            return seri;
         }
 
         public string Hurda(string hatkodu, string mik1, string stokkodu)
@@ -1783,20 +2095,25 @@ namespace NOVA.Controllers
                             {
                                 if (seri == null)
                                 {
-                                    
                                     if (i == 0)
                                     {
-                                        
-                                            uretim.OTOSERIURET();
-                                            uretim.SeriEkle(uretim.SeriOku(0).Seri1, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
-                                        
-                                        
+                                        apiUrl2 = "http://192.168.2.13:83/api/seri/exec/4";
+
+                                        //Connect API
+                                        url2 = new Uri(apiUrl2);
+                                        client = new WebClient();
+                                        client.Encoding = System.Text.Encoding.UTF8;
+
+                                        json2 = client.DownloadString(url2);
+
+                                        List<OtoSeriModel> otoseri = ser.Deserialize<List<OtoSeriModel>>(json2);
+                                        //uretim.OTOSERIURET();
+                                        uretim.SeriEkle(otoseri[0].SERI_NO, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
                                     }
                                     else
                                     {
                                         uretim.SeriEkle(karsi, "", "", "", uretim.UretSon_Miktar, uretim.F_Yedek1);
                                     }
-                                    
                                 }
                                 else
                                 {
@@ -3945,7 +4262,7 @@ namespace NOVA.Controllers
 
                 WebMail.SmtpServer = "192.168.2.13";
 
-                WebMail.Send("surecgelistirme@efecegalvaniz.com", "HURDA & İKİNCİ KALİTE BİLGİLENDİRME", $"<p>Merhaba,</p> <p>{Request.Cookies["Name"].Value} tarafından tartılan {Aciklama} açıklamalı {EtiketBilgisi.STOK_ADI} toplam {EtiketBilgisi.MIKTAR1} KG'dir. </p> <p>İyi çalışmalar dilerim.</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
+                WebMail.Send("alidonmez@efecegalvaniz.com, yaseminkurutac@efecegalvaniz.com, burcuyildirim@efecegalvaniz.com, surecgelistirme@efecegalvaniz.com", "HURDA & İKİNCİ KALİTE BİLGİLENDİRME", $"<p>Merhaba,</p> <p>{Request.Cookies["Name"].Value} tarafından tartılan {Aciklama} açıklamalı {EtiketBilgisi.STOK_ADI} toplam {EtiketBilgisi.MIKTAR1} KG'dir. </p> <p>İyi çalışmalar dilerim.</p>", "sistem@efecegalvaniz.com", null, null, true, null, null, null, null, null, null);
 
                 return Json(new Wrappers.Concrete.SuccessResponse<string>("Etiket başarıyla oluşturuldu."));
             }

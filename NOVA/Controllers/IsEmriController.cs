@@ -1021,6 +1021,10 @@ namespace NOVA.Controllers
                         {
                             m2 = Double.Parse(isemridis[i].AGIRLIK);
                         }
+                        if (isemridis[i].REF_ISEMRINO.Substring(0,2)=="SM")
+                        {
+                            m2 = isemridis[i].REF_ADET.ToDouble();
+                        }
                         Isemri.Miktar = m2;
                         Isemri.kayitYeni();
                         NetRS netRS = kernel.yeniNetRS(sirket);
@@ -1086,7 +1090,12 @@ namespace NOVA.Controllers
                     }
                     else
                     {
+                        if(isemridis[i].REF_ISEMRINO != "-" && isemridis[i].REF_ISEMRINO.Substring(0,2) != "SM")
                         netRS2.Ac("UPDATE TBLISEMRIREC SET SERINO='" + isemridis[i].GIRDI1 + "', DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                        else
+                        {
+                            netRS2.Ac("UPDATE TBLISEMRIREC SET DEPO_KODU='45',MIKTAR=1,MIKTARSABITLE='H' WHERE ISEMRINO='" + isemridis[i].ISEMRINO + "'");
+                        }
                     }
 
 

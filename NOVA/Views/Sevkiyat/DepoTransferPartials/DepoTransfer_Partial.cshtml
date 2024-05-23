@@ -1588,16 +1588,20 @@
                     StokAdlariGetir();
 
                     for (const Kayit of Kayitlar) {
-                        requests.push($.ajax({
-                            url: `http://192.168.2.13:83/api/seri/bakiye/${Kayit.SERI_NO}/${Kayit.CIKIS_DEPO}`,
-                            type: "GET",
-                            error: (e) => { reject("Kurtarılmış veriler kontrol edilirken bir sorun oluştu."); },
-                            success: (response) => {
-                                if (response.length <= 0) {
-                                    Kayitlar = Kayitlar.filter(x => x.SERI_NO != Kayit.SERI_NO);
+
+                        if (Kayit.SERI_NO[0] != "H" && Kayit.SERI_NO[0] != "I")
+                        {
+                            requests.push($.ajax({
+                                url: `http://192.168.2.13:83/api/seri/bakiye/${Kayit.SERI_NO}/${Kayit.CIKIS_DEPO}`,
+                                type: "GET",
+                                error: (e) => { reject("Kurtarılmış veriler kontrol edilirken bir sorun oluştu."); },
+                                success: (response) => {
+                                    if (response.length <= 0) {
+                                        Kayitlar = Kayitlar.filter(x => x.SERI_NO != Kayit.SERI_NO);
+                                    }
                                 }
-                            }
-                        }));
+                            }));
+                        }
                     }
 
                     $.when.apply($, requests).done(function () {

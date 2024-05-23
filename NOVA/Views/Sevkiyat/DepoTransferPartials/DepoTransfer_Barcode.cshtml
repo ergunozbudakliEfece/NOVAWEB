@@ -84,11 +84,8 @@
 <script>
     var Scanner;
 
-    function BarkodModal() {
+    $(document).ready(() => {
         Scanner = new Instascan.Scanner({ video: document.getElementById('qr-scanner'), mirror: false, refractoryPeriod: 2000 });
-
-        document.getElementsByClassName('qr-scanner-area')[0].style.display = "block";
-        SetFullscreen(document.getElementsByClassName('qr-scanner-area')[0]);
 
         Scanner.addListener('scan', function (content) {
             if (content[0] == "H" || content[0] == "I") {
@@ -98,6 +95,14 @@
                 BarkodBakiyeGetir(content);
             }
         });
+    });
+
+    function BarkodModal() {
+
+        document.getElementsByClassName('qr-scanner-area')[0].style.display = "block";
+        SetFullscreen(document.getElementsByClassName('qr-scanner-area')[0]);
+
+        
 
         let Cameras = [];
 
@@ -128,7 +133,17 @@
 
             })
             .catch((e) => {
-                console.error(e)
+                Swal.fire({
+                    text: "Kamera başlatılırken bir sorun oluştu.",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: '1500',
+                    target: document.getElementsByClassName("qr-controls")[0],
+                });
+
+                setTimeout(() => {
+                    Close();
+                }, 1500);
             });
     }
 
@@ -139,7 +154,6 @@
             Scanner
                 .stop()
                 .then(() => {
-                    Scanner = null;
                     document.exitFullscreen();
                     SeriOku = false;
                     $('#SeriOkuButon').removeClass('SeriOkuButonActive');
@@ -159,7 +173,6 @@
                 Scanner
                     .stop()
                     .then(() => {
-                        Scanner = null;
                         document.exitFullscreen();
                         SeriOku = false;
                         $('#SeriOkuButon').removeClass('SeriOkuButonActive');
