@@ -2207,7 +2207,7 @@ namespace NOVA.Controllers
                                     
                                     fatUst = fatura.Ust();
                                     fatUst.FATIRS_NO = fatura.YeniNumara("D");
-                                    fatUst.CariKod = "12035200100406";
+                                    //fatUst.CariKod = "12035200100406";
                                     fatUst.TIPI = TFaturaTipi.ft_Bos;
                                     fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                                     fatUst.Tarih = DateTime.Now;
@@ -2237,7 +2237,7 @@ namespace NOVA.Controllers
 
                                     fatUst = fatura.Ust();
                                     fatUst.FATIRS_NO = fatura.YeniNumara("D");
-                                    fatUst.CariKod = "12035200100406";
+                                    //fatUst.CariKod = "12035200100406";
                                     fatUst.TIPI = TFaturaTipi.ft_Bos;
                                     fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                                     fatUst.Tarih = DateTime.Now;
@@ -3016,7 +3016,7 @@ namespace NOVA.Controllers
 
                 fatUst = fatura.Ust();
                 fatUst.FATIRS_NO = fatura.YeniNumara("D");
-                fatUst.CariKod = "12035200100406";
+                //fatUst.CariKod = "12035200100406";
                 fatUst.TIPI = TFaturaTipi.ft_Bos;
                 fatUst.AMBHARTUR = TAmbarHarTur.htUretim;
                 fatUst.Tarih = DateTime.Now;
